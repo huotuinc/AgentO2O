@@ -1,0 +1,4 @@
+.tipDivDialog{width:70px;height:auto;z-index:9999;border:1px solid #CCC;margin:-5px;*margin-top:-8px; padding:0;font-size:12px;font-weight:normal;text-align:left;color:#000;position:absolute;left:0;top:0; background:#fff; display:none;}
+
+a.ll{ text-align:center; padding:0;margin:0; color:#1f262e;display:inline-block; border-bottom:1px dashed #b8b8b8; line-height:25px; width:70px;height:25px;}
+a.ll:hover{ text-decoration:none; color:#F64E4E;}

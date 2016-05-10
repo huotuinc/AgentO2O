@@ -1,0 +1,47 @@
+html, body {height: 100%;}
+body {height: 100%; font-family: Arial, Helvetica, sans-serif, "宋体"; font-size: 12px; margin: 0; padding: 0; background:#eaeaea url(../images/bg_body_left.png) repeat-y left; color: #666;}
+	p {padding: 0; margin: 0;}
+	ul, li {list-style: none; padding: 0; margin: 0;}
+	img {border: none;}
+	h1, h2, h3, h4, h5 {padding: 0; margin: 0;}
+	.left {float: left;}
+	.right {float: right;}
+	.red {color: #C61B1B;}
+	.green {color: #98B22B; }
+	.smltxt {font-size: 12px;}
+	.hoverimg {background: #ccc; padding: 3px; float: left;}
+	.hoverimg:hover {cursor: pointer; background: #e4e4e4;}
+
+
+	/* Left Side/Navigation Elements */	
+	
+	#leftside {width: 200px; height: 100%; background: #525252 url(../images/bg_leftside.png) repeat-x top; position: absolute; top: 70px; border-right:1px solid #fff; padding-top: 10px;}
+
+
+	/* Navigation Elements */
+	
+		ul.navigation {width: 200px; color: #fff;}
+			ul.navigation li a {text-shadow: 1px 1px 1px #222; background: url(../images/bg_navigation_link.png) repeat-x top; outline: none; width: 190px; display: block; color: #fff; text-decoration: none; padding: 10px; height: 15px;}
+				ul.navigation li a:hover {color: #ccc; background: #333;}
+
+			ul#nav li a.heading, a.collapsed, a.expanded, ul.navigation li.selected{line-height: 1.2em; width: 190px; font-size: 16px; font-weight: 700; padding: 9px 10px; display: block; color: #fff; cursor: pointer;}
+			ul.navigation li.selected {width: 201px; z-index: 2; position: relative; padding: 10px;}
+			
+	/* Main Content/Right Side */
+	
+	/* Blue Theme Stylesheet */
+
+	.contentcontainer .altheading {background: #00789F url(../images/bg_heading_alt.png); border: 1px solid #00789F; color: #fff; text-shadow: 1px 1px 1px #2D738A;}
+
+	/* Navigation Styling */
+			
+	ul#nav li a.heading, a.collapsed, a.expanded, ul.navigation li.selected{border-bottom: 1px solid #006F93; border-top: 1px solid #2DABD5;  background: url(../images/bg_navigation.png) no-repeat top;}
+	
+	ul#nav li a.expanded {background: url(../images/bg_navigation.png) -10px -76px;}
+	
+	ul#nav li a.collapsed:hover {background: url(../images/bg_navigation.png) no-repeat 0 -38px; width: 190px;}
+	ul#nav li a.expanded:hover {background: url(../images/bg_navigation.png) no-repeat -10px -114px; width: 190px;}
+
+	ul.navigation li.selected {background: url(../images/bg_navigation_selected.png) no-repeat -1px 0; border: none;}
+
+ 

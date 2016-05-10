@@ -1,0 +1,61 @@
+﻿@charset "utf-8";
+/* CSS Document */
+
+.font{ font-size:14px;}
+.logo{ margin:0 auto; width:240px; padding:60px 0px 50px 0px;}
+.content{ margin:0 auto; text-align:center; width:1000px; }
+.renwuxin
+{margin:0 auto;width:980px;*width:990px;_width:990px; padding:0px; text-align:center;
+}
+ 
+.renwu li{ float:left; text-align:center; } 
+.renwu li:hover{border-radius: 90px; }
+.renwu li:nth-child(odd){margin-left:1%; margin-right:1%}
+
+.renwu li.rens{ background-color:#FF5151;border-radius:90px  0px;  color:#fff;   box-shadow:6px 9px 1px rgba(0,0,0,0.1)}
+    .renwu li.rens a:hover
+    { background-color:#FF5151;color:#fff;border-radius:90px  0px;
+    }
+
+.renwu li.ren{ background-color:#FF5151;border-radius:0px  90px;  color:#fff;   box-shadow:6px 9px 1px rgba(0,0,0,0.1)}
+    .renwu li.ren a:hover
+    { background-color:#FF5151;color:#fff;border-radius:0px  90px;
+    }
+.renwu li.fan{  background-color:#3797FF; color:#fff;  box-shadow:6px 9px 1px rgba(0,0,0,0.1);border-radius:0px  90px;}
+.renwu li.fan a:hover
+    { background-color:#3797FF; color:#fff;border-radius:0px  90px;
+    }
+ 
+ .renwu li.wei{background-color:#F4335D; background-position: center; color:#fff;  box-shadow:6px 9px 1px rgba(0,0,0,0.1);border-radius:90px  0px;}
+.renwu li.wei a:hover
+    { background-color:#F4335D; color:#fff;border-radius:90px  0px;
+    }
+ 
+ 
+
+.renwu li a{ display:block;color:#fff; text-decoration:none; padding:60px 0px 30px 0px;}
+.renwu li img{ vertical-align:middle;}
+.renwu li p{ height:90px;}
+
+.gg{  width:750px; height:37px; margin:0 auto; margin-top:45px; border-bottom:1px dashed #ccc;}
+.gg img{ float:left; vertical-align:middle;}
+.gg p{text-align:left; line-height:37px; font-size:14px; font-family: Arial; color:#fc602f} /*padding-left:50px; */
+
+.tongji{ height:70px; width:750px; margin:0 auto; margin-top:20px; color:#999; background:#fff; padding:10px 0;}
+.tongji li{ float:left; width:186px; border-right:1px dashed #ccc; height:70px;}
+.tongji p{ padding:8px;}
+.tongji p.number{ font-size:22px; font-family:微软雅黑;}
+
+.download{ text-align: center; margin:0 auto; }
+.download a{ float:left; height:35px; width:35px; margin-right:10px; }
+.download div{ padding:10px 0; height:35px;}
+.download b{ color:#fc602f;}
+    .download img
+    {   
+    }
+.download p
+{ font-size:14px; font-family: Arial,'Microsoft YaHei'; padding-top:10px;
+}
+.copyright{ padding:10px 0;font-size:14px; font-family: Arial,'Microsoft YaHei'; color:#ccc}
+.shekuan{background-color:#fff; color:#111; border:1px solid #eee; padding:4px 6px; margin-right:10px;box-shadow:4px 4px 0px rgba(0,0,0,0.05)}
+.shekuan b{ color:#ddd; padding:0px 6px}

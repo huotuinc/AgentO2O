@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN"
+      xmlns="http://java.sun.com/jsf/composite">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <!--<link rel="shortcut icon" href="favicon_pdmall.ico"/>-->
+    <title>代理商管理中心</title>
+    <script type="text/javascript" src="resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script src="resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <link href="resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/ResPdmall/css/houtaikk.css" th:href="@{/resource/3rdParty/ResPdmall/css/houtaikk.css}" rel="stylesheet"/>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        //#region 框架自适应
+        var adaptFrame = {};
+        adaptFrame.init = function () {
+            // 浏览改大小
+            $(window).bind('resize', function () {
+                var heightLeft = adaptFrame._getLeftHeight();
+                var heightMain = adaptFrame._getMainHeight();
+                var widthMain = adaptFrame._getMainWidth();
+
+                $("#con_left").height(heightLeft);
+
+                $("#content").attr('height', heightMain);
+                $("#content").attr('width', widthMain);
+
+                $('#con_right').height(heightMain);
+
+                $('#loading').css('padding-top', heightMain / 2).width(widthMain);
+                //alert(Math.random());
+            });
+        };
+
+        adaptFrame._getLeftHeight = function () {
+            return $(window).height() - 177;
+        };
+
+        adaptFrame._getMainHeight = function () {
+            return $(window).height() - 51;
+        };
+
+        adaptFrame._getMainWidth = function () {
+            return $(window).width() - $('#con_left').width();
+        };
+
+        adaptFrame.outputLeftMenu = function () {
+            var width = $('#con_left').width();
+            var scrolling = 'auto';
+            var height = this._getLeftHeight();
+            var ifSrc = /*[[@{/leftMenu}]]*/ "ordersManage.html";
+            document.write('<iframe id="content_left" width="' + width + '" height="' + height + 'px" class="hide" marginwidth="0" marginheight="0" frameborder="0" scrolling="' + scrolling + '" onload="$(\'#loading\').hide();$(this).show();" src="' + ifSrc + '" style="overflow-x:hidden;"></iframe>');
+        };
+
+        adaptFrame.outputMain = function (src) {
+            var width = adaptFrame._getMainWidth();
+            var scrolling = $.isIE6 == true ? 'yes' : 'auto';
+            var height = this._getMainHeight();
+            document.write('<iframe id="content" width="' + width + '" height="' + height + 'px" class="hide" marginwidth="0" marginheight="0" frameborder="0" scrolling="' + scrolling + '" onload="$(\'#loading\').hide();$(this).show();" src="' + src + '"></iframe>');
+            $('#con_right').height(height);
+        };
+        //#endregion
+
+        //#region 菜单
+        var mallMenuManager = {};
+        mallMenuManager.init = function () {
+            $('.dropdown-toggle').click(function () {
+                $('.dropdown-menu').toggle();
+            });
+        };
+        mallMenuManager.active = function (menuId, childMenuId) {
+            $(".active").removeClass("active");
+            $("#menu_" + menuId).addClass("active");
+            var leftMenu = /*[[@{/leftMenu}]]*/ "";
+            leftMenu = leftMenu + "?parentId=" + menuId + "&activeMenuId=" + childMenuId;
+            _loadLeftMenu(leftMenu);
+        };
+        mallMenuManager.index = function () {
+//            $(".active").removeClass("active");
+//            $("#menu_index").addClass("active");
+            window.location.href = /*[[@{/index}]]*/ "";
+        };
+        //#endregion
+
+        $(function () {
+            var activeMenuId = /*[[${activeMenuId}]]*/ "";
+            adaptFrame.init();
+//            adaptFrame.outputMain('about:blank');
+
+            mallMenuManager.init();
+            if (activeMenuId != null && activeMenuId != "") {
+                mallMenuManager.active(activeMenuId);
+            } else {
+                var indexUrl = /*[[@{/home}]]*/ "";
+                _loadMain(indexUrl);
+            }
+        });
+
+        function _loadMain(url) {
+            $('#loading').show();
+            $('#content').hide().attr('src', url);
+        }
+
+        function _loadLeftMenu(leftUrl) {
+            document.getElementById("content_left").src = leftUrl;
+        }
+        function createRight() {//左页面事件，传递给右页面
+            document.getElementById('content').contentWindow.createRight();
+        }
+        function showUpdatePwd() {
+            var url = "showModifyPwd";
+            J.PopupIFrame(url, "修改密码", 400, 200, "ifrm", "", "auto", "");
+        }
+
+        /*]]>*/
+    </script>
+</head>
+
+<body class="horizontal-menu-sidebar" style="overflow: hidden;">
+<section>
+    <div class="leftpanel">
+        <div class="logopanel">
+            <p style="font-size: x-large;color: white;text-align: center;margin-top: 15px;">代理商管理平台</p>
+            <!--<img src="resource/3rdParty/ResPdmall/images/bglogo_Ultimate.png" height="48px" style="margin-left: 15px"/>-->
+        </div>
+        <!--账号信息BEGIN-->
+        <div class="leftpanelinner" style="border-bottom: 1px dotted #444;">
+            <ul class="nav nav-pills nav-stacked nav-bracket" style="margin-bottom: 0px;">
+                <li style="clear: both; height: 5px"></li>
+                <li>
+                    <p style="margin-left: 15px">
+                            <span style="width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; display: inline-block;">
+                                <a href="javascript:;" style="color: #8f939e" th:text="${#authentication.principal.username}">chinahtwx@163.com</a>
+                            </span>
+
+                            <span style="width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; display: inline-block;">
+                                <a href="javascript:;" style="color: #8f939e" title="该编号用于大伙伴/操作员登录时填写">编号：<span th:text="${authorId}">10000005</span></a>
+                            </span>
+
+                        <span style="width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; display: inline-block;">
+                                <a href="javascript:showUpdatePwd()" style="color: #8f939e;">修改密码</a>
+                            </span>
+
+                            <span style="width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; display: inline-block;">
+                                <a id="logout" href="javascript:void(0)" th:href="@{/logout}" style="color: #8f939e;">退出</a>
+                            </span>
+
+                    </p>
+                </li>
+            </ul>
+        </div>
+        <!--账号信息END-->
+
+        <!--菜单BEGIN-->
+        <div id="con_left">
+            <script type="text/javascript">
+                adaptFrame.outputLeftMenu();
+            </script>
+        </div>
+        <!--菜单END-->
+    </div>
+
+    <div class="mainpanel" style="min-width: 1000px; overflow: hidden;">
+        <!--商城一级菜单BEGIN-->
+        <div class="headerbar">
+            <div class="header-left" style="padding-left: 5px;">
+                <div class="topnav">
+                    <ul class="nav nav-horizontal">
+                        <span>
+
+                        </span>
+                        <li class="active" id="menu_index" onclick="mallMenuManager.index('index')">
+                            <a style="cursor: pointer;"><i class="fa fa-home"></i>
+                                <span>首页</span></a>
+                        </li>
+                        <li th:onclick="|mallMenuManager.active('${menu.menuId}','')|" th:id="${'menu_'+menu.menuId}"
+                            th:if="${menu.isAuthor()}" th:each="menu:${menus}">
+                            <a style="cursor: pointer;"><i class="fa fa-folder-o"></i>
+                                <span th:text="${menu.menuName}">订单管理</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--商城一级菜单END-->
+
+        <!--公告条BEGIN-->
+        <div style="clear: both"></div>
+        <div class="pageheader" style="padding-left: 12px;">
+        </div>
+        <div style="clear: both"></div>
+        <!--公告条END-->
+
+        <!--主体BEGIN-->
+        <div id="con_right">
+            <div id="loading" style="height: auto; text-align: center; padding-top: 436px; display: none; width: 1061px;">
+                <img src="resource/3rdParty/images/loading.gif" alt="loading" border="0"/>
+            </div>
+            <script type="text/javascript">
+                adaptFrame.outputMain('about:blank');
+            </script>
+        </div>
+        <!--主体END-->
+    </div>
+</section>
+</body>
+</html>
+

@@ -1,0 +1,140 @@
+﻿.listPage a {
+    text-decoration: none;
+}
+
+.listPage .dataTables_wrapper {
+    padding: 8px;
+}
+
+.listPage .dataTables_wrapper {
+    font-family: arial,sans-serif;
+    color: #222;
+    background-color: #fff;
+    font-size: 12px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+    .listPage .dataTables_wrapper table tr:hover {
+        background-color: #E4F3FF;
+        moz-transition: all 0.5s ease-out 0s;
+        -webkit-transition: all 0.5s ease-out 0s;
+        transition: all 0.5s ease-out 0s;
+    }
+
+.listPage .sdkbar {
+    color: #4f4f4f;
+    text-shadow: 0 1px 0 #fff;
+    line-height: 34px;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #aaa;
+    background-color: #E2E2E2;
+}
+
+    .listPage .sdkbar th {
+        background: url(../images/data-table-th.gif);
+        height: 31px;
+        font-size: 12px;
+        line-height: 31px;
+        font-weight: bold;
+        color: #2e3740;
+    }
+
+
+.listPage table tr.odd {
+    border-bottom: 1px solid #d8dcde;
+}
+
+.listPage table tr.over {
+    /*background: #eef4f6;*/
+    background-color: rgb(242, 242, 242);
+    border-bottom: 1px solid #d8dcde;
+}
+
+.listPage tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+    height: 25px;
+    line-height: 25px;
+}
+
+.listPage table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 2px;
+    border-color: gray;
+    border: 1px solid #E2E2E2;
+}
+
+.listPage tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.listPage .tablept5 td {
+    padding: 5px 0px;
+    border-right: 1px solid #DDDDDD;
+}
+
+
+
+
+
+
+/**分页样式begin***/
+
+
+.listPage .pager-bar {
+  height: 25px;
+  line-height: 25px;
+  color: #5b5959;
+  text-align: right;
+  padding-top: 10px;
+}
+
+.listPage .button-white {
+  display: inline-block;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border: none;
+  background-image: url(../images/button-white.gif);
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  padding: 0px 0px 0px 12px;
+  margin:12px 2px 0 0;
+  text-decoration: none;
+  font-weight: normal;
+  color: #5b5959;  
+  cursor:pointer;
+}
+
+.listPage .button-white span {
+  display: block;
+  padding: 0px 12px 0px 0px;
+  background-image: url(../images/button-white.gif);
+  background-repeat: no-repeat;
+  background-position: right 0px;
+  font-size: 12px;
+  font-family: "微软雅黑","宋体";
+}
+
+.listPage .button-white_disabled {
+    filter:Alpha(Opacity=60);opacity:0.6;
+}
+
+
+.listPage .paging_full_numbers {
+    float: right;
+}
+
+.listPage .paging_full_numbers_text {
+    float: left;
+    padding: 15px 0px;
+    display: none;
+    color:#5b5959;
+}
+/**分页样式end***/

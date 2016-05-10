@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>代理商平台登录</title>
+    <link href="resource/3rdParty/jBox/Skins/Green/jbox.css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <link href="resource/css/login.css"
+          th:href="@{/resource/css/login.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"
+            src="resource/3rdParty/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"
+            src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js"></script>
+</head>
+<body style="zoom: 1; background-color: #292929;" class=" move">
+<div style="width: 100%; padding-top: 20px; background-color: #e8ecef;">
+    <header class="header">
+    </header>
+</div>
+<section class="main" th:style="|background: url(@{/resource/lib/images/muban.jpg}) center center;|">
+    <!--登录框-->
+    <div>
+        <p style="font-size: xx-large;">代理商管理平台</p>
+        <br/>
+        <form action="login" th:action="@{/login}" id="loginPage" method="post" style="display:block;height:335px;">
+            <div class="loginFormIpt" style="text-align: center; margin: 0 auto;">
+                <select class="onebox" id="roletype" name="roleType">
+                    <option value="0">代理登录</option>
+                    <option value="1">门店登录</option>
+                    <option value="2">操作员登录</option>
+                </select>
+            </div>
+            <div class="loginFormIpt showPlaceholder" style="text-align: center; margin: 0 auto;">
+                <input class="formIpt" tabindex="1" title="请输入帐号" id="username" name="username" type="text" maxlength="50" autocomplete="off" placeholder="帐号"/>
+            </div>
+            <div class="loginFormIpt showPlaceholder" style="text-align: center; margin: 0 auto;">
+                <input class="formIpt" tabindex="2" title="请输入密码" id="password" name="password" type="password" placeholder="密码"/>
+            </div>
+            <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;">
+                <p style="width: 50%;margin: auto">
+                    <input id="mallBtn" type="submit"  class="buttons3" value="登&nbsp;&nbsp;录"/>
+                </p>
+            </div>
+            <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;">
+                <p style="width: 50%;margin: auto">
+                    <span id="errorInfo" style="color: red" th:text="${errMsg}"></span>
+                </p>
+            </div>
+        </form>
+    </div>
+</section>
+<footer id="footer" class="footer">
+    <div class="footer-inner" id="footerInner">
+        <nav class="footerNav">
+            <span class="copyright">Copyright &#169; 2013-2015,浙ICP备13027761号-5</span>
+        </nav>
+    </div>
+</footer>
+</body>
+</html>

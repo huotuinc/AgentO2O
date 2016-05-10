@@ -1,0 +1,233 @@
+﻿/* 结算明细*/
+.hua_w .data-table td.txt4r {
+    text-indent: 5px;
+    width: 16.6%;
+}
+.hua_w .data-table td.thr {
+   text-indent: 5px;
+   width: 16.6%; border-right:none;
+}
+
+/*结算明细*/
+
+
+/* 设置提现账户、申请提现账户*/
+
+.hua_card .card_main{
+	    border-bottom: #e1e1e0 1px solid;
+    border-left: #e1e1e0 1px solid;
+    margin: 10px auto;
+    width: 580px;
+    background: #f5f5f5;
+    float: none;
+    padding: 20px 0px 30px 0px;
+    border-top: #e1e1e0 1px solid;
+    border-right: #e1e1e0 1px solid;
+}
+.hua_card .card_set {
+    width: 500px;
+    float: none;
+    margin: 0 auto;
+    padding-left: 80px;
+}
+.hua_card {
+    text-align: left;
+    margin: 0 auto;
+    clear: both;
+    overflow: hidden;
+}
+.hua_card ul{
+    padding-bottom: 0;
+    list-style-type: none;
+    margin: 0;
+    padding-left: 0;
+    width: 100%;
+    padding-right: 0;
+    overflow: hidden;
+    list-style-image: none;
+    padding-top: 0;
+}
+.hua_card .hua_cardset ul li {
+	line-height: 25px;
+	width: 100%;
+	float: left;
+	padding-top: 10px;
+}
+.hua_card .hua_cardset ul li span {
+	text-align: right;
+	line-height: 30px;
+	width: 100px;
+	font-family: 微软雅黑;
+	float: left;
+	font-size: 14px;
+}
+.hua_card .hua_cardset ul li .text-oper {
+	padding-bottom: 0;
+	margin: 0;
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: 0;
+}
+.hua_card .hua_cardset .text-oper {
+	float: left;
+}
+.hua_card .hua_cardset li .fontredstar {
+	padding-bottom: 0;
+	text-transform: none;
+	font-style: normal;
+	padding-left: 0;
+	padding-right: 2px;
+	float: left;
+	color: #f60;
+	padding-top: 0;
+}
+.hua_card .hua_cardset .input {
+	border-bottom: #dcdcdc 1px solid;
+	border-left: #dcdcdc 1px solid;
+	line-height: 30px;
+	width: 300px;
+	height: 30px;
+	vertical-align: middle;
+	border-top: #dcdcdc 1px solid;
+	border-right: #dcdcdc 1px solid;
+}
+.hua_card .hua_cardset .btnarea {
+	    text-align: center;
+    margin: 0 auto;
+    width: 389px;
+    padding-top: 20px;
+}
+
+
+
+.hua_card .hua_cardset .btnarea .file {
+    position: relative;
+    display: inline-block;
+    background: #E23B3A;
+    border: 1px solid #E23B3A;
+    border-radius: 2px;
+    padding: 4px 40px;
+    overflow: hidden;
+    color: #FFFFFF;
+    text-decoration: none;
+    text-indent: 0;
+    line-height: 20px;
+}
+
+.hua_card .hua_cardset .btnarea .file:hover {
+    background: #F74B4A;
+    border-color: #A51716;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/* 设置提现账户、申请提现账户*结束*/
+
+
+
+
+
+
+/* 票据管理 3P*/
+.om-tabs .header-no-border {
+	border-width: 0;
+}
+.om-tabs .om-tabs-headers {
+	overflow: hidden;
+	padding: 2px 0 2px;
+	position: relative;
+	_width: 100%;
+	border: 1px solid #ccc;
+	border-bottom-width: 0;
+}
+.om-widget .om-widget-header {
+	background: url(../images/header_bg.png) repeat-x scroll 0 0 ;
+	color: #333;
+	font-weight: bold;
+}
+.om-tabs .om-tabs-headers ul {
+	width: 5000px;
+	font-size: 12px;
+	margin: 0;
+	padding: 0 0 0 4px;
+	border-bottom: 1px solid #ccc;
+}
+.om-corner-all, .om-corner-bottom, .om-corner-left, .om-corner-bl {
+	-moz-border-radius-bottomleft: 4px;
+	-webkit-border-bottom-left-radius: 4px;
+	-khtml-border-bottom-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+.om-tabs .om-tabs-headers ul li.om-tabs-activated {
+	border-color: #ccc #ccc #FFF;
+	background: url(../images/tabs/om-tabs-bg-a.png) repeat-x scroll 0 0 #FFF;
+	font-weight: bold;
+}
+.om-tabs .om-tabs-headers ul li {
+	background: url(../images/tabs/om-tabs-bg-d.png) repeat-x scroll 0 0 #f1f1f1;
+	display: inline-block;
+	margin: 0 4px -1px 0;
+	padding: 0;
+	position: relative;
+	-moz-user-select: none;
+	float: left;
+}
+.om-state-active, .om-widget-content .om-state-active, .om-widget-header .om-state-active {
+	background: #a5c7ff;
+	font-weight: normal;
+	color: #212121;
+}
+.om-state-default, .om-widget-content .om-state-default, .om-widget-header .om-state-default {
+	border: 1px solid #ccc;
+	background-image: #e6e6e6 url(../images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x;
+	font-weight: normal;
+	color: #555;
+}
+.om-corner-all, .om-corner-top, .om-corner-right, .om-corner-tr {
+	-moz-border-radius-topright: 4px;
+	-webkit-border-top-right-radius: 4px;
+	-khtml-border-top-right-radius: 4px;
+	border-top-right-radius: 4px;
+}
+.om-tabs .om-tabs-headers ul li a.om-tabs-inner {
+	text-align: center;
+	text-decoration: none;
+	outline: none;
+	white-space: nowrap;
+	float: left;
+	padding: 0 10px;
+}
+.om-tabs .om-tabs-headers .om-state-default a {
+	color: #333;
+}
+
+::-webkit-scrollbar-track-piece {
+ background-color: #f5f5f5;
+ border-left: 1px solid #d2d2d2;
+}
+::-webkit-scrollbar-thumb {
+ background-color: #c2c2c2;
+ background-clip: padding-box;
+ border: 1px solid #979797;
+ min-height: 28px;
+}
+::-webkit-scrollbar {
+ width: 10px;
+ height: 13px;
+}
+.om-helper-clearfix:after {
+	content: ".";
+	display: block;
+	font-size: 0;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+/* 票据管理 3P结束*/
+
+
+/*添加商品开始*/
+.notice {
+	color: #999;
+}
+/*添加商品结束*/

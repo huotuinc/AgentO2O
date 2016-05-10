@@ -1,0 +1,95 @@
+html, body
+{
+margin: 0;
+padding: 0
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td, hr, button, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section
+{
+margin: 0;
+padding: 0
+}
+a, img, button, input, select {
+	-webkit-tap-highlight-color: transparent;
+	outline: 0;
+}
+img {
+	border: 0 none;
+	vertical-align: top
+}
+i, em {
+	font-style: normal
+}
+ol, ul {
+	 list-style-type:none
+}
+input, select, button, h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-family: inherit
+}
+body {
+	font-family:arial,sans-serif;color:#5a5a5a; background-color:#fff; font-size:14px; line-height:1.5;word-wrap : break-word ;word-break:break-all;
+}
+ 
+a:link, a:visited {
+	color:#666;
+}
+.fn-clear:after {
+	visibility:hidden;
+	display:block;
+	font-size:0;
+	content:" ";
+	clear:both;
+	height:0;
+}
+.fn-clear {
+	zoom:1;
+}
+a
+{
+text-decoration: none;
+color: #5a5a5a;
+cursor: pointer;
+transition: all .3s ease-out;
+-moz-transition: all .3s ease-out;
+-webkit-transition: all .15s ease-out;
+-o-transition: all .15s ease-out
+}
+a:hover
+{
+color:#000;
+transition: all .3s ease-out;
+-moz-transition: all .3s ease-out;
+-webkit-transition: all .15s ease-out;
+-o-transition: all .15s ease-out
+}
+input[type=button]{-webkit-appearance:none;}
+.tm_tit {
+height: 20px;
+padding: 0px 0;
+margin: 0 auto;
+text-align: center;
+overflow: hidden;
+position: relative;
+} 
+ 
+.tm_tit:after {
+left: 0;
+}
+.tm_tit:before {
+right: 0;
+}
+.tm_tit:after, .tm_tit:before {
+height: 1px;
+width:22%;
+content: '\20';
+position: absolute;
+top: 10px;
+display: block;
+background: #ddd;
+}.tm_tit h3 {
+font-size: 12px;
+line-height: 20px;
+color: #AFAFAF;
+font-weight: 400;
+}
+p,h1,h2,h3,h4{cursor: default;}

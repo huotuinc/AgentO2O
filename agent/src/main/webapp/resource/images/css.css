@@ -1,0 +1,87 @@
+﻿@charset "utf-8";
+/* CSS Document */
+
+body{ background:none; font:12px '微软雅黑'; width:100%; color:#fff; behavior:url("csshover.htc"); min-width:1000px;}
+*{ list-style:none; padding:0; margin:0; text-decoration:none;}
+img{ border:none;}
+.tex{ font-size:12px; font-family:宋体;}
+a{ color:#fff;}
+a:hover{ text-decoration:none;}
+
+/*top*/
+.box_top{ float:left; width:100%;min-width:1100px; background:#1f262e; height:74px; margin:0 auto;}
+.logo{ float:left; width:209px; height:74px;}
+.menu{ float:left; border-left:1px solid #000; border-right:1px solid #2e3740; display:block; height:74px;}
+.menu a{ float:left; display:block; width:135px; height:74px; color:#fff;}
+.menu a.on{display:block; width:135px; height:74px; color:#fff; background:#f64e4e;}
+.menu a:hover{ display:block; width:135px; height:74px; color:#fff; background:#f64e4e;}
+.menu li{ border-left:1px solid #2e3740; border-right:1px solid #000; float:left; display:block; width:135px; height:74px;}
+.menu li img{ width:135px; height:47px;}
+.menu li p{ width:135px; text-align:center;}
+.menu_more{ position:absolute; top:73px; left:-1px; width:135px; background:#fff; border:1px solid #1f262e; z-index:-1}
+.menu2{ background:#fff;}
+.menu2 li{ border-bottom:1px dashed #b8b8b8; border-width:0 0 1px 0; height:40px; line-height:40px; text-align:center;}
+.menu2 li a.more_mu{ color:#1f262e; font-size:14px; font-weight:bold;}
+.menu2 li a.more_mu:hover{ background:none; color:#f64e4e;}
+
+/*左边*/
+.content{ width:100%; height:100%;}
+.con_left{ float:left; width:210px; background:#2e3740; position:absolute; top:74px; left:0; bottom:0; overflow:auto; color:#9BA3AE; min-height:400px;}
+.con_left1{ float:none; width:210px;height:100%; background:#2e3740; position:absolute; top:0; left:0; bottom:0; overflow:auto; color:#9BA3AE;}
+h2{ padding:20px 10px 0 30px}
+.con_left  p{ font-size:12px; padding:10px 10px 0 20px; line-height:25px;}
+.con_left1  p{ font-size:12px; padding:10px 10px 0 20px; line-height:25px;}
+.contact{ position:absolute; bottom:50px; width:100%; color:#9BA3AE;}
+h4{ padding-left:20px;}
+.qq{ padding:15px 0 5px 35px;}
+.qq li{ padding:5px 0;}
+.contact a{ font-size:12px;}
+.tool{ position:absolute; bottom:0; width:100%; text-align:center; clear:both;}
+.tool a.box{ position:relative; display:block; float:left; width:32.3%; background:#1f262e; margin-right:1%; display:inline;}
+
+/*右边*/
+.con_right{ position:absolute; top:74px; bottom:0; right:0; left:210px; z-index:7;}
+/*
+.group{ margin:20px 20px 30px 20px; height:auto;}
+.tit{ border-bottom:2px solid #1f262e; height:25px; line-height:25px; color:#1f262e; font-size:14px; font-weight:bold; padding-right:10px;}
+.menu-cont{ margin:10px 0px; display:inline-block; height:auto;}
+.menu_box{ display:block; float:left; width:170px; height:60px; padding:15px 0 20px 0; margin:0 15px 10px 0; text-align:center;}
+.menu_box img.bimg{}
+.menu_box p.name{ font-size:14px; font-weight:bold;}
+*/
+
+.menu_box ul{ display:none;}
+
+
+.box_top .tex{ float:right; line-height:100px; margin-right:10px;white-space:nowrap;word-break: break-all;white-space:normal; overflow:hidden;text-overflow:ellipsis;
+display:inline;}
+.box_top .tex span{ color:#e71900; font-weight:bold;}
+
+
+/*模板乐园*/
+.tem_box{ padding:20px;}
+.tem_box ul.tem{ width:202px; height:376px; float:left; display:inline; margin:0 32px 20px 10px;}
+.pad{ padding-left:63px;}
+.tem_box ul.tem li{ float:left;}
+.tem_box ul.tem li.tem_pic{ width:202px; height:346px;}
+.tem_box ul.tem li.tem_tit{ color:#000; width:202px; line-height:30px; height:30px; text-align:center; font-size:12px;}
+.tem_box ul.tem li.tem_btn{ width:202px; line-height:30px; height:30px; padding-left:66px;}
+li.tem_btn a{display:block; width:70px; height:27px; line-height:27px; text-align:center;}
+li.tem_btn a.btnn{ background:url(btn.png) no-repeat center; color:#2E3740;}
+li.tem_btn a.btnn:hover{ background:url(btn2.png) no-repeat center;}
+li.tem_btn a.btnn_on{ background:url(btn_on.png) no-repeat center;}
+
+/*登录*/
+.login_back{ width:100%; height:100%; background:url(login.gif) center top #e7e7e7;}
+.log_box{ margin:0 auto; width:650px;}
+.log_left{ float:left;}
+.log_left img.log{ float:left;}
+.log_left span{ float:left; padding:30px 0}
+.log_left span p{ padding:10px 0 0 38px; color:#b5b5b5; font-family:宋体;}
+
+.log_right{ float:right; width:290px; color:#2e3740;}
+label, input, button, textarea, select{ vertical-align:middle;}
+.in{ width:150px; border:1px solid #2e3740; height:20px; line-height:20px;}
+a.line:hover{ text-decoration:underline;}
+.tt{ font-size:14px; color:#2e3740;  display:block;}
+

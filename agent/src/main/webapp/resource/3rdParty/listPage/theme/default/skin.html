@@ -1,0 +1,43 @@
+﻿<div class="listPage">
+    <!---表格--->
+    <div class="dataTables_wrapper">
+        <table width="100%" class="table_appss tablept5">
+            <!---表头---->
+            <thead>
+                <tr class="sdkbar listHead" style="font-weight: bold;">
+                    <th align="center">{thead}</th>
+                </tr>
+            </thead>
+            <!---表头---->
+            <!---内容---->
+            <tbody class="listBody">
+            </tbody>
+            <!---内容---->
+        </table>
+        <!--翻页--->
+        <div class="page-bar">
+            <div class="paging_full_numbers_text"></div>
+            <div class="dataTables_paginate paging_full_numbers">
+            </div>
+        </div>
+        <p style="clear: both"></p>
+    </div>
+</div>
+<!--列表内容二级模版代码-->
+<script type="text/template" class="listTd">
+    <td align="center" style="{css}">{tbody}</td>
+</script>
+<!--列表内容一级模版代码-->
+<script type="text/template" class="listTr">
+    <tr  class="{clsName}">
+        {tbodyHtml}
+    </tr>
+</script>
+<!--列表内容复选框模版代码-->
+<script  type="text/template" class="bodyCheckBox">
+    <td align="center" style="width:25px;" ><input class="list_checkbox_{selector}" value="{key}"  type="checkbox" name="chb_{selector}" /></td>
+</script>
+<!--列表头部全选复选框模版代码-->
+<script  type="text/template" class="headCheckBox">
+    <th align="center"><input class="list_checkbox_{selector}" type="checkbox" name="chbAll_{selector}" /></th>
+</script>

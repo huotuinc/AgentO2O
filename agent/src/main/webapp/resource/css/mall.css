@@ -1,0 +1,6 @@
+﻿/*支付方式配置**/
+.mall_input_txt { width: 308px; height: 25px;  border: solid 1px #ccc; border-radius: 3px; text-indent: 1px; box-shadow: 0 10px 10px rgba(0,0,0,0.1) inset;}
+.mall_input_txt:hover {border:1px solid rgb(235, 65, 65); }
+.mall_span_txt {color:#6c6a6a;font-size:10px;}
+
+/*支付方式配置**/

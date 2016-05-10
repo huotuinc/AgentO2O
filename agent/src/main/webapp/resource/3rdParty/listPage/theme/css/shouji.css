@@ -1,0 +1,20 @@
+ 
+/*手机网站*/
+ 
+.fgk_fgk{ float:left; width:610px; margin-left:-4px; overflow:visible;}
+.pd_m{ width:170px; height:296px; float:right; margin:5px 3px; background:url(../images/phone_xiao.jpg) no-repeat; padding:47px 13px 0px 13px; display:inline; position:relative; overflow: visible; z-index:99}
+.pd_m .pd_nr p{ display:block; width:170px; height:248px; background:#333; filter:alpha(opacity=0);-moz-opacity:0;	-khtml-opacity: 0; opacity: 0; position:absolute; top:47px; left:13px; z-index:999}
+.pd_m .pd_nr a.bnt{ display:block; width:0px; height:44px; background:url(bnt01.png) no-repeat; _background:url(../images/bnt01.gif) no-repeat 3px 3px; position:absolute; top:160px; left:24px; z-index:9999}
+.pd_m .shao{ position:absolute; width:120px; height:142px; background:url(shao.png) no-repeat; _background:url(../images/shao.gif) no-repeat; top:10px; right:-188px; padding:17px 34px 31px 45px; display:none; z-index:9999;overflow: hidden; display: none;}
+
+.pd_m .shao img{ float:left;padding:2px; background:#fff; width:120px}
+.pd_m .shao p{ display:block; width:125px; height:24px; line-height:24px; float:left; text-align:left; color:#fff; font-size:12px;}
+.pd_m .shao a{color:#fff; padding-left:10px}
+
+.fgk_right{width:320px;height:665px; background:url(../images/phone_da.gif) no-repeat;  padding:95px 28px 0px 21px; overflow:hidden;}
+.fgk_right .fgk_screll{height:450px;width:321px;}
+.fgk_right .fgk_screll iframe{height:440px;overflow:scroll;*width:326px!important;width:321px;*width:326px;}
+.fgk_right .fgk_screll iframe body{height:440px; overflow:hidden; width:321px;}
+.fgk_right_01{  position: fixed; top:47px; _position:absolute; _z-index:9}
+.fgk_right_02{ display:block;}
+ 

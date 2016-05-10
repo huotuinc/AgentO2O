@@ -1,0 +1,239 @@
+html {
+    font-size: 62.5%
+}
+
+.commfont {
+    font-size: 1.4rem;
+}
+
+.commfont .tit_rem {
+    font-size: 1.2rem
+}
+
+.commfont .tit_rem_big {
+    font-size: 1.5rem
+}
+
+.commfont .tit_rem_small {
+    font-size: 0.8rem
+}
+
+body {
+    max-width: 640px;
+    min-width: 320px;
+    margin: 0 auto;
+
+}
+
+.xiaofeijilv .t {
+    overflow: hidden;
+    padding: 6px 10px;
+    background-color: #fff;
+}
+
+.xiaofeijilv li {
+    line-height: 33px;
+
+    background-color: #fff;
+
+}
+
+.xiaofeijilv .t .tit, .xiaofeijilv .DDH {
+
+    line-height: 18PX;
+}
+
+.xiaofeijilv .DDH {
+    padding: 4px 0px;
+}
+
+.xiaofeijilv .t .pic {
+    width: 45px;
+    float: left;
+}
+
+.xiaofeijilv .t .coni {
+    margin-left: 70px;
+    line-height: 20px;
+
+}
+
+.pici {
+    width: 21px;
+    float: left;
+    padding-top: 15px;
+}
+
+.tuihouq {
+    padding: 5px 0;
+}
+
+.tuihdj {
+    margin: 10px auto;
+    width: 95%;
+    border-radius: 5px;
+    background-color: #ec5050;
+    height: 42px;
+    line-height: 42px;
+}
+
+.tuihdj p {
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.xiaofeijilv .DDH {
+
+    line-height: 18PX;
+}
+
+.xiaofeijilv .DDH {
+    padding: 4px 0px;
+}
+
+.ddhp {
+    margin: 0px 10px;
+}
+
+.xiaofeijilv {
+}
+
+.xiaofeijilv ul {
+    background-color: #f5f5f5;
+}
+
+.jiatupian li {
+    border-bottom: none;
+    border-top: none;
+    background-color: rgb(245, 245, 245);
+    margin: 20px;
+}
+
+.jiatupian img {
+    width: 60px;
+    height: 60px;
+    float: left;
+    margin-right: 10px;
+}
+
+.cre10 {
+    clear: both;
+    height: 20px;
+}
+
+.address_new .submit {
+    background-color: #ec5050;
+}
+
+.address_new button {
+    display: block;
+    height: 42px;
+    line-height: 42px;
+    color: #fff;
+    background-color: #3884FF;
+    color: #fff;
+    margin-bottom: 10px;
+
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    width: 100%;
+    border: 0 none;
+}
+
+.liimg {
+
+    margin: 0px 10px;
+}
+
+.areaSelP {
+}
+
+.address_new p {
+    border-bottom: 1px solid #ddd;
+    padding: 13px 20px 13px 100px;
+    position: relative;
+    background-color: #fff;
+}
+
+.address_new .tit {
+    color: #666;
+    width: 80px;
+    line-height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto 0;
+    height: 20px;
+    padding-right: 20px;
+    text-align: right;
+}
+
+.address_new select {
+    width: 100%;
+
+    position: relative;
+    height: 35px;
+    line-height: 35px;
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+    border: 1px solid #ddd;
+    padding: 0 16px 0 5px;
+    background: #fff;
+    background-size: 15px 5px;
+}
+
+.address_new p {
+    border-bottom: 1px solid #ddd;
+    padding: 13px 20px 13px 100px;
+    position: relative;
+    background-color: #fff;
+}
+
+.address_new input {
+    height: 20px;
+    line-height: normal;
+    border: 0 none;
+    width: 100%;
+    -webkit-appearance: none;
+    vertical-align: top;
+    color: #333;
+}
+
+.ddinn {
+    border: 1px solid #ddd;
+    padding: 6px 0px 50px 6px;
+    color: #333;
+    width: 98%;
+}
+
+.ired {
+    color: #ff3d00;
+}
+
+/*输入文本框*/
+.th .xxintwo textarea {
+    height: 300px;
+    margin: 5px 0px;
+    width: 98%;;
+    margin-left: 1%;
+    border: 1px solid #dcdcdc;
+    background-color: #fff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
