@@ -7,7 +7,7 @@ import com.huotu.agento2o.common.ienum.ICommonEnum;
  */
 public enum AgentStatusEnum implements ICommonEnum {
     NOT_CHECK(0,"未提交"),
-    CHECKING(1,"审核中"),
+    CHECKING(1,"待审核"),
     CHECKED(2,"审核通过"),
     RETURNED(3,"审核不通过");
 
