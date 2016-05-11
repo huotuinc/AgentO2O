@@ -49,6 +49,11 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional
     public Shop addShop(Shop shop) {
+        //判断门店登录名是否唯一
+        Shop checkShop = findByUserName(shop.getUsername());
+        if(checkShop != null){
+            return null;
+        }
         shop.setPassword(passwordEncoder.encode(shop.getPassword()));
         return shopRepository.save(shop);
     }

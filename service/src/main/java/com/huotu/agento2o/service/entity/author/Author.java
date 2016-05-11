@@ -39,6 +39,36 @@ public abstract class Author implements Serializable,UserDetails{
     private String password;
 
     /**
+     * 名称
+     */
+    @Column(name = "Name")
+    private String name;
+
+    /**
+     * 联系人
+     */
+    @Column(name = "Contact")
+    private String Contact;
+
+    /**
+     * 手机号码
+     */
+    @Column(name = "Mobile")
+    private String mobile;
+
+    /**
+     * 电话号码
+     */
+    @Column(name = "Telephone")
+    private String telephone;
+
+    /**
+     * 地址
+     */
+    @Column(name = "address")
+    private String address;
+
+    /**
      * 是否冻结
      */
     @Column(name = "Disabled")
@@ -50,8 +80,51 @@ public abstract class Author implements Serializable,UserDetails{
     @Column(name = "Deleted")
     private boolean isDeleted;
 
+    /**
+     * 上级代理商
+     * @return
+     */
+    @JoinColumn(name = "Parent_Agent_Id")
+    @ManyToOne
+    private Author author;
+
+    // TODO: 2016/5/11 小伙伴信息
+
+    /**
+     * 省
+     * @return
+     */
+    @Column(name = "Province")
+    private String province;
+
+    /**
+     * 市
+     * @return
+     */
+    @Column(name = "City")
+    private String city;
+
+    /**
+     * 门店审核状态
+     */
     @Column(name = "Status")
     private AgentStatusEnum status;
+
+    /**
+     * 区
+     * @return
+     */
+    @Column(name = "District")
+    private String district;
+
+    /**
+     * 备注
+     * @return
+     */
+    @Column(name = "Comment")
+    private String comment;
+
+
 
     public boolean isAccountNonLocked() {
         return this.isDisabled == false;

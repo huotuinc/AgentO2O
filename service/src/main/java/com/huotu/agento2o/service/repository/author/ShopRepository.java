@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * Created by helloztt on 2016/5/9.
  */
 @Repository(value = "shopRepository")
-public interface ShopRepository extends JpaRepository<Shop,Integer>,JpaSpecificationExecutor {
+public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecificationExecutor {
     Shop findByUsernameAndStatus(String userName, AgentStatusEnum status);
 }

@@ -45,6 +45,11 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public Agent addAgent(Agent agent) {
+        //判断代理商登录名是否唯一
+        Agent checkAgent = findByUserName(agent.getUsername());
+        if(checkAgent != null){
+            return null;
+        }
         agent.setPassword(passwordEncoder.encode(agent.getPassword()));
         return agentRepository.save(agent);
     }

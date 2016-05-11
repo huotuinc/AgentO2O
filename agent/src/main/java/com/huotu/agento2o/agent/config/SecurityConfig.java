@@ -29,7 +29,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static String[] STATIC_RESOURCE_PATH = {
             "/resource/**",
             "/loginFailed",
-            "/huobanmall/**"
+            "/huobanmall/**",
+            "/agent/index/**"
     };
 
     @Autowired

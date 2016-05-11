@@ -12,6 +12,6 @@ import java.util.List;
  * Created by helloztt on 2016/5/9.
  */
 @Repository(value = "authorRepository")
-public interface AuthorRepository extends JpaRepository<Author,Integer>,JpaSpecificationExecutor {
+public interface AuthorRepository extends JpaRepository<Author, Integer>, JpaSpecificationExecutor {
     List<Author> findByCustomer_CustomerId(Integer customerId);
 }

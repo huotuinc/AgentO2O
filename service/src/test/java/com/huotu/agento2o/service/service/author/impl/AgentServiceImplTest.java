@@ -32,12 +32,12 @@ public class AgentServiceImplTest {
     }
 
     @Test
-//    @Rollback(value = false)
+    @Rollback(value = false)
     public void testAddAgent() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String passWord = UUID.randomUUID().toString();
-//        String userName = "ztt";
-//        String passWord = "123456";
+//        String userName = UUID.randomUUID().toString();
+//        String passWord = UUID.randomUUID().toString();
+        String userName = "usa";
+        String passWord = "123456";
         Agent agent = new Agent();
         agent.setUsername(userName);
         agent.setPassword(passWord);

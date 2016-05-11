@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * Created by helloztt on 2016/5/9.
  */
 @Repository(value = "agentRepository")
-public interface AgentRepository extends JpaRepository<Agent,Integer>,JpaSpecificationExecutor {
+public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpecificationExecutor {
     Agent findByUsernameAndStatus(String userName, AgentStatusEnum status);
 }
