@@ -27,22 +27,28 @@ import java.util.List;
 @Setter
 public class AgtMenu {
     @Id
+    @Column(name = "Menu_Id")
     private String menuId;
     @ManyToOne
-    @JoinColumn(referencedColumnName = "MENUID")
+    @JoinColumn(referencedColumnName = "Menu_Id",name = "Parent_Menu_Id")
     private AgtMenu parent;
+    @Column(name = "Menu_Name")
     private String menuName;
+    @Column(name = "Link_Url")
     private String linkUrl;
+    @Column(name = "Sort_Num")
     private int sortNum;
     @OneToMany(mappedBy = "parent", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @OrderBy("sortNum asc ")
     private List<AgtMenu> children;
+    @Column(name = "Length")
     private int length;
-    @Column(length = 2000)
+    @Column(name = "Author",length = 2000)
     private String author;
     /**
      * 是否启用,0表示启用,1表示不启用
      */
+    @Column(name = "Disabled")
     private int isDisabled;
 
     public AgtMenu() {
