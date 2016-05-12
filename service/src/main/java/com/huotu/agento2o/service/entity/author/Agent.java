@@ -12,8 +12,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -30,8 +32,12 @@ public class Agent extends Author {
     @ManyToOne
     private AgentLevel agentLevel;
 
-
+    @SuppressWarnings("Duplicates")
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(AuthorityEnum.AGENT_ROOT.getCode()));
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.AGENT_ROOT.getCode()));
+        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
+        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_ORDER.getCode()));
+        return authorityList;
     }
 }

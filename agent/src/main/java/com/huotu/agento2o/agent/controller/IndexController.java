@@ -52,16 +52,20 @@ public class IndexController {
     }
 
     @RequestMapping(value = "index")
-    public String loginSuccess(@AuthenticationPrincipal Author author, Model model) {
-        model.addAttribute("authorId",author.getId());
-        // TODO: 2016/5/10 add menu 
+    public String loginSuccess(@AuthenticationPrincipal Author author,
+                               String activeMenuId,
+                               Model model) {
+        model.addAttribute("authorId", author.getId());
+        List<AgtMenu> menus = menuService.findPrimary();
+        model.addAttribute("menus", menus);
+        model.addAttribute("activeMenuId", activeMenuId);
         return "home";
     }
 
     @RequestMapping(value = "home")
-    public String home(@AuthenticationPrincipal Author author,Model model){
+    public String home(@AuthenticationPrincipal Author author, Model model) {
         IndexStatistics indexStatistics = indexStatisticsService.orderStatistics(author.getId());
-        model.addAttribute("indexStatistics",indexStatistics);
+        model.addAttribute("indexStatistics", indexStatistics);
         return "index";
     }
 
@@ -90,6 +94,7 @@ public class IndexController {
 
     /**
      * 放开权限，所有角色均可修改自己的登录密码
+     *
      * @return
      */
     @RequestMapping(value = "showModifyPwd")
@@ -103,22 +108,22 @@ public class IndexController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/modifyPwd", produces = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
+    @RequestMapping(value = "/modifyPwd", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     @ResponseBody
     public ApiResult modifyPwd(@AuthenticationPrincipal UserDetails user, String oldPwd, String password) throws Exception {
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(oldPwd)) {
             return ApiResult.resultWith(ResultCodeEnum.PASSWORD_NULL);
         }
         //校验旧密码
-        if(user instanceof Author){
-            if(!authorService.checkPwd(((Author) user).getId(),oldPwd)){
+        if (user instanceof Author) {
+            if (!authorService.checkPwd(((Author) user).getId(), oldPwd)) {
                 return new ApiResult("原始密码错误!");
             }
         }
         //修改新密码
-        if(user instanceof Author){
+        if (user instanceof Author) {
             //修改代理商/门店密码
-            authorService.updatePwd(((Author)user).getId(), password);
+            authorService.updatePwd(((Author) user).getId(), password);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }

@@ -35,7 +35,7 @@ public class MallGoods {
      */
     @Column(name = "Brief")
     private String brief;
-    @OneToMany(mappedBy = "good")
+    @OneToMany(mappedBy = "goods")
     private List<MallProduct> products;
     /**
      * 成本价

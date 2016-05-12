@@ -7,8 +7,9 @@ import com.huotu.agento2o.common.ienum.ICommonEnum;
  */
 public enum AuthorityEnum implements ICommonEnum {
     MANAGER_ROOT("ROLE_ROOT", "超级管理员"),
-    AGENT_ROOT("AGENT_ROOT","代理商"),
-    SHOP_ROOT("SHOP_ROOT","门店");
+    AGENT_ROOT("ROLE_AGENT","代理商"),
+    ROLE_SHOP("ROLE_SHOP","门店"),
+    ROLE_ORDER("ROLE_ORDER","订单");
     private String code;
     private String value;
 
