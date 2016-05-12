@@ -16,6 +16,7 @@ package com.huotu.agento2o.common.util;
  */
 public class Constant {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
+
     public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static final int PAGESIZE = 20;
 
