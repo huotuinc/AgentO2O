@@ -59,5 +59,10 @@ public class MallGoods {
     private String name;
     @Column(name = "Disabled")
     private boolean disabled;
+    /**
+     * 缩略图
+     */
+    @Column(name = "Thumbnail_Pic")
+    private String thumbnailPic;
     // TODO: 3/17/16
 }
