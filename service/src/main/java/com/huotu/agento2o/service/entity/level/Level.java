@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.entity.level;
 
+import com.huotu.agento2o.service.entity.MallCustomer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,7 +52,12 @@ public abstract class Level implements Serializable{
     @Column(name = "Comment")
     private String comment;
 
-
+    /**
+     * 平台方
+     */
+    @ManyToOne
+    @JoinColumn(name = "Customer_Id")
+    private MallCustomer customer;
 
 
 }

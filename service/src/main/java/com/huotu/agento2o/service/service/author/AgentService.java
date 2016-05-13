@@ -13,6 +13,8 @@ package com.huotu.agento2o.service.service.author;
 import com.huotu.agento2o.service.entity.author.Agent;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 /**
  * Created by helloztt on 2016/5/9.
  */
@@ -26,5 +28,6 @@ public interface AgentService extends UserDetailsService {
 
     void flush();
 
+    List<Agent> findByAgentLevelId(Integer id);
 
 }

@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by helloztt on 2016/5/9.
  */
@@ -57,6 +59,11 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public void flush() {
         agentRepository.flush();
+    }
+
+    @Override
+    public List<Agent> findByAgentLevelId(Integer id) {
+        return agentRepository.findByAgentLevel_levelId(id);
     }
 
     @Override

@@ -12,11 +12,21 @@ package com.huotu.agento2o.service.repository.level;
 
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.OrderBy;
+import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/11.
  */
 @Repository(value = "agentLevelRepository")
 public interface AgentLevelRepository extends JpaRepository<AgentLevel, Integer> {
+
+    List<AgentLevel> findByCustomer_customerIdOrderByLevel(Integer customerId);
+
+    @Query("select max(a.level) from AgentLevel a where a.customer.customerId = ?1")
+    Integer findLastLevel(Integer customerId);
+
 }
