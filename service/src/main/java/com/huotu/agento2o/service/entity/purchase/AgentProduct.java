@@ -18,6 +18,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 /**
+ * 代理商/平台方库存
  * Created by helloztt on 2016/5/11.
  */
 @Entity

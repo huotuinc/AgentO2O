@@ -8,8 +8,9 @@
  *
  */
 
-package com.huotu.agento2o.agent.config.annotataion;
+package com.huotu.agento2o.agent.config.resolver;
 
+import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;

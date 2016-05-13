@@ -1,15 +1,13 @@
 package com.huotu.agento2o.agent.config;
 
-import com.huotu.agento2o.agent.config.annotataion.AttributeArgumentResolver;
-import com.huotu.agento2o.agent.config.annotataion.AuthArgumentResolver;
+import com.huotu.agento2o.agent.config.resolver.AttributeArgumentResolver;
+import com.huotu.agento2o.agent.config.resolver.AuthArgumentResolver;
 import com.huotu.agento2o.agent.interceptor.CustomerInterceptor;
-import com.huotu.agento2o.agent.interceptor.ExceptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;

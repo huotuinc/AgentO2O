@@ -8,8 +8,9 @@
  *
  */
 
-package com.huotu.agento2o.agent.config.annotataion;
+package com.huotu.agento2o.agent.config.resolver;
 
+import com.huotu.agento2o.agent.config.annotataion.AuthenticationPrincipal;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
