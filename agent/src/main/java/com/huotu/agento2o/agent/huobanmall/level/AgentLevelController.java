@@ -1,5 +1,6 @@
 package com.huotu.agento2o.agent.huobanmall.level;
 
+import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by WangJie on 2016/5/12.
  */
 @Controller
-@RequestMapping("/level")
+@RequestMapping("/huobanmall/level")
 public class AgentLevelController {
 
     @Autowired
@@ -87,14 +88,14 @@ public class AgentLevelController {
 
     /**
      * 展示代理商等级列表
-     * @param customer
+     * @param customerIdStr
      * @param model
      * @return
      */
     @RequestMapping("/levelList")
-    public String showLevelList( MallCustomer customer, Model model) {
-        customer.setCustomerId(5919);
-        List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customer.getCustomerId());
+    public String showLevelList(@RequestAttribute(value = "customerId") String customerIdStr, Model model) {
+        int customerId = Integer.parseInt(customerIdStr);
+        List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         model.addAttribute("agentLevels", agentLevels);
         return "level/agentLevelList";
     }
