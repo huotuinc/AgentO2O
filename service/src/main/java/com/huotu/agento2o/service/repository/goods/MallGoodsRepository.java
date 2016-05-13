@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.repository.goods;
 
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +20,5 @@ import org.springframework.stereotype.Repository;
  * Created by allan on 3/21/16.
  */
 @Repository
-public interface MallGoodRepository extends JpaRepository<MallGoods, Integer> {
+public interface MallGoodsRepository extends JpaRepository<MallGoods, Integer> {
 }

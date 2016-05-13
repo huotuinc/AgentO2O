@@ -1,6 +1,9 @@
 package com.huotu.agento2o.agent.config;
 
+import com.huotu.agento2o.agent.config.annotataion.AttributeArgumentResolver;
 import com.huotu.agento2o.agent.config.annotataion.AuthArgumentResolver;
+import com.huotu.agento2o.agent.interceptor.CustomerInterceptor;
+import com.huotu.agento2o.agent.interceptor.ExceptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,6 +38,8 @@ import java.util.List;
 public class MVCConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private Environment env;
+    @Autowired
+    private CustomerInterceptor customerInterceptor;
 
     /**
      * for upload
@@ -44,6 +49,11 @@ public class MVCConfig extends WebMvcConfigurerAdapter {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("UTF-8");
         return resolver;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(customerInterceptor).addPathPatterns("/huobanmall/**");
     }
 
     @Override
@@ -68,6 +78,7 @@ public class MVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new AuthArgumentResolver());
+        argumentResolvers.add(new AttributeArgumentResolver());
     }
 
     @Override
