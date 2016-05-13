@@ -1,0 +1,216 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10"/>
+    <title>
+        等级设置
+    </title>
+    <link href="resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="resource/3rdParty/jBox/Skins/Green/jbox.css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script src="resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script src="resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
+    <script src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script src="resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        var ajaxUrl = /*[[@{/level/}]]*/ "/level";
+    </script>
+
+    <style type="text/css">
+        .disable {
+            filter: Alpha(Opacity=60);
+            opacity: 0.6;
+        }
+
+        .setRed {
+            color: red;
+        }
+
+        .setGreen {
+            color: green;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .data-form th {
+            background: #eee;
+            padding-right: 10px;
+            line-height: 35px;
+            text-align: right;
+            font-weight: bold;
+            width: 80px;
+        }
+
+        .data-form td {
+            background: #fff;
+            padding-left: 10px;
+            width: 180px;
+            color: #000;
+        }
+    </style>
+</head>
+<body marginwidth="0" marginheight="0" style="cursor: auto;">
+<form method="post" action="accountManage" id="form1">
+
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3>代理商等级</h3>
+
+                <div class="bar">
+                    <a class="btn-lit" href="javascript:levelHandler.showEdit(0)">
+                        <span>新增</span></a>
+                </div>
+            </div>
+            <div class="cnt-wp" style="min-height: 450px;">
+                <div id="bg" style="width: 100%; height: 100%; position: absolute; z-index: 555; display: none;">
+                    <img th:src="@{/resource/3rdParty/images/loading.gif}" src="resource/3rdParty/images/loading.gif" border="0" style="margin-left: 46%; margin-top: 13%;"/>
+                </div>
+                <div class="cnt" id="content" width="1392" style="display: block;">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                        <tr class="even">
+                            <th scope="col" style="width: 10%">序号
+                            </th>
+                            <th scope="col" style="width: 25%">等级名称
+                            </th>
+                            <th scope="col" style="width: 20%">等级
+                            </th>
+                            <th scope="col" style="">备注
+                            </th>
+                            <th scope="col" style="width: 15%">操作
+                            </th>
+                        </tr>
+                        </tbody>
+                        <tbody>
+                        <tr th:each="agentLevel:${agentLevels}">
+                            <td class="txt40 c" th:text="${agentLevelStat.count}">1</td>
+                            <td class="txt40 c" th:text="${agentLevel.levelName}">一级代理商</td>
+                            <td class="txt40 c" th:text="${agentLevel.level}">一级</td>
+                            <td class="txt40 c" th:text="${agentLevel.comment}">6折进货</td>
+                            <td class="txt40 c">
+                                <a href="javascript:levelHandler.showEdit(1)" th:href="|javascript:levelHandler.showEdit(${agentLevel.levelId})|">编辑</a> |
+                                <a href="javascript:levelHandler.deleteLevel(1)" th:href="|javascript:levelHandler.deleteLevel(${agentLevel.levelId})|">删除</a>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="edit_dialog" style="display: none;">
+
+</div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    var levelHandler = {
+        deleteLevel: function (levelId) {
+            J.jboxConfirm("确定要删除该等级?", function () {
+                $.jBox.tip("正在删除...", "loading");
+
+                J.GetJsonRespons(ajaxUrl + "delete", {
+                    levelId: levelId
+                }, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("删除成功", "success");
+                        window.location.reload();
+                    } else if (json.code == 800){
+                        $.jBox.tip("无法删除,该等级已被代理商使用", "error");
+                    } else {
+                        $.jBox.tip("删除失败", "error");
+                    }
+                }, function () {
+                }, J.PostMethod);
+            });
+        },
+        showEdit: function (levelId) {
+            $("#edit_dialog").html($("#level_edit_template").html());
+            if (levelId > 0) {
+                J.GetJsonRespons(ajaxUrl + levelId, null, function (json) {
+                    var level = json.data;
+                    $("#levelName").val(level.levelName);
+                    $("#comment").val(level.comment);
+                }, function () {
+                }, J.GetMethod);
+            }
+            var title = levelId == 0 ? "新增代理商等级" : "代理商等级编辑";
+            J.ShowDialog("edit_dialog", title, function () {
+                var self = this;
+                var requestData = levelHandler.checkForm(levelId);
+                if (requestData != null) {
+                    $.jBox.tip("正在保存...", "loading");
+
+                    J.GetJsonRespons(ajaxUrl + "save", requestData, function (json) {
+                        if (json.code == 200) {
+                            $.jBox.tip("保存成功", "success");
+                            $(self).dialog('close');
+                            window.location.reload();
+                        } else {
+                            $.jBox.tip("保存失败", error);
+                        }
+                    }, function () {
+                    }, J.PostMethod);
+                }
+            }, function () {
+                $(this).dialog('close');
+            });
+        },
+        checkForm: function (levelId) {
+            var levelName = $.trim($("#levelName").val());
+            var comment = $.trim($("#comment").val());
+
+            if (levelName.length == 0) {
+                $.jBox.tip("请输入等级名称");
+                return null;
+            }
+            var requestData = {
+                levelId: levelId,
+                levelName: levelName,
+                comment: comment
+            };
+            return requestData;
+        }
+    }
+</script>
+
+<script type="text/html" id="level_edit_template">
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 80px;">
+        <table id="contenttable" class="data-form" border="0" cellspacing="1" cellpadding="0"
+               style="background: #e1e1e1;">
+            <tbody>
+            <tr style="color: #e8e8e8">
+                <th scope="row">等级名称：</th>
+                <td>
+                    <input type="text" id="levelName"/>
+                </td>
+            </tr>
+            <tr style="color: #e8e8e8">
+                <th scope="row">备注：</th>
+                <td>
+                    <textarea id="comment" style="margin-top: 10px;margin-bottom: 10px;"></textarea>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</script>
