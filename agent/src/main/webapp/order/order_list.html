@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--@thymesVar id="ordersList" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallOrder>"-->
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>
+
+        订单列表
+    </title>
+    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.8.3.min.js" th:src="@{/resource/3rdParty/js/jquery-1.8.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <link href="../resource/3rdParty/omTabs/themes/default/operamasks-ui.min.css" th:href="@{/resource/3rdParty/omTabs/themes/default/operamasks-ui.min.css}" rel="stylesheet" type="text/css"/>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <script src="../resource/3rdParty/Knockout/knockout-2.3.0.js" th:src="@{/resource/3rdParty/Knockout/knockout-2.3.0.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        var agentId = /*[[${agentId}]]*/ 1;
+
+        /*<![CDATA[*/
+        var _oldCass = ''
+        $(function () {
+            var authority = "";
+            if (authority != "") {
+                $(".aucontrol").hide();
+            }
+
+//            $('tr').mouseover(function () {
+//                _oldCass = this.className;
+//                this.className = 'over';
+//            }).mouseout(function () {
+//                this.className = _oldCass;
+//            });
+
+        });
+
+        function showList(statu) {
+            if (statu == 0) {
+                $("#shipStatus").attr("value", -1);
+                $('#form1').submit();
+            } else if (statu == 2) {
+                $("#shipStatus").attr("value", 0);
+                $('#form1').submit();
+                //$('.aparent3').parent().toggleClass('om-state-default om-corner-top  om-tabs-activated om-state-active');
+            } else if (statu == 3) {
+                $("#shipStatus").attr("value", 1);
+                $('#form1').submit();
+            } else if (statu == 4) {
+                $("#shipStatus").attr("value", 4);
+                $('#form1').submit();
+            }
+        }
+        /*]]>*/
+    </script>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        //#region 导出助手
+        var exportHelper = {};
+        exportHelper.init = function () {
+            $('.OnlyNum').OnlyNum();
+        };
+
+
+        exportHelper.checkPage = function (txtBeginPage, txtEndPage) {
+            var numberBug = pageCount;//总页数
+            if (txtBeginPage == '' || txtEndPage == '') {
+                return {flag: false, msg: '请输入正确的起止页码'};
+            }
+            var beginPage = parseInt(txtBeginPage);
+            var endPage = parseInt(txtEndPage);
+            if (endPage < beginPage) {
+                return {flag: false, msg: '结束页不能小于起始页'};
+            }
+            if (endPage > numberBug) {
+                return {flag: false, msg: '结束页不能大于总页数'};
+            }
+            var _maxPage = 500;
+            if (endPage - beginPage >= _maxPage) {
+                $('#txtEndPage').focus().select();
+                return {flag: false, msg: '最多导出' + _maxPage + '页'};
+            }
+//            return {flag: true, msg: ''};
+            return {flag: true};
+        };
+
+        exportHelper.showDialogV2 = function () {
+            var txtBeginPage = $("#txtBeginPage").val();
+            var txtEndPage = $("#txtEndPage").val();
+
+            var chkResult = this.checkPage(txtBeginPage, txtEndPage);
+            if (!chkResult.flag) {
+                jBox.tip(chkResult.msg, 'info');
+                return;
+            }
+
+            var txtOrderId = $("#orderId").val();
+//            var txtShipName = $("#txtShipName").val();
+//            var txtShipMobile = $("#txtShipMobile").val();
+
+            var ddlShipStatus = $("#shipStatus").val();
+            var ddlPayStatus = $("#payStatus").val();
+            var ddlOrderByField = $("#orderType").val();
+            var raSortType_0 = $("input[name=raSortType]:checked").val();
+            var txtBeginTime = $("#beginTime").val();
+            var txtEndTime = $("#endTime").val();
+
+            var txtEndPaytime = $("#endPayTime").val();
+            var txtBeginPaytime = $("#beginPayTime").val();
+            var url = /*[[@{/order/orderExport}]]*/ "";
+            url += '?rnd=' + Math.random()
+                    + '&customerId=' + customerId
+                    + '&txtOrderId=' + txtOrderId
+                    + '&ddlShipStatus=' + ddlShipStatus
+                    + '&ddlPayStatus=' + ddlPayStatus
+                    + '&ddlOrderByField=' + ddlOrderByField
+                    + '&raSortType_0=' + raSortType_0
+                    + '&txtBeginTime=' + txtBeginTime
+                    + '&txtEndTime=' + txtEndTime
+                    + '&txtEndPaytime=' + txtEndPaytime
+                    + '&txtBeginPaytime=' + txtBeginPaytime
+                    + '&txtBeginPage=' + txtBeginPage
+                    + '&txtEndPage=' + txtEndPage
+            ;
+
+            J.PopupIFrame(url, "选择导出模版", 330, 230, "ifrm", "", "auto", "");
+        };
+
+        exportHelper.showDialog = function () {
+            if (checkBoxHelper._getItems() == '') {
+                jBox.tip('没有选择要导出的项', 'info');
+                return false;
+            }
+            var url = 'OrderExport.aspx?customerid=5&rnd=' + Math.random();
+
+            J.PopupIFrame(url, "导出", 280, 240, "export", {"导出": true}, "auto", "", function (result) {
+                //alert(result);
+            });
+        };
+
+        //#endregion
+
+        function showBatchDeliverySupplier() {
+//            var url = 'OrderBatchDeliverySupplier.aspx?customerid=5&rnd=' + Math.random();
+            J.PopupIFrame(url, "供货商订单批量发货", 370, 180, "batchdelivery", null, "auto", "", function (result) {
+                //alert(result);
+            });
+        }
+
+        $(function () {
+            exportHelper.init();
+
+            if (0 == 0) {
+                $(".shipFunc").hide();
+            }
+        });
+
+        var viewModel;
+        /*]]>*/
+    </script>
+    <style>
+        #jbox {
+            left: 20%;
+        }
+    </style>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!--/*@thymesVar id="searchCondition" type="com.huotu.hotsupplier.hbm.service.searchable.OrderSearchCondition"*/-->
+<form method="get" action="/order/getOrdersPage" th:action="@{/order/getOrdersPage}" id="form1" th:object="${searchCondition}">
+    <!--<input hidden="hidden" id="pageNoStr" name="pageNoStr" th:value="*{pageNoStr}"/>-->
+
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>订单筛选</h3>
+
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+
+                    <div class="search-bar">
+                        <label class="first ">订单号：</label>
+                        <input name="orderId" type="text" th:value="*{orderId}" id="orderId" class="input-small" style="width: 120px;"/>
+                        <label class="first ">商品名称：</label>
+                        <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
+                        <label class="first ">收货人姓名：</label>
+                        <input name="shipName" type="text" th:value="*{shipName}" id="shipName" class="input-small" style="width: 120px;"/>
+                        <label class="first ">收货人电话：</label>
+                        <input name="shipMobile" type="text" th:value="*{shipMobile}" id="shipMobile" class="input-small" style="width: 120px;"/>
+
+                        <br/>
+                        <br/>
+
+                        <label class="first ">付款状态：</label>
+                        <select name="payStatus" id="payStatus">
+                            <option selected="selected"  value="-1"  th:selected="*{payStatus == -1}">==所有==</option>
+                            <!--/*@thymesVar id="payStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.PayStatus"*/-->
+                            <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == searchCondition.payStatus}">未支付</option>
+                        </select>
+
+                        <label class="first ">发货状态：</label>
+                        <select name="shipStatus" id="shipStatus">
+                            <option selected="selected" value="-1"  th:selected="*{shipStatus == -1}">==所有==</option>
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
+                        </select>
+                        &nbsp;
+                        <label class="first ">排序：</label>
+                        <select name="orderType" id="orderType">
+                            <option selected="selected" value="0" th:selected="*{orderType==0}">按下单时间</option>
+                            <option value="1" th:selected="*{orderType==1}">按支付时间</option>
+                            <option value="2" th:selected="*{orderType==2}">按订单金额</option>
+
+                        </select>
+                        <style type="text/css">
+                            #raSortType label {
+                                padding-left: 0px;
+                            }
+                        </style>
+                        <span id="raSortType">
+                            <input id="raSortType_0" type="radio" name="raSortType" value="0" th:checked="*{orderRule==0}" checked="checked"/>
+                            <label for="raSortType_0">倒序</label>
+                            <input id="raSortType_1" type="radio" name="raSortType" value="1" th:checked="*{orderRule==1}"/>
+                            <label for="raSortType_1">顺序</label>
+                            <input type="hidden" name="orderRule" th:value="*{orderRule}"/>
+                        </span>
+
+                        <br/>
+                        <br/>
+
+                        <label class="first ">下单时间：</label>
+
+                        <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
+                               class="input-normal Wdate" th:value="*{beginTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                        <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
+                               class="input-normal Wdate" th:value="*{endTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+
+                        <br/>
+                        <br/>
+
+                        <label class="first ">支付时间：</label>
+
+                        <input name="beginPayTime" type="text" id="beginPayTime" th:value="*{beginPayTime}" placeholder=" [开始日期]"
+                               class="input-normal Wdate"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                        <input name="endPayTime" type="text" id="endPayTime" th:value="*{endPayTime}" placeholder=" [结束日期]"
+                               class="input-normal Wdate"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginPayTime\')}'})"/>
+
+                        <div style="display: none;">
+                            <input type="submit" name="btnSearch" value="" id="btnSearch"/>
+                            <input type="submit" name="btnSearchAll" value="" id="btnSearchAll"/>
+                        </div>
+                        <label><a class="btn-lit btn-middle" id="search" href="javascript:searchOrder();"
+                                  style="margin-bottom: 3px;"><span>搜索</span></a></label>
+                        <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchOrderAll();"
+                                  style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+
+                        <br/>
+                        <br/>
+                        <label class="first ">导出订单：</label>
+                        第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
+                                style="height:15px;width:28px;"/>页
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                                  style="height:15px;width:28px;"/>页
+
+                        <!--<label><a class="btn-lit btn-middle" id="A1" href="#"-->
+                        <!--th:href="@{/exportExcel?orderId=2015101013240980351792}"-->
+                        <!--style="margin-bottom: 3px;"><span>导出主订单</span></a></label>-->
+                        <label>
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;" href="javascript:exportHelper.showDialogV2();">
+                                <span>导出主订单</span>
+                            </a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 144px;">订单管理 </h3>
+
+                <div class="bar">
+                    <!--
+                    <a class="btn-lit aucontrol" href='javascript:exportHelper.showDialog();'>
+                        <span>导出主订单</span></a>
+
+                    <a class="btn-lit aucontrol" href='javascript:exportHelper.showSupplierDialog();' style='display:none;'>
+                        <span>导出供货商子订单</span></a>
+                    |
+                    <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
+                        <span>批量发货</span></a>
+                        -->
+                    <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
+                        <span>批量发货</span></a>
+                </div>
+
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+
+                <div id="Div1" class="om-tabs om-widget om-widget-content om-corner-all" style="height: auto;">
+                    <div class="om-tabs-headers om-helper-reset om-helper-clearfix om-widget-header om-corner-all header-no-border"
+                         style="height: 28px;">
+                        <ul style="height: 28px; line-height: 28px;">
+                            <span class="left-placeholder"></span>
+                            <li class="om-state-default om-corner-top"
+                                th:classappend="${searchCondition.shipStatus==-1?'om-tabs-activated om-state-active':''}" id="ddgl1">
+                                <span class="lileft"></span><a href="javascript:showList(0);" class="om-tabs-inner" style="width: auto; height: 27px;">全部</a><span class="liright"></span>
+                            </li>
+                            <li class="om-state-default om-corner-top"
+                                th:classappend="${searchCondition.shipStatus==0?'om-tabs-activated om-state-active':''}" id="ddgl2"><span class="lileft"></span><a
+                                    href="javascript:showList(2);" class="om-tabs-inner"
+                                    style="width: auto; height: 27px;">未发货</a><span class="liright"></span></li>
+
+                            <li class="om-state-default om-corner-top"
+                                th:classappend="${searchCondition.shipStatus==1?'om-tabs-activated om-state-active':''}" id="ddgl3"><span class="lileft">
+                            </span><a
+                                    href="javascript:showList(3);" class="om-tabs-inner"
+                                    style="width: auto; height: 27px;">已发货</a><span class="liright"></span></li>
+
+                            <li class="om-state-default om-corner-top"
+                                th:classappend="${searchCondition.shipStatus==4?'om-tabs-activated om-state-active':''}" id="ddgl4"><span class="lileft"></span><a
+                                    href="javascript:showList(4);" class="om-tabs-inner"
+                                    style="width: auto; height: 27px;">已退货</a><span class="liright"></span></li>
+
+                            <span class="right-placeholder"></span>
+                        </ul>
+                    </div>
+                    <div class="om-tabs-panels om-widget-content om-corner-bottom">
+
+                        <div class="om-widget om-panel ">
+                            <div id="Div2"
+                                 class="om-panel-body om-widget-content om-panel-noheader om-state-nobd">
+                                <div class="cnt">
+                                    <table class="data-table even1" width="100%" border="0"
+                                           cellspacing="0"
+                                           cellpadding="0">
+                                        <tr>
+                                            <th scope="col"></th>
+                                            <th scope="col">订单号
+                                            </th>
+                                            <th scope="col">商品
+                                            </th>
+                                            <th scope="col">下单时间
+                                            </th>
+
+                                            <th scope="col">支付时间
+                                            </th>
+
+                                            <th scope="col">总额
+                                            </th>
+
+                                            <th scope="col">收货人
+                                            </th>
+
+                                            <th scope="col">付款状态
+                                            </th>
+
+                                            <th scope="col">发货状态
+                                            </th>
+
+                                            <!--<th scope="col">订单状态
+                                            </th>-->
+
+                                            <th scope="col">支付方式
+                                            </th>
+
+
+                                            <th scope="col" width="70px">操作
+                                            </th>
+                                        </tr>
+                                        <tbody>
+                                        <tr th:each="orders:${ordersList}" th:class="${ordersStat.odd}? 'even'">
+                                            <td class="txt20 c" th:text="${ordersStat.count}">
+                                                1
+                                            </td>
+                                            <td class="txt80">
+                                                <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="查看详细" th:text="${orders.orderId}"></a>
+                                            </td>
+                                            <td class="txt160">
+                                                <span th:text="${orders.orderItems.size()}>0?${orders.orderItems[0].name}"></span>
+                                                <a th:if="${orders.orderItems.size() > 1}" href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
+                                            </td>
+                                            <td class="txt80" th:text="${#dates.format(orders.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                                                2015/9/21 20:18:01
+                                            </td>
+                                            <td class="txt80">
+                                                <span style='color:#ccc;'
+                                                      th:if="${orders.payTime!=null and orders.payTime!=''}"
+                                                      th:text="${#dates.format(orders.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
+                                            </td>
+                                            <td class="txt40">￥
+                                                <span th:text="${orders.finalAmount}">100</span>
+                                            </td>
+                                            <td class="txt40" th:text="${orders.shipName}">
+                                                asdf
+                                            </td>
+                                            <td class="txt40" th:text="${orders.payStatus.value}">
+                                                未支付
+                                            </td>
+                                            <td class="txt40" th:text="${orders.shipStatus.value}">
+                                                未发货
+                                            </td>
+                                            <td class="txt80" th:text="${orders.paymentType.value}">
+                                                银联在线支付
+                                            </td>
+                                            <td class="txt40 c tail">
+                                                <div th:inline="text">
+                                                    <span th:if="${orders.deliveryable()}">
+                                                        <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
+                                                    </span>
+                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a> |
+                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
+
+                                                    <!--<a th:attr="orderId=''+${orders.orderId}" onclick="showRefunds(this)" title="退货" th:if="${orders.returnable()}">退货</a>-->
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <script type="text/javascript" th:inline="javascript">
+                                    /*<![CDATA[*/
+                                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                                    var formName = 'form1';
+                                    //                                    var pageNoStr = 'pageNoStr';
+                                    Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+
+                                    /*]]>*/
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var orderUrl = /*[[@{/order/}]]*/ "/order/";
+    function showBatchDelivery() {
+        var url = orderUrl + 'batchDeliver';
+        J.PopupIFrame(url, "发货操作", 370, 220, "ifrm", "", "auto", "");
+    }
+
+    function showConsignFlow(obj, type) {//发货
+        var orderId = $(obj).attr("orderId");
+        var title = "发货操作";
+        if (type == 1) {
+            title = "退货操作";
+        }
+        var url = orderUrl + 'delivery?orderId=' + orderId;
+        J.PopupIFrame(url, title, 900, 480, "ifrm", "", "auto", "");
+    }
+
+    //查看详细
+    function showDetail(obj) {
+        var orderId = $(obj).attr("orderId");
+        window.location.href = orderUrl + "showOrderDetail?orderId=" + orderId;
+//        J.PopupIFrame(url, "订单详情", 1100, 680, "ifrm", "", "auto", "");
+    }
+
+    //备注
+    function showRemark(obj) {
+        var orderId = $(obj).attr("orderId");
+        var url = orderUrl + 'showRemark?orderId=' + orderId;
+        J.PopupIFrame(url, "订单 " +orderId+ " 备注", 500, 300, "ifrm", "", "auto", "");
+    }
+
+    //退货
+    function showRefunds(obj) {
+        var orderId = $(obj).attr("orderId");
+        var url = orderUrl + 'showRefundForm?orderId=' + orderId;
+        J.PopupIFrame(url, "退货操作", 900, 480, "ifrm", "", "auto", "");
+    }
+
+    function searchOrder() {
+        $("input[name=orderRule]").val($("input[name=raSortType]:checked").val());
+        $('#form1').submit();
+    }
+    function searchOrderAll() {
+        window.location.href = /*[[@{/order/getOrdersPage}]]*/ "";
+    }
+    function createRight() {//左页面点击事件
+        searchOrderAll();
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

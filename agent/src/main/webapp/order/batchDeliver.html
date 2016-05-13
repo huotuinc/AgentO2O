@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>
+        订单详情
+    </title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" th:href="@{/resource/3rdParty/css/admin.global.css}" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" th:href="@{/resource/3rdParty/css/admin.content.css}" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.mall.css" rel="stylesheet" th:href="@{/resource/3rdParty/css/admin.mall.css}" type="text/css"/>
+    <script src="../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script src="../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"></script>
+
+    <script th:inline="javascript">
+        var deliverResult = /*[[${deliverResult}]]*/ {};
+
+        $(function () {
+            if (deliverResult != null) {
+                deliverResult = JSON.parse(deliverResult);
+
+                if (deliverResult.code == 200) {
+                    $("#msgField").html("本次批量操作成功,其中成功发货" + deliverResult.data.successCount + "单,失败" + deliverResult.data.failedCount + "单");
+                    $("#failedList").empty();
+                    $.each(deliverResult.data.lstFailedMsg, function () {
+                        $("#failedList").append('<li>' + this + '</li>');
+                    });
+                    $("#msgPanel").show();
+                }
+            }
+
+        });
+
+        function submitForm() {
+            var fileData = $('#FileData').val();
+            if (fileData == "" || fileData == undefined) {
+                jBox.tip('请选择文件！', 'info');
+                return
+            }
+            var extStart = fileData.lastIndexOf(".");
+            var ext = fileData.substring(extStart, fileData.length).toUpperCase();
+            if (ext == ".xlsx" || ext == ".xls" || ext == ".XLSX" || ext == ".XLS") {
+                $.jBox.tip("批量发货中，请稍后...", "loading");
+                $('#form1').submit();
+            } else {
+                jBox.tip('上传文件只支持Excel！', 'info');
+                return
+            }
+        }
+    </script>
+</head>
+<body style="padding: 15px 10px;">
+<form id="form1" th:action="@{/order/batchDeliver}" enctype="multipart/form-data" method="post">
+    <div style="font-size: 14px;">
+        Excel：
+        <input id="FileData" class="input-big" type="file" name="FileData"/>
+    </div>
+    <div style="color: #ccc; padding: 10px 5px;">
+        注：供应商用户，请重新下载模板，
+        <a href="#" th:href="@{/order/upLoadExcel}">[右键另存]</a>
+        <br/>
+        <br/>
+
+        <div id="msgPanel" style="display: none;color:red;">
+            <p id="msgField">本次批量操作成功,其中成功发货</p>
+
+            <p style="height: 20px;"></p>
+            <ul style="list-style: none" id="failedList">
+                <li>20123123123:订单号不存在</li>
+            </ul>
+        </div>
+    </div>
+    <div style="text-align: center; padding: 10px;">
+        <input id="btnExecute" type="submit" style="display: none;" value="执行" name="btnExecute"/>
+        <a class="btn-lit" href="javascript:submitForm();">
+            <span>提交</span>
+        </a>
+
+        <a class="btn-lit" href="javascript:parent.window.location.reload()">
+            <span>完成</span>
+        </a>
+    </div>
+</form>
+</body>
+</html>

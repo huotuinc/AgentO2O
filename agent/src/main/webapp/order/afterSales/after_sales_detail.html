@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="afterSales" type="com.huotu.hotsupplier.hbm.service.entity.order.MallAfterSales"*/-->
+<!--/*@thymesVar id="afterSalesItem" type="com.huotu.hotsupplier.hbm.service.entity.order.MallAfterSalesItem"*/-->
+<!--/*@thymesVar id="userInfo" type="com.huotu.hotsupplier.hbm.service.entity.user.UserBaseInfo"*/-->
+<!--/*@thymesVar id="order" type="com.huotu.hotsupplier.hbm.service.entity.order.MallOrder"*/-->
+<!--/*@thymesVar id="afterSalesItems" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallAfterSalesItem>"*/-->
+<!--/*@thymesVar id="hbResourceHost" type="java.lang.String"*/-->
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>售后单列表</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="/resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <link href="/resource/css/tuihuo.css" th:href="@{/resource/css/tuihuo.css}" type="text/css" rel="stylesheet"/>
+    <style type="text/css">
+        .division th {
+            vertical-align: middle;
+        }
+
+        body {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .push_text {
+            border-top: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+            border-right: 2px solid #bec6ce;
+            border-bottom: 2px solid #bec6ce;
+            background: #fff;
+            margin: 10px;
+            padding: 5px;
+            line-height: 150%;
+            white-space: normal;
+        }
+
+        .bigImg {
+            width: 240px;
+            height: 320px;
+        }
+
+        .smallImg {
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+    <script type="text/javascript" th:inline="javascript">
+        var afterId = /*[[${afterSales.afterId}]]*/ 0;
+        var ajaxUri = /*[[@{/supplier/afterSale/ajax/}]]*/ "";
+        var actionMethod = {
+            returnAgree: "returnAgree",
+            refundAgree: "refundAgree",
+            afterSaleRefuse: "afterSaleRefuse"
+        };
+        var afterSale = {
+            //同意退款
+            agreeRefund: function () {
+                J.jboxConfirm("确定同意退款", function () {
+                    $.jBox.tip("正在提交...", "loading");
+                    J.GetJsonRespons(ajaxUri + actionMethod.refundAgree, {
+                        afterId: afterId
+                    }, function (json) {
+                        if (json.code == 200) {
+                            $.jBox.tip("提交成功", "success");
+                            window.location.reload();
+                        } else {
+                            $.jBox.tip(json.msg);
+                        }
+                    }, function () {
+                    }, J.PostMethod);
+                });
+            },
+            //同意退货
+            agreeReturn: function (returnAddr) {
+                J.jboxConfirm("确定同意退货", function () {
+                    $.jBox.tip("正在提交...", "loading");
+                    J.GetJsonRespons(ajaxUri + actionMethod.returnAgree, {
+                        afterId: afterId,
+                        returnAddr: returnAddr
+                    }, function (json) {
+                        if (json.code == 200) {
+                            $.jBox.tip("提交成功", "success");
+                            window.location.reload();
+                        } else {
+                            $.jBox.tip(json.msg);
+                        }
+                    }, function () {
+                    }, J.PostMethod);
+                });
+            },
+            //拒绝售后
+            refuseAfterSale: function (reason) {
+                J.jboxConfirm("确定拒绝售后?", function () {
+                    $.jBox.tip("正在提交...", "loading");
+                    J.GetJsonRespons(ajaxUri + actionMethod.afterSaleRefuse, {
+                        afterId: afterId,
+                        reason: reason
+                    }, function (json) {
+                        if (json.code == 200) {
+                            $.jBox.tip("提交成功", "success");
+                            window.location.reload();
+                        } else {
+                            $.jBox.tip(json.msg);
+                        }
+                    }, function () {
+                    }, J.PostMethod);
+                });
+            },
+            //显示留言框
+            showReply: function (msg, actionMethod) {
+                $("#contextTitle").html(msg);
+                $("#sendReply").show();
+                $("#actionMethod").val(actionMethod);
+            },
+            //提交留言
+            commitReply: function () {
+                var action = $("#actionMethod").val();
+                var comment = $("#comment").val();
+                switch (action) {
+                    case actionMethod.returnAgree:
+                        this.agreeReturn(comment);
+                        break;
+                    case actionMethod.afterSaleRefuse:
+                        this.refuseAfterSale(comment);
+                        break;
+                }
+            }
+        }
+
+        function resizeImg(img) {
+            var sizeType = $(img).attr("sizeType");
+            if (sizeType == 0) {
+                $(img).css("width", "240px");
+                $(img).css("height", "320px");
+                $(img).attr("sizeType", 1);
+            } else {
+                $(img).css("width", "60px");
+                $(img).css("height", "60px");
+                $(img).attr("sizeType", 0);
+            }
+        }
+    </script>
+</head>
+<body>
+<form method="post" id="form1">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3>售后申请</h3>
+
+                <div class="bar">
+
+                    <a class="btn-lit" href='/MallManage/AfterSales/ReturnProduct.aspx?customerid=3677' th:href="@{/supplier/afterSale/afterSaleList}">
+                        <span>返回列表</span></a>
+                </div>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt form">
+
+                    <div id="return_detail">
+                        <div class="tableform">
+                            <h5>售后基本信息：</h5>
+
+                            <div class="division" th:object="${afterSales}">
+                                售后编号：<span class="font16px fontbold fontcolorBlack" th:text="*{afterId}">
+                                        2015123077823895
+                                    </span>&nbsp;&nbsp;
+                                <p style="height: 5px;"></p>
+
+                                <div>
+                                    售后状态：<span id="x-return_item_status-1" class="font14px fontcolorOrange fontbold" style="font-weight: bold; font-size: 14px; color: orange;" th:text="*{afterSaleStatus.value}">申请中</span>
+                                    &nbsp;&nbsp;
+                                </div>
+                                <p style="height: 5px;"></p>
+
+                                <div>
+                                    申请时间：<span class="fontcolorOrange" th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}">2015-12-30 17:10:17</span>
+                                </div>
+                                <p style="height: 5px;"></p>
+
+                                <div>
+                                    申请方式：<span class="fontcolorOrange" th:text="*{afterSaleType.value}">我要退货并退款</span>
+                                </div>
+                                <p style="height: 5px;"></p>
+
+                                <div>
+                                    申请原因：<span class="fontcolorOrange" th:text="*{afterSalesReason.value}">商品质量有问题</span>
+                                </div>
+                                <p style="height: 5px;"></p>
+                            </div>
+
+                            <h5>售后货品</h5>
+
+                            <div class="division" th:object="${afterSales}">
+                                <p>
+                                    <img th:if="*{productImg!=''}" th:src="${hbResourceHost}+*{productImg}" src="/resource/images/wechat/3677/mall/pic20151110163708.jpg" onerror="setDefImg(this)" style="height: 40px; width: 40px;"/>
+                                </p>
+
+                                <p th:text="*{productName}">自然美仁（5盒装）(1)</p>
+
+                                <p>数量：<span th:text="*{productNum}"></span></p>
+
+                                <p>退款金额：<span th:text="*{#numbers.formatDecimal(afterMoney,1,2)}">290.00</span></p>
+
+                                <p>积分抵用：<span th:text="*{integral}"></span>(抵用<span th:text="*{#numbers.formatDecimal(integralAmount,1,2)}"></span>元)</p>
+
+                                <p>买家：
+                                    <span id="UserName" th:text="${userInfo.nickname}">测试</span>(<span th:text="${userInfo.mobile}">13754325420</span>)</p>
+
+                                <p>下单时间：
+                                    <span th:text="${#dates.format(order.createTime,'yyyy-MM-dd HH:mm:ss')}" id="OrderTime">12/30/2015 5:04:07 PM</span></p>
+
+                                <p>订单编号：<span th:text="${order.orderId}"></span></p>
+
+                            </div>
+                            <div>
+                                <div style="display: block; border: 1px solid #ddd;" class="xiaofeijilv">
+                                    <ul>
+                                        <div th:each="afterSalesItem:${afterSalesItems}">
+                                            <!--卖家-->
+                                            <div th:if="${afterSalesItem.reply!=null and afterSalesItem.reply!=''}">
+                                                <em>
+                                                    <li class="t" style="margin: 0px; border-bottom: 1px solid #ddd;">
+                                                        <span class="DDH " style="float: left; font-size: 14px; font-style: normal; font-weight: bolder;">卖家</span>
+                                                        <span class="DDH " style="float: right;" th:text="${#dates.format(afterSalesItem.replyTime,'yyyy-MM-dd HH:mm:ss')}">2015-12-30 17:10:17</span>
+                                                    </li>
+                                                    <li class="t" style="line-height: 24px; margin: 0px; font-style: normal; list-style: none; border-bottom: 1px solid #000;">
+                                                        <p style="clean: both;"></p>
+
+                                                        <p style="color: #ec5050;" th:text="${afterSalesItem.afterItemsStatus.value}">退款完成</p>
+
+                                                        <p th:if="${afterSalesItem.afterItemsStatus.code==3}" th:each="info:${afterSalesItem.refundInfos}">
+                                                            <span th:text="${info}"></span>
+                                                        </p>
+
+                                                        <p id="1" th:if="${afterSalesItem.afterItemsStatus.code!=3 and afterSalesItem.afterItemsStatus.code!=1}" th:text="${afterSalesItem.reply}"></p>
+
+                                                        <p id="2" th:if="${afterSalesItem.afterItemsStatus.code==1}">退货地址：<span th:text="${afterSalesItem.reply}"></span></p>
+                                                    </li>
+                                                </em>
+                                            </div>
+                                            <!--买家,提交申请售后-->
+                                            <em th:if="${afterSalesItem.isLogic==0 and afterSalesItem.afterItemsStatus.code!=5}">
+                                                <li class="t" style="margin: 10px 0px 0px 0px; border-bottom: 1px solid #ddd; font-style: normal; list-style: none;">
+                                                    <span class="DDH " style="float: left; font-size: 14px; font-style: normal; font-weight: bolder;">买家</span>
+                                                    <span class="DDH " style="float: right;" th:text="${#dates.format(afterSalesItem.applyTime,'yyyy-MM-dd HH:mm:ss')}">2015-12-30 17:10:17</span>
+                                                </li>
+                                                <li class="t" style="line-height: 24px; margin: 0px; font-style: normal; list-style: none; border-bottom: 1px solid #000;">
+                                                    <p style="clean: both;"></p>
+
+                                                    <p style="color: #ec5050;">发起售后申请</p>
+
+                                                    <p>申请方式：<span th:text="${afterSalesItem.afterSaleType.value}"></span></p>
+
+                                                    <p>申请原因：<span th:text="${afterSalesItem.afterSalesReason.value}"></span></p>
+
+                                                    <p>退款金额：<span th:text="${#numbers.formatDecimal(afterSalesItem.afterMoney,1,2)}"></span></p>
+
+                                                    <p>退回积分：<span th:text="${afterSales.integral}"></span>(抵用<span th:text="${#numbers.formatDecimal(afterSales.integralAmount,1,2)}"></span>元)</p>
+
+                                                    <p>联系电话：<span th:text="${afterSales.applyMobile}"></span></p>
+
+                                                    <p>详细原因：<span th:text="${afterSalesItem.afterContext}"></span></p>
+
+                                                    <div th:if="${afterSalesItem.imgFiles!='' and afterSalesItem.imgFiles!=null}" class="jiatupian">
+                                                        <p>图片举证：</p>
+                                                        <ul>
+                                                            <li style="list-style:none;" th:each="img:${afterSalesItem.imgFileList}">
+                                                                <img sizeType="0" onclick="resizeImg(this)" data-class="smallImg" th:src="${img}" src="/resource/images/ReturnProduct/3677/pic20151230174957.jpg" width="50"/>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </em>
+                                            <!--买家:留言-->
+                                            <em th:if="${afterSalesItem.isLogic==2 and afterSalesItem.afterContext!=null and afterSalesItem.afterContext!=''}">
+                                                <li class="t" style="margin: 10px 0px 0px 0px; border-bottom: 1px solid #ddd;">
+                                                    <span class="DDH " style="float: left; font-size: 14px; font-style: normal; font-weight: bolder;">买家</span>
+                                                    <span class="DDH " style="float: right;" th:text="${#dates.format(afterSalesItem.applyTime,'yyyy-MM-dd HH:mm:ss')}">2015-12-30 17:10:17</span>
+                                                </li>
+                                                <li class="t" style="line-height: 24px; margin: 0px; font-style: normal; list-style: none; border-bottom: 1px solid #000;">
+                                                    <p style="clean: both;"></p>
+
+                                                    <p style="color: #ec5050;">留言信息</p>
+
+                                                    <p>详细信息：<span th:text="${afterSalesItem.afterContext}"></span></p>
+                                                </li>
+                                            </em>
+                                            <!--买家:已取消-->
+                                            <em th:if="${afterSalesItem.afterItemsStatus.code==5}">
+                                                <li class="t" style="margin: 10px 0px 0px 0px; border-bottom: 1px solid #ddd;">
+                                                    <span class="DDH " style="float: left; font-size: 14px; font-style: normal; font-weight: bolder;">买家</span>
+                                                    <span class="DDH " style="float: right;" th:text="${#dates.format(afterSalesItem.applyTime,'yyyy-MM-dd HH:mm:ss')}">2015-12-30 17:10:17</span>
+                                                </li>
+                                                <li class="t" style="line-height: 24px; margin: 0px; font-style: normal; list-style: none; border-bottom: 1px solid #000;">
+                                                    <p style="clean: both;"></p>
+
+                                                    <p style="color: #ec5050;">已取消</p>
+
+                                                </li>
+                                            </em>
+                                            <!--买家:物流信息-->
+                                            <em th:if="${afterSalesItem.isLogic==1}">
+                                                <li class="t" style="margin: 10px 0px 0px 0px; border-bottom: 1px solid #ddd; font-style: normal; list-style: none;">
+                                                    <span class="DDH " style="float: left; font-size: 14px; font-style: normal; font-weight: bolder;">买家</span>
+                                                    <span class="DDH " style="float: right;" th:text="${#dates.format(afterSalesItem.applyTime,'yyyy-MM-dd HH:mm:ss')}">2015-12-30 17:10:17</span>
+                                                </li>
+                                                <li class="t" style="line-height: 24px; margin: 0px; font-style: normal; list-style: none; border-bottom: 1px solid #000;">
+                                                    <p style="clean: both;"></p>
+
+                                                    <p style="color: #ec5050;">提交退货物流</p>
+
+                                                    <p>退款金额：<span th:text="${#numbers.formatDecimal(afterSalesItem.afterMoney,1,2)}"></span></p>
+
+                                                    <p>退回积分：<span th:text="${afterSales.integral}"></span>(抵用<span th:text="${#numbers.formatDecimal(afterSales.integralAmount,1,2)}"></span>元)</p>
+
+                                                    <p>物流公司：<span th:text="${afterSalesItem.logiModel.logiCompanyChina}"></span></p>
+
+                                                    <p>物流单号：<span th:text="${afterSalesItem.logiModel.logiNo}"></span></p>
+
+                                                    <p>联系手机：<span th:text="${afterSalesItem.logiModel.logiMobile}"></span></p>
+
+                                                    <p>备注信息：<span th:text="${afterSalesItem.logiModel.logiRemark}"></span></p>
+
+                                                    <div th:if="${afterSalesItem.logiModel.logiImg!='' and afterSalesItem.logiModel.logiImg!=null}" class="jiatupian">
+                                                        <p>图片举证：</p>
+                                                        <ul>
+                                                            <li style="list-style:none;" th:each="logiImg:${afterSalesItem.logiModel.logiImgs}">
+                                                                <img onclick="resizeImg(this)" data-class="smallImg" th:src="${logiImg}" src="/resource/images/ReturnProduct/3677/pic20151230174957.jpg" width="50"/>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </em>
+                                        </div>
+
+                                    </ul>
+                                </div>
+
+                            </div>
+
+                            <br/>
+
+                            <div class="table-action">
+
+                                <div style="padding-left: 15px;">
+
+
+                                    <a th:if="${afterSales.returnable()}" class="btn-lit status" id="status7" href="javascript:afterSale.showReply('填写退货地址',actionMethod.returnAgree);"><span>同意退货</span></a>
+
+                                    <a th:if="${afterSales.refundable()}" class="btn-lit status" id="status8" href="javascript:afterSale.agreeRefund();"><span>同意退款</span></a>
+
+
+                                    <a th:if="${afterSales.refusable()}" class="btn-lit status" id="status5" href="javascript:afterSale.showReply('给客户留言',actionMethod.afterSaleRefuse);"><span>拒绝</span></a>
+
+                                </div>
+
+                            </div>
+
+                            <div id="divSendMessage" style="display: block;">
+                            </div>
+                            <div id="sendReply" style="display: none">
+                                <input type="hidden" id="actionMethod" value="none"/>
+
+                                <div class="division">
+                                    <h4 id="contextTitle"></h4>
+                                    <textarea style="width: 50%; height: 120px;" id="comment" name="comment"></textarea>
+                                </div>
+                                <div style="padding-left: 15px;">
+                                    <a class="btn-lit" href="javascript:afterSale.commitReply();"><span>提交</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

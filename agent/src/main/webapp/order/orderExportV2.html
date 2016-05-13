@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<!--/*@thymesVar id="orderExportModel" type="com.huotu.hotsupplier.supplier.model.OrderExportModel"*/-->
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>
+        订单导出
+    </title>
+    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.mall.css" th:href="@{/resource/3rdParty/css/admin.mall.css}" rel="stylesheet" type="text/css"/>
+    <script src="../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" th:src="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+</head>
+<body style="padding: 10px;">
+    <form id="form1" action="exportExcel" method="get" >
+      <div class="aspNetHidden">
+          <input id="customerId"  th:value="${orderExportModel.customerId}" type="hidden" value="20" name="customerId" />
+          <input id="orderId"  th:value="${orderExportModel.txtOrderId}" type="hidden" value="20" name="orderId" />
+          <input id="shipName"  th:value="${orderExportModel.txtShipName}" type="hidden" value="20" name="shipName" />
+          <input id="shipMobile"  th:value="${orderExportModel.txtShipMobile}" type="hidden" value="20" name="shipMobile" />
+          <input id="shipStatus"  th:value="${orderExportModel.ddlShipStatus}" type="hidden" value="20" name="shipStatus" />
+          <input id="payStatus"  th:value="${orderExportModel.ddlPayStatus}" type="hidden" value="20" name="payStatus" />
+          <input id="orderType"  th:value="${orderExportModel.ddlOrderByField}" type="hidden" value="20" name="orderType" />
+          <input id="orderRule"  th:value="${orderExportModel.raSortType_0}" type="hidden" value="20" name="orderRule" />
+          <input id="beginTime"  th:value="${orderExportModel.txtBeginTime}" type="hidden" value="20" name="beginTime" />
+          <input id="endTime"  th:value="${orderExportModel.txtEndTime}" type="hidden" value="20" name="endTime" />
+          <input id="endPayTime"  th:value="${orderExportModel.txtEndPaytime}" type="hidden" value="20" name="endPayTime" />
+          <input id="beginPayTime"  th:value="${orderExportModel.txtBeginPaytime}" type="hidden" value="20" name="beginPayTime" />
+          <input id="txtBeginPage"  th:value="${orderExportModel.txtBeginPage}" type="hidden" value="20" name="txtBeginPage" />
+          <input id="txtEndPage"  th:value="${orderExportModel.txtEndPage}" type="hidden" value="20" name="txtEndPage" />
+        <div style="font-size:14px;">
+            <div style="padding: 3px;">
+                <input id="raExcel_1" type="radio" value="1" name="raExport" checked="checked"/>
+                <label for="raExcel_1" >excel-订单导出(系统)</label>
+            </div>
+        </div>
+        <div style="text-align: center; padding: 10px;">
+            <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:showBatchDelivery();"
+                      style="margin-bottom: 3px;"><span>导出</span></a></label>
+        </div>
+      </div>
+    </form>
+    <script type="text/javascript">
+        function showBatchDelivery(){
+            var customerId=$("#customerId").val();
+            if(customerId =="" || customerId ==undefined){
+                jBox.tip('customerId 无法获取， 请检查！', 'info');
+                return
+            }
+//            var raExcel_1=$("#raExcel_1").val();
+            $('#form1').submit();
+        }
+
+    </script>
+</body>
+</html>

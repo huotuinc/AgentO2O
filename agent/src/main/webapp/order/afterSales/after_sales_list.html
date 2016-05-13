@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<!--/*@thymesVar id="afterSales" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallAfterSales>"*/-->
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>售后单列表</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}" type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <style type="text/css">
+        .over {
+            background-color: #00ff21;
+        }
+
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <div class="blank10">
+    </div>
+
+    <!--/*@thymesVar id="afterSaleSearch" type="com.huotu.hotsupplier.hbm.service.searchable.AfterSaleSearch"*/-->
+    <form method="get" id="searchForm" th:action="@{/supplier/afterSale/afterSaleList}" th:object="${afterSaleSearch}">
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>售后单列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first ">起始时间：</label>
+                            <input name="beginTime" type="text" id="txtCreateBeginTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;" th:value="*{beginTime}"/>
+                            <label class="first ">---</label>
+                            <input name="endTime" type="text" id="txtCreateEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{endTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'txtCreateBeginTime\')}'})"/>
+                            <label class="first ">售后单号：</label>
+                            <input name="afterId" type="text" th:value="*{afterId}" id="afterId" class="input-small" style="width: 120px;"/>
+                            <label class="first ">订单编号：</label>
+                            <input name="orderId" type="text" th:value="*{orderId}" id="orderId" class="input-small" style="width: 120px;"/>
+                            <br/>
+                            <br/>
+                            <label class="first"> 售后单状态：
+                                <select id="afterSaleStatus" name="afterSaleStatus">
+                                    <option th:value="-1" th:selected="*{afterSaleStatus==-1}">请选择</option>
+                                    <option th:each="afterStatus:${afterSaleStatusList}" th:value="${afterStatus.code}" th:text="${afterStatus.value}"
+                                            th:selected="${afterStatus.code == afterSaleSearch.afterSaleStatus}">售后申请中
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                <a class="btn-lit btn-middle" href="javascript:$('#searchForm').submit();"
+                                   style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                                <a class="btn-lit btn-middle" th:href="@{/supplier/afterSale/afterSaleList}"
+                                   style="margin-bottom: 3px;">
+                                    <span>显示全部</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">售后编号
+                            </th>
+                            <th scope="col">订单编号
+                            </th>
+                            <th scope="col">商品名称
+                            </th>
+                            <th scope="col">购买数量
+                            </th>
+                            <th scope="col">申请手机
+                            </th>
+                            <th scope="col">申请时间
+                            </th>
+                            <th scope="col">审核状态
+                            </th>
+                            <th scope="col">操作
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="afterSale:${afterSales}">
+                            <td class="txt40 c" th:text="${afterSale.afterId}"></td>
+                            <td class="txt40 c" th:text="${afterSale.orderId}"></td>
+                            <td class="txt80 c" th:text="${afterSale.productName}"></td>
+                            <td class="txt80 c" th:text="${afterSale.productNum}"></td>
+                            <td class="txt80 c" th:text="${afterSale.applyMobile}"></td>
+                            <td class="txt80 c" th:text="${#dates.format(afterSale.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
+                            <td class="txt80 c">
+                                <a th:href="@{/supplier/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情</a>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'searchForm';
+                    //                                    var pageNoStr = 'pageNoStr';
+                    Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

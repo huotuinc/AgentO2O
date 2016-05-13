@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="deliveryList" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallDelivery>"*/-->
+<!--/*@thymesVar id="deliverySearcher" type="com.huotu.hotsupplier.hbm.service.searchable.DeliverySearcher"*/-->
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>
+        发货单列表
+    </title>
+    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.4.2.min.js" th:href="@{/resource/3rdParty/js/jquery-1.4.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js" th:href="@{../resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:href="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js" th:href="@{/resource/3rdParty/js/admin.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js" th:href="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <style type="text/css">
+        .over {
+            background-color: #00ff21;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="blank10">
+    </div>
+    <form method="get" id="searchForm" th:action="@{/order/deliveries}" th:object="${deliverySearcher}">
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>发货单列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first ">用户名：</label>
+                            <input name="username" type="text" th:value="*{username}" class="input-small" style="width: 120px;"/>
+                            <label class="first ">发货单号：</label>
+                            <input name="deliveryNo" type="text" th:value="*{deliveryNo}" class="input-small" style="width: 120px;"/>
+                            <label class="first ">订单编号：</label>
+                            <input name="orderId" type="text" th:value="*{orderId}" class="input-small" style="width: 120px;"/>
+                            <br/>
+                            <br/>
+                            <label class="first ">起始时间：</label>
+                            <input name="beginTime" type="text" id="txtCreateBeginTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;" th:value="*{beginTime}"/>
+                            <label class="first ">---</label>
+                            <input name="endTime" type="text" id="txtCreateEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{endTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'txtCreateBeginTime\')}'})"/>
+                            <label>
+                                <a class="btn-lit btn-middle" href="javascript:$('#searchForm').submit();"
+                                   style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                                <a class="btn-lit btn-middle" th:href="@{/order/deliveries}"
+                                   style="margin-bottom: 3px;">
+                                    <span>显示全部</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">发货单号
+                            </th>
+                            <th scope="col">订单号
+                            </th>
+                            <th scope="col">创建时间
+                            </th>
+                            <th scope="col">会员用户名
+                            </th>
+                            <th scope="col">物流费用
+                            </th>
+                            <th scope="col">收货人
+                            </th>
+                            <th scope="col">物流公司
+                            </th>
+                            <th scope="col">物流单号
+                            </th>
+                            <th scope="col">操作
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="delivery:${deliveryList}">
+                            <td class="txt40 c" th:text="${delivery.deliveryId}"></td>
+                            <td class="txt40 c" th:text="${delivery.order.orderId}"></td>
+                            <td class="txt80 c" th:text="${#dates.format(delivery.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td class="txt80 c" th:text="${delivery.userBaseInfo.loginName}"></td>
+                            <td class="txt80 c" th:text="${#numbers.formatDecimal(delivery.freight,1,2)}"></td>
+                            <td class="txt80 c" th:text="${delivery.shipName}"></td>
+                            <td class="txt80 c" th:text="${delivery.logisticsName}"></td>
+                            <td class="txt80 c" th:text="${delivery.logisticsNo}"></td>
+                            <td class="txt80 c">
+
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'searchForm';
+                    Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+
