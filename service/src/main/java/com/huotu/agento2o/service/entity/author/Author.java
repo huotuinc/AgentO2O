@@ -130,13 +130,6 @@ public abstract class Author implements Serializable,UserDetails{
     @Column(name = "Comment")
     private String comment;
 
-    /**
-     * 用户类型
-     * @return
-     */
-    @Column(name = "DType")
-    private String dType;
-
 
     public boolean isAccountNonLocked() {
         return this.isDisabled == false;

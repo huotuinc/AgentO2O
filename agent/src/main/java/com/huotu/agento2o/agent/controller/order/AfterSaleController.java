@@ -37,7 +37,6 @@ public class AfterSaleController {
             AfterSaleSearch afterSaleSearch
     ){
         ModelAndView modelAndView = new ModelAndView();
-        afterSaleSearch.setAgentType(author.getDType());
         afterSaleSearch.setAgentId(author.getId());
         if (author.getId() > 0) {
             Page<MallAfterSales> afterSales = afterSalesService.findAll(pageIndex, Constant.PAGESIZE, author.getId(), afterSaleSearch);

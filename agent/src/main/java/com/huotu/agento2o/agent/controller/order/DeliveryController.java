@@ -52,7 +52,6 @@ public class DeliveryController {
     ) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         deliverySearcher.setAgentId(author.getId());
-        deliverySearcher.setAgentType(author.getDType());
         if (type.equals("delivery"))
             modelAndView.setViewName("order/delivery_list");
         else
@@ -65,7 +64,6 @@ public class DeliveryController {
         modelAndView.addObject("pageSize", ordersDeliveryPage.getSize());
         modelAndView.addObject("pageIndex", pageIndex);
         modelAndView.addObject("deliverySearcher", deliverySearcher);
-
         return modelAndView;
     }
 
