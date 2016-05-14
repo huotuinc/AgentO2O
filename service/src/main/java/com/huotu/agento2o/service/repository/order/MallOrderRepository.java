@@ -1,15 +1,10 @@
 package com.huotu.agento2o.service.repository.order;
 
 
-import com.huotu.agento2o.common.ienum.OrderEnum;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.Date;
 
 /**
  * Created by allan on 12/31/15.

@@ -32,9 +32,14 @@ public abstract class Author implements Serializable,UserDetails{
     @JoinColumn(name = "Customer_Id")
     private MallCustomer customer;
 
+    /**
+     * 登录名
+     */
     @Column(name = "LoginName")
     private String username;
-
+    /**
+     * 登录密码
+     */
     @Column(name = "LoginPwd")
     private String password;
 
@@ -86,7 +91,7 @@ public abstract class Author implements Serializable,UserDetails{
      */
     @JoinColumn(name = "Parent_Agent_Id")
     @ManyToOne
-    private Author author;
+    private Author parentAuthor;
 
     // TODO: 2016/5/11 小伙伴信息
 
@@ -106,6 +111,7 @@ public abstract class Author implements Serializable,UserDetails{
 
     /**
      * 门店审核状态
+     * 代理商添加时审核状态默认为 审核通过
      */
     @Column(name = "Status")
     private AgentStatusEnum status;

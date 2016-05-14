@@ -1,6 +1,6 @@
 package com.huotu.agento2o.service.service.order;
 
-import com.huotu.agento2o.common.ienum.OrderEnum;
+import com.huotu.agento2o.service.common.OrderEnum;
 
 /**
  * Created by AiWelv on 2016/5/11.

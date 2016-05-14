@@ -1,7 +1,7 @@
 package com.huotu.agento2o.service.entity.support;
 
 
-import com.huotu.agento2o.common.ienum.AfterSaleEnum;
+import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 
 import javax.persistence.AttributeConverter;

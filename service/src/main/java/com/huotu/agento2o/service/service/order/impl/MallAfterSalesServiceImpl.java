@@ -1,6 +1,6 @@
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.common.ienum.AfterSaleEnum;
+import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;

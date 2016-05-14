@@ -2,7 +2,7 @@ package com.huotu.agento2o.service.service.order.impl;
 
 
 import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.ienum.OrderEnum;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;

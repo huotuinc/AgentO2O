@@ -51,9 +51,11 @@ public class MallGoods {
     @Column(name = "Customer_Id")
     private Integer customerId;
 
-    @JoinColumn(name = "Agent_Id")
-    @ManyToOne
-    private Shop shop;
+    /**
+     * 代理商ID，值为0表示平台方代理商品
+     */
+    @Column(name = "Agent_Id")
+    private Integer agentId;
 
     @Column(name = "Name")
     private String name;
@@ -64,5 +66,15 @@ public class MallGoods {
      */
     @Column(name = "Thumbnail_Pic")
     private String thumbnailPic;
+    /**
+     * 库存数量
+     */
+    @Column(name = "Store")
+    private int store;
+    /**
+     * 单位
+     */
+    @Column(name = "Unit")
+    private String unit;
     // TODO: 3/17/16
 }

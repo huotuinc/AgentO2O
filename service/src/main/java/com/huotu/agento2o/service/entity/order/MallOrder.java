@@ -1,6 +1,6 @@
 package com.huotu.agento2o.service.entity.order;
 
-import com.huotu.agento2o.common.ienum.OrderEnum;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.marketing.MallPintuan;
 import lombok.Getter;

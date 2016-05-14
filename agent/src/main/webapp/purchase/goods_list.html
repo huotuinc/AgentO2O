@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>商品采购</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+</head>
+<body>
+<form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
+      data-th-object="${goodsSearcher}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+                <h3>商品采购</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first ">商品名称：</label>
+                            <input name="goodsName" type="text" data-th-value="*{goodsName}" id="goodsName"
+                                   class="input-small" style="width: 120px;"/>
+                            <label>
+                                <a class="btn-lit btn-middle" onclick="searchSettlement()" style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">序号
+                            </th>
+                            <th scope="col">商品名称
+                            </th>
+                            <th scope="col">单价
+                            </th>
+                            <th scope="col">库存
+                            </th>
+                            <th scope="col">订购数量/单位
+                            </th>
+                            <th scope="col">操作
+                            </th>
+
+                        </tr>
+                        </thead>
+                        <tbody data-th-remove="all-but-first">
+                        <tr data-th-each="goods,goodsStat:${goodsList}">
+                            <td class="txt100 c" data-th-text="${goodsStat.count}">1</td>
+                            <td class="txt100 c" data-th-text="${goods.name}">
+                                商品名称
+                            </td>
+                            <td class="txt100 c">
+                                ￥<span data-th-text="${goods.price}">100</span>
+                            </td>
+                            <td class="txt100 c" data-th-text="${goods.store}">
+                                1000
+                            </td>
+                            <td class="txt100 c">
+                                <input style="width: 50px;text-align: center;" type="number" value="0"/> <span data-th-text="${goods.unit}"></span>
+                            </td>
+                            <td class="txt100 c">
+                                <a data-th-attr="goodsId=${goods.goodId}" onclick="showProducts(this)"
+                                   data-th-text="订购"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--分页开始-->
+                <script type="text/javascript" dtat-th-inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[*{pageNo}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'form1';
+                    //                                    var pageNoStr = 'pageNoStr';
+                    Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+                <!--分页结束-->
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.huotu.agento2o.service.service.order;
 
-import com.huotu.agento2o.common.ienum.OrderEnum;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;

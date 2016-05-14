@@ -8,7 +8,7 @@
  *
  */
 
-package com.huotu.agento2o.service;
+package com.huotu.agento2o.service.service;
 
 import com.huotu.agento2o.service.entity.AgtMenu;
 

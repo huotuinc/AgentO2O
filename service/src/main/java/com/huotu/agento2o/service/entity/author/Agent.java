@@ -26,7 +26,7 @@ import java.util.List;
 public class Agent extends Author {
 
     /**
-     * 门店等级
+     * 代理商等级
      */
     @JoinColumn(name = "Level_Id")
     @ManyToOne

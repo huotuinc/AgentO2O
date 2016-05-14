@@ -10,7 +10,7 @@
 
 package com.huotu.agento2o.service.service.impl;
 
-import com.huotu.agento2o.service.AgtMenuService;
+import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import com.huotu.agento2o.service.repository.AgtMenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;

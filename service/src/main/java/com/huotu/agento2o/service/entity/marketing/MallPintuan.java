@@ -1,7 +1,7 @@
 package com.huotu.agento2o.service.entity.marketing;
 
 
-import com.huotu.agento2o.common.ienum.ActEnum;
+import com.huotu.agento2o.service.common.ActEnum;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import lombok.Getter;
 import lombok.Setter;

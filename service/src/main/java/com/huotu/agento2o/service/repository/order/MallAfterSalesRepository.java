@@ -1,6 +1,6 @@
 package com.huotu.agento2o.service.repository.order;
 
-import com.huotu.agento2o.common.ienum.AfterSaleEnum;
+import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

@@ -1,7 +1,7 @@
 package com.huotu.agento2o.service.entity.support;
 
 import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.ienum.OrderEnum;
+import com.huotu.agento2o.service.common.OrderEnum;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

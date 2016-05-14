@@ -12,7 +12,7 @@ package com.huotu.agento2o.agent.controller.menu;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.AgtMenuService;
+import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

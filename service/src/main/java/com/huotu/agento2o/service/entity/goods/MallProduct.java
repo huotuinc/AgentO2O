@@ -48,7 +48,15 @@ public class MallProduct {
      */
     @Column(name = "Price")
     private double price;
-    @Column(name = "Name")
+
+    @Column(name = "Name", nullable = false)
     private String name;
+
+    @Column(name = "Marketable", nullable = false)
+    private boolean marketable;
+
+    @Column(name = "Is_Local_Stock", nullable = false)
+    private boolean isLocalStock;
+
     // TODO: 3/17/16
 }

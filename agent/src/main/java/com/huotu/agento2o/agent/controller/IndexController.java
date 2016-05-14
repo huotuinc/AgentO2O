@@ -2,7 +2,7 @@ package com.huotu.agento2o.agent.controller;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.AgtMenuService;
+import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.model.statistics.IndexStatistics;

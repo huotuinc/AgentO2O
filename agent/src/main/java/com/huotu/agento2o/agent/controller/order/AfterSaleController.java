@@ -1,7 +1,7 @@
 package com.huotu.agento2o.agent.controller.order;
 
 import com.huotu.agento2o.agent.config.annotataion.AuthenticationPrincipal;
-import com.huotu.agento2o.common.ienum.AfterSaleEnum;
+import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
