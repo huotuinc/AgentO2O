@@ -20,14 +20,44 @@ import java.util.List;
  */
 public interface AgentService extends UserDetailsService {
 
+    /**
+     * 根据唯一id获取某个代理商
+     * @param id
+     * @return
+     */
     Agent findById(Integer id);
 
+    /**
+     * 根据登录名获取审核通过的代理商
+     * @param userName
+     * @return
+     */
     Agent findByUserName(String userName);
 
+    /**
+     * 增加代理商
+     * @param agent
+     * @return
+     */
     Agent addAgent(Agent agent);
 
+    /**
+     * 刷新，缓存与数据库同步
+     */
     void flush();
 
+    /**
+     * 根据代理商等级id获取代理商集合
+     * @param id
+     * @return
+     */
     List<Agent> findByAgentLevelId(Integer id);
+
+    /**
+     * 判断用户名是否可用
+     * @param userName
+     * @return true--可用
+     */
+    boolean ifEnable(String userName);
 
 }

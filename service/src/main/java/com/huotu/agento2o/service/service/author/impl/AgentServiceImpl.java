@@ -29,11 +29,6 @@ public class AgentServiceImpl implements AgentService {
         return agentRepository.findOne(id);
     }
 
-    /**
-     * 根据登录名查找未删除且审核通过的代理商
-     * @param userName
-     * @return
-     */
     @Override
     public Agent findByUserName(String userName) {
         return agentRepository.findByUsernameAndStatus(userName,AgentStatusEnum.CHECKED);
@@ -48,12 +43,11 @@ public class AgentServiceImpl implements AgentService {
     @Transactional
     public Agent addAgent(Agent agent) {
         //判断代理商登录名是否唯一
-        Agent checkAgent = findByUserName(agent.getUsername());
-        if(checkAgent != null){
-            return null;
+        if(ifEnable(agent.getUsername())){
+            agent.setPassword(passwordEncoder.encode(agent.getPassword()));
+            return agentRepository.save(agent);
         }
-        agent.setPassword(passwordEncoder.encode(agent.getPassword()));
-        return agentRepository.save(agent);
+        return null;
     }
 
     @Override
@@ -64,6 +58,11 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public List<Agent> findByAgentLevelId(Integer id) {
         return agentRepository.findByAgentLevel_levelId(id);
+    }
+
+    @Override
+    public boolean ifEnable(String userName) {
+        return agentRepository.findByUsernameAndIsDeletedFalse(userName) == null;
     }
 
     @Override
