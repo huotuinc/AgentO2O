@@ -11,6 +11,7 @@
 package com.huotu.agento2o.agent.config.resolver;
 
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -35,6 +36,9 @@ public class AttributeArgumentResolver implements HandlerMethodArgumentResolver 
         if (StringUtils.isEmpty(attributeName)) {
             attributeName = methodParameter.getParameterName();
         }
-        return nativeWebRequest.getAttribute(attributeName, RequestAttributes.SCOPE_REQUEST);
+        // TODO: 2016/5/16 类型转换
+        Class methodType = methodParameter.getParameterType();
+        Object result = nativeWebRequest.getAttribute(attributeName, RequestAttributes.SCOPE_REQUEST);
+        return ConvertUtils.convert(result, methodType);
     }
 }

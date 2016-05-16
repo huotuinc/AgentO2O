@@ -1,6 +1,6 @@
 package com.huotu.agento2o.agent.controller.order;
 
-import com.huotu.agento2o.agent.config.annotataion.AuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -40,7 +40,7 @@ public class OrderController {
      */
     @RequestMapping(value = "/getOrdersPage", method = RequestMethod.GET)
     public String getOrdersAll(
-            @AuthenticationPrincipal Author author,
+            @AgtAuthenticationPrincipal Author author,
             Model model,
             OrderSearchCondition searchCondition,
             @RequestParam(required = false, defaultValue = "1") int pageIndex

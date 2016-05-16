@@ -33,4 +33,11 @@ public interface MallGoodsService {
      * @return
      */
     Page<MallGoods> findByAgentId(Integer agentId, GoodsSearcher goodsSearcher);
+
+    /**
+     * 根据 商品ID 查找商品
+     * @param goodsId
+     * @return
+     */
+    MallGoods findByGoodsId(Integer goodsId);
 }

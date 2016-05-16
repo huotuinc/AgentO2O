@@ -8,7 +8,7 @@
   ~ 2013-2016. All rights reserved.
   ~
   -->
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <title>商品采购</title>
@@ -36,6 +36,7 @@
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
+<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
 <form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
       data-th-object="${goodsSearcher}">
     <div class="container">
@@ -57,10 +58,10 @@
                     <div class="search-bar">
                         <div>
                             <label class="first ">商品名称：</label>
-                            <input name="goodsName" type="text" data-th-value="*{goodsName}" id="goodsName"
+                            <input name="goodsName" type="text" data-th-value="${goodsSearcher.goodsName}" id="goodsName"
                                    class="input-small" style="width: 120px;"/>
                             <label>
-                                <a class="btn-lit btn-middle" onclick="searchSettlement()" style="margin-bottom: 3px;">
+                                <a class="btn-lit btn-middle" onclick="searchGoods()" style="margin-bottom: 3px;">
                                     <span>查询</span>
                                 </a>
                             </label>
@@ -101,22 +102,26 @@
                         </tr>
                         </thead>
                         <tbody data-th-remove="all-but-first">
-                        <tr data-th-each="goods,goodsStat:${goodsList}">
-                            <td class="txt100 c" data-th-text="${goodsStat.count}">1</td>
-                            <td class="txt100 c" data-th-text="${goods.name}">
+                        <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
+                        <tr data-th-each="goods,goodsStat:${goodsList}" data-th-id="${goods.goodsId}">
+                            <td class="txt20 c" data-th-text="${goodsStat.count}">1</td>
+                            <td class="txt160 c" data-th-text="${goods.name}">
                                 商品名称
                             </td>
-                            <td class="txt100 c">
+                            <td class="txt80 c">
                                 ￥<span data-th-text="${goods.price}">100</span>
                             </td>
-                            <td class="txt100 c" data-th-text="${goods.store}">
+                            <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![store-freez])}">
                                 1000
                             </td>
-                            <td class="txt100 c">
-                                <input style="width: 50px;text-align: center;" type="number" value="0"/> <span data-th-text="${goods.unit}"></span>
+                            <td class="txt80 c">
+                                <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
+                                       data-th-max="${#aggregates.sum(goods.products.![store-freez])}"/> <span
+                                    data-th-text="${goods.unit}"></span>
                             </td>
-                            <td class="txt100 c">
-                                <a data-th-attr="goodsId=${goods.goodId}" onclick="showProducts(this)"
+                            <td class="txt80 c">
+                                <a data-th-attr="goodsId=${goods.goodsId},productNum=${goods.products.size()}"
+                                   onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
                                    data-th-text="订购"></a>
                             </td>
                         </tr>
@@ -124,14 +129,13 @@
                     </table>
                 </div>
                 <!--分页开始-->
-                <script type="text/javascript" dtat-th-inline="javascript">
+                <script type="text/javascript" th:inline="javascript">
                     /*<![CDATA[*/
                     var pageSize = /*[[${pageSize}]]*/ '-1';
                     var pageIndex = /*[[*{pageNo}]]*/ '-1';
                     var pageCount = /*[[${totalPages}]]*/ '-1';
                     var recordCount = /*[[${totalRecords}]]*/ '-1';
                     var formName = 'form1';
-                    //                                    var pageNoStr = 'pageNoStr';
                     Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
                     /*]]>*/
                 </script>
@@ -140,5 +144,55 @@
         </div>
     </div>
 </form>
+<script type="application/javascript" data-th-inline="javascript">
+    /*<![CDATA[*/
+    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    //查询
+    function searchGoods() {
+        $("#pageNo").val(1);
+        $("#form1").submit();
+    }
+    //订购
+    function putIntoShoppingCart(obj) {
+        var goodsId = parseInt($(obj).attr("goodsId"));
+        var productNum = $(obj).attr("productNum");
+        var num = parseInt($("#" + goodsId + " input[name=num]").val());
+        var max = parseInt($("#" + goodsId + " input[name=num]").attr("max"));
+        if (num > max) {
+            $.jBox.tip("订购数量大于可用库存！");
+            return;
+        }
+        //只有一件货品，直接加入购物车
+        if (productNum == 1) {
+            if( num <= 0){
+                $.jBox.tip("请输入要订购的数量");
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: basicUrl + "/addShopping",
+                data: {
+                    goodsId: goodsId,
+                    num: num
+                },
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code == 200) {
+                        $.jBox.confirm("已添加至购物车","提示",function(){
+                            top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
+                        },{buttons:{'继续采购':false,'采购下单':true}})
+                    } else {
+                        $.jBox.tip(msg.msg, 'error');
+                    }
+                }
+            });
+        } else {
+            //多件货品，弹出层
+            var url = basicUrl + "/showProductList?goodsId=" + goodsId;
+            J.PopupIFrame(url, "货品列表", 600, 500, "ifrm", "", "auto", "");
+        }
+    }
+    /*]]>*/
+</script>
 </body>
 </html>

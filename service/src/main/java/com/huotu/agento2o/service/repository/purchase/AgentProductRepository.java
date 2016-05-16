@@ -23,6 +23,6 @@ import java.util.List;
 @Repository
 public interface AgentProductRepository extends JpaRepository<AgentProduct,Integer> {
 
-    @Query("SELECT DISTINCT product.product.goods.goodId FROM AgentProduct product WHERE product.agent.id = ?1")
+    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.agent.id = ?1")
     List<Integer> findGoodsListByAgentId(Integer agentId);
 }

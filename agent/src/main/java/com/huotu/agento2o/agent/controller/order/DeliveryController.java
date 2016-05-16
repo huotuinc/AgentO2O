@@ -1,6 +1,6 @@
 package com.huotu.agento2o.agent.controller.order;
 
-import com.huotu.agento2o.agent.config.annotataion.AuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
@@ -45,7 +45,7 @@ public class DeliveryController {
      */
     @RequestMapping(value = "/deliveries", method = RequestMethod.GET)
     public ModelAndView showDeliveryList(
-            @AuthenticationPrincipal Author author,
+            @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = false, defaultValue = "1") int pageIndex,
             @RequestParam(required = false, defaultValue = "delivery") String type,
             DeliverySearcher deliverySearcher
