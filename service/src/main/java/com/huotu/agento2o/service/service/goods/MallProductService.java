@@ -8,19 +8,18 @@
  *
  */
 
-package com.huotu.agento2o.service.repository.goods;
+package com.huotu.agento2o.service.service.goods;
 
 import com.huotu.agento2o.service.entity.goods.MallProduct;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
- * Created by allan on 3/21/16.
+ * Created by helloztt on 2016/5/16.
  */
-@Repository
-public interface MallProductRepository extends JpaRepository<MallProduct, Integer> {
+public interface MallProductService {
 
-    List<MallProduct> findByGoods_GoodsId(Integer goodsId);
+    MallProduct findByProductId(Integer productId);
+
+    List<MallProduct> findByGoodsId(Integer goodsId);
 }

@@ -1,6 +1,6 @@
 package com.huotu.agento2o.agent.controller.order;
 
-import com.huotu.agento2o.agent.config.annotataion.AuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -32,7 +32,7 @@ public class AfterSaleController {
 
     @RequestMapping("/afterSaleList")
     public ModelAndView afterSaleList(
-            @AuthenticationPrincipal Author author,
+            @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true, defaultValue = "1") int pageIndex,
             AfterSaleSearch afterSaleSearch
     ){

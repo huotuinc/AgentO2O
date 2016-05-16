@@ -51,6 +51,22 @@ public class MallProduct {
 
     @Column(name = "Name", nullable = false)
     private String name;
+    /**
+     * 单位
+     */
+    @Column(name = "Unit")
+    private String unit;
+
+    /**
+     * 库存
+     */
+    @Column(name = "Store")
+    private int store;
+    /**
+     * 预占库存
+     */
+    @Column(name = "Freez")
+    private int freez;
 
     @Column(name = "Marketable", nullable = false)
     private boolean marketable;

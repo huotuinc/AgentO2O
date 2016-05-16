@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthenticationPrincipal {
+public @interface AgtAuthenticationPrincipal {
     /**
      * @return 需要得到的角色类型
      */
