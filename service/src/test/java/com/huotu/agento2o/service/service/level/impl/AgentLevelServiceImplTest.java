@@ -6,6 +6,7 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,11 +23,8 @@ import java.util.List;
 /**
  * Created by WangJie on 2016/5/11.
  */
-@ActiveProfiles("test")
-@ContextConfiguration(classes = ServiceConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-//@Transactional
-public class AgentLevelServiceImplTest {
+
+public class AgentLevelServiceImplTest extends CommonTestBase {
     @Autowired
     private AgentLevelService agentLevelService;
 
@@ -54,6 +52,14 @@ public class AgentLevelServiceImplTest {
         //存在的id查询
         list = agentLevelService.findByCustomertId(6340);
         Assert.assertTrue(list.size() >= 0);
+    }
+
+    @Test
+    public void testAddOrUpdate() throws Exception {
+        AgentLevel agentLevel = new AgentLevel();
+        agentLevel.setComment("8折进货");
+        agentLevel.setLevelName("一级代理商");
+        agentLevelService.addOrUpdate(0,-1,agentLevel);
     }
 
     @Test

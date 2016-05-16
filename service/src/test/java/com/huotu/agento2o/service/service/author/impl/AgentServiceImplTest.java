@@ -31,11 +31,19 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
+    public void testIfEnable(){
+        boolean bn = agentService.ifEnable("wwww");
+        Assert.assertTrue(bn);
+        bn = agentService.ifEnable("wj");
+        Assert.assertTrue(!bn);
+    }
+
+    @Test
 //    @Rollback(value = false)
     public void testAddAgent() throws Exception{
 //        String userName = UUID.randomUUID().toString();
 //        String passWord = UUID.randomUUID().toString();
-        String userName = "ceshi";
+        String userName = "wjj";
         String passWord = "123456";
 //        AgentLevel agentLevel = new AgentLevel();
 //        agentLevel.setLevelId(1);

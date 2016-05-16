@@ -13,7 +13,10 @@ import java.util.List;
  */
 @Repository(value = "agentRepository")
 public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpecificationExecutor {
+
     Agent findByUsernameAndStatus(String userName, AgentStatusEnum status);
 
     List<Agent> findByAgentLevel_levelId(Integer levelId);
+
+    Agent findByUsernameAndIsDeletedFalse(String userName);
 }
