@@ -30,7 +30,7 @@ public interface MallDeliveryService {
 
     List<MallDelivery> findByAutor(Author author);
 
-    Page<MallDelivery> getPage(int pageIndex, int pageSize, DeliverySearcher deliverySearcher, String type);
+    Page<MallDelivery> getPage(int pageIndex, Author author, int pageSize, DeliverySearcher deliverySearcher, String type);
 
     @Transactional(value = "transactionManager")
     MallDelivery deliver(Author author, MallOrder order, MallDelivery deliveryInfo, String sendBn);

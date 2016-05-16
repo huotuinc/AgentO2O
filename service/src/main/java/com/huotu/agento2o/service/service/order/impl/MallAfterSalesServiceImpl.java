@@ -3,6 +3,9 @@ package com.huotu.agento2o.service.service.order.impl;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.searchable.AfterSaleSearch;
@@ -30,14 +33,13 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
     private MallAfterSalesRepository afterSalesRepository;
 
     @Override
-    public Page<MallAfterSales> findAll(int pageIndex, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch) {
+    public Page<MallAfterSales> findAll(int pageIndex, Author author, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch) {
         Specification<MallAfterSales> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (!StringUtils.isEmpty(afterSaleSearch.getAgentType())&&afterSaleSearch.getAgentType().equalsIgnoreCase("shop")) {
+            if (author!=null && author instanceof Shop) {
                 predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), agentId));
-            }
-            if (!StringUtils.isEmpty(afterSaleSearch.getAgentType())&&afterSaleSearch.getAgentType().equalsIgnoreCase("agent")) {
-                predicates.add(criteriaBuilder.equal(root.get("shop").get("author").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
+            }else if (author!=null && author instanceof Agent) {
+                predicates.add(criteriaBuilder.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
             }
             if (!StringUtils.isEmpty(afterSaleSearch.getBeginTime())) {
                 Date beginTime = StringUtil.DateFormat(afterSaleSearch.getBeginTime(), StringUtil.TIME_PATTERN);

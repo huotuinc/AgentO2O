@@ -39,7 +39,7 @@ public class AfterSaleController {
         ModelAndView modelAndView = new ModelAndView();
         afterSaleSearch.setAgentId(author.getId());
         if (author.getId() > 0) {
-            Page<MallAfterSales> afterSales = afterSalesService.findAll(pageIndex, Constant.PAGESIZE, author.getId(), afterSaleSearch);
+            Page<MallAfterSales> afterSales = afterSalesService.findAll(pageIndex, author, Constant.PAGESIZE, author.getId(), afterSaleSearch);
             modelAndView.addObject("afterSales", afterSales.getContent());
             modelAndView.addObject("pageSize", Constant.PAGESIZE);
             modelAndView.addObject("totalRecords", afterSales.getTotalElements());

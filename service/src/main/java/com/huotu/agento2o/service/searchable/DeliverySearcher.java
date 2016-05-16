@@ -23,5 +23,4 @@ public class DeliverySearcher {
     private String beginTime;
     private String endTime;
     private Integer agentId;
-    private String agentType;
 }

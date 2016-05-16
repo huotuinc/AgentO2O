@@ -3,7 +3,9 @@ package com.huotu.agento2o.service.service.order.impl;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.LogiModel;
@@ -44,14 +46,13 @@ public class MallDeliveryServiceImpl implements MallDeliveryService{
     }
 
     @Override
-    public Page<MallDelivery> getPage(int pageIndex, int pageSize,  DeliverySearcher deliverySearcher, String type) {
+    public Page<MallDelivery> getPage(int pageIndex, Author author, int pageSize,  DeliverySearcher deliverySearcher, String type) {
         Specification<MallDelivery> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (!StringUtils.isEmpty(deliverySearcher.getAgentType())&&deliverySearcher.getAgentType().equalsIgnoreCase("shop")) {
+            if (author!=null && author instanceof Shop) {
                 predicates.add(cb.equal(root.get("shop").get("id").as(Long.class), deliverySearcher.getAgentId()));
-            }
-            if (!StringUtils.isEmpty(deliverySearcher.getAgentType())&&deliverySearcher.getAgentType().equalsIgnoreCase("agent")) {
-                predicates.add(cb.equal(root.get("shop").get("author").get("id").as(Long.class), deliverySearcher.getAgentId()));
+            }else if (author!=null && author instanceof Agent) {
+                predicates.add(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Long.class), deliverySearcher.getAgentId()));
             }
             predicates.add(cb.equal(cb.lower(root.get("type").as(String.class)), type.toLowerCase()));
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {

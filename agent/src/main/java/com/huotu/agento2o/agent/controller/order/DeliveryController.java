@@ -57,7 +57,7 @@ public class DeliveryController {
         else
             modelAndView.setViewName("order/return_list");
 
-        Page<MallDelivery> ordersDeliveryPage = deliveryService.getPage(pageIndex, Constant.PAGESIZE,  deliverySearcher, type);
+        Page<MallDelivery> ordersDeliveryPage = deliveryService.getPage(pageIndex,author, Constant.PAGESIZE,  deliverySearcher, type);
         modelAndView.addObject("deliveryList", ordersDeliveryPage.getContent());
         modelAndView.addObject("totalRecords", ordersDeliveryPage.getTotalElements());
         modelAndView.addObject("totalPages", ordersDeliveryPage.getTotalPages());

@@ -46,7 +46,7 @@ public class OrderController {
             @RequestParam(required = false, defaultValue = "1") int pageIndex
     ) {
         searchCondition.setAgentId(author.getId());
-        Page<MallOrder> ordersList  = orderService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
+        Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
         int totalPages = ordersList.getTotalPages();
         model.addAttribute("payStatusEnums", OrderEnum.PayStatus.values());
         model.addAttribute("shipStatusEnums",OrderEnum.ShipStatus.values());

@@ -16,6 +16,5 @@ public class AfterSaleSearch {
     private String orderId;
     private Integer afterSaleStatus = -1;
 
-    private String agentType;
     private Integer agentId;
 }

@@ -1,6 +1,7 @@
 package com.huotu.agento2o.service.service.order;
 
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;
@@ -21,7 +22,7 @@ public interface MallOrderService {
 
 //    ApiResult updateRemark(Integer agentId, String orderId, String supplierMarkType, String supplierMarkText);
 
-    Page<MallOrder> findAll(int pageIndex, int pageSize, OrderSearchCondition searchCondition);
+    Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition);
 
     OrderDetailModel findOrderDetail(String orderId);
 

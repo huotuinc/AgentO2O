@@ -4,6 +4,9 @@ package com.huotu.agento2o.service.service.order.impl;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
@@ -54,11 +57,13 @@ public class MallOrderServiceImpl implements MallOrderService{
 //    }
 
     @Override
-    public Page<MallOrder> findAll(int pageIndex, int pageSize, OrderSearchCondition searchCondition) {
+    public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition) {
         Specification<MallOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (!StringUtils.isEmpty(searchCondition.getAgentType())&&searchCondition.getAgentType().equalsIgnoreCase("shop")) {
-                predicates.add(cb.equal(root.get("shop").get("id").as(Long.class), searchCondition.getAgentId()));
+            if (author!=null&&author instanceof Shop) {
+                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()));
+            }else if (author!=null&&author instanceof Agent) {
+                predicates.add(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId()));
             }
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
@@ -69,9 +74,7 @@ public class MallOrderServiceImpl implements MallOrderService{
             if (!StringUtils.isEmpty(searchCondition.getOrderId())) {
                 predicates.add(cb.like(root.get("orderId").as(String.class), "%" + searchCondition.getOrderId() + "%"));
             }
-            if (!StringUtils.isEmpty(searchCondition.getAgentType())&&searchCondition.getAgentType().equalsIgnoreCase("agent")) {
-                predicates.add(cb.equal(root.get("shop").get("author").get("id").as(Integer.class), searchCondition.getAgentId()));
-            }
+
             if (!StringUtil.isEmptyStr(searchCondition.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItems").get("name").as(String.class), "%" + searchCondition.getOrderItemName() + "%"));
             }
