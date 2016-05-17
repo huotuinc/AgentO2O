@@ -10,8 +10,11 @@
 
 package com.huotu.agento2o.service.service.purchase;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.searchable.GoodsSearcher;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -26,4 +29,22 @@ public interface AgentProductService {
      * @return
      */
     List<AgentProduct> findByParentAgentProduct(Author author);
+
+    /**
+     * 查找指定代理商的库存信息
+     * @param agentId
+     * @return
+     */
+    Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId);
+
+    /**
+     * 查找出需要发送库存警告的信息
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    //Page<AgentProduct> findByStoreLessThanWarning(int pageIndex, int pageSize);
+
+
+
 }

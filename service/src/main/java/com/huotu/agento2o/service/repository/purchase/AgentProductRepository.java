@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.repository.purchase;
 
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +22,7 @@ import java.util.List;
  * Created by helloztt on 2016/5/12.
  */
 @Repository
-public interface AgentProductRepository extends JpaRepository<AgentProduct,Integer> {
+public interface AgentProductRepository extends JpaRepository<AgentProduct,Integer>, JpaSpecificationExecutor<AgentProduct> {
 
     @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.agent.id = ?1")
     List<Integer> findGoodsListByAgentId(Integer agentId);

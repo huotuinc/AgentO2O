@@ -22,14 +22,22 @@
     </properties>
 
     <dependencyManagement>
-        <!--spring-security 针对4.1.6涉及 -->
+
         <dependencies>
+            <!--spring-security 针对4.1.6涉及 -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
                 <version>${spring.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!--spring integration email -->
+            <dependency>
+                <groupId>org.springframework.integration</groupId>
+                <artifactId>spring-integration-mail</artifactId>
+                <version>4.2.3.RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
