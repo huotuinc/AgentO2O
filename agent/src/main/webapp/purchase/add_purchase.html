@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>确认采购单</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <style type="text/css">
+        .ononon {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 16px;
+            height: 22px;
+            display: none;
+        }
+        .option.option_selected {
+            border-color: #ff8c00;
+        }
+    </style>
+</head>
+<body>
+<form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
+      data-th-object="${agentPurchaseOrder}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+                <h3>采购信息核对</h3>
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+                <div class="cnt form">
+                    <div>
+                        <span class="spModuleTitle">收货人信息</span>
+                        <div class="division">
+
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>收货人:</th>
+                                    <td>
+                                        <input type="text" th:value="*{shipName}"
+                                               class="input-normal"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>联系方式:</th>
+                                    <td>
+                                        <input type="text" th:value="*{shipMobile}"
+                                               class="input-normal"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>收货人省、市、区:</th>
+                                    <td>
+                                        <select defaultval="" id="province" name="province" class="jm_input inp prov"
+                                                id="apply_prov"></select>
+                                        <select defaultval="" id="city" name="city" class="jm_input inp city"
+                                                id="apply_city"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>收货人详细地址:</th>
+                                    <td>
+                                        <input type="text" th:field="*{shipAddr}" th:value="*{shipAddr}" id="supContact"
+                                               class="input-normal"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="spModuleTitle">选择配送方式</span>
+                        <div class="division">
+                            <span class="option">
+                                <span class="ononon" style="display: none;" onclick="sendMentChange(this)">
+                                    <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
+                                </span>送货上门
+                            </span>
+                            <span class="option">
+                                <span class="ononon" style="display: none;" onclick="sendMentChange(this)">
+                                    <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
+                                </span>物流快递
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="application/javascript" data-th-inline="javascript">
+    /*<![CDATA[*/
+    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    function sendMentChange(obj){
+        $("span[class=ononon]").attr("style","display: none;");
+        $(obj).attr("style","display: inline;");
+        $("span[class~=option]").removeClass("option_selected");
+        $(ob).parent().addClass("option_selected");
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

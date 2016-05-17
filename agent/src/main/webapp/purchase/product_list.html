@@ -35,74 +35,72 @@
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <style type="text/css">
-        .over {
-            background-color: #CCCCCC;
-        }
-
-        body, td, th {
-            font-family: "微软雅黑", "宋体", Arial;
-        }
-    </style>
 </head>
 <body>
 <form method="post" action="/purchase/showProductList" data-th-action="@{/purchase/showProductList}" id="form1">
-    <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
-        <div class="cnt">
+    <div class="block">
+        <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+            <div class="cnt">
 
-            <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
-                <thead>
-                <tr class="even">
-                    <th scope="col">序号
-                    </th>
-                    <th scope="col">规格
-                    </th>
-                    <th scope="col">单价
-                    </th>
-                    <th scope="col">库存
-                    </th>
-                    <th scope="col">订购数量/单位
-                    </th>
-                    <th scope="col">操作
-                    </th>
-                </tr>
-                </thead>
-                <tbody data-th-remove="all-but-first">
-                <!--@thymesVar id="productList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallProduct>"-->
-                <tr data-th-each="product,productStat:${productList}" th:id="${product.productId}">
-                    <td class="txt20 c" data-th-text="${productStat.count}">1</td>
-                    <td class="txt40 c" data-th-text="${product.standard}">
-                        规格描述
-                    </td>
-                    <td class="txt40 c">
-                        ￥<span data-th-text="${product.price}">100</span>
-                    </td>
-                    <td class="txt40 c" data-th-text="${product.store - product.freez}">
-                        1000
-                    </td>
-                    <td class="txt40 c">
-                        <input name="num" style="width: 50px;text-align: center;" type="number" value="0" data-th-max="${product.store - product.freez}"/> <span data-th-text="${product.unit}"></span>
-                    </td>
-                    <td class="txt40 c">
-                        <a data-th-if="${product.store - product.freez > 0}" data-th-attr="productId=${product.productId}"
-                           onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
-                           data-th-text="订购"></a>
-                        <span th:if="${product.freez - product.store  > 0}">库存不足</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <thead>
+                    <tr class="even">
+                        <th scope="col">序号
+                        </th>
+                        <th scope="col">规格
+                        </th>
+                        <th scope="col">单价
+                        </th>
+                        <th scope="col">库存
+                        </th>
+                        <th scope="col">订购数量/单位
+                        </th>
+                        <th scope="col">操作
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody data-th-remove="all-but-first">
+                    <!--@thymesVar id="productList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallProduct>"-->
+                    <tr data-th-each="product,productStat:${productList}" th:id="${product.productId}">
+                        <td class="txt20 c" data-th-text="${productStat.count}">1</td>
+                        <td class="txt80 c" data-th-text="${product.standard}">
+                            规格描述
+                        </td>
+                        <td class="txt20 c">
+                            ￥<span data-th-text="${product.price}">100</span>
+                        </td>
+                        <td class="txt20 c" data-th-text="${product.store - product.freez}">
+                            1000
+                        </td>
+                        <td class="txt40 c">
+                            <input name="num" style="width: 50px;text-align: center;" type="number" value="0" data-th-max="${product.store - product.freez}"/> <span data-th-text="${product.unit}"></span>
+                        </td>
+                        <td class="txt40 c">
+                            <a data-th-if="${product.store - product.freez > 0}" data-th-attr="productId=${product.productId}"
+                               onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
+                               data-th-text="订购"></a>
+                            <span th:if="${product.freez - product.store  > 0}">库存不足</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
 </form>
 <script type="application/javascript" th:inline="javascript">
     /*<![CDATA[*/
     var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
-    //查询
-    function searchGoods() {
-        $("#pageNo").val(1);
-        $("#form1").submit();
-    }
+    //订购数量校验
+    $("input[name=num]").change(function(){
+        var max = parseInt($(this).attr("max"));
+        var num = parseInt($(this).val());
+        if(num > max){
+            $.jBox.tip("订购数量大于可用库存！");
+            $(this).val(max);
+        }
+    })
     //订购
     function putIntoShoppingCart(obj){
         var productId = $(obj).attr("productId");
@@ -122,22 +120,17 @@
             dataType: "json",
             success: function (msg) {
                 if (msg.code == 200) {
-                    $.jBox.confirm("已添加至购物车","提示",function(){
-                        top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
+                    $.jBox.confirm("已添加至购物车","提示",function(v,h,f){
+                        if(v==true){
+                            top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
+                        }else{
+                            window.location.reload();
+                        }
                     },{buttons:{'继续采购':false,'采购下单':true}})
                 } else {
                     $.jBox.tip(msg.msg, 'error');
                 }
             }
-        });
-    }
-
-    //加入购物车成功
-    function success(){
-        J.ShowDialog("successDialog", function () {
-            $(this).dialog('close');
-        }, function () {
-            top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
         });
     }
     /*]]>*/

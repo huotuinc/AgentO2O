@@ -109,10 +109,10 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             cggl = menuRepository.save(cggl);
             subMenu2.clear();
             //二级菜单 采购管理
-            AgtMenu spcg = new AgtMenu(2,"/purchase","商品采购",0,cggl,"PURCHASE",0,"020101");
+            AgtMenu spcg = new AgtMenu(2,"/purchase/showGoodsList","商品采购",0,cggl,"PURCHASE",0,"020101");
             spcg = menuRepository.save(spcg);
             subMenu2.add(spcg);
-            AgtMenu gwc = new AgtMenu(2,"/purchase","购物车",1,cggl,"PURCHASE",0,"020102");
+            AgtMenu gwc = new AgtMenu(2,"/shoppingCart/showShoppingCart","购物车",1,cggl,"PURCHASE",0,"020102");
             gwc = menuRepository.save(gwc);
             subMenu2.add(gwc);
             cggl.setChildren(subMenu2);
