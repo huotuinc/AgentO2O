@@ -52,22 +52,27 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             List<AgtMenu> subMenu1 = new ArrayList<>();
             //二级子菜单列表
             List<AgtMenu> subMenu2 = new ArrayList<>();
+
             //订单管理
             AgtMenu orderMenu = new AgtMenu(0, "", "订单管理", 0, null, "ORDER", 0, "01");
             orderMenu = menuRepository.save(orderMenu);
             subMenu1.clear();
+
             //订单管理
             AgtMenu ddgl = new AgtMenu(1, "", "订单管理", 0, orderMenu, "ORDER", 0, "0101");
             ddgl = menuRepository.save(ddgl);
             subMenu2.clear();
+
             //订单列表
             AgtMenu ddlb = new AgtMenu(2, "/order/getOrdersPage", "订单列表", 0, ddgl, "ORDER", 0, "010101");
             ddlb = menuRepository.save(ddlb);
             subMenu2.add(ddlb);
+
             //售后列表
             AgtMenu shlb = new AgtMenu(2, "/supplier/afterSale/afterSaleList", "售后列表", 1, ddgl, "ORDER", 0, "010102");
             shlb = menuRepository.save(shlb);
             subMenu2.add(shlb);
+
             ddgl.setChildren(subMenu2);
             ddgl = menuRepository.save(ddgl);
             subMenu1.add(ddgl);
@@ -162,6 +167,40 @@ public class AgtMenuServiceImpl implements AgtMenuService {
      */
     private void initShopMenu(){
         // TODO: 2016/5/12
+        //判断是否存在订单模块
+        if(menuRepository.findOne("03") == null) {
+            //一级子菜单列表
+            List<AgtMenu> subMenu1 = new ArrayList<>();
+            //二级子菜单列表
+            List<AgtMenu> subMenu2 = new ArrayList<>();
+
+            //门店管理
+            AgtMenu shopMenu = new AgtMenu(0, "", "门店管理", 0, null, "SHOP", 0, "03");
+            shopMenu = menuRepository.save(shopMenu);
+            subMenu1.clear();
+
+            //门店管理
+            AgtMenu mdgl = new AgtMenu(1, "", "门店管理", 0, shopMenu, "SHOP", 0, "0301");
+            mdgl = menuRepository.save(mdgl);
+            subMenu2.clear();
+
+            //新增门店
+            AgtMenu xzmd = new AgtMenu(2, "/shop/addShopPage", "新增门店", 0, mdgl, "SHOP", 0, "030101");
+            xzmd = menuRepository.save(xzmd);
+            subMenu2.add(xzmd);
+
+            //门店列表
+            AgtMenu shlb = new AgtMenu(2, "/shop/shopList", "门店列表", 1, mdgl, "SHOP", 0, "030102");
+            shlb = menuRepository.save(shlb);
+            subMenu2.add(shlb);
+
+            mdgl.setChildren(subMenu2);
+            mdgl = menuRepository.save(mdgl);
+            subMenu1.add(mdgl);
+
+            shopMenu.setChildren(subMenu1);
+            menuRepository.save(shopMenu);
+        }
     }
 
     /**
