@@ -12,10 +12,13 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
+import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.ienum.ICommonEnum;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -24,6 +27,7 @@ import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -55,11 +60,13 @@ public class PurchaseController {
     private ShoppingCartService shoppingCartService;
     @Autowired
     private StaticResourceService resourceService;
+    @Autowired
+    private AgentPurchaseOrderService purchaseOrderService;
 
     /**
      * 显示商品采购列表
      * 如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
-     * 
+     *
      * @param author
      * @param goodsSearcher
      * @return
@@ -89,10 +96,10 @@ public class PurchaseController {
         return model;
     }
 
-    private void getImgUri(List<MallGoods> goodsList){
-        if(goodsList != null){
-            goodsList.forEach(goods->{
-                if(!StringUtil.isEmptyStr(goods.getThumbnailPic())){
+    private void getImgUri(List<MallGoods> goodsList) {
+        if (goodsList != null) {
+            goodsList.forEach(goods -> {
+                if (!StringUtil.isEmptyStr(goods.getThumbnailPic())) {
                     try {
                         URI picUri = resourceService.getResource(goods.getThumbnailPic());
                         goods.setPicUri(picUri);
@@ -178,24 +185,54 @@ public class PurchaseController {
 
     /**
      * 采购下单
+     *
      * @param author
      * @param agentPurchaseOrder
      * @param shoppingCartIds
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/addPurchase",method = RequestMethod.POST)
+    @RequestMapping(value = "/addPurchase", method = RequestMethod.POST)
+    @ResponseBody
     public ApiResult addPurchase(
-            @AgtAuthenticationPrincipal Author author,
-            AgentPurchaseOrder agentPurchaseOrder,String... shoppingCartIds) throws Exception{
-        if(agentPurchaseOrder == null){
+            @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
+            AgentPurchaseOrder agentPurchaseOrder, String... shoppingCartIds) throws Exception {
+        String sendModeCode = request.getParameter("sendModeCode");
+        String taxTypeCode = request.getParameter("taxTypeCode");
+        //采购信息校验
+        if (agentPurchaseOrder == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if(shoppingCartIds.length == 0){
+        if (shoppingCartIds.length == 0) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        agentPurchaseOrder.setAuthor(author);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        if (StringUtil.isEmptyStr(agentPurchaseOrder.getShipName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getShipMobile())
+                || StringUtil.isEmptyStr(agentPurchaseOrder.getShipAddr())) {
+            return new ApiResult("请输入收货信息");
+        }
+        if (StringUtil.isEmptyStr(sendModeCode)) {
+            return new ApiResult("请选择配送方式");
+        }
+        if (StringUtil.isEmptyStr(taxTypeCode)) {
+            return new ApiResult("请选择发票类型");
+        }
+        if ("1".equals(taxTypeCode)) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyTel())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyAddr())) {
+                return new ApiResult("请输入普通发票信息");
+            }
+        } else if ("2".equals(taxTypeCode)) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyTel())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyAddr()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxpayerCode())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getBankName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getAccountNo())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getGeneralCertificateUrl()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxRegistCertificateUrl())) {
+                return new ApiResult("请输入增值税发票信息");
+            }
+        }
+        agentPurchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, Integer.parseInt(sendModeCode)));
+        agentPurchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, Integer.parseInt(taxTypeCode)));
+        ApiResult result = purchaseOrderService.addPurchaseOrder(agentPurchaseOrder, author, shoppingCartIds);
+        return result;
     }
 
 

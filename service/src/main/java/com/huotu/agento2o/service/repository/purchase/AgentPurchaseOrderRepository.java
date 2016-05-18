@@ -18,5 +18,5 @@ import org.springframework.stereotype.Repository;
  * Created by helloztt on 2016/5/18.
  */
 @Repository
-public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder,Integer> {
+public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder,String> {
 }

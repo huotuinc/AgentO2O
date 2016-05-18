@@ -13,11 +13,15 @@ package com.huotu.agento2o.service.service.purchase;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
+import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
+import org.springframework.data.domain.Page;
 
 /**
  * Created by helloztt on 2016/5/18.
  */
 public interface AgentPurchaseOrderService {
+
+    Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher);
 
     ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds);
 }

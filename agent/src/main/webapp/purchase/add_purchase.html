@@ -162,7 +162,7 @@
                         <span class="spModuleTitle">选择配送方式</span>
                         <div class="division" style="height: 40px;" name="sendMode">
                             <!--/*@thymesVar id="sendmentEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.SendmentStatus"*/-->
-                            <span th:each="sendment,sendmentStat:${sendmentEnum}" class="option" th:classappend="${sendmentStat.index}==0?'option_selected'" th:value="sendment.code">
+                            <span th:each="sendment,sendmentStat:${sendmentEnum}" class="option" th:classappend="${sendmentStat.index}==0?'option_selected'" th:value="${sendment.code}">
                                 <span class="ononon" th:style="${sendmentStat.index}==0?'display: inline;':'display: none;'">
                                     <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${sendment.value}"></th:block>
@@ -327,7 +327,7 @@
                     <div>
                         <div class="division">
                             <span style="font-size: 14px;">备注：</span>
-                            <span><textarea rows="3" style="width: 90%" /></span>
+                            <span><textarea rows="3" style="width: 90%" name="authorComment"/></span>
 
                         </div>
                     </div>
@@ -394,7 +394,7 @@
         //配送方式选择
         var sendMode = "0";
         if($("div[name=sendMode] span[class~=option_selected]").length == 1){
-            sendMode = $("span[class~=option_selected]").val();
+            sendMode = $("span[class~=option_selected]").attr("value");
         }else{
             $.jBox.tip("请选择配送方式");
             return;
@@ -402,7 +402,7 @@
         //发票校验
         var taxType ;
         if($("div[name=invoiceInfo] span[class~=option_selected]").length == 1){
-            taxType = $("div[name=invoiceInfo] span[class~=option_selected]").val();
+            taxType = $("div[name=invoiceInfo] span[class~=option_selected]").attr("value");
         }else{
             $.jBox.tip("请选择发票类型");
             return;
@@ -415,7 +415,13 @@
         var accountNo;
         var taxRegistCertificateUrl;
         var generalCertificateUrl;
-
+        var data = {
+            'shipName':shipName,
+            'shipMobile':shipMobile,
+            'shipAddr':shipAddr,
+            'sendModeCode':sendMode,
+            'taxTypeCode':taxType
+        };
         //普通发票校验
         if(taxType == "1"){
             companyName = $.trim($("#companyName").val());
@@ -431,8 +437,10 @@
             if(companyAddr.length == 0){
                 $.jBox.tip("请输入发票公司注册地址");
             }
-        }
-        if(taxType == '2'){
+            data['companyName']=companyName;
+            data['companyTel']=companyTel;
+            data['companyAddr']=companyAddr;
+        }else if(taxType == '2'){
             companyName = $.trim($("#tax_companyName").val());
             if(companyName.length == 0){
                 $.jBox.tip("请输入发票公司名称");
@@ -471,38 +479,38 @@
                 $.jBox.tip("请提交纳税人资格证");
                 return;
             }
+            data['companyName']=companyName;
+            data['companyTel']=companyTel;
+            data['companyAddr']=companyAddr;
+            data['taxpayerCode']=taxpayerCode;
+            data['bankName']=bankName;
+            data['accountNo']=accountNo;
+            data['taxRegistCertificateUrl']=taxRegistCertificateUrl;
+            data['generalCertificateUrl']=generalCertificateUrl;
         }
         //购物车商品信息
         var shoppingCartIds = "";
         $("table[class~=data-table] tr").each(function(){
-            var value = $(this.id);
-            if($.trim(value).length == 0){
+            var value = $.trim($(this).attr("id"));
+            if(value.length > 0){
                 shoppingCartIds += value + ",";
             }
         });
+        shoppingCartIds = shoppingCartIds.substring(0, shoppingCartIds.lastIndexOf(","));
         if(shoppingCartIds.length == 0){
             $.jBox.tip("请选择要采购的货品");
             return;
         }
+        data['shoppingCartIds']=shoppingCartIds;
+        //备注
+        var authorComment = $.trim($("textarea[name=authorComment]").text());
+        if(authorComment.length > 0 ){
+            data['authorComment']=authorComment;
+        }
         $.ajax({
             type: "POST",
             url: basicUrl + "/addPurchase",
-            data: {
-                shipName:shipName,
-                shipMobile:shipMobile,
-                shipAddr:shipAddr,
-                sendMode:sendMode,
-                taxType:taxType,
-                companyName:companyName,
-                companyTel:companyTel,
-                companyAddr:companyAddr,
-                taxpayerCode:taxpayerCode,
-                bankName:bankName,
-                accountNo:accountNo,
-                taxRegistCertificateUrl:taxRegistCertificateUrl,
-                generalCertificateUrl:generalCertificateUrl,
-                shoppingCartIds:shoppingCartIds
-            },
+            data: data,
             dataType: "json",
             success: function (msg) {
                 if (msg.code == 200) {

@@ -28,9 +28,8 @@ import java.util.List;
 @Setter
 public class AgentPurchaseOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "P_Order_Id")
-    private Integer id;
+    private String pOrderId;
 
     /**
      * 代理商/门店

@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -25,8 +26,10 @@ import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
+import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +54,17 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     private MallProductRepository productRepository;
 
     /**
-     * 增加采购单,增加相应货品预占库存
+     * 采购单列表
+     * @param purchaseOrderSearcher
+     * @return
+     */
+    @Override
+    public Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher) {
+        return null;
+    }
+
+    /**
+     * 增加采购单,增加相应货品预占库存,删除购物车中相应货品
      *
      * @param purchaseOrder
      * @param shoppingCartIds
@@ -60,16 +73,28 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     @Override
     @Transactional
     public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) {
+        purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         purchaseOrder.setAuthor(author);
         purchaseOrder.setDisabled(false);
         purchaseOrder.setCreateTime(new Date());
         purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         List<AgentPurchaseOrderItem> itemList = new ArrayList<>();
+        List<ShoppingCart> shoppingCartList = new ArrayList<>();
         for (String shoppingCartId : shoppingCartIds) {
             ShoppingCart shoppingCart = shoppingCartRepository.findByIdAndAuthor(Integer.valueOf(shoppingCartId), author);
+            if (shoppingCart == null) {
+                continue;
+            }
+            if (shoppingCart.getNum() > (shoppingCart.getProduct().getStore() - shoppingCart.getProduct().getFreez())) {
+                return new ApiResult("库存不足，无法下单！");
+            }
+            shoppingCartList.add(shoppingCart);
+        }
+        for (ShoppingCart shoppingCart : shoppingCartList) {
             //增加 采购货品
             AgentPurchaseOrderItem orderItem = new AgentPurchaseOrderItem();
+            orderItem.setProduct(shoppingCart.getProduct());
             orderItem.setPurchaseOrder(purchaseOrder);
             orderItem.setNum(shoppingCart.getNum());
             orderItem.setBn(shoppingCart.getProduct().getBn());
@@ -79,22 +104,22 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             // TODO: 2016/5/18 根据 Agent_Id 获取相应销售价（进货价）
             orderItem.setPrice(shoppingCart.getProduct().getPrice());
             orderItem.setThumbnailPic(shoppingCart.getProduct().getGoods().getThumbnailPic());
+            orderItem = itemRepository.save(orderItem);
+            itemList.add(orderItem);
             //增加 预占库存
-            if(author.getParentAuthor() == null){
+            if (author.getParentAuthor() == null) {
                 //修改平台方货品预占库存
                 MallProduct customerProduct = shoppingCart.getProduct();
                 customerProduct.setFreez(customerProduct.getFreez() + shoppingCart.getNum());
                 productRepository.save(customerProduct);
-            }else{
+            } else {
                 //修改代理商库存
-                AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct((Agent) author.getParentAuthor(),shoppingCart.getProduct());
+                AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct((Agent) author.getParentAuthor(), shoppingCart.getProduct());
                 agentProduct.setFreez(agentProduct.getFreez() + shoppingCart.getNum());
                 agentProductRepository.save(agentProduct);
             }
-
-
-            orderItem = itemRepository.save(orderItem);
-            itemList.add(orderItem);
+            //删除购物车
+            shoppingCartRepository.delete(shoppingCart);
         }
         purchaseOrder.setFinalAmount(itemList.stream().mapToDouble(p -> p.getNum() * p.getPrice()).sum());
         // TODO: 2016/5/18 邮费

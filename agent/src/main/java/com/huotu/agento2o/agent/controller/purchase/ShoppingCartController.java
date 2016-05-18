@@ -127,9 +127,17 @@ public class ShoppingCartController {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
+    /**
+     * 填写采购单
+     * @param author
+     * @param agentPurchaseOrder
+     * @param shoppingCartId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/addPurchase")
     public ModelAndView addPurchase(
-            @AuthenticationPrincipal Author author,
+            @AuthenticationPrincipal Author author,AgentPurchaseOrder agentPurchaseOrder,
             String ... shoppingCartId) throws Exception{
         ModelAndView model = new ModelAndView();
         if(shoppingCartId.length == 0){
@@ -138,7 +146,6 @@ public class ShoppingCartController {
             return model;
         }
         model.setViewName("/purchase/add_purchase");
-        AgentPurchaseOrder agentPurchaseOrder = new AgentPurchaseOrder();
         // TODO: 2016/5/17 获取 author 默认收货信息
         // TODO: 2016/5/17 获取 author 默认发票信息
         List<Integer> shoppingCartIds = new ArrayList<>();
