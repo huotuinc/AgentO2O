@@ -33,9 +33,4 @@ public class OrderSearchCondition {
      */
     private String orderItemName;
 
-    /**
-     *代理商类型
-     * shop or agent
-     */
-    private String agentType;
 }

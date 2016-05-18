@@ -5,22 +5,22 @@
  * (c) Copyright Hangzhou Hot Technology Co., Ltd.
  * Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
  * 2013-2016. All rights reserved.
- *
  */
 
-package com.huotu.agento2o.service.searchable;
+package com.huotu.agento2o.service.model.order;
 
 import lombok.Data;
 
 /**
- * Created by WenbinChen on 2015/10/30 16:34.
+ * Created by allan on 3/25/16.
  */
 @Data
-public class DeliverySearcher {
-    private String username;
-    private String deliveryNo;
+public class DeliveryInfo {
     private String orderId;
-    private String beginTime;
-    private String endTime;
-    private Integer agentId;
+    private String logiName;
+    private String logiNo;
+    private String logiCode;
+    private String remark;
+    private double freight;
+    private String sendItems;
 }

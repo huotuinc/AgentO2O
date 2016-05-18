@@ -44,6 +44,7 @@
                 <div class="cnt">
                     <div class="search-bar">
                         <div>
+                            <input name="type" value="return" type="hidden"/>
                             <label class="first ">用户名：</label>
                             <input name="username" type="text" th:value="*{username}" class="input-small" style="width: 120px;"/>
                             <label class="first ">退货单号：</label>
@@ -62,7 +63,7 @@
                                    class="input-normal Wdate" th:value="*{endTime}"
                                    onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'txtCreateBeginTime\')}'})"/>
                             <label>
-                                <a class="btn-lit btn-middle" href="javascript:$('#searchForm').submit();"
+                                <a class="btn-lit btn-middle" href="javascript:$('pageIndex').val(1);$('#searchForm').submit();"
                                    style="margin-bottom: 3px;">
                                     <span>查询</span>
                                 </a>

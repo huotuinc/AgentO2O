@@ -5,22 +5,20 @@
  * (c) Copyright Hangzhou Hot Technology Co., Ltd.
  * Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
  * 2013-2016. All rights reserved.
- *
  */
 
-package com.huotu.agento2o.service.searchable;
+package com.huotu.agento2o.service.model.order;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
- * Created by WenbinChen on 2015/10/30 16:34.
+ * Created by allan on 3/25/16.
  */
 @Data
-public class DeliverySearcher {
-    private String username;
-    private String deliveryNo;
-    private String orderId;
-    private String beginTime;
-    private String endTime;
-    private Integer agentId;
+public class BatchDeliverResult {
+    List<String> lstFailedMsg;
+    private int successCount;
+    private int failedCount;
 }

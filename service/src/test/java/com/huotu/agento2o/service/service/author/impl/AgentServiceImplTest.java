@@ -7,6 +7,7 @@ import com.huotu.agento2o.service.service.common.CommonTestBase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
@@ -39,12 +40,12 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
-//    @Rollback(value = false)
+   @Rollback(value = false)
     public void testAddAgent() throws Exception{
 //        String userName = UUID.randomUUID().toString();
 //        String passWord = UUID.randomUUID().toString();
-        String userName = "wjj";
-        String passWord = "123456";
+        String userName = "ylv2";
+        String passWord = "1";
 //        AgentLevel agentLevel = new AgentLevel();
 //        agentLevel.setLevelId(1);
         Agent agent = new Agent();

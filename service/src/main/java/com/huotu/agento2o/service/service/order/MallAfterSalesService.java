@@ -1,6 +1,7 @@
 package com.huotu.agento2o.service.service.order;
 
 import com.huotu.agento2o.service.common.AfterSaleEnum;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.searchable.AfterSaleSearch;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public interface MallAfterSalesService {
      * @param afterSaleSearch
      * @return
      */
-    Page<MallAfterSales> findAll(int pageIndex, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch);
+    Page<MallAfterSales> findAll(int pageIndex, Author author, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch);
 
     /**
      * 修改售后单状态
