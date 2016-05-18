@@ -93,8 +93,8 @@
                             </th>
                             <th scope="col">商品名称
                             </th>
-                            <th scope="col">规格
-                            </th>
+                         <!--   <th scope="col">规格
+                            </th>-->
                             <th scope="col">单价
                             </th>
                             <th scope="col">库存
@@ -104,29 +104,30 @@
                         </tr>
                         </thead>
                         <tbody data-th-remove="all-but-first">
-                        <tr data-th-each="goods,goodsStat:${goodsList}" class="infotr">
+                        <tr data-th-each="agentProduct,goodsStat:${agentProduct}" class="infotr"
+                            data-th-attr="productId=${agentProduct.product.productId},warnig=${agentProduct.warning},agentId=${agentProduct.agent.id}">
                             <td class="txt20 c" data-th-text="${goodsStat.count}">1</td>
-                            <td class="txt160 c js_nametd" data-th-text="${goods.name}" >
+                            <td class="txt160 c js_nametd" data-th-text="${agentProduct.product.name}" >
                                 商品名称
                             </td>
+                           <!-- <td class="txt80 c">
+                                ￥<span data-th-text="${product.price}">100</span>
+                            </td>-->
                             <td class="txt80 c">
-                                ￥<span data-th-text="${goods.price}">100</span>
+                                ￥<span data-th-text="${agentProduct.product.price}">100</span>
                             </td>
-                            <td class="txt80 c">
-                                ￥<span data-th-text="${goods.price}">100</span>
-                            </td>
-                            <td class="txt80 c" data-th-text="${goods.store}">
+                            <td class="txt80 c" data-th-text="${agentProduct.store}">
                                 1000
                             </td>
                             <td class="txt80 c waringtd">
-                                <input style="width: 50px;text-align: center;" type="number" value="0" /> <span data-th-text="${goods.unit}" ></span>
+                                <input style="width: 50px;text-align: center;" type="number" value="0" /> <span data-th-text="${agentProduct.warning}" ></span>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
                 <!--分页开始-->
-          <!--      <script type="text/javascript" dtat-th-inline="javascript">
+                <script type="text/javascript" dtat-th-inline="javascript">
                     /*<![CDATA[*/
                     var pageSize = /*[[${pageSize}]]*/ '-1';
                     var pageIndex = /*[[*{pageNo}]]*/ '-1';
@@ -136,7 +137,7 @@
                     //                                    var pageNoStr = 'pageNoStr';
                     Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
                     /*]]>*/
-                </script>-->
+                </script>
                 <!--分页结束-->
             </div>
         </div>
@@ -150,13 +151,15 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     function save() {
+
         $.jBox.tip("正在保存...", "loading");
-
         var employees = new Array();
-        $("input[name=&&*]").each(fun{})
         $('.infotr').each(function(v,i){
+/*
+            employees.push('{agentId:'+$(this).attr("agentId")+' , productId:'+$(this).attr("productId")+'warning:'+$(this).attr("warnig")+'}');
+*/
+            employees.push('{'+$(this).attr("agentId")+','+$(this).attr("productId")+','+$(this).attr("warnig")+'}');
 
-            employees.push('{product:'+$(this).children('.nametd').text()+' , warning:'+$(this).children('.waringtd').children("input").val()+'}');
         });
 
  /*       var employees = [
@@ -169,12 +172,9 @@
         console.log(JSON.stringify(obj));
 */
 
-
-
-
-
         var info = {};
         info['info']=employees;
+        alert(JSON.stringify(info));
 
         $.ajax({
             type: "POST",

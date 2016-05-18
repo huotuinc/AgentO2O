@@ -50,13 +50,14 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 		// 赋值市级函数
 		var cityStart=function(){
 			var prov_id=prov_obj.get(0).selectedIndex;
+			var prov_val = prov_obj.get(0).value;
 			if(!settings.required){
 				prov_id--;
 			};
 			city_obj.empty().attr("disabled",true);
 			dist_obj.empty().attr("disabled",true);
 
-			if(prov_id<0||typeof(city_json.citylist[prov_id].c)=="undefined"){
+			if(prov_id<0||prov_val==""||typeof(city_json.citylist[prov_id].c)=="undefined"){
 				if(settings.nodata=="none"){
 					city_obj.css("display","none");
 					dist_obj.css("display","none");
@@ -81,13 +82,16 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 		var distStart=function(){
 			var prov_id=prov_obj.get(0).selectedIndex;
 			var city_id=city_obj.get(0).selectedIndex;
+			var prov_val = prov_obj.get(0).value;
+			var city_val=city_obj.get(0).value;
+
 			if(!settings.required){
 				prov_id--;
 				city_id--;
 			};
 			dist_obj.empty().attr("disabled",true);
 
-			if(prov_id<0||city_id<0||typeof(city_json.citylist[prov_id].c[city_id].a)=="undefined"){
+			if(prov_id<0||city_id<0||prov_val==""||city_val==""||typeof(city_json.citylist[prov_id].c[city_id].a)=="undefined"){
 				if(settings.nodata=="none"){
 					dist_obj.css("display","none");
 				}else if(settings.nodata=="hidden"){
