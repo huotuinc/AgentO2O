@@ -17,6 +17,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/12.
@@ -70,7 +71,7 @@ public class AgentPurchaseOrder {
      * 配送方式
      */
     @Column(name = "Sendment")
-    private PurchaseEnum.SendmentStatus sendmentStatus;
+    private PurchaseEnum.SendmentStatus sendMode;
     /**
      * 发票类型
      */
@@ -162,5 +163,8 @@ public class AgentPurchaseOrder {
      */
     @Column(name = "Disabled")
     private boolean disabled;
+
+    @OneToMany(mappedBy = "purchaseOrder")
+    private List<AgentPurchaseOrderItem> orderItemList;
 
 }

@@ -15,6 +15,7 @@ import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
@@ -145,8 +146,11 @@ public class ShoppingCartController {
             shoppingCartIds.add(Integer.valueOf(shoppingCart));
         }
         List<ShoppingCart> shoppingCartList = shoppingCartService.findById(shoppingCartIds,author);
+        getPicUri(shoppingCartList);
         model.addObject("agentPurchaseOrder",agentPurchaseOrder);
         model.addObject("shoppingCartList",shoppingCartList);
+        model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
+        model.addObject("taxTypeEnum",PurchaseEnum.TaxType.values());
         return model;
 
     }

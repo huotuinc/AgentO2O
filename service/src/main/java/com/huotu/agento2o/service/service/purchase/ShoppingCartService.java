@@ -53,7 +53,7 @@ public interface ShoppingCartService {
 
     /**
      * 根据 ID列表 和 当前登录用户 查找勾选的购物车货品信息
-     * @param id
+     * @param ids
      * @param author
      * @return
      */

@@ -30,8 +30,6 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
 
     ShoppingCart findByIdAndAuthor(Integer id, Author author);
 
-    List<ShoppingCart> findByIdInAndAuthor(List<Integer> ids, Author author);
-
     ShoppingCart findByAuthorAndProduct(Author author, MallProduct product);
 
     @Modifying

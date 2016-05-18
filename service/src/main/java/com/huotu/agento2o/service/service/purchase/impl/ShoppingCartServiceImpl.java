@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,7 +64,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public List<ShoppingCart> findById(List<Integer> ids, Author author) {
-        return shoppingCartRepository.findByIdInAndAuthor(ids,author);
+        List<ShoppingCart> shoppingCartList = new ArrayList<>();
+        ids.forEach(p->{
+            ShoppingCart cart = findById(p,author);
+            if(cart != null){
+                shoppingCartList.add(cart);
+            }
+        });
+        return shoppingCartList;
     }
 
     @Override

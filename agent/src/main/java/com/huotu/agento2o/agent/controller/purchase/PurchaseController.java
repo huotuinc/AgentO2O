@@ -19,6 +19,7 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
@@ -173,6 +174,28 @@ public class PurchaseController {
         }
         model.addObject("productList", productList);
         return model;
+    }
+
+    /**
+     * 采购下单
+     * @param author
+     * @param agentPurchaseOrder
+     * @param shoppingCartIds
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/addPurchase",method = RequestMethod.POST)
+    public ApiResult addPurchase(
+            @AgtAuthenticationPrincipal Author author,
+            AgentPurchaseOrder agentPurchaseOrder,String... shoppingCartIds) throws Exception{
+        if(agentPurchaseOrder == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if(shoppingCartIds.length == 0){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        agentPurchaseOrder.setAuthor(author);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
 
