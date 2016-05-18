@@ -12,18 +12,22 @@ package com.huotu.agento2o.agent.service.impl;
 
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.agent.service.VFSHelper;
+import com.huotu.agento2o.common.util.StringUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * @author CJ
@@ -83,6 +87,36 @@ public abstract class AbstractStaticResourceService implements StaticResourceSer
             stringBuilder.append("/");
         stringBuilder.append(path);
         return new URI(stringBuilder.toString());
+    }
+
+    @Override
+    public void setListUri(List targetList, String sourceColumnName, String targetColumnName) {
+        if(targetList != null){
+            targetList.forEach(p->{
+                try {
+                    if(p.getClass().getDeclaredField(targetColumnName).getType() != URI.class){
+                        return;
+                    }
+                    Field sourceColumn = p.getClass().getDeclaredField(sourceColumnName);
+                    sourceColumn.setAccessible(true);
+                    String resourceStr = String.valueOf(sourceColumn.get(p));
+                    if(StringUtil.isEmptyStr(resourceStr)){
+                        URI picUri = getResource(resourceStr);
+                        Field targetColumn = p.getClass().getDeclaredField(targetColumnName);
+                        targetColumn.setAccessible(true);
+                        targetColumn.set(p,picUri);
+                        targetColumn.setAccessible(false);
+                    }
+                    sourceColumn.setAccessible(false);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override

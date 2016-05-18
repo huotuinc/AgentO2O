@@ -23,15 +23,15 @@ public class PurchaseOrderSearcher {
     /**
      * 审核状态
      */
-    Integer statusCode;
+    Integer statusCode = -1;
     /**
      * 发货状态
      */
-    Integer shipSatatusCode;
+    Integer shipStatusCode = -1;
     /**
      * 付款状态
      */
-    Integer paymentCode;
+    Integer payStatusCode = -1;
     /**
      * 采购单ID
      */
@@ -41,6 +41,20 @@ public class PurchaseOrderSearcher {
      */
     private String beginTime;
     private String endTime;
+    /**
+     * 支付时间查询
+     */
+    private String beginPayTime;
+    private String endPayTime;
+
+    int pageIndex = 1;
+
+    /**
+     * 货名名称
+     */
+    private String orderItemName;
+
+
 
 
 }

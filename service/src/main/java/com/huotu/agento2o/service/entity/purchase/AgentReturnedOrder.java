@@ -93,6 +93,18 @@ public class AgentReturnedOrder {
      */
     @Column(name = "Createtime")
     private Date createTime;
+    @Temporal(value = TemporalType.TIMESTAMP)
+    /**
+     * 退款时间
+     */
+    @Column(name = "Paytime")
+    private Date payTime;
+    /**
+     * 最近修改时间
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "Last_update_time")
+    private Date lastUpdateTime;
     /**
      * 直系代理商/平台方备注
      */

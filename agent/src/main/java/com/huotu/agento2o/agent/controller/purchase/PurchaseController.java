@@ -87,27 +87,13 @@ public class PurchaseController {
             goodsPage = goodsService.findByAgentId(author.getParentAuthor().getId(), goodsSearcher);
         }
         List<MallGoods> goodsList = goodsPage.getContent();
-        getImgUri(goodsList);
+        resourceService.setListUri(goodsList,"thumbnailPic","picUri");
         model.addObject("goodsList", goodsList);
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", goodsSearcher.getPageNo());
         model.addObject("totalPages", goodsPage.getTotalPages());
         model.addObject("totalRecords", goodsPage.getTotalElements());
         return model;
-    }
-
-    private void getImgUri(List<MallGoods> goodsList) {
-        if (goodsList != null) {
-            goodsList.forEach(goods -> {
-                if (!StringUtil.isEmptyStr(goods.getThumbnailPic())) {
-                    try {
-                        URI picUri = resourceService.getResource(goods.getThumbnailPic());
-                        goods.setPicUri(picUri);
-                    } catch (URISyntaxException e) {
-                    }
-                }
-            });
-        }
     }
 
     /**

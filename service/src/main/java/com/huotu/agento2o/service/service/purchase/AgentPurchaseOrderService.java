@@ -24,4 +24,6 @@ public interface AgentPurchaseOrderService {
     Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher);
 
     ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds);
+
+    AgentPurchaseOrder findByPOrderId(String pOrderId);
 }

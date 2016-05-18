@@ -54,8 +54,7 @@ public class ShoppingCartController {
      */
     @RequestMapping("/showShoppingCart")
     public ModelAndView showShoppingCart(
-            @AgtAuthenticationPrincipal Author author
-    ) {
+            @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/shopping_cart");
         List<ShoppingCart> shoppingCarts = shoppingCartService.findByAgentId(author.getId());

@@ -10,9 +10,8 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
-import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.common.util.SerialNo;
+import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -30,9 +29,13 @@ import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,12 +58,49 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
 
     /**
      * 采购单列表
+     *
      * @param purchaseOrderSearcher
      * @return
      */
     @Override
     public Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher) {
-        return null;
+        Specification<AgentPurchaseOrder> specification = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() != 0) {
+                predicates.add(cb.equal(root.get("author").get("id").as(Integer.class), purchaseOrderSearcher.getAgentId()));
+            }
+            if (purchaseOrderSearcher.getParentAgentId() != null && purchaseOrderSearcher.getParentAgentId() != 0) {
+                predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()));
+            }
+            if (purchaseOrderSearcher.getStatusCode() != -1) {
+                predicates.add(cb.equal(root.get("status").as(PurchaseEnum.OrderStatus.class),
+                        EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, purchaseOrderSearcher.getStatusCode())));
+            }
+            if (purchaseOrderSearcher.getShipStatusCode() != -1) {
+                predicates.add(cb.equal(root.get("shipStatus").as(PurchaseEnum.ShipStatus.class),
+                        EnumHelper.getEnumType(PurchaseEnum.ShipStatus.class, purchaseOrderSearcher.getShipStatusCode())));
+            }
+            if (purchaseOrderSearcher.getPayStatusCode() != -1) {
+                predicates.add(cb.equal(root.get("payStatus").as(PurchaseEnum.PayStatus.class),
+                        EnumHelper.getEnumType(PurchaseEnum.PayStatus.class, purchaseOrderSearcher.getPayStatusCode())));
+            }
+            if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getPOrderId())) {
+                predicates.add(cb.like(root.get("pOrderId").as(String.class), "%" + purchaseOrderSearcher.getPOrderId() + "%"));
+            }
+            if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getBeginTime())) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(purchaseOrderSearcher.getBeginTime(), StringUtil.TIME_PATTERN)));
+            }
+            if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getEndTime())) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(purchaseOrderSearcher.getEndTime(), StringUtil.TIME_PATTERN)));
+            }
+            if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getOrderItemName())) {
+                predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class), "%" + purchaseOrderSearcher.getOrderItemName() + "%"));
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return purchaseOrderRepository.findAll(specification, new PageRequest(purchaseOrderSearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
     /**
@@ -127,5 +167,10 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         purchaseOrder.setOrderItemList(itemList);
         purchaseOrderRepository.save(purchaseOrder);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public AgentPurchaseOrder findByPOrderId(String pOrderId) {
+        return purchaseOrderRepository.findOne(pOrderId);
     }
 }

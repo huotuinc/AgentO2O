@@ -12,11 +12,12 @@ package com.huotu.agento2o.service.repository.purchase;
 
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
  * Created by helloztt on 2016/5/18.
  */
 @Repository
-public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder,String> {
+public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder,String>,JpaSpecificationExecutor<AgentPurchaseOrder> {
 }

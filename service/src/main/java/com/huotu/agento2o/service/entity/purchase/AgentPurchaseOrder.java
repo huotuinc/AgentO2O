@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.entity.purchase;
 
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -147,6 +148,19 @@ public class AgentPurchaseOrder {
      */
     @Column(name = "Createtime")
     private Date createTime;
+    /**
+     * 付款时间
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "Paytime")
+    private Date payTime;
+    /**
+     * 最近修改时间
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "Last_update_time")
+    private Date lastUpdateTime;
+
     /**
      * 发货方备注
      */

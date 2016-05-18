@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.net.URI;
 
 /**
  * Created by helloztt on 2016/5/12.
@@ -76,4 +77,7 @@ public class AgentPurchaseOrderItem {
      */
     @Column(name = "Thumbnail_Pic")
     private String thumbnailPic;
+
+    @Transient
+    private URI picUri;
 }

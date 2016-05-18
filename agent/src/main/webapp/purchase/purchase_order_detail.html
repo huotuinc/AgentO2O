@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -11,7 +12,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>确认采购单</title>
+    <title>采购单详细</title>
     <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
     <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
@@ -104,22 +105,21 @@
     </style>
 </head>
 <body>
-<form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
-      data-th-object="${agentPurchaseOrder}">
+<form method="post" action="/purchaseOrder/showPurchaseOrderDetail" data-th-action="@{/purchaseOrder/showPurchaseOrderDetail}" id="form1"
+      data-th-object="${purchaseOrder}">
     <div class="container">
         <div class="blank10">
         </div>
         <div class="block">
             <div class="h">
                 <span class="icon-sprite icon-list"></span>
-                <h3>采购信息核对</h3>
+                <h3>采购信息</h3>
             </div>
             <div class="cnt-wp">
                 <div class="cnt form">
                     <div>
                         <span class="spModuleTitle">收货人信息</span>
                         <div class="division">
-
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr >
@@ -136,16 +136,6 @@
                                                class="input-normal"/>
                                     </td>
                                 </tr>
-                                <!--<tr>
-                                    <th>收货人省、市、区:</th>
-                                    <td>
-                                        <div id="citys">
-                                            <select class="prov input-normal" id="province"></select>
-                                            <select class="city input-normal" id="city" disabled="disabled"></select>
-                                            <select class="dist input-normal" id="district" disabled="disabled"></select>
-                                        </div>
-                                    </td>
-                                </tr>-->
                                 <tr>
                                     <th>收货人详细地址:</th>
                                     <td>
@@ -162,8 +152,8 @@
                         <span class="spModuleTitle">选择配送方式</span>
                         <div class="division" style="height: 40px;" name="sendMode">
                             <!--/*@thymesVar id="sendmentEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.SendmentStatus"*/-->
-                            <span th:each="sendment,sendmentStat:${sendmentEnum}" class="option" th:classappend="${sendmentStat.index}==0?'option_selected'" th:value="${sendment.code}">
-                                <span class="ononon" th:style="${sendmentStat.index}==0?'display: inline;':'display: none;'">
+                            <span th:each="sendment:${sendmentEnum}" class="option" th:classappend="${sendment.code}==*{sendMode.code}?'option_selected'">
+                                <span class="ononon" th:style="${sendment.code}==*{sendMode.code}?'display: inline;':'display: none;'">
                                     <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${sendment.value}"></th:block>
                             </span>
@@ -173,13 +163,13 @@
                         <span class="spModuleTitle">开具发票</span>
                         <br/>
                         <div class="division" style="height: 40px;" name="invoiceInfo">
-                            <span th:each="taxType,taxTypeStat:${taxTypeEnum}" class="option" th:classappend="${taxTypeStat.index} == 0?'option_selected'" th:value="${taxType.code}" th:onclick="|changeInvoiceType(${taxType.code})|">
-                                <span class="ononon" th:style="${taxTypeStat.index} == 0?'display: inline;':'display: none;'">
+                            <span th:each="taxType:${taxTypeEnum}" class="option" th:classappend="${taxType.code} == *{taxType.code}?'option_selected'">
+                                <span class="ononon" th:style="${taxType.code} == *{taxType.code}?'display: inline;':'display: none;'">
                                     <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${taxType.value}"></th:block>
                             </span>
                         </div>
-                        <div class="division js-normal" style="display: none;">
+                        <div class="division js-normal" th:style="*{taxType.code} == 1?'':'display: none;'">
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tbody>
                                 <tr>
@@ -199,7 +189,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="division js-tax"  style="display: none;">
+                        <div class="division js-tax"  th:style="*{taxType.code}==2?'' :'display: none;'">
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tbody>
                                 <tr>
@@ -281,8 +271,6 @@
                                     </th>
                                     <th scope="col" style="text-align: center;">单价
                                     </th>
-                                    <th scope="col" style="text-align: center;">库存
-                                    </th>
                                     <th scope="col" style="text-align: center;">订购数量/单位
                                     </th>
                                     <th scope="col" style="text-align: center;">小计
@@ -290,34 +278,27 @@
                                 </tr>
                                 </thead>
                                 <tbody data-th-remove="all-but-first">
-                                <!--@thymesVar id="shoppingCartList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.ShoppingCart>"-->
-                                <tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}"
-                                    th:id="${shoppingCart.id}">
-                                    <td class="txt20 c" data-th-text="${shoppingCartStat.count}">1</td>
+                                <tr data-th-each="orderItem,orderItemStat:*{orderItemList}">
+                                    <td class="txt20 c" data-th-text="${orderItemStat.count}">1</td>
                                     <td style="padding: 10px" class="txt120 c">
                            <span style="width: 20%;float: left;">
-                               <img th:src="${shoppingCart.product.goods.picUri}!=null?${shoppingCart.product.goods.picUri}"
+                               <img th:src="${orderItem.picUri}!=null?${orderItem.picUri}"
                                     style="vertical-align: top;width: 59px;height: 59px;border: 1px solid #eaeaea;"/>
                            </span>
                             <span style="width: 75%;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
                             -webkit-line-clamp: 2;-webkit-box-orient: vertical;float: left;margin-right: 20px; margin-top: 16px"
-                                  data-th-text="${shoppingCart.product.name}">商品名称</span>
+                                  data-th-text="${orderItem.name}">商品名称</span>
                                     </td>
-                                    <td class="txt40 c" data-th-text="${shoppingCart.product.standard}">
+                                    <td class="txt40 c" data-th-text="${orderItem.pdtDesc}">
                                         规格描述
                                     </td>
                                     <td class="txt40 c" name="td-price">
-                                        ￥<span data-th-text="${shoppingCart.product.price}" name="price">100</span>
-                                    </td>
-                                    <td class="txt40 c"
-                                        data-th-text="${shoppingCart.product.store - shoppingCart.product.freez}">
-                                        1000
+                                        ￥<span data-th-text="${orderItem.price}" name="price">100</span>
                                     </td>
                                     <td class="txt40 c" name="td-num">
-                                        <span data-th-text="${shoppingCart.num}"></span>
-                                        <span data-th-text="${shoppingCart.product.unit}"></span>
+                                        <span data-th-text="${orderItem.num} +' ' + ${orderItem.unit}"></span>
                                     </td>
-                                    <td class="txt40 c" data-th-text="${shoppingCart.product.price * shoppingCart.num}">
+                                    <td class="txt40 c" data-th-text="${orderItem.price * orderItem.num}">
                                     </td>
                                 </tr>
                                 </tbody>
@@ -334,11 +315,11 @@
                     <div style="margin: 10px">
                         <div style="font-size: 14px; float: right">
                             <span>订单总计金额</span>
-                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="${#aggregates.sum(shoppingCartList.![product.price * num])}"></b></span>
+                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="*{#aggregates.sum(orderItemList.![price * num])}"></b></span>
                         </div>
                         <p style="clear: both"></p>
                         <div style="float: right;margin-top: -21px;">
-                            <a class="btn-lit" href="javascript:saveBasicConfig();" id="saveConfig"><span>提交订单</span></a>
+                            <a class="btn-lit" href="javascript:goBack();" id="saveConfig"><span>返回列表</span></a>
                         </div>
                         <p style="clear: both"></p>
                     </div>
@@ -349,184 +330,13 @@
 </form>
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
-    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
-    /*$("#citys").citySelect({
-        nodata:null,
-        required:true
-    });*/
-    $("span[class~=option]").on("click", function () {
-        $(this).siblings("span[class~=option_selected]").removeClass("option_selected");
-        $(this).addClass("option_selected");
-        $(this).parent().find("span[class=ononon]").attr("style", "display: none;");
-        $(this).find("span[class=ononon]").attr("style", "display: inline;");
+    $(function(){
+        $("input").attr("disabled","disabled");
+        $("textarea").attr("disabled","disabled");
     })
-
-    function changeInvoiceType(type){
-        if(type == 0){
-            $("div[class~=js-normal]").hide();
-            $("div[class~=js-tax]").hide();
-        }else if(type == 1){
-            $("div[class~=js-normal]").show();
-            $("div[class~=js-tax]").hide();
-        }else if(type == 2){
-            $("div[class~=js-normal]").hide();
-            $("div[class~=js-tax]").show();
-        }
+    function goBack(){
+        window.location.href=document.referrer;
     }
-
-    function saveBasicConfig(){
-        //校验收货人信息
-        var shipName = $.trim($("input[name=shipName]").val());
-        var shipMobile = $.trim($("input[name=shipMobile]").val());
-        var shipAddr = $.trim($("input[name=shipAddr]").val());
-        if(shipName.length == 0){
-            $.jBox.tip("请填写收货人");
-            return;
-        }
-        if(shipMobile.length == 0){
-            $.jBox.tip("请填写收货人联系方式")
-            return;
-        }
-        if(shipAddr.length == 0){
-            $.jBox.tip("请填写收货人地址");
-            return;
-        }
-        //配送方式选择
-        var sendMode = "0";
-        if($("div[name=sendMode] span[class~=option_selected]").length == 1){
-            sendMode = $("span[class~=option_selected]").attr("value");
-        }else{
-            $.jBox.tip("请选择配送方式");
-            return;
-        }
-        //发票校验
-        var taxType ;
-        if($("div[name=invoiceInfo] span[class~=option_selected]").length == 1){
-            taxType = $("div[name=invoiceInfo] span[class~=option_selected]").attr("value");
-        }else{
-            $.jBox.tip("请选择发票类型");
-            return;
-        }
-        var companyName;
-        var companyTel;
-        var companyAddr;
-        var taxpayerCode;
-        var bankName;
-        var accountNo;
-        var taxRegistCertificateUrl;
-        var generalCertificateUrl;
-        var data = {
-            'shipName':shipName,
-            'shipMobile':shipMobile,
-            'shipAddr':shipAddr,
-            'sendModeCode':sendMode,
-            'taxTypeCode':taxType
-        };
-        //普通发票校验
-        if(taxType == "1"){
-            companyName = $.trim($("#companyName").val());
-            if(companyName.length == 0){
-                $.jBox.tip("请输入发票公司名称");
-                return;
-            }
-            companyTel = $.trim($("#companyTel").val());
-            if(companyTel.length == 0){
-                $.jBox.tip("请输入发票公司注册电话");
-            }
-            companyAddr = $.trim($("#companyAddr").val());
-            if(companyAddr.length == 0){
-                $.jBox.tip("请输入发票公司注册地址");
-            }
-            data['companyName']=companyName;
-            data['companyTel']=companyTel;
-            data['companyAddr']=companyAddr;
-        }else if(taxType == '2'){
-            companyName = $.trim($("#tax_companyName").val());
-            if(companyName.length == 0){
-                $.jBox.tip("请输入发票公司名称");
-                return;
-            }
-            companyTel = $.trim($("#tax_companyTel").val());
-            if(companyTel.length == 0){
-                $.jBox.tip("请输入发票公司注册电话");
-                return;
-            }
-            companyAddr = $.trim($("#tax_companyAddr").val());
-            if(companyAddr.length == 0){
-                $.jBox.tip("请输入发票公司注册地址");
-                return;
-            }
-            taxpayerCode = $.trim($("#tax_taxpayerCode").val());
-            if(taxpayerCode.length == 0){
-                $.jBox.tip("请输入纳税人识别码");
-                return;
-            }
-            bankName = $.trim($("#tax_bankName").val());
-            if(bankName.length == 0){
-                $.jBox.tip("请输入开户银行名称");
-            }
-            accountNo = $.trim($("#tax_accountNo").val(0));
-            if(accountNo.length == 0){
-                $.jBox.tip("请输入开户银行账号");
-            }
-            taxRegistCertificateUrl = $.trim($("#taxRegisterCertificateFile").val());;
-            if (taxRegistCertificateUrl.length == 0) {
-                $.jBox.tip("请提交税务登记证");
-                return;
-            }
-            generalCertificateUrl = $.trim($("#"))
-            if (generalCertificateUrl.length == 0) {
-                $.jBox.tip("请提交纳税人资格证");
-                return;
-            }
-            data['companyName']=companyName;
-            data['companyTel']=companyTel;
-            data['companyAddr']=companyAddr;
-            data['taxpayerCode']=taxpayerCode;
-            data['bankName']=bankName;
-            data['accountNo']=accountNo;
-            data['taxRegistCertificateUrl']=taxRegistCertificateUrl;
-            data['generalCertificateUrl']=generalCertificateUrl;
-        }
-        //购物车商品信息
-        var shoppingCartIds = "";
-        $("table[class~=data-table] tr").each(function(){
-            var value = $.trim($(this).attr("id"));
-            if(value.length > 0){
-                shoppingCartIds += value + ",";
-            }
-        });
-        shoppingCartIds = shoppingCartIds.substring(0, shoppingCartIds.lastIndexOf(","));
-        if(shoppingCartIds.length == 0){
-            $.jBox.tip("请选择要采购的货品");
-            return;
-        }
-        data['shoppingCartIds']=shoppingCartIds;
-        //备注
-        var authorComment = $.trim($("textarea[name=authorComment]").text());
-        if(authorComment.length > 0 ){
-            data['authorComment']=authorComment;
-        }
-        $.jBox.tip("正在保存...", "loading");
-        $.ajax({
-            type: "POST",
-            url: basicUrl + "/addPurchase",
-            data: data,
-            dataType: "json",
-            success: function (msg) {
-                if (msg.code == 200) {
-                    $.jBox.tip("新增采购单成功！");
-                    setTimeout(function(){
-                        top.document.getElementById("content_left").contentDocument.getElementById("id_020201").getElementsByTagName("a")[0].click();
-                    },500)
-                } else {
-                    $.jBox.tip(msg.msg, 'error');
-                }
-            }
-        });
-    }
-
-    //todo 上传图片
     /*]]>*/
 </script>
 </body>

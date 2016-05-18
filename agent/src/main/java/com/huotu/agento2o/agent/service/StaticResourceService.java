@@ -10,10 +10,13 @@
 
 package com.huotu.agento2o.agent.service;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * 静态资源处理服务
@@ -59,6 +62,14 @@ public interface StaticResourceService {
      * @throws URISyntaxException
      */
     URI getResource(String path) throws URISyntaxException;
+
+    /**
+     * 根据 Object 中的 sourceColumnName 字段 获取资源 并 set 到 targetColumnName 字段中
+     * @param targetList
+     * @param sourceColumnName
+     * @param targetColumnName
+     */
+    void setListUri(List targetList, String sourceColumnName, String targetColumnName) throws NoSuchFieldException;
 
     /**
      * 删除资源
