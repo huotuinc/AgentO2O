@@ -594,7 +594,7 @@ $(function () {
         Index.Init();
     }
     //表格鼠标经过
-    $('tr').mouseover(function () {
+    $('table[class~=data-table] tr').mouseover(function () {
         _oldCass = this.className;
         this.className = 'over';
     }).mouseout(function () {

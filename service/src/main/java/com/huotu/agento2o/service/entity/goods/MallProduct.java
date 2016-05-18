@@ -31,6 +31,11 @@ public class MallProduct {
     @ManyToOne
     @JoinColumn(name = "Goods_Id")
     private MallGoods goods;
+    /**
+     * 货号
+     */
+    @Column(name = "Bn")
+    private String bn;
 
     /**
      * 规格
