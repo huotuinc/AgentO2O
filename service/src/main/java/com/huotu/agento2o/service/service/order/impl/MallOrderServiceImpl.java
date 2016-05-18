@@ -41,7 +41,7 @@ import java.util.List;
  * Created by AiWelv on 2016/5/12.
  */
 @Service
-public class MallOrderServiceImpl implements MallOrderService{
+public class MallOrderServiceImpl implements MallOrderService {
 
     @Autowired
     private MallOrderRepository orderRepository;
@@ -56,7 +56,7 @@ public class MallOrderServiceImpl implements MallOrderService{
 
     @Override
     public MallOrder findByShopAndOrderId(Shop shop, String orderId) {
-        return orderRepository.findByShopAndOrderId(shop , orderId);
+        return orderRepository.findByShopAndOrderId(shop, orderId);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class MallOrderServiceImpl implements MallOrderService{
     @Override
     public ApiResult updateRemark(Shop shop, String orderId, String agentMarkType, String agentMarkText) {
         MallOrder order = orderRepository.findByShopAndOrderId(shop, orderId);
-        if (order == null){
+        if (order == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         } else {
             order.setAgentMarkText(agentMarkText);
@@ -86,10 +86,13 @@ public class MallOrderServiceImpl implements MallOrderService{
     public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition) {
         Specification<MallOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (author!=null&&author instanceof Shop) {
-                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()));
-            }else if (author!=null&&author instanceof Agent) {
-                predicates.add(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId()));
+            if (author != null && author instanceof Shop) {
+                predicates.add(cb.or(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()),
+                        cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId())));
+            } else if (author != null && author instanceof Agent) {
+                predicates.add(cb.or(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId()),
+                        cb.equal(root.get("beneficiaryShop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId())));
+//                predicates.add(cb.equal(root.get("beneficiaryShop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId()));
             }
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);

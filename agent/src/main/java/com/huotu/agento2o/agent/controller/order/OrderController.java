@@ -7,12 +7,16 @@ import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
+import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.model.order.OrderExportModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
+import com.huotu.agento2o.service.service.order.MallOrderItemService;
 import com.huotu.agento2o.service.service.order.MallOrderService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -55,6 +59,11 @@ public class OrderController {
     @Autowired
     private MallDeliveryService deliveryService;
 
+    @Autowired
+    private MallOrderItemService orderItemService;
+
+    @Autowired
+    private AgentProductService agentProductService;
     /**
      * 获取订单全部数据 query 查询分页
      * Modified By cwb

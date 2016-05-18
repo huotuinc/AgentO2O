@@ -154,6 +154,10 @@ public class MallOrder {
     @OneToMany(mappedBy = "order")
     private List<MallOrderItem> orderItems;
 
+    @JoinColumn(name = "Beneficiary_Agent_id")
+    @ManyToOne
+    private Shop beneficiaryShop;
+
 
     //发货状态为 未发货，部分发货，部分退货
     //支付状态为 已支付，部分退款
