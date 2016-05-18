@@ -178,10 +178,14 @@
                             <a style="cursor: pointer;"><i class="fa fa-home"></i>
                                 <span>首页</span></a>
                         </li>
+
                         <li th:onclick="|mallMenuManager.active('${menu.menuId}','')|" th:id="${'menu_'+menu.menuId}"
                             th:if="${menu.isAuthor()}" th:each="menu:${menus}">
+
                             <a style="cursor: pointer;"><i class="fa fa-folder-o"></i>
                                 <span th:text="${menu.menuName}">订单管理</span></a>
+
+
                         </li>
                     </ul>
                 </div>

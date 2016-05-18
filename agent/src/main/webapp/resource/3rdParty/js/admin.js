@@ -593,6 +593,13 @@ $(function () {
     if (Admin.IsIndexPage) {
         Index.Init();
     }
+    //表格鼠标经过
+    $('tr').mouseover(function () {
+        _oldCass = this.className;
+        this.className = 'over';
+    }).mouseout(function () {
+        this.className = _oldCass;
+    });
 });
 
 ////只调用最顶的jBox

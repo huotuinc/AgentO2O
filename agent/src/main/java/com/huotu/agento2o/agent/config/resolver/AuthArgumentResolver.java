@@ -10,7 +10,7 @@
 
 package com.huotu.agento2o.agent.config.resolver;
 
-import com.huotu.agento2o.agent.config.annotataion.AuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -27,11 +27,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotation(AuthenticationPrincipal.class) != null;
+        return parameter.getParameterAnnotation(AgtAuthenticationPrincipal.class) != null;
     }
 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        AuthenticationPrincipal authenticationPrincipal = parameter.getParameterAnnotation(AuthenticationPrincipal.class);
+        AgtAuthenticationPrincipal authenticationPrincipal = parameter.getParameterAnnotation(AgtAuthenticationPrincipal.class);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
@@ -30,5 +32,17 @@ public class ServiceConfig {
     @Bean
     public JdbcTemplate getTemplate() {
         return new JdbcTemplate(dataSource);
+    }
+
+
+    @Bean
+    public JavaMailSenderImpl getJavaMailSender(){
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+
+        javaMailSender.setHost("");
+        javaMailSender.setUsername("");
+        javaMailSender.setPassword("");
+
+        return javaMailSender;
     }
 }

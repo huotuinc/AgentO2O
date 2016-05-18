@@ -48,4 +48,12 @@ public interface AgentLevelService {
      * @return
      */
     Integer findLastLevel(Integer customerId);
+
+    /**
+     * 根据levelId增加或修改代理商等级
+     * @param levelId 当levelId大于0时修改，否则增加
+     * @param customerId
+     * @param agentLevel
+     */
+    void addOrUpdate(Integer levelId,Integer customerId,AgentLevel agentLevel);
 }

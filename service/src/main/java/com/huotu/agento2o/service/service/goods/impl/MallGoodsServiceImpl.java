@@ -51,7 +51,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
             predicates.add(cb.equal(root.get("agentId").as(Integer.class), agentId));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
-                predicates.add(cb.like(root.get("name").as(String.class), goodsSearcher.getGoodsName()));
+                predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -83,5 +83,10 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         } else {
             return goodsRepository.findByAgentIdAndName(agentId, "%" + goodsSearcher.getGoodsName() + "%", new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
         }
+    }
+
+    @Override
+    public MallGoods findByGoodsId(Integer goodsId) {
+        return goodsRepository.findOne(goodsId);
     }
 }

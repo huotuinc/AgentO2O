@@ -81,6 +81,10 @@ input,textarea{border:1px solid #A4A4A4; color:#4a4a4a; font-size:12px; font-fam
 {
  background-color:#ffffdd;
 }
+/*鼠标经过*/
+.over {
+ background-color: #CCCCCC;
+}
 
 
 

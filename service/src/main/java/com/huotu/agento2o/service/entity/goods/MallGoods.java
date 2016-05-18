@@ -29,7 +29,7 @@ public class MallGoods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Goods_Id")
-    private Integer goodId;
+    private Integer goodsId;
     /**
      * 商品简介
      */

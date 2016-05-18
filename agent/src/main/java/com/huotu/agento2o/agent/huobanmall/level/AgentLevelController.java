@@ -32,27 +32,16 @@ public class AgentLevelController {
 
     /**
      * 增加或修改代理商等级
-     * @param customer
+     * @param customerIdStr
      * @param requestAgentLevel
      * @param levelId
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult addAndSaveLevel(MallCustomer customer,AgentLevel requestAgentLevel,Integer levelId) {
-        customer.setCustomerId(5919);
-        AgentLevel agentLevel;
-        if (levelId > 0) {
-            agentLevel = agentLevelService.findById(levelId);
-        } else {
-            Integer level = agentLevelService.findLastLevel(customer.getCustomerId());
-            agentLevel = new AgentLevel();
-            agentLevel.setCustomer(customer);
-            agentLevel.setLevel(level == null ? 0:level+1);
-        }
-        agentLevel.setLevelName(requestAgentLevel.getLevelName());
-        agentLevel.setComment(requestAgentLevel.getComment());
-        agentLevelService.addAgentLevel(agentLevel);
+    public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") String customerIdStr,AgentLevel requestAgentLevel,Integer levelId) {
+        int customerId = Integer.parseInt(customerIdStr);
+        agentLevelService.addOrUpdate(levelId,customerId,requestAgentLevel);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
