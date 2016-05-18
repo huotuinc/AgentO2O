@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -90,9 +92,11 @@ public class MallOrderServiceImpl implements MallOrderService {
                 predicates.add(cb.or(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()),
                         cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId())));
             } else if (author != null && author instanceof Agent) {
-                predicates.add(cb.or(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId()),
-                        cb.equal(root.get("beneficiaryShop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId())));
-//                predicates.add(cb.equal(root.get("beneficiaryShop").get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId()));
+                Join<MallOrder,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
+                Join<MallOrder,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class), JoinType.LEFT);
+                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class),searchCondition.getAgentId());
+                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class),searchCondition.getAgentId());
+                predicates.add(cb.or(p1,p2));
             }
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
