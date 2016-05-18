@@ -37,6 +37,8 @@ public interface AgentProductService {
      */
     Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId);
 
+    boolean updateWaring(Integer agentId,Integer productId,Integer warning);
+
     /**
      * 查找出需要发送库存警告的信息
      * @param pageIndex

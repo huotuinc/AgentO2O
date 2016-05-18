@@ -59,4 +59,9 @@ public class AgentProductServiceImpl implements AgentProductService {
         };
         return agentProductRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
     }
+
+    @Override
+    public boolean updateWaring(Integer agentId, Integer productId, Integer warning) {
+        return agentProductRepository.updateWaring(agentId,productId,warning)>0 ? true:false;
+    }
 }

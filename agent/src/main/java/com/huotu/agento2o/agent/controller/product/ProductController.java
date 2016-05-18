@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -37,7 +38,7 @@ import java.util.Map;
 @PreAuthorize("hasAnyRole('AGENT','ORDER')")
 public class ProductController {
 
-    private static String PRODUCT_MANAGER_URL="product/manager";
+    private static String PRODUCT_MANAGER_URL = "product/manager";
 
     @Autowired
     protected AgentProductService agentProductService;
@@ -49,44 +50,30 @@ public class ProductController {
             @RequestParam(required = true, defaultValue = "1") int pageIndex) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName(PRODUCT_MANAGER_URL);
-        Page<AgentProduct> agentProduct = agentProductService.findByAgentId(pageIndex, Constant.PAGESIZE,author.getId());
-        model.addObject("agentProduct",agentProduct);
+        Page<AgentProduct> agentProduct = agentProductService.findByAgentId(pageIndex, Constant.PAGESIZE, author.getId());
+        model.addObject("agentProduct", agentProduct);
         return model;
     }
 
-/*
+    @SuppressWarnings("unchecked")
     @RequestMapping("save")
-    public @ResponseBody
-    ApiResult saveInfo(@RequestBody  ArrayList<AgentProduct> products){
-        System.out.println(products);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-    }
-*/
+    public
+    @ResponseBody
+    ApiResult saveInfo(@RequestBody JSONObject products) {
 
-    @RequestMapping("save")
-    public @ResponseBody
-    ApiResult saveInfo(@RequestBody JSONObject products ){
-        System.out.println(products.get("info"));
-
-        List l = (List) products.get("info");
-        Map o = (Map)l.get(1);
-//        JSONObject jsonObject = JSON.parseObject();
-        System.out.println(o.toString());
-
-        for(int i=0;i<l.size();i++){
-            System.out.println(l.get(i));
-
+        boolean success = false;
+        List<String> l = (List) products.get("info");
+        for (String str : l) {
+            String _item = str.substring(1, str.length() - 1);
+            String[] item = _item.split(",");
+            if (item.length == 3) {
+                //更新
+                success = agentProductService.updateWaring(Integer.parseInt(item[0].trim()),
+                        Integer.parseInt(item[1].trim()),
+                        Integer.parseInt(item[2].trim()));
+            }
         }
-        AgentProduct agentProduct = new AgentProduct();
-        MallProduct mallProduct= new MallProduct();
-      //  mallProduct.setProductId(100);
-
-      //  agentProduct.setProduct(mallProduct);
-        agentProduct.setWarning(20);
-
-    //    agentProductRepository.saveAndFlush(agentProduct);
-
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return success ? ApiResult.resultWith(ResultCodeEnum.SUCCESS):ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
     }
 
 
