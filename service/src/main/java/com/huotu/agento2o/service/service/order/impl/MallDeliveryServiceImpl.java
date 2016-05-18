@@ -1,17 +1,26 @@
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.Constant;
-import com.huotu.agento2o.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.huotu.agento2o.common.SysConstant;
+import com.huotu.agento2o.common.httputil.HttpClientUtil;
+import com.huotu.agento2o.common.httputil.HttpResult;
+import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
+import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.model.order.BatchDeliverResult;
+import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.model.order.LogiModel;
+import com.huotu.agento2o.service.model.order.OrderForDelivery;
 import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
+import com.huotu.agento2o.service.service.order.MallOrderService;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,9 +31,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by AiWelv on 2016/5/12.
@@ -34,6 +41,9 @@ public class MallDeliveryServiceImpl implements MallDeliveryService{
 
     @Autowired
     private MallDeliveryRepository deliveryRepository;
+
+    @Autowired
+    private MallOrderService orderService;
 
     @Override
     public List<MallDelivery> findByOrderId(String orderId) {
@@ -50,9 +60,9 @@ public class MallDeliveryServiceImpl implements MallDeliveryService{
         Specification<MallDelivery> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (author!=null && author instanceof Shop) {
-                predicates.add(cb.equal(root.get("shop").get("id").as(Long.class), deliverySearcher.getAgentId()));
+                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId()));
             }else if (author!=null && author instanceof Agent) {
-                predicates.add(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Long.class), deliverySearcher.getAgentId()));
+                predicates.add(cb.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId()));
             }
             predicates.add(cb.equal(cb.lower(root.get("type").as(String.class)), type.toLowerCase()));
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
@@ -86,7 +96,81 @@ public class MallDeliveryServiceImpl implements MallDeliveryService{
     }
 
     @Override
-    public ApiResult pushRefund(String orderId, LogiModel logiModel, int supplierId, String dicReturnItemsStr) throws UnsupportedEncodingException {
-        return null;
+    public ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int agentId) throws UnsupportedEncodingException {
+        Map<String, Object> params = new TreeMap<>();
+        params.put("lstDeliveryInfoJson", JSON.toJSONString(orderForDeliveries));
+        params.put("agentId", agentId);
+        String sign = SignBuilder.buildSignIgnoreEmpty(params, null, SysConstant.AGENT_KEY);
+        params.put("sign", sign);
+        HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/BatchDeliver", params);
+        if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
+            return JSON.parseObject(httpResult.getHttpContent(), new TypeReference<ApiResult<BatchDeliverResult>>() {
+            });
+        }
+        return ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
+    }
+
+    @Override
+    public ApiResult pushDelivery(DeliveryInfo deliveryInfo, int agentId) throws UnsupportedEncodingException {
+        MallOrder order = orderService.findByOrderId(deliveryInfo.getOrderId());
+        if (order.deliveryable()) {
+            String dicDeliverItemsStr = "";
+            for (MallOrderItem orderItem : order.getOrderItems()) {
+                //判断货品是否发货
+                if (orderItem.deliverable()) {
+                    if (!StringUtils.isEmpty(deliveryInfo.getSendItems()) &&
+                            deliveryInfo.getSendItems().contains("|" + orderItem.getItemId() + "|")) {
+                        dicDeliverItemsStr += orderItem.getItemId() + "," + orderItem.getNums() + "|";
+                    }
+                }
+            }
+            if (StringUtils.isEmpty(dicDeliverItemsStr)) {
+                return ApiResult.resultWith(ResultCodeEnum.DATA_NULL, "未找到发货信息", null);
+            }
+            //推送分销商进行发货
+            Map<String, Object> map = new TreeMap<>();
+            map.put("orderId", deliveryInfo.getOrderId());
+            map.put("logisticsName", deliveryInfo.getLogiName());
+            map.put("logisticsNo", deliveryInfo.getLogiNo());
+            map.put("logiCode", deliveryInfo.getLogiCode());
+                map.put("freight", Double.toString(deliveryInfo.getFreight()));
+            if (deliveryInfo.getRemark() != null && !"".equals(deliveryInfo.getRemark())) {
+                map.put("remark", deliveryInfo.getRemark());
+            }
+            map.put("agentId", agentId);
+            map.put("dicDeliverItemsStr", dicDeliverItemsStr.substring(0, dicDeliverItemsStr.length() - 1));
+            String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);
+            map.put("sign", sign);
+            HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/Deliver", map);
+            ApiResult apiResult;
+            if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
+                apiResult = JSON.parseObject(httpResult.getHttpContent(), ApiResult.class);
+            } else {
+                apiResult = ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
+            }
+            return apiResult;
+        }
+        return ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST, "该订单无法发货", null);
+    }
+
+    @Override
+    public ApiResult pushRefund(String orderId, LogiModel logiModel, Integer agentId, String dicReturnItemsStr) throws UnsupportedEncodingException {
+        Map<String, Object> param = new TreeMap<>();
+        param.put("orderId", orderId);
+        param.put("agentId", agentId);
+        param.put("logiName", logiModel.getLogiCompanyChina());
+        param.put("logiNo", logiModel.getLogiNo());
+        param.put("logiMobile", logiModel.getLogiMobile());
+        param.put("remark", logiModel.getLogiRemark());
+        param.put("dicReturnItemsStr", dicReturnItemsStr);
+        String sign = SignBuilder.buildSignIgnoreEmpty(param, null, SysConstant.AGENT_KEY);
+        param.put("sign", sign);
+
+        HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/ReturnProduct", param);
+        if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
+            return JSON.parseObject(httpResult.getHttpContent(), ApiResult.class);
+        } else {
+            return ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
+        }
     }
 }

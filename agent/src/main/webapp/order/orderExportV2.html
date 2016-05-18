@@ -18,7 +18,7 @@
 <body style="padding: 10px;">
     <form id="form1" action="exportExcel" method="get" >
       <div class="aspNetHidden">
-          <input id="customerId"  th:value="${orderExportModel.customerId}" type="hidden" value="20" name="customerId" />
+          <input id="agentId"  th:value="${orderExportModel.agentId}" type="hidden" value="20" name="agentId" />
           <input id="orderId"  th:value="${orderExportModel.txtOrderId}" type="hidden" value="20" name="orderId" />
           <input id="shipName"  th:value="${orderExportModel.txtShipName}" type="hidden" value="20" name="shipName" />
           <input id="shipMobile"  th:value="${orderExportModel.txtShipMobile}" type="hidden" value="20" name="shipMobile" />
@@ -46,8 +46,8 @@
     </form>
     <script type="text/javascript">
         function showBatchDelivery(){
-            var customerId=$("#customerId").val();
-            if(customerId =="" || customerId ==undefined){
+            var agentId=$("#agentId").val();
+            if(agentId =="" || agentId ==undefined){
                 jBox.tip('customerId 无法获取， 请检查！', 'info');
                 return
             }

@@ -35,7 +35,7 @@
     </div>
 
     <!--/*@thymesVar id="afterSaleSearch" type="com.huotu.hotsupplier.hbm.service.searchable.AfterSaleSearch"*/-->
-    <form method="get" id="searchForm" th:action="@{/supplier/afterSale/afterSaleList}" th:object="${afterSaleSearch}">
+    <form method="get" id="searchForm" th:action="@{/agent/afterSale/afterSaleList}" th:object="${afterSaleSearch}">
         <div class="search block" style="display: block;">
             <div class="h">
                 <span class="icon-sprite icon-magnifier"></span>
@@ -78,11 +78,11 @@
                                 </select>
                             </label>
                             <label>
-                                <a class="btn-lit btn-middle" href="javascript:$('#searchForm').submit();"
+                                <a class="btn-lit btn-middle" href="javascript:$('pageIndex').val(1);$('#searchForm').submit();"
                                    style="margin-bottom: 3px;">
                                     <span>查询</span>
                                 </a>
-                                <a class="btn-lit btn-middle" th:href="@{/supplier/afterSale/afterSaleList}"
+                                <a class="btn-lit btn-middle" th:href="@{/agent/afterSale/afterSaleList}"
                                    style="margin-bottom: 3px;">
                                     <span>显示全部</span>
                                 </a>
@@ -139,7 +139,7 @@
                             <td class="txt80 c" th:text="${#dates.format(afterSale.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
                             <td class="txt80 c">
-                                <a th:href="@{/supplier/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情</a>
+                                <a th:if="${authorType=='Shop' }" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情</a>
                             </td>
                         </tr>
                         </tbody>

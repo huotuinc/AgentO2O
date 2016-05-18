@@ -7,15 +7,19 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
+import com.huotu.agento2o.service.entity.order.MallAfterSalesItem;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.searchable.AfterSaleSearch;
+import com.huotu.agento2o.service.service.order.MallAfterSalesItemService;
 import com.huotu.agento2o.service.service.order.MallAfterSalesService;
+import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
@@ -31,6 +35,10 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
 
     @Autowired
     private MallAfterSalesRepository afterSalesRepository;
+    @Autowired
+    private MallAfterSalesItemService afterSalesItemService;
+    @Autowired
+    private MallOrderService orderService;
 
     @Override
     public Page<MallAfterSales> findAll(int pageIndex, Author author, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch) {
@@ -69,13 +77,15 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
     }
 
     @Override
+    @Transactional(value = "transactionManager")
     public void updateStatus(AfterSaleEnum.AfterSaleStatus afterSaleStatus, String afterId) {
-
+        afterSalesRepository.updateStatus(afterSaleStatus, afterId);
+        afterSalesRepository.flush();
     }
 
     @Override
     public MallAfterSales findByAfterId(String afterId) {
-        return null;
+        return afterSalesRepository.findOne(afterId);
     }
 
     @Override
@@ -94,13 +104,46 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
     }
 
     @Override
+    @Transactional(value = "transactionManager")
     public void afterSaleAgree(MallAfterSales afterSales, String message, AfterSaleEnum.AfterSaleStatus afterSaleStatus, AfterSaleEnum.AfterItemsStatus afterItemsStatus) {
-
+        //更改售后表状态
+        this.updateStatus(afterSaleStatus, afterSales.getAfterId());
+        //更改协商表
+        MallAfterSalesItem afterSalesItem = afterSalesItemService.findTopByIsLogic(afterSales, AfterSaleEnum.AfterSalesIsLogis.MESSAGE.getCode());
+        afterSalesItem.setAfterItemsStatus(afterItemsStatus);
+        afterSalesItem.setReply(message);
+        afterSalesItem.setReplyTime(new Date());
+        afterSalesItemService.save(afterSalesItem);
     }
 
     @Override
+    @Transactional(value = "transactionManager")
     public void afterSaleRefuse(MallAfterSales afterSales, String reason) {
-
+        Date now = new Date();
+        this.updateStatus(AfterSaleEnum.AfterSaleStatus.AFTER_SALE_REFUSED, afterSales.getAfterId());
+        //更改协商表
+        MallAfterSalesItem afterSalesItem = afterSalesItemService.findTopByIsLogic(afterSales, AfterSaleEnum.AfterSalesIsLogis.MESSAGE.getCode());
+        if (StringUtils.isEmpty(afterSalesItem.getReply())) {
+            afterSalesItem.setAfterItemsStatus(AfterSaleEnum.AfterItemsStatus.AFTER_SALE_REFUSED);
+            afterSalesItem.setReply(reason);
+            afterSalesItem.setReplyTime(now);
+        } else {
+            afterSalesItem = new MallAfterSalesItem();
+            afterSalesItem.setAfterContext("");
+            afterSalesItem.setAfterSales(afterSales);
+            afterSalesItem.setAfterMoney(0);
+            afterSalesItem.setAfterMobile("");
+            afterSalesItem.setAfterSalesReason(AfterSaleEnum.AfterSalesReason.UN_SELECT);
+            afterSalesItem.setAfterSaleType(AfterSaleEnum.AfterSaleType.UN_SELECT);
+            afterSalesItem.setAfterItemsStatus(AfterSaleEnum.AfterItemsStatus.AFTER_SALE_REFUSED);
+            afterSalesItem.setApplyTime(now);
+            afterSalesItem.setIsLogic(AfterSaleEnum.AfterSalesIsLogis.MESSAGE.getCode());
+            afterSalesItem.setReply(reason);
+            afterSalesItem.setReplyTime(now);
+        }
+        afterSalesItemService.save(afterSalesItem);
+        //更改分销商订单状态
+        orderService.updatePayStatus(afterSales.getOrderId(), afterSales.getPayStatus());
     }
 
     @Override
