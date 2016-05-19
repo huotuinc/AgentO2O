@@ -87,13 +87,13 @@
                                 <tr>
                                     <th>代理商等级：</th>
                                     <td>
-                                        <input type="text" class="input-normal"/>
+                                        <input type="text" class="input-normal"  readonly="readonly" th:value="${agent.agentLevel.levelName}" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>代理商账户：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="author" readonly="readonly"  th:field="${agent.username}" th:value="${agent.username}" />
+                                        <input type="text" class="input-normal" id="author" readonly="readonly" th:field="${agent.username}" th:value="${agent.username}" />
                                     </td>
                                 </tr>
                                 <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
@@ -231,37 +231,6 @@
         </div>
     </div>
 </form>
-<script>
-
-    /**
-     * 转换form查看
-     */
-    function change2view2form(formId){
-        var winfra = $('#'+formId);
-        try{
-            //替换所有的输入框为文本框
-            winfra.find(":input").each(
-                    function(i) {
-                        var inputType = this.type ? this.type.toLowerCase() : null;
-                        if ( inputType != "hidden") {
-                            if(inputType == "button"){
-                                $(this).remove();
-                            }else{
-                                var tmpvalue = $(this).val();
-                                if(inputType == "select-one"){
-                                    var tmpText = $(this).find("option:selected").text();
-                                    $(this).replaceWith("<span>" + tmpText + "</span>");
-                                }else{
-                                    $(this).replaceWith("<span>" + tmpvalue + "</span>");
-                                }
-                            }
-                        }
-                    });
-        }catch(e){
-        }
-    }
-
-</script>
 <script th:inline="javascript">
         //保存
         function saveShopConfig() {

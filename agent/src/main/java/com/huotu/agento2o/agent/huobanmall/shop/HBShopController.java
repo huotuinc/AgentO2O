@@ -46,14 +46,13 @@ public class HBShopController {
     private AgentLevelService agentLevelService;
 
     /**
-     * 跳转门店新增页面
+     * 查看门店
      * @param shop
      * @param model
      * @return
      */
     @RequestMapping("/addShopPage")
     public String toAddShopPage(Shop shop, Model model) {
-        // TODO: 2016/5/13 等级名称
         shop = shopService.findById(shop.getId());
         model.addAttribute("shop",shop);
         return "shop/huobanmall/hb_viewShop";
@@ -64,17 +63,17 @@ public class HBShopController {
      * @param model
      * @return
      */
-    @RequestMapping("/shopList")
-    public String showShopList(@RequestAttribute(value = "customerId") String customerIdStr, Model model , ShopSearchCondition searchCondition, @RequestParam(required = false, defaultValue = "1")int pageIndex, String type) {
-        if("list".equals(type)){//门店列表 为非未审核的门店 ?type=list  //1,2,3
-        }else{//门店审核 显示所有状态为待审核且Disabled=0的门店信息 ?type=audit
-
-        }
+    @RequestMapping(value = "/shopList" )
+    public String showShopList(@RequestAttribute(value = "customerId") String customerIdStr,
+                               Model model ,
+                               ShopSearchCondition searchCondition,
+                               @RequestParam(required = false, defaultValue = "1")int pageIndex) {
         int customerId = Integer.parseInt(customerIdStr);
         List<AgentLevel> agentLevels =agentLevelService.findByCustomertId(customerId);
-        model.addAttribute("agentLevels", agentLevels);
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
+        model.addAttribute("type",searchCondition.getType());
+        model.addAttribute("agentLevels", agentLevels);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalRecords", shopsList.getTotalElements());
         model.addAttribute("pageSize", shopsList.getSize());
@@ -85,23 +84,10 @@ public class HBShopController {
     }
 
     /**
-     * 更改门店审核状态
+     * 冻结解冻
      * @param id
-     * @param type
      * @return
      */
-    @RequestMapping("/changeStatus")
-    @ResponseBody
-    public ApiResult changeStatus(int id,String type){
-        AgentStatusEnum statusEnum = AgentStatusEnum.NOT_CHECK;
-        if("ToFactory".equals(type)){
-            statusEnum = AgentStatusEnum.CHECKING ;
-        }
-        shopService.updateStatus(statusEnum,id);
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
-    }
-
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
     public ApiResult changeIsDisabled(int id){
@@ -112,8 +98,7 @@ public class HBShopController {
     }
 
     /**
-     * 导出Excel 订单
-     *
+     * 导出Excel
      */
     @RequestMapping("exportExcel")
     public void exportExcel(ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
@@ -128,7 +113,7 @@ public class HBShopController {
         OutputStream fOut = null;
         try {
             // 进行转码，使其支持中文文件名
-            String excelName = "shop-" + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
+            String excelName = "shops-" + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
             excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
             response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
             HSSFWorkbook workbook = shopService.createWorkBook(shopList);
@@ -146,6 +131,11 @@ public class HBShopController {
         }
     }
 
+    /**
+     * 审核
+     * @param shop
+     * @return
+     */
     @RequestMapping("/audit")
     @ResponseBody
     public ApiResult toAudit(Shop shop) {
@@ -154,6 +144,11 @@ public class HBShopController {
         return res;
     }
 
+    /**
+     * 重置密码
+     * @param shop
+     * @return
+     */
     @RequestMapping("/resetpassword")
     @ResponseBody
     public ApiResult resetPassword(Shop shop) {

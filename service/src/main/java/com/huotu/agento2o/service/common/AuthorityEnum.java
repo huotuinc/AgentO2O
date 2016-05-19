@@ -9,6 +9,7 @@ public enum AuthorityEnum implements ICommonEnum {
     MANAGER_ROOT("ROLE_ROOT", "超级管理员"),
     AGENT_ROOT("ROLE_AGENT","代理商"),
     ROLE_SHOP("ROLE_SHOP","门店"),
+    ROLE_SHOPDATA("ROLE_SHOPDATA","门店资料"),
     ROLE_ORDER("ROLE_ORDER","订单"),
     ROLE_PURCHASE("ROLE_PURCHASE","采购");
     private String code;

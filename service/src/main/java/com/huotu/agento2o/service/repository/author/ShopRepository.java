@@ -16,11 +16,8 @@ import java.util.List;
  */
 @Repository(value = "shopRepository")
 public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecificationExecutor {
-    Shop findByUsernameAndStatus(String userName, AgentStatusEnum status);
 
     Shop findByUsername(String userName);
-
-    List<Shop> findByParentAuthorAndIsDeleted(Author author , Boolean isDeleted);
 
     @Query("update Shop shop set shop.status=?1 where shop.id=?2")
     @Modifying

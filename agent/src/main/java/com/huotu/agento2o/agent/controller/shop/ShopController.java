@@ -14,6 +14,7 @@ import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,17 +34,14 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/shop")
-//@PreAuthorize("hasAnyRole('Agent')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP')")
 public class ShopController {
 
     @Autowired
     private ShopService shopService ;
 
-    @Autowired
-    private AuthorService authorService ;
-
     /**
-     * 跳转门店新增页面
+     * 门店新增页面
      * @param customer
      * @param shop
      * @param model
@@ -51,7 +49,6 @@ public class ShopController {
      */
     @RequestMapping("/addShopPage")
     public String toAddShopPage(@AuthenticationPrincipal Agent customer, Shop shop, Model model) {
-        // TODO: 2016/5/13 等级名称
         model.addAttribute("agent",customer);
         if(!"".equals(shop.getId()) && shop.getId()!=null){//编辑
             shop = shopService.findById(shop.getId());
@@ -61,7 +58,7 @@ public class ShopController {
     }
 
     /**
-     *新增门店
+     *保存门店
      * @param customer
      * @param shop
      * @return
@@ -87,9 +84,11 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/shopList")
-    public String showShopList(@AuthenticationPrincipal Agent customer, Model model , ShopSearchCondition searchCondition, @RequestParam(required = false, defaultValue = "1")int pageIndex) {
-        Author author = authorService.findById(customer.getId());
-        searchCondition.setParentAuthor(author);
+    public String showShopList(@AuthenticationPrincipal Agent customer,
+                               Model model ,
+                               ShopSearchCondition searchCondition,
+                               @RequestParam(required = false, defaultValue = "1")int pageIndex) {
+        searchCondition.setParentAuthor(customer);
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("totalPages", totalPages);
@@ -119,6 +118,11 @@ public class ShopController {
         return res;
     }
 
+    /**
+     * 删除门店
+     * @param id
+     * @return
+     */
     @RequestMapping("/delete")
     @ResponseBody
     public ApiResult deleteById(int id){
@@ -127,6 +131,11 @@ public class ShopController {
         return res;
     }
 
+    /**
+     * 冻结解冻
+     * @param id
+     * @return
+     */
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
     public ApiResult changeIsDisabled(int id){
@@ -137,12 +146,15 @@ public class ShopController {
     }
 
     /**
-     * 导出Excel 订单
+     * 导出Excel
      *
      */
     @RequestMapping("exportExcel")
-    public void exportExcel(@AuthenticationPrincipal Agent customer, ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
-                            HttpSession session, HttpServletResponse response) {
+    public void exportExcel(@AuthenticationPrincipal Agent customer,
+                            ShopSearchCondition searchCondition,
+                            int txtBeginPage, int txtEndPage,
+                            HttpSession session,
+                            HttpServletResponse response) {
         searchCondition.setParentAuthor(customer);
         int pageSize =  Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
         Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);

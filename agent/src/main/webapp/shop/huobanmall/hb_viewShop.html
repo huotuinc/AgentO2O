@@ -87,13 +87,13 @@
                                 <tr>
                                     <th>代理商等级：</th>
                                     <td>
-                                        <input type="text" class="input-normal"/>
+                                        <input type="text" class="input-normal" readonly="readonly" th:field="*{parentAuthor.agentLevel.levelName}"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>代理商账户：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="author" readonly="readonly"  th:field="*{parentAuthor.username}" th:value="*{parentAuthor.username}" />
+                                        <input type="text" class="input-normal" id="author" readonly="readonly" th:field="*{parentAuthor.username}" th:value="*{parentAuthor.username}" />
                                     </td>
                                 </tr>
                                 <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
@@ -234,7 +234,6 @@
     function audit() {
         $("#audit_dialog").html($("#audit_template").html());
         J.ShowDialog("audit_dialog", "审核", function () {
-            debugger;
             var requestData = checkAudit();
             if (requestData != null) {
                 $.jBox.tip("正在审批...", "loading");
