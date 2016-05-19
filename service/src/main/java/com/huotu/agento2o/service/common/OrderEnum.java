@@ -67,7 +67,8 @@ public interface OrderEnum {
         BAIDUPAY(200, "百度钱包"),
         WEIXINPAY_APP(300, "微信APP支付"),
         WEIFUTONG(500, "威富通"),
-        HUIJINTONG(600, "汇金宝");
+        HUIJINTONG(600, "汇金宝"),
+        YUFUKUAN(700, "预付款");
 
         private Integer code;
         private String value;

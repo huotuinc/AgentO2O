@@ -36,7 +36,6 @@ public class AttributeArgumentResolver implements HandlerMethodArgumentResolver 
         if (StringUtils.isEmpty(attributeName)) {
             attributeName = methodParameter.getParameterName();
         }
-        // TODO: 2016/5/16 类型转换
         Class methodType = methodParameter.getParameterType();
         Object result = nativeWebRequest.getAttribute(attributeName, RequestAttributes.SCOPE_REQUEST);
         return ConvertUtils.convert(result, methodType);

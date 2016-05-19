@@ -91,20 +91,20 @@ public abstract class AbstractStaticResourceService implements StaticResourceSer
 
     @Override
     public void setListUri(List targetList, String sourceColumnName, String targetColumnName) {
-        if(targetList != null){
-            targetList.forEach(p->{
+        if (targetList != null) {
+            targetList.forEach(p -> {
                 try {
-                    if(p.getClass().getDeclaredField(targetColumnName).getType() != URI.class){
+                    if (p.getClass().getDeclaredField(targetColumnName).getType() != URI.class) {
                         return;
                     }
                     Field sourceColumn = p.getClass().getDeclaredField(sourceColumnName);
                     sourceColumn.setAccessible(true);
                     String resourceStr = String.valueOf(sourceColumn.get(p));
-                    if(StringUtil.isEmptyStr(resourceStr)){
+                    if (!StringUtil.isEmptyStr(resourceStr)) {
                         URI picUri = getResource(resourceStr);
                         Field targetColumn = p.getClass().getDeclaredField(targetColumnName);
                         targetColumn.setAccessible(true);
-                        targetColumn.set(p,picUri);
+                        targetColumn.set(p, picUri);
                         targetColumn.setAccessible(false);
                     }
                     sourceColumn.setAccessible(false);

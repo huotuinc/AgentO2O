@@ -35,6 +35,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Transient;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,8 +70,12 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("author").get("id").as(Integer.class), purchaseOrderSearcher.getAgentId()));
             }
-            if (purchaseOrderSearcher.getParentAgentId() != null && purchaseOrderSearcher.getParentAgentId() != 0) {
-                predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()));
+            if (purchaseOrderSearcher.getParentAgentId() != null) {
+                if (purchaseOrderSearcher.getParentAgentId() == 0) {
+                    predicates.add(cb.isNull(root.get("author").get("parentAuthor").as(Author.class)));
+                } else {
+                    predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()));
+                }
             }
             if (purchaseOrderSearcher.getStatusCode() != -1) {
                 predicates.add(cb.equal(root.get("status").as(PurchaseEnum.OrderStatus.class),
@@ -98,6 +103,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class), "%" + purchaseOrderSearcher.getOrderItemName() + "%"));
             }
+            predicates.add(cb.isFalse(root.get("disabled")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         return purchaseOrderRepository.findAll(specification, new PageRequest(purchaseOrderSearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
@@ -112,7 +118,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      */
     @Override
     @Transactional
-    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) {
+    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         purchaseOrder.setAuthor(author);
@@ -125,9 +131,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             ShoppingCart shoppingCart = shoppingCartRepository.findByIdAndAuthor(Integer.valueOf(shoppingCartId), author);
             if (shoppingCart == null) {
                 continue;
-            }
-            if (shoppingCart.getNum() > (shoppingCart.getProduct().getStore() - shoppingCart.getProduct().getFreez())) {
-                return new ApiResult("库存不足，无法下单！");
             }
             shoppingCartList.add(shoppingCart);
         }
@@ -150,11 +153,19 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (author.getParentAuthor() == null) {
                 //修改平台方货品预占库存
                 MallProduct customerProduct = shoppingCart.getProduct();
+                if (customerProduct.getFreez() + shoppingCart.getNum() > customerProduct.getStore()) {
+                    // TODO: 2016/5/19 单元测试，库存不足 
+                    throw new Exception("库存不足，下单失败！");
+                }
                 customerProduct.setFreez(customerProduct.getFreez() + shoppingCart.getNum());
                 productRepository.save(customerProduct);
             } else {
                 //修改代理商库存
                 AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct((Agent) author.getParentAuthor(), shoppingCart.getProduct());
+                if (agentProduct.getFreez() + shoppingCart.getNum() > agentProduct.getStore()) {
+                    // TODO: 2016/5/19 单元测试，库存不足 
+                    throw new Exception("库存不足，下单失败！");
+                }
                 agentProduct.setFreez(agentProduct.getFreez() + shoppingCart.getNum());
                 agentProductRepository.save(agentProduct);
             }
@@ -172,5 +183,42 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     @Override
     public AgentPurchaseOrder findByPOrderId(String pOrderId) {
         return purchaseOrderRepository.findOne(pOrderId);
+    }
+
+    /**
+     * 逻辑删除采购单 设置采购单 disable 为 true
+     * 减少相应库存
+     *
+     * @param agentPurchaseOrder
+     */
+    @Override
+    @Transactional
+    public void disableAgentPurchaseOrder(AgentPurchaseOrder agentPurchaseOrder, Author author) throws Exception {
+        List<AgentPurchaseOrderItem> purchaseOrderItemList = agentPurchaseOrder.getOrderItemList();
+        for (AgentPurchaseOrderItem item : purchaseOrderItemList) {
+            //减少 预占库存
+            if (author.getParentAuthor() == null) {
+                //修改平台方货品预占库存
+                MallProduct customerProduct = item.getProduct();
+                if (customerProduct.getFreez() - item.getNum() <= 0) {
+                    // TODO: 2016/5/19 单元测试，库存不足 
+                    throw new Exception("库存不足，无法删除！");
+                }
+                customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
+                productRepository.save(customerProduct);
+            } else {
+                //修改代理商库存
+                AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct((Agent) author.getParentAuthor(), item.getProduct());
+                if (agentProduct.getFreez() - item.getNum() > 0) {
+                    // TODO: 2016/5/19 单元测试 库存不足 
+                    throw new Exception("库存不足，无法删除！");
+                }
+                agentProduct.setFreez(agentProduct.getFreez() - item.getNum());
+                agentProductRepository.save(agentProduct);
+            }
+        }
+        agentPurchaseOrder.setDisabled(true);
+        purchaseOrderRepository.save(agentPurchaseOrder);
+        return;
     }
 }

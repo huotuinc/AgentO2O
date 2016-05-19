@@ -80,22 +80,16 @@ public class AgentPurchaseOrder {
 
     /*以下为发票信息*/
     /**
-     * 公司名称
+     * 发票抬头
      */
-    @Column(name = "Company_Name")
-    private String companyName;
+    @Column(name = "Tax_Title")
+    private String taxTitle;
 
     /**
-     * 公司电话
+     * 发票内容
      */
-    @Column(name = "Company_Tel")
-    private String companyTel;
-
-    /**
-     * 公司地址
-     */
-    @Column(name = "CompanyAddr")
-    private String companyAddr;
+    @Column(name = "Tax_Content")
+    private String taxContent;
 
     /**
      * 纳税人识别码
@@ -114,18 +108,6 @@ public class AgentPurchaseOrder {
      */
     @Column(name = "Account_No")
     private String accountNo;
-
-    /**
-     * 税务登记证
-     */
-    @Column(name = "TaxRegistCertificateUrl")
-    private String taxRegistCertificateUrl;
-
-    /**
-     * 一般纳税人资格证
-     */
-    @Column(name = "GeneralCertificateUrl")
-    private String generalCertificateUrl;
 
     /**
      * 采购单状态
@@ -179,5 +161,17 @@ public class AgentPurchaseOrder {
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<AgentPurchaseOrderItem> orderItemList;
+
+    //采购状态为 待审核 或 审核不通过
+    //可删除
+    public boolean deletable(){
+        return status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED;
+    }
+
+    //采购状态为 待审核
+    //可审核
+    public boolean checkable(){
+        return status == PurchaseEnum.OrderStatus.CHECKING;
+    }
 
 }

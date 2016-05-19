@@ -15,7 +15,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
     <title>
-        我的采购单列表
+        下级采购单列表
     </title>
     <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
     <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
@@ -34,7 +34,7 @@
 <body marginwidth="0" marginheight="0">
 
 <!--/*@thymesVar id="purchaseOrderSearcher" type="com.huotu.agento2o.service.searchable.PurchaseOrderSearcher"*/-->
-<form method="get" action="/purchaseOrder/showPurchaseOrderList" th:action="@{/purchaseOrder/showPurchaseOrderList}" id="form1" th:object="${purchaseOrderSearcher}">
+<form method="get" action="/purchaseOrder/showAgentPurchaseOrderList" th:action="@{/purchaseOrder/showAgentPurchaseOrderList}" id="form1" th:object="${purchaseOrderSearcher}">
     <div class="container">
         <div class="blank10">
         </div>
@@ -182,7 +182,7 @@
                                         <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
                                     </span>-->
                                     <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
-                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="删除"> | 删除</a>
+                                    <a th:if="${pOrder.checkable}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="checkOrder(this)" title="审核"> | 审核</a>
                                 </div>
                             </td>
                         </tr>
@@ -212,33 +212,7 @@
     function showDetail(obj) {
         var pOrderId = $(obj).attr("pOrderId");
         window.location.href = baseUrl + "/showPurchaseOrderDetail?pOrderId=" + pOrderId;
-    }
-    //删除采购单
-    function deleteOrder(obj){
-        /*$.jBox.confirm("确定要删除该采购单吗？","提示",function(v){
-            if(v == 'ok'){
-                var pOrderId = $(obj).attr("pOrderId");
-                $.jBox.tip("正在删除...", "loading");
-                $.ajax({
-                    type: "POST",
-                    url: basicUrl + "/deletePurchaseOrder",
-                    data: {
-                        pOrderId: pOrderId
-                    },
-                    dataType: "json",
-                    success: function (msg) {
-                        if (msg.code == 200) {
-                            $.jBox.tip("删除成功!");
-                            setTimeout(function(){
-                                window.location.reload();
-                            },500);
-                        } else {
-                            $.jBox.tip(msg.msg, 'error');
-                        }
-                    }
-                })
-            }
-        })*/
+//        J.PopupIFrame(url, "订单详情", 1100, 680, "ifrm", "", "auto", "");
     }
     function searchOrder() {
         $("#pageIndex").val(1);

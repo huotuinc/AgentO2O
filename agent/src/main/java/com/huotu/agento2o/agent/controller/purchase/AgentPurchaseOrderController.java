@@ -13,7 +13,9 @@ package com.huotu.agento2o.agent.controller.purchase;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.controller.common.UploadController;
 import com.huotu.agento2o.agent.service.StaticResourceService;
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -27,6 +29,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.net.URI;
@@ -69,18 +73,63 @@ public class AgentPurchaseOrderController {
     }
 
     /**
+     * 显示下级采购单
+     * @param author
+     * @param purchaseOrderSearcher
+     * @return
+     * @throws Exception
+     */
+    @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
+    @RequestMapping("/showAgentPurchaseOrderList")
+    public ModelAndView showAgentPurchaseOrderList(@AuthenticationPrincipal Author author,PurchaseOrderSearcher purchaseOrderSearcher) throws Exception{
+        ModelAndView model = new ModelAndView();
+        model.setViewName("/purchase/purchase_order_list");
+        purchaseOrderSearcher.setParentAgentId(author.getId());
+        Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
+        model.addObject("purchaseOrderList",purchaseOrderPage.getContent());
+        model.addObject("pageSize", Constant.PAGESIZE);
+        model.addObject("pageNo",purchaseOrderSearcher.getPageIndex());
+        model.addObject("totalPages",purchaseOrderPage.getTotalPages());
+        model.addObject("totalRecords",purchaseOrderPage.getTotalElements());
+        model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
+        model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
+        return model;
+    }
+
+    /**
      * 显示采购单详细
      */
     @RequestMapping("/showPurchaseOrderDetail")
-    public ModelAndView showPurchaseOrderDetail(@AgtAuthenticationPrincipal Author author,String pOrderId) throws Exception{
+    public ModelAndView showPurchaseOrderDetail(
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam(required = true) String pOrderId) throws Exception{
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/purchase_order_detail");
         AgentPurchaseOrder purchaseOrder =  purchaseOrderService.findByPOrderId(pOrderId);
-        resourceService.setListUri(purchaseOrder.getOrderItemList(),"thumbnailPic","picUri");
+        if(purchaseOrder != null){
+            resourceService.setListUri(purchaseOrder.getOrderItemList(),"thumbnailPic","picUri");
+        }
         model.addObject("purchaseOrder",purchaseOrder);
         model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         model.addObject("taxTypeEnum",PurchaseEnum.TaxType.values());
         return model;
+    }
+
+    /**
+     * 取消采购单
+     */
+    @RequestMapping("/deletePurchaseOrder")
+    @ResponseBody
+    public ApiResult deletePurchaseOrder(
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam(required = true) String pOrderId) throws Exception{
+        ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        AgentPurchaseOrder purchaseOrder = purchaseOrderService.findByPOrderId(pOrderId);
+        if(purchaseOrder != null){
+            purchaseOrderService.disableAgentPurchaseOrder(purchaseOrder,author);
+            result = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        }
+        return result;
     }
 
 
