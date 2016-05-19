@@ -2,6 +2,7 @@ package com.huotu.agento2o.service.service.product;
 
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,6 @@ public class ProductWarning {
      * 每个一小时进行一次查询提醒
      */
     @Scheduled(cron = "*/1 * * * * ?")
-    @Transactional
     public void productWarningService() {
 
         //查询出需要提醒的库存信息
@@ -31,6 +31,10 @@ public class ProductWarning {
         // System.out.println("hello");
 
     }
+
+
+
+
 
 
 

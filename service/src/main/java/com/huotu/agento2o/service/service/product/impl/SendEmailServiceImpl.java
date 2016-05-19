@@ -6,6 +6,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
@@ -38,4 +39,14 @@ public class SendEmailServiceImpl implements SendEmailService {
             System.err.println(ex.getMessage());
         }
     }
+
+
+    @Async
+    public void sayNumber() throws InterruptedException {
+        Thread.sleep(1000);
+        System.out.println("Execute method asynchronously. "
+                + Thread.currentThread().getName());
+
+    }
+
 }

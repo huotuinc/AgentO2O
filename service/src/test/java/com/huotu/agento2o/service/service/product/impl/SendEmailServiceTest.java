@@ -27,4 +27,16 @@ public class SendEmailServiceTest {
     }
 
 
+    @Test
+    public void testAsync() throws InterruptedException {
+        for(int i=1;i<100;i++){
+            sendEmailService.sayNumber();
+        }
+
+        Thread.sleep(10000);
+    }
+
+
+
+
 }
