@@ -35,4 +35,8 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
     @Query("update AgentProduct  set warning=?3 where agent.id=?1 and product.productId=?2")
     @Modifying
     int updateWaring(Integer agentId,Integer productId,Integer warning);
+
+    List<AgentProduct> findAgentProductByAgent_Id(Integer agentId);
+
+    AgentProduct findByProduct_productId(Integer productId);
 }
