@@ -1,15 +1,17 @@
 package com.huotu.agento2o.agent.controller.shop;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
-import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.author.ShopService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,9 +38,6 @@ public class ShopController {
 
     @Autowired
     private ShopService shopService ;
-
-    @Autowired
-    private AgentService AgentService ;
 
     @Autowired
     private AuthorService authorService ;
@@ -85,9 +89,8 @@ public class ShopController {
     @RequestMapping("/shopList")
     public String showShopList(@AuthenticationPrincipal Agent customer, Model model , ShopSearchCondition searchCondition, @RequestParam(required = false, defaultValue = "1")int pageIndex) {
         Author author = authorService.findById(customer.getId());
-        searchCondition.setAuthor(author);
-
-        Page<Shop> shopsList = shopService.findAll(pageIndex, 20, searchCondition);
+        searchCondition.setParentAuthor(author);
+        Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalRecords", shopsList.getTotalElements());
@@ -133,4 +136,39 @@ public class ShopController {
         return res;
     }
 
+    /**
+     * 导出Excel 订单
+     *
+     */
+    @RequestMapping("exportExcel")
+    public void exportExcel(@AuthenticationPrincipal Agent customer, ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
+                            HttpSession session, HttpServletResponse response) {
+        searchCondition.setParentAuthor(customer);
+        int pageSize =  Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
+        Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
+        List<Shop> shopList = pageInfo.getContent();
+        session.setAttribute("state", null);
+        // 生成提示信息，
+        response.setContentType("apsplication/vnd.ms-excel");
+        String codedFileName = null;
+        OutputStream fOut = null;
+        try {
+            // 进行转码，使其支持中文文件名
+            String excelName = "shop-" + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
+            excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
+            response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
+            HSSFWorkbook workbook = shopService.createWorkBook(shopList);
+            fOut = response.getOutputStream();
+            workbook.write(fOut);
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                assert fOut != null;
+                fOut.flush();
+                fOut.close();
+            } catch (IOException ignored) {
+            }
+            session.setAttribute("state", "open");
+        }
+    }
 }

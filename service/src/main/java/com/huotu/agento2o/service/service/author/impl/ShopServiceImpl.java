@@ -10,14 +10,19 @@
 
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -116,6 +121,12 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
+    public void updateStatusAndComment(AgentStatusEnum Status, String comment, int id) {
+        shopRepository.updateStatusAndComment(Status, comment, id);
+    }
+
+    @Override
+    @Transactional
     public void deleteById(int id) {
         shopRepository.updateIsDeleted(id);
     }
@@ -124,6 +135,13 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public void updateIsDisabledById(boolean isDisabled ,int id) {
         shopRepository.updateIsDisabled(isDisabled,id);
+    }
+
+    @Override
+    @Transactional
+    public void updatePasswordById(String password, int id) {
+        password = passwordEncoder.encode(password);
+        shopRepository.updatePassword(password,id);
     }
 
     @Override
@@ -138,27 +156,71 @@ public class ShopServiceImpl implements ShopService {
     public Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition){
         Specification<Shop> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if(searchCondition.getAuthor().getId()!=null){
-                predicates.add(cb.equal(root.get("parentAuthor").as(Author.class), searchCondition.getAuthor()));
-            }
+
+            //门店过滤条件
             if (!StringUtils.isEmpty(searchCondition.getName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + searchCondition.getName() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getProvince())) {
                 predicates.add(cb.like(root.get("province").as(String.class), "%" + searchCondition.getProvince() + "%"));
             }
-            if (!StringUtils.isEmpty(searchCondition.getCity())) {
+            if (!StringUtil.isEmptyStr(searchCondition.getCity())) {
                 predicates.add(cb.like(root.get("city").as(String.class), "%" + searchCondition.getCity() + "%"));
             }
-            if (!StringUtils.isEmpty(searchCondition.getDistrict())) {
+            if (!StringUtil.isEmptyStr(searchCondition.getDistrict())) {
                 predicates.add(cb.like(root.get("district").as(String.class), "%" + searchCondition.getDistrict() + "%"));
             }
             if (searchCondition.getStatus() != -1) {
                 predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,searchCondition.getStatus())));
             }
+
+            //上级代理商过滤条件
+            if(searchCondition.getParentAuthor()!=null){
+                predicates.add(cb.equal(root.get("parentAuthor").as(Author.class), searchCondition.getParentAuthor()));
+            }
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_name())) {
+                predicates.add(cb.like(root.get("parentAuthor").get("name").as(String.class), "%" + searchCondition.getParent_name() + "%"));
+            }
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_province())) {
+                predicates.add(cb.like(root.get("parentAuthor").get("province").as(String.class), "%" + searchCondition.getParent_province() + "%"));
+            }
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_city())) {
+                predicates.add(cb.like(root.get("parentAuthor").get("city").as(String.class), "%" + searchCondition.getParent_city() + "%"));
+            }
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_district())) {
+                predicates.add(cb.like(root.get("parentAuthor").get("district").as(String.class), "%" + searchCondition.getParent_district() + "%"));
+            }
+
+            //等级过滤
+            // TODO: 2016/5/18
+            if (searchCondition.getParent_agentLevel()!=-1) {
+//                predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class),  searchCondition.getParent_agentLevel() ));
+            }
+
+            // TODO: 2016/5/18 未提交状态显示条件
+//            predicates.add(cb.notEqual(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,0)));
+            predicates.add(cb.equal(root.get("isDeleted").as(Boolean.class),false));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
 
         return shopRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
+    }
+
+    @Override
+    public HSSFWorkbook createWorkBook(List<Shop> shops) {
+        List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
+        shops.forEach(shop -> {
+            List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
+
+            cellDescList.add(ExcelHelper.asCell(shop.getName()));
+            cellDescList.add(ExcelHelper.asCell(shop.getProvince()+'—'+shop.getCity()+'—'+shop.getDistrict()));
+            cellDescList.add(ExcelHelper.asCell(shop.getUsername()));
+            cellDescList.add(ExcelHelper.asCell(shop.getContact()));
+            cellDescList.add(ExcelHelper.asCell(shop.getMobile()));
+            cellDescList.add(ExcelHelper.asCell(shop.getStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(shop.isDisabled() ? "冻结": "激活" ));
+            rowAndCells.add(cellDescList);
+        });
+        return ExcelHelper.createWorkbook("门店列表", SysConstant.SHOP_EXPORT_HEADER, rowAndCells);
     }
 }

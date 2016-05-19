@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-<form action="#" th:action="@{/shop/addShop}" method="post" id="supConfigForm" th:object="${shop}" >
+<form action="#" th:action="@{/shop/addShop}" method="post" id="shopConfigForm" th:object="${shop}" >
     <div class="container">
         <div class="blank10">
         </div>
@@ -182,7 +182,7 @@
                                 <tr>
                                     <th>备注:</th>
                                     <td>
-                                        <textarea rows="6" style="width: 80%" id="comment" th:field="*{comment}" th:value="*{comment}"></textarea>
+                                        <textarea type="text" rows="6" style="width: 80%" id="comment" th:field="*{comment}" th:value="*{comment}"></textarea>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -231,10 +231,40 @@
         </div>
     </div>
 </form>
+<script>
+
+    /**
+     * 转换form查看
+     */
+    function change2view2form(formId){
+        var winfra = $('#'+formId);
+        try{
+            //替换所有的输入框为文本框
+            winfra.find(":input").each(
+                    function(i) {
+                        var inputType = this.type ? this.type.toLowerCase() : null;
+                        if ( inputType != "hidden") {
+                            if(inputType == "button"){
+                                $(this).remove();
+                            }else{
+                                var tmpvalue = $(this).val();
+                                if(inputType == "select-one"){
+                                    var tmpText = $(this).find("option:selected").text();
+                                    $(this).replaceWith("<span>" + tmpText + "</span>");
+                                }else{
+                                    $(this).replaceWith("<span>" + tmpvalue + "</span>");
+                                }
+                            }
+                        }
+                    });
+        }catch(e){
+        }
+    }
+
+</script>
 <script th:inline="javascript">
         //保存
         function saveShopConfig() {
-            debugger;
             var username = $.trim($("#username").val());
             var password = $.trim($("#password").val());
             var province = $.trim($("#province").val());
@@ -350,7 +380,7 @@
             city:city,
             dist:dist,
             nodata:null,
-            required:true
+            required:false
         });
         $("#password").parent().parent().hide();
     }else{
