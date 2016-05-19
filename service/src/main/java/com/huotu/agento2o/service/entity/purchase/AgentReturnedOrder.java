@@ -26,6 +26,7 @@ import java.util.Date;
 @Table(name = "Agt_Returned_Order")
 @Getter
 @Setter
+@Cacheable(false)
 public class AgentReturnedOrder {
     @Id
     @Column(name = "R_Order_Id")
@@ -73,7 +74,7 @@ public class AgentReturnedOrder {
     private PurchaseEnum.SendmentStatus sendmentStatus;
 
     /**
-     * 退货状态
+     * 审核状态
      */
     @Column(name = "Status")
     private PurchaseEnum.OrderStatus status;
@@ -91,12 +92,14 @@ public class AgentReturnedOrder {
     /**
      * 生成时间
      */
+    @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "Createtime")
     private Date createTime;
-    @Temporal(value = TemporalType.TIMESTAMP)
+
     /**
      * 退款时间
      */
+    @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "Paytime")
     private Date payTime;
     /**
