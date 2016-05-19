@@ -35,7 +35,6 @@
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
     <style type="text/css">
         .spModuleTitle {
             padding: 3px 10px 0px 10px;
@@ -270,7 +269,7 @@
                     <div>
                         <div class="division">
                             <span style="font-size: 14px;">备注：</span>
-                            <span><textarea rows="3" style="width: 90%" name="authorComment"/></span>
+                            <span><textarea rows="3" style="width: 90%" th:text="*{authorComment}" name="authorComment"/></span>
 
                         </div>
                     </div>

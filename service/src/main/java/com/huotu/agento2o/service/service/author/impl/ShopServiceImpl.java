@@ -194,7 +194,7 @@ public class ShopServiceImpl implements ShopService {
             //等级过滤
             // TODO: 2016/5/18
             if (searchCondition.getParent_agentLevel()!=-1) {
-//                predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class),  searchCondition.getParent_agentLevel() ));
+                predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class),  searchCondition.getParent_agentLevel() ));
             }
 
             // TODO: 2016/5/18 未提交状态显示条件

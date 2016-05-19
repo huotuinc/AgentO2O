@@ -9,6 +9,7 @@
   ~ 2013-2016. All rights reserved.
   ~
   -->
+
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
@@ -35,7 +36,6 @@
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
     <style type="text/css">
         .spModuleTitle {
             padding: 3px 10px 0px 10px;
@@ -235,6 +235,8 @@
                                     </th>
                                     <th scope="col" style="text-align: center;">订购数量/单位
                                     </th>
+                                    <th scope="col" style="text-align: center;">发货数量
+                                    </th>
                                     <th scope="col" style="text-align: center;">小计
                                     </th>
                                 </tr>
@@ -259,6 +261,9 @@
                                     </td>
                                     <td class="txt40 c" name="td-num">
                                         <span data-th-text="${orderItem.num} +' ' + ${orderItem.unit}"></span>
+                                    </td>
+                                    <td class="txt40 c" name="td-num">
+                                        <span data-th-text="${orderItem.sendNum}"></span>
                                     </td>
                                     <td class="txt40 c" data-th-text="${orderItem.price * orderItem.num}">
                                     </td>

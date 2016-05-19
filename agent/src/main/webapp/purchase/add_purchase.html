@@ -414,7 +414,7 @@
             if(bankName.length == 0){
                 $.jBox.tip("请输入开户银行名称");
             }
-            accountNo = $.trim($("#tax_accountNo").val(0));
+            accountNo = $.trim($("#tax_accountNo").val());
             if(accountNo.length == 0){
                 $.jBox.tip("请输入开户银行账号");
             }
@@ -439,7 +439,7 @@
         }
         data['shoppingCartIds']=shoppingCartIds;
         //备注
-        var authorComment = $.trim($("textarea[name=authorComment]").text());
+        var authorComment = $.trim($("textarea[name=authorComment]").val());
         if(authorComment.length > 0 ){
             data['authorComment']=authorComment;
         }
@@ -451,7 +451,7 @@
             dataType: "json",
             success: function (msg) {
                 if (msg.code == 200) {
-                    $.jBox.tip("新增采购单成功！");
+                    $.jBox.tip("新增采购单成功！",'success');
                     setTimeout(function(){
                         top.document.getElementById("content_left").contentDocument.getElementById("id_020201").getElementsByTagName("a")[0].click();
                     },500)

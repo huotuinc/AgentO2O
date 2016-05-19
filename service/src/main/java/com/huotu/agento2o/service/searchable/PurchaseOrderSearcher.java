@@ -20,6 +20,8 @@ public class PurchaseOrderSearcher {
     Integer agentId;
 
     Integer parentAgentId;
+
+    Integer customerId;
     /**
      * 审核状态
      */
