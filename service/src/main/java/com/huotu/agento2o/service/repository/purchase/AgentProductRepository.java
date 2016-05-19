@@ -10,6 +10,8 @@
 
 package com.huotu.agento2o.service.repository.purchase;
 
+import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -28,7 +30,13 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
     @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.agent.id = ?1")
     List<Integer> findGoodsListByAgentId(Integer agentId);
 
+    AgentProduct findByAgentAndProduct(Agent agent, MallProduct product);
+
     @Query("update AgentProduct  set warning=?3 where agent.id=?1 and product.productId=?2")
     @Modifying
     int updateWaring(Integer agentId,Integer productId,Integer warning);
+
+    List<AgentProduct> findAgentProductByAgent_Id(Integer agentId);
+
+    AgentProduct findByProduct_productId(Integer productId);
 }

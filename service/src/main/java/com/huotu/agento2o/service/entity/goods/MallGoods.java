@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -66,6 +67,8 @@ public class MallGoods {
      */
     @Column(name = "Thumbnail_Pic")
     private String thumbnailPic;
+    @Transient
+    private URI picUri;
     /**
      * 库存数量
      */

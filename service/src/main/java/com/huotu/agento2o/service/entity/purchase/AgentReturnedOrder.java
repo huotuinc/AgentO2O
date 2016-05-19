@@ -28,9 +28,8 @@ import java.util.Date;
 @Setter
 public class AgentReturnedOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "R_Order_Id")
-    private Integer id;
+    private String rOrderId;
 
     /**
      * 代理商/门店
@@ -94,6 +93,18 @@ public class AgentReturnedOrder {
      */
     @Column(name = "Createtime")
     private Date createTime;
+    @Temporal(value = TemporalType.TIMESTAMP)
+    /**
+     * 退款时间
+     */
+    @Column(name = "Paytime")
+    private Date payTime;
+    /**
+     * 最近修改时间
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "Last_update_time")
+    private Date lastUpdateTime;
     /**
      * 直系代理商/平台方备注
      */

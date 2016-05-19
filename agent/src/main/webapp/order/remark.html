@@ -30,13 +30,13 @@
         var baseUrl = /*[[@{/order/}]]*/ "/order/";
 
         function submitForm() {
-            var supplierMarkType = $("input[name=supplierMarkType]:checked").val();
-            var supplierMarkText = $("#supplierMarkType").val();
+            var agentMarkType = $("input[name=agentMarkType]:checked").val();
+            var agentMarkText = $("#agentMarkType").val();
             var orderId = $("#orderId").val();
             var requestData = {
                 orderId:orderId,
-                supplierMarkType: supplierMarkType,
-                supplierMarkText: supplierMarkText
+                agentMarkType: agentMarkType,
+                agentMarkText: agentMarkText
             };
             $.jBox.tip("正在保存...", "loading");
             setTimeout(function () {
@@ -72,37 +72,37 @@
                         <tbody>
                         <tr>
                             <td>
-                                <input id="raMarkTypes_0" type="radio" name="supplierMarkType" value="b1" th:checked="${supplierMarkType == null or supplierMarkType == 'b1'}"/>
+                                <input id="raMarkTypes_0" type="radio" name="agentMarkType" value="b1" th:checked="${agentMarkType == null or agentMarkType == 'b1'}"/>
                                 <label for="raMarkTypes_0">
                                     <img th:src="@{/resource/images/remark_icons/b1.gif}" width="20" height="20"/>
                                 </label>
                             </td>
                             <td>
-                                <input id="raMarkTypes_1" type="radio" name="supplierMarkType" value="b2" th:checked="${supplierMarkType == 'b2'}"/>
+                                <input id="raMarkTypes_1" type="radio" name="agentMarkType" value="b2" th:checked="${agentMarkType == 'b2'}"/>
                                 <label for="raMarkTypes_1">
                                     <img th:src="@{/resource/images/remark_icons/b2.gif}" width="20" height="20"/>
                                 </label>
                             </td>
                             <td>
-                                <input id="raMarkTypes_2" type="radio" name="supplierMarkType" value="b3" th:checked="${supplierMarkType == 'b3'}"/>
+                                <input id="raMarkTypes_2" type="radio" name="agentMarkType" value="b3" th:checked="${agentMarkType == 'b3'}"/>
                                 <label for="raMarkTypes_2">
                                     <img th:src="@{/resource/images/remark_icons/b3.gif}" width="20" height="20"/>
                                 </label>
                             </td>
                             <td>
-                                <input id="raMarkTypes_3" type="radio" name="supplierMarkType" value="b4" th:checked="${supplierMarkType=='b4'}"/>
+                                <input id="raMarkTypes_3" type="radio" name="agentMarkType" value="b4" th:checked="${agentMarkType=='b4'}"/>
                                 <label for="raMarkTypes_3">
                                     <img th:src="@{/resource/images/remark_icons/b4.gif}" width="20" height="20"/>
                                 </label>
                             </td>
                             <td>
-                                <input id="raMarkTypes_4" type="radio" name="supplierMarkType" value="b5" th:checked="${supplierMarkType == 'b5'}"/>
+                                <input id="raMarkTypes_4" type="radio" name="agentMarkType" value="b5" th:checked="${agentMarkType == 'b5'}"/>
                                 <label for="raMarkTypes_4">
                                     <img th:src="@{/resource/images/remark_icons/b5.gif}" width="20" height="20"/>
                                 </label>
                             </td>
                             <td>
-                                <input id="raMarkTypes_5" type="radio" name="supplierMarkType" value="b0" th:checked="${supplierMarkType == 'b0'}"/>
+                                <input id="raMarkTypes_5" type="radio" name="agentMarkType" value="b0" th:checked="${agentMarkType == 'b0'}"/>
                                 <label for="raMarkTypes_5">
                                     <img th:src="@{/resource/images/remark_icons/b0.gif}" width="20" height="20"/>
                                 </label>
@@ -115,7 +115,7 @@
             <tr>
                 <th>订单备注:</th>
                 <td>
-                    <textarea name="supplierMarkText" id="supplierMarkType" rows="6" style="width: 80%" th:text="${supplierMarkText}"></textarea>
+                    <textarea name="agentMarkText" id="agentMarkType" rows="6" style="width: 80%" th:text="${agentMarkText}"></textarea>
                 </td>
             </tr>
             </tbody>
