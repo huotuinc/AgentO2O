@@ -8,12 +8,12 @@
  *
  */
 
-package com.huotu.agento2o.service.entity.order;
+package com.huotu.agento2o.service.entity.purchase;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,49 +22,46 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 发货表,退货表
- * Created by helloztt on 2016/3/25.
+ * Created by helloztt on 2016/5/19.
  */
 @Entity
-@Table(name = "Mall_Delivery")
-@Setter
+@Table(name = "Agt_Delivery")
 @Getter
+@Setter
 @Cacheable(value = false)
-public class MallDelivery {
+public class AgentDelivery {
     @Id
     @Column(name = "Delivery_Id")
     private String deliveryId;
-
     @ManyToOne
-    @JoinColumn(name = "Order_Id")
+    @JoinColumn(name = "P_Order_Id")
     @JSONField(deserialize = false)
-    private MallOrder order;
-    @ManyToOne
-    @JoinColumn(name = "Member_Id", referencedColumnName = "UB_UserID")
-    private UserBaseInfo userBaseInfo;
-    @Column(name = "Type")
+    private AgentPurchaseOrder purchaseOrder;
+//    @ManyToOne
+//    @JoinColumn(name = "Agent_Id")
+//    private Author author;
+    @Column(name = "Agent_Id")
+    private Integer agentId;
+//    @ManyToOne
+//    @JoinColumn(name = "Parent_Agent_Id")
+//    private Agent parentAgentId;
+    @Column(name = "Parent_Agent_Id")
+    private Integer parentAgentId;
+    @Column(name = "DType")
     private String type;
-    //    @Transient
-//    private String logisticsCode;//物流公司 编码
     @Column(name = "Logi_Name")
     private String logisticsName;//物流公司
     @Column(name = "Logi_No")
     private String logisticsNo;//物流单号
     @Column(name = "Money")
     private double freight;//物流费用
-    //    private String remark;//备注
-    @ManyToOne
-    @JoinColumn(name = "Agent_Id")
-    private Shop shop;
-
-    @ManyToOne
-    @JoinColumn(name = "Beneficiary_Agent_id")
-    private Shop beneficiaryShop;
-
-    //    private String dicDeliverItemsStr;//发货数量序列化字段（货品id,发货数量|货品id,发货数量）
+//    @ManyToOne
+//    @JoinColumn(name = "Customer_Id")
+//    private MallCustomer customer;
+    @Column(name = "Customer_Id")
+    private Integer customerId;
     @Column(name = "T_Begin")
     private Date createTime;//单据生成时间
-
     @Column(name = "Ship_Addr")
     private String shipAddr;
     @Column(name = "Ship_Name")
@@ -75,7 +72,9 @@ public class MallDelivery {
     private String shipZip;
     @Column(name = "Ship_Tel")
     private String shipTel;
+    @Column(name = "Memo")
+    private String memo;
 
     @OneToMany(mappedBy = "delivery")
-    private List<MallDeliveryItem> deliveryItems;
+    private List<AgentDeliveryItem> deliveryItems;
 }

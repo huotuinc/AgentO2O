@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.entity.purchase;
 
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,7 +78,25 @@ public class AgentPurchaseOrderItem {
      */
     @Column(name = "Thumbnail_Pic")
     private String thumbnailPic;
+    /**
+     * 发货状态
+     */
+    @Column(name = "Ship_Status")
+    private PurchaseEnum.ShipStatus shipStatus = PurchaseEnum.ShipStatus.NOT_DELIVER;
+    /**
+     * 发货数量
+     */
+    @Column(name = "Sendnum")
+    private int sendNum = 0;
 
     @Transient
     private URI picUri;
+
+    //采购状态为已审核 且支付状态为 已支付 且发货状态 为空 或未发货
+    //可发货
+    public boolean deliverable() {
+        return purchaseOrder.getStatus() == PurchaseEnum.OrderStatus.CHECKED
+                && purchaseOrder.getPayStatus() == PurchaseEnum.PayStatus.PAYED
+                && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
+    }
 }

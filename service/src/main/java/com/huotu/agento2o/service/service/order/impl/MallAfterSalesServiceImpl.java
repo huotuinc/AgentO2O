@@ -22,6 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,10 +47,16 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
     public Page<MallAfterSales> findAll(int pageIndex, Author author, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch) {
         Specification<MallAfterSales> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (author!=null && author instanceof Shop) {
-                predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), agentId));
-            }else if (author!=null && author instanceof Agent) {
-                predicates.add(criteriaBuilder.equal(root.get("shop").get("parentAuthor").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
+            if (author != null && author instanceof Shop) {
+                Predicate p1 = criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), agentId);
+                Predicate p2 = criteriaBuilder.equal(root.get("beneficiaryShop").get("id").as(Integer.class), agentId);
+                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
+            } else if (author != null && author instanceof Agent) {
+                Join<MallAfterSales,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
+                Join<MallAfterSales,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class),JoinType.LEFT);
+                Predicate p1 = criteriaBuilder.equal(join1.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
+                Predicate p2 = criteriaBuilder.equal(join2.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
+                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             }
             if (!StringUtils.isEmpty(afterSaleSearch.getBeginTime())) {
                 Date beginTime = StringUtil.DateFormat(afterSaleSearch.getBeginTime(), StringUtil.TIME_PATTERN);
@@ -74,6 +83,24 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
         };
         return afterSalesRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize,
                 new Sort(Sort.Direction.DESC, "createTime")));
+    }
+
+    /**
+     * 用于判断门店或是平台发货
+     * @param afterSaleSearch
+     * @param criteriaBuilder
+     * @param predicates
+     * @param shop
+     * @param beneficiaryShop
+     */
+    private void judgeShipMode(AfterSaleSearch afterSaleSearch, CriteriaBuilder criteriaBuilder, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
+        if (afterSaleSearch.getShipMode() == 0) {
+            predicates.add(shop);
+        } else if (afterSaleSearch.getShipMode() == 1) {
+            predicates.add(beneficiaryShop);
+        } else {
+            predicates.add(criteriaBuilder.or(shop, beneficiaryShop));
+        }
     }
 
     @Override

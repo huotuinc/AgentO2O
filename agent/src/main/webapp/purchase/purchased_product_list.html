@@ -79,12 +79,12 @@
                             <td class="txt80 c">
                                 ￥<span data-th-text="${agentProduct.product.price}">100</span>
                             </td>
-                            <td class="txt80 c" data-th-text="${agentProduct.store-agentProduct.freez}">
+                            <td class="txt80 c store"  data-th-text="${agentProduct.store-agentProduct.freez}">
                                 1000
                             </td>
                             <td class="txt80 c">
                                 <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
-                                       data-th-max="${agentProduct.store-agentProduct.freez}"/>
+                                       data-th-max="${agentProduct.store-agentProduct.freez}" data-th-min="0"/>
                             </td>
                             <td class="txt20 c">
                                 <span data-th-text="${agentProduct.product.unit}"></span>
@@ -117,6 +117,38 @@
             </div>
             <p style="clear: both"></p>
         </div>
+
+    <div id="managerInfoDialog" style="width: auto; min-height: 49px; height: auto; display: none"
+    class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+    <div class="cnt form" style="padding: 10px; width: 500px; height: 100px;">
+        <table id="contenttable" class="data-form" border="0" cellspacing="1" cellpadding="0"
+               style="background: #e1e1e1;">
+            <tbody>
+            <tr style="color: #e8e8e8">
+                <th scope="row">联系方式：</th>
+                <td>
+                    <input type="text" id="mobile"/>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">配送方式：</th>
+                <td>
+                    <select name="deliverWay" id="deliverWay">
+                        <option value="HOME_DELIVERY">送货上门</option>
+                        <option value="EXPRESS">物流快递</option>
+                    </select>
+                </td>
+            </tr>
+            <tr style="color: rgb(232, 232, 232); display: table-row;" id="passtr" >
+                <th scope="row">备注：</th>
+                <td>
+                    <textarea id="mark"></textarea>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
 </form>
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
@@ -124,19 +156,38 @@
     $("#checkall").click(function () {
         var option = $("#checkall").prop('checked');
         $("[name='checkProduct']:checkbox").each(function () {
-            $(this).prop("checked", option);
+
+            if(!$(this).attr("disabled")){
+                $(this).prop("checked", option);
+            }
+
         });
 
         console.log(getCheckedItems("checkProduct"));
     });
 
+    // 默认退货数量都不可编辑
+    $("input[name=num]").each(function(){
+        $(this).attr("disabled","disabled");
+    });
 
-//    $("input[name=num]").each(function(){
-//        $(this).attr("disabled","disabled");
-//    });
+    // 库存为0 的商品不可选择
+    $(".store").each(function(i,e){
+        if($(e).text()==0){
+            var check = $("input[name='checkProduct']").eq(i);
+            $(check).attr("disabled","disabled");
+        }
+    })
 
+    // 选中货品才可编辑退货数量
     $("input[name='checkProduct']").click(function(){
-        //pass;//fixme
+        var i = $("input[name='checkProduct']").index($(this));
+        var num = $("input[name='num']").eq(i);
+        if (num.attr("disabled")) {
+            num.attr("disabled", false);
+        }else{
+            num.attr("disabled", true);
+        }
     });
 
     $("input[name=num]").change(function(){
@@ -149,8 +200,6 @@
     });
 
 
-
-
     function getCheckedItems() {
         var checkedObj = $("input[name='checkProduct']:checked");
         var checkedMenu = "";
@@ -161,24 +210,20 @@
         return checkedMenu.substring(0, checkedMenu.lastIndexOf(","));
     }
 
+    function submitForm(productIds,productNums,callback){
 
-    function addReturnOrder(){
-        var productIds = getCheckedItems();
-        var productNums = "";
-        $("input[name='checkProduct']").each(function(i,v){
-            if(v.checked){
-                var num = $("input[name='num']").eq(i).val();
-                productNums += num +",";
-            }
-        });
+        var mobile = $.trim($("#mobile").val());
+        var sendmentStatus = $("#deliverWay option:selected").val();
+        var authorComment = $.trim($("#mark").val());
 
-        if(productIds.length == 0){
-            $.jBox.tip("请选择退货商品");
+        if(!J.IsMobile(mobile)){
+            $.jBox.tip("手机号码格式不正确");
             return;
         }
-
-
-        console.log(productNums);
+        if(mark.length == 0){
+            $.jBox.tip("备注不能为空");
+            return;
+        }
 
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
@@ -186,17 +231,14 @@
             url: basicUrl+"/addReturnOrder",
             data: {
                 productIds: productIds,
-                productNums:productNums
+                productNums:productNums,
+                mobile:mobile,
+                sendmentStatus:sendmentStatus,
+                authorComment:authorComment
             },
             dataType: "json",
             success: function (result) {
-                if (result.code == 200) {
-                    $.jBox.tip(result.msg, 'success');
-                    window.location.reload();
-                } else {
-                    $.jBox.tip(result.msg, 'error');
-                    window.location.reload();
-                }
+                callback(result);
             },
             error: function () {
                 $.jBox.tip("发生错误", "error");
@@ -204,6 +246,40 @@
         });
     }
 
+
+    function addReturnOrder(){
+
+        var self2 = this;
+        var productIds = getCheckedItems();
+        var productNums = "";
+        if(productIds.length == 0){
+            $.jBox.tip("请选择退货商品");
+            return;
+        }
+        $("input[name='checkProduct']").each(function(i,v){
+            if(v.checked){
+                var num = $("input[name='num']").eq(i).val();
+                productNums += num +",";
+            }
+        });
+
+        J.ShowDialog("managerInfoDialog", "填写退货单信息", function () {
+
+            submitForm(productIds,productNums,function (result) {
+                if (result.code == 200) {
+//                        self.setList(result);
+                    $.jBox.tip(result.msg, "success");
+                    $(self2).dialog('close');
+                    location.reload();
+                } else {
+                    $.jBox.tip(result.msg, "error");
+                }
+            });
+
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
     /*]]>*/
 </script>
 </body>

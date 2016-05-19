@@ -83,6 +83,7 @@ public class OrderController {
         int totalPages = ordersList.getTotalPages();
         model.addAttribute("payStatusEnums", OrderEnum.PayStatus.values());
         model.addAttribute("shipStatusEnums",OrderEnum.ShipStatus.values());
+        model.addAttribute("shipModeEnums",OrderEnum.ShipMode.values());
         model.addAttribute("ordersList", ordersList.getContent());
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("agentId", author.getId());

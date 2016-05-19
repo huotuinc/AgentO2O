@@ -33,4 +33,9 @@ public class OrderSearchCondition {
      */
     private String orderItemName;
 
+    /**
+     * 发货形式（代发or自发）
+     */
+    private int shipMode = -1;
+
 }

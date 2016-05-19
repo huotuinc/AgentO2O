@@ -17,4 +17,5 @@ public class AfterSaleSearch {
     private Integer afterSaleStatus = -1;
 
     private Integer agentId;
+    private Integer shipMode = -1;
 }

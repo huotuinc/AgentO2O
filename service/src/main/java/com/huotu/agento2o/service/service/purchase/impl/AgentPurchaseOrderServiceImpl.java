@@ -35,6 +35,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Transient;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,8 +70,15 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("author").get("id").as(Integer.class), purchaseOrderSearcher.getAgentId()));
             }
-            if (purchaseOrderSearcher.getParentAgentId() != null && purchaseOrderSearcher.getParentAgentId() != 0) {
-                predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()));
+            if (purchaseOrderSearcher.getParentAgentId() != null) {
+                if (purchaseOrderSearcher.getParentAgentId() == 0) {
+                    predicates.add(cb.isNull(root.get("author").get("parentAuthor").as(Author.class)));
+                } else {
+                    predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()));
+                }
+            }
+            if (purchaseOrderSearcher.getCustomerId() != null && purchaseOrderSearcher.getCustomerId() != 0) {
+                predicates.add(cb.equal(root.get("author").get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId()));
             }
             if (purchaseOrderSearcher.getStatusCode() != -1) {
                 predicates.add(cb.equal(root.get("status").as(PurchaseEnum.OrderStatus.class),
@@ -98,6 +106,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class), "%" + purchaseOrderSearcher.getOrderItemName() + "%"));
             }
+            predicates.add(cb.isFalse(root.get("disabled")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         return purchaseOrderRepository.findAll(specification, new PageRequest(purchaseOrderSearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
@@ -112,12 +121,13 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      */
     @Override
     @Transactional
-    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) {
+    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         purchaseOrder.setAuthor(author);
         purchaseOrder.setDisabled(false);
         purchaseOrder.setCreateTime(new Date());
+        purchaseOrder.setLastUpdateTime(new Date());
         purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         List<AgentPurchaseOrderItem> itemList = new ArrayList<>();
         List<ShoppingCart> shoppingCartList = new ArrayList<>();
@@ -125,9 +135,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             ShoppingCart shoppingCart = shoppingCartRepository.findByIdAndAuthor(Integer.valueOf(shoppingCartId), author);
             if (shoppingCart == null) {
                 continue;
-            }
-            if (shoppingCart.getNum() > (shoppingCart.getProduct().getStore() - shoppingCart.getProduct().getFreez())) {
-                return new ApiResult("库存不足，无法下单！");
             }
             shoppingCartList.add(shoppingCart);
         }
@@ -150,11 +157,19 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (author.getParentAuthor() == null) {
                 //修改平台方货品预占库存
                 MallProduct customerProduct = shoppingCart.getProduct();
+                if (customerProduct.getFreez() + shoppingCart.getNum() > customerProduct.getStore()) {
+                    // TODO: 2016/5/19 单元测试，库存不足 
+                    throw new Exception("库存不足，下单失败！");
+                }
                 customerProduct.setFreez(customerProduct.getFreez() + shoppingCart.getNum());
                 productRepository.save(customerProduct);
             } else {
                 //修改代理商库存
                 AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct((Agent) author.getParentAuthor(), shoppingCart.getProduct());
+                if (agentProduct.getFreez() + shoppingCart.getNum() > agentProduct.getStore()) {
+                    // TODO: 2016/5/19 单元测试，库存不足 
+                    throw new Exception("库存不足，下单失败！");
+                }
                 agentProduct.setFreez(agentProduct.getFreez() + shoppingCart.getNum());
                 agentProductRepository.save(agentProduct);
             }
@@ -172,5 +187,123 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     @Override
     public AgentPurchaseOrder findByPOrderId(String pOrderId) {
         return purchaseOrderRepository.findOne(pOrderId);
+    }
+
+    @Override
+    public AgentPurchaseOrder findByPOrderIdAndAuthor(String pOrderId, Author author) {
+        return purchaseOrderRepository.findByPOrderIdAndAuthor(pOrderId, author);
+    }
+
+    /**
+     * 逻辑删除采购单 设置采购单 disable 为 true
+     * 减少相应库存
+     *
+     * @param pOrderId
+     */
+    @Override
+    @Transactional
+    public ApiResult disableAgentPurchaseOrder(String pOrderId, Author author) throws Exception {
+        AgentPurchaseOrder agentPurchaseOrder = findByPOrderIdAndAuthor(pOrderId, author);
+        if (agentPurchaseOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (!agentPurchaseOrder.deletable()) {
+            return new ApiResult("采购单已审核，无法删除！");
+        }
+        List<AgentPurchaseOrderItem> purchaseOrderItemList = agentPurchaseOrder.getOrderItemList();
+        for (AgentPurchaseOrderItem item : purchaseOrderItemList) {
+            //减少 预占库存
+            if (author.getParentAuthor() == null) {
+                //修改平台方货品预占库存
+                MallProduct customerProduct = item.getProduct();
+                if (customerProduct.getFreez() - item.getNum() <= 0) {
+                    // TODO: 2016/5/19 单元测试，库存不足 
+                    throw new Exception("库存不足，无法删除！");
+                }
+                customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
+                productRepository.save(customerProduct);
+            } else {
+                //修改代理商库存
+                AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct((Agent) author.getParentAuthor(), item.getProduct());
+                if (agentProduct.getFreez() - item.getNum() > 0) {
+                    // TODO: 2016/5/19 单元测试 库存不足 
+                    throw new Exception("库存不足，无法删除！");
+                }
+                agentProduct.setFreez(agentProduct.getFreez() - item.getNum());
+                agentProductRepository.save(agentProduct);
+            }
+        }
+        agentPurchaseOrder.setDisabled(true);
+        agentPurchaseOrder.setLastUpdateTime(new Date());
+        purchaseOrderRepository.save(agentPurchaseOrder);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult payAgentPurchaseOrder(String pOrderId, Author author) {
+        AgentPurchaseOrder agentPurchaseOrder = findByPOrderIdAndAuthor(pOrderId, author);
+        if (agentPurchaseOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (!agentPurchaseOrder.payabled()) {
+            return new ApiResult("采购单未审核或已已支付，无法支付！");
+        }
+        agentPurchaseOrder.setPayStatus(PurchaseEnum.PayStatus.PAYED);
+        agentPurchaseOrder.setPayTime(new Date());
+        agentPurchaseOrder.setLastUpdateTime(new Date());
+        purchaseOrderRepository.save(agentPurchaseOrder);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult deliveryAgentPurchaseOrder(Integer customerId, Integer authorId, String pOrderId) {
+        AgentPurchaseOrder agentPurchaseOrder = findByPOrderId(pOrderId);
+        if (agentPurchaseOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        //若上级代理商为平台，判断平台是否有修改该采购单的权限
+        //判断该平台是否有修改该采购单的权限
+        if (customerId != null && !(agentPurchaseOrder.getAuthor().getParentAuthor() == null && agentPurchaseOrder.getAuthor().getCustomer().getCustomerId() == customerId)) {
+            return new ApiResult("对不起，您没有操作权限！");
+        } else if (authorId != null && !(agentPurchaseOrder.getAuthor().getParentAuthor() != null && agentPurchaseOrder.getAuthor().getParentAuthor().getId() == authorId)) {
+            //判断该代理商是否有修改该采购单的权限
+            return new ApiResult("对不起，您没有操作权限！");
+        }
+        if (!agentPurchaseOrder.deletable()) {
+            return new ApiResult("该采购单已审核，无法再次审核！");
+        }
+        agentPurchaseOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        agentPurchaseOrder.setLastUpdateTime(new Date());
+        purchaseOrderRepository.save(agentPurchaseOrder);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) {
+        AgentPurchaseOrder agentPurchaseOrder = findByPOrderId(pOrderId);
+        if (agentPurchaseOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        //若上级代理商为平台，判断平台是否有修改该采购单的权限
+        //判断该平台是否有修改该采购单的权限
+        if (customerId != null && !(agentPurchaseOrder.getAuthor().getParentAuthor() == null && agentPurchaseOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+            return new ApiResult("对不起，您没有操作权限！");
+        } else if (authorId != null && !(agentPurchaseOrder.getAuthor().getParentAuthor() != null && agentPurchaseOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+            //判断该代理商是否有修改该采购单的权限
+            return new ApiResult("对不起，您没有操作权限！");
+        }
+        if (!agentPurchaseOrder.checkable()) {
+            return new ApiResult("该采购单已审核，无法再次审核！");
+        }
+        agentPurchaseOrder.setStatus(status);
+        if (status == PurchaseEnum.OrderStatus.RETURNED) {
+            agentPurchaseOrder.setParentComment(comment);
+        }
+        agentPurchaseOrder.setLastUpdateTime(new Date());
+        purchaseOrderRepository.save(agentPurchaseOrder);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }

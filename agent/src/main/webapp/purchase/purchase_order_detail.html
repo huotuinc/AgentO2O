@@ -35,7 +35,6 @@
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
     <style type="text/css">
         .spModuleTitle {
             padding: 3px 10px 0px 10px;
@@ -173,18 +172,14 @@
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tbody>
                                 <tr>
-                                    <th>公司名称:</th>
+                                    <th>发票抬头:</th>
                                     <td  style="border-top: 1px solid #ddd;">
-                                        <input name="companyName" type="text" id="companyName" class="input-normal" th:value="*{companyName}" style="width: 80%;"/></td>
-                                    <th>注册电话:</th>
-                                    <td style="border-top: 1px solid #ddd;">
-                                        <input name="companyTel" type="text" id="companyTel" class="input-normal" th:value="*{companyTel}" style="width: 50%;"/>
-                                    </td>
+                                        <input name="taxTitle" type="text" id="taxTitle" class="input-normal" th:value="*{taxTitle}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
-                                    <th>注册地址:</th>
+                                    <th>发票内容:</th>
                                     <td colspan="3">
-                                        <input name="companyAddr" type="text" id="companyAddr" class="input-normal" th:value="*{companyAddr}" style="width: 80%;"/></td>
+                                        <input name="taxContent" type="text" id="taxContent" class="input-normal" th:value="*{taxContent}" style="width: 80%;"/></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -193,64 +188,30 @@
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tbody>
                                 <tr>
-                                    <th>公司名称:</th>
-                                    <td  style="border-top: 1px solid #ddd;"><span id="lblOrderId"></span>
-                                        <input name="companyName" type="text" id="tax_companyName" class="input-normal" th:value="*{companyName}" style="width: 80%"/></td>
-                                    <th>纳税人识别码:</th>
-                                    <td  style="border-top: 1px solid #ddd;"><span id="lblCreateTime">
-                                        <input name="taxpayerCode" type="text" id="tax_taxpayerCode" class="input-normal" th:value="*{taxpayerCode}" style="width: 80%"/></span>
-                                    </td>
+                                    <th>发票抬头:</th>
+                                    <td  style="border-top: 1px solid #ddd;">
+                                        <input name="taxTitle" type="text" id="tax_taxTitle" class="input-normal" th:value="*{taxTitle}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
-                                    <th>注册地址:</th>
-                                    <td>
-                                        <input name="companyAddr" type="text" id="tax_companyAddr" class="input-normal" th:value="*{companyAddr}" style="width: 80%"/>
-                                    </td>
-                                    <th>注册电话:</th>
-                                    <td>
-                                        <input name="companyTel" type="companyTel" id="tax_companyTel" class="input-normal" th:value="*{companyTel}" style="width: 80%"/>
-                                    </td>
+                                    <th>发票内容:</th>
+                                    <td colspan="3">
+                                        <input name="taxContent" type="text" id="tax_taxContent" class="input-normal" th:value="*{taxContent}" style="width: 80%;"/></td>
+                                </tr>
+                                <tr>
+                                    <th>纳税人识别码:</th>
+                                    <td colspan="3">
+                                        <input name="taxpayerCode" type="text" id="tax_taxpayerCode" class="input-normal" th:value="*{taxpayerCode}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
                                     <th>开户银行名称:</th>
                                     <td>
                                         <input name="bankName" type="text" id="tax_bankName" class="input-normal" th:value="*{bankName}" style="width: 80%"/>
                                     </td>
+                                </tr>
+                                <tr>
                                     <th>开户银行账号:</th>
                                     <td>
                                         <input name="accountNo" type="text" id="tax_accountNo" class="input-normal" th:value="*{accountNo}"  style="width: 80%"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>税务登记证:</th>
-                                    <td>
-                                        <img id="uploadRCF"
-                                             style="width: 80px; height: 80px; border: 1px solid #ccc; float: left; background: #efefef; line-height: 80px; text-align: center; color: #ccc;"/>
-                                        <input style="margin-left: 10px;cursor: pointer;" type="button"
-                                               value="上传"
-                                               onclick="javascript:$('#btnTaxRegisterCertificateFile').click();"/>
-                                        <input onchange="configHandler.uploadImg('btnTaxRegisterCertificateFile','uploadRCF','taxRegisterCertificateFile')"
-                                               id="btnTaxRegisterCertificateFile" name="btnFile"
-                                               style="display: none;" type="file"/>
-                                        <input type="hidden" id="taxRegisterCertificateFile"
-                                               th:value="${taxConfig}==null?'':*{taxRegistCertificateUrl}"/>
-                                        <input type="hidden" id="rcf_uri"
-                                               th:value="${rcf_uri}==null?'':${rcf_uri}"/>
-                                    </td>
-                                    <th>一般纳税人资格证:</th>
-                                    <td>
-                                        <img id="uploadGCF"
-                                             style="width: 80px; height: 80px; border: 1px solid #ccc; float: left; background: #efefef; line-height: 80px; text-align: center; color: #ccc;"/>
-                                        <input style="margin-left: 10px;cursor: pointer;" type="button"
-                                               value="上传"
-                                               onclick="javascript:$('#btnGeneralCertificateFile').click();"/>
-                                        <input onchange="configHandler.uploadImg('btnGeneralCertificateFile','uploadGCF','generalCertificateFile')"
-                                               id="btnGeneralCertificateFile" name="btnFile"
-                                               style="display:none;" type="file"/>
-                                        <input type="hidden" id="generalCertificateFile"
-                                               th:value="${taxConfig}==null?'':*{generalCertificateUrl}"/>
-                                        <input type="hidden" id="gcf_uri"
-                                               th:value="${gcf_uri}==null?'':${gcf_uri}"/>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -308,7 +269,7 @@
                     <div>
                         <div class="division">
                             <span style="font-size: 14px;">备注：</span>
-                            <span><textarea rows="3" style="width: 90%" name="authorComment"/></span>
+                            <span><textarea rows="3" style="width: 90%" th:text="*{authorComment}" name="authorComment"/></span>
 
                         </div>
                     </div>

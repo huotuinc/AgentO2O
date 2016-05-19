@@ -154,6 +154,9 @@ public class MallOrder {
     @OneToMany(mappedBy = "order")
     private List<MallOrderItem> orderItems;
 
+    /**
+     *拆单时的受益方
+     */
     @JoinColumn(name = "Beneficiary_Agent_id")
     @ManyToOne
     private Shop beneficiaryShop;

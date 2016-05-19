@@ -203,15 +203,13 @@ public class PurchaseController {
             return new ApiResult("请选择发票类型");
         }
         if ("1".equals(taxTypeCode)) {
-            if (StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyTel())
-                    || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyAddr())) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())) {
                 return new ApiResult("请输入普通发票信息");
             }
         } else if ("2".equals(taxTypeCode)) {
-            if (StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyTel())
-                    || StringUtil.isEmptyStr(agentPurchaseOrder.getCompanyAddr()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxpayerCode())
-                    || StringUtil.isEmptyStr(agentPurchaseOrder.getBankName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getAccountNo())
-                    || StringUtil.isEmptyStr(agentPurchaseOrder.getGeneralCertificateUrl()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxRegistCertificateUrl())) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxpayerCode()) || StringUtil.isEmptyStr(agentPurchaseOrder.getBankName())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getAccountNo())) {
                 return new ApiResult("请输入增值税发票信息");
             }
         }

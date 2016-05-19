@@ -27,6 +27,7 @@ import java.util.List;
 @Table(name = "Agt_Purchase_Order")
 @Getter
 @Setter
+@Cacheable(value = false)
 public class AgentPurchaseOrder {
     @Id
     @Column(name = "P_Order_Id")
@@ -42,12 +43,12 @@ public class AgentPurchaseOrder {
     /**
      * 总金额
      */
-    @Column(name = "Final_Amount",precision = 2)
+    @Column(name = "Final_Amount", precision = 2)
     private double finalAmount;
     /**
      * 邮费
      */
-    @Column(name = "Cost_Freight",precision = 2)
+    @Column(name = "Cost_Freight", precision = 2)
     private double costFreight;
 
     /*以下为收货人信息*/
@@ -80,22 +81,16 @@ public class AgentPurchaseOrder {
 
     /*以下为发票信息*/
     /**
-     * 公司名称
+     * 发票抬头
      */
-    @Column(name = "Company_Name")
-    private String companyName;
+    @Column(name = "Tax_Title")
+    private String taxTitle;
 
     /**
-     * 公司电话
+     * 发票内容
      */
-    @Column(name = "Company_Tel")
-    private String companyTel;
-
-    /**
-     * 公司地址
-     */
-    @Column(name = "CompanyAddr")
-    private String companyAddr;
+    @Column(name = "Tax_Content")
+    private String taxContent;
 
     /**
      * 纳税人识别码
@@ -116,32 +111,20 @@ public class AgentPurchaseOrder {
     private String accountNo;
 
     /**
-     * 税务登记证
-     */
-    @Column(name = "TaxRegistCertificateUrl")
-    private String taxRegistCertificateUrl;
-
-    /**
-     * 一般纳税人资格证
-     */
-    @Column(name = "GeneralCertificateUrl")
-    private String generalCertificateUrl;
-
-    /**
      * 采购单状态
      */
     @Column(name = "Status")
-    private PurchaseEnum.OrderStatus status;
+    private PurchaseEnum.OrderStatus status = PurchaseEnum.OrderStatus.CHECKING;
     /**
      * 发货状态
      */
     @Column(name = "Ship_Status")
-    private PurchaseEnum.ShipStatus shipStatus;
+    private PurchaseEnum.ShipStatus shipStatus = PurchaseEnum.ShipStatus.NOT_DELIVER;
     /**
      * 付款状态
      */
     @Column(name = "Pay_Status")
-    private PurchaseEnum.PayStatus payStatus;
+    private PurchaseEnum.PayStatus payStatus = PurchaseEnum.PayStatus.NOT_PAYED;
 
     /**
      * 生成时间
@@ -175,9 +158,36 @@ public class AgentPurchaseOrder {
      * 采购单状态
      */
     @Column(name = "Disabled")
-    private boolean disabled;
+    private boolean disabled = false;
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<AgentPurchaseOrderItem> orderItemList;
+
+    //采购状态为 待审核 或 审核不通过
+    //可删除
+    public boolean deletable() {
+        return status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED;
+    }
+
+    //采购状态为 待审核
+    //可审核
+    public boolean checkable() {
+        return status == PurchaseEnum.OrderStatus.CHECKING;
+    }
+
+    //采购状态为已审核,且 支付状态 为空或 未支付
+    //可支付
+    public boolean payabled() {
+        return status == PurchaseEnum.OrderStatus.CHECKED
+                && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED);
+    }
+
+    //采购状态为已审核 且支付状态为 已支付 且发货状态 为空 或未发货
+    //可发货
+    public boolean deliverable() {
+        return status == PurchaseEnum.OrderStatus.CHECKED
+                && payStatus == PurchaseEnum.PayStatus.PAYED
+                && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
+    }
 
 }

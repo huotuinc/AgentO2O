@@ -39,6 +39,7 @@ public class Agent extends Author {
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_ORDER.getCode()));
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_PURCHASE.getCode()));
+        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_AGENT_PURCHASE.getCode()));
         return authorityList;
     }
 }

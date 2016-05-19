@@ -10,17 +10,13 @@
 
 package com.huotu.agento2o.service.repository.purchase;
 
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
- * Created by helloztt on 2016/5/18.
+ * Created by helloztt on 2016/5/19.
  */
 @Repository
-public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder, String>, JpaSpecificationExecutor<AgentPurchaseOrder> {
-
-    AgentPurchaseOrder findByPOrderIdAndAuthor(String pOrderId, Author author);
+public interface AgentDeliveryRepository extends JpaRepository<AgentDelivery, String> {
 }
