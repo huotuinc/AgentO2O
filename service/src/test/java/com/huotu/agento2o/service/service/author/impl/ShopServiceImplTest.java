@@ -14,11 +14,13 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
+import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,17 +68,23 @@ public class ShopServiceImplTest {
     }
 
     @Test
-    @Rollback(value = false)
     public void subToFac(){
         int id = 50 ;
         shopService.updateStatus(AgentStatusEnum.RETURNED,id);
     }
 
     @Test
-    @Rollback(value = false)
     public void del(){
         int id = 57 ;
         shopService.deleteById(id);
+    }
+
+    @Test
+    public void findAll(){
+        ShopSearchCondition searchCondition = new ShopSearchCondition();
+        searchCondition.setParent_agentLevel(41);
+        Page<Shop> shops = shopService.findAll(1, 20, searchCondition);
+        Assert.assertTrue(shops.getContent().size()>0);
     }
 
 }

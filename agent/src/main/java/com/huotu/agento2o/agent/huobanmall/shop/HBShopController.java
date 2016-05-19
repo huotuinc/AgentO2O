@@ -1,5 +1,6 @@
-package com.huotu.agento2o.agent.controller.shop;
+package com.huotu.agento2o.agent.huobanmall.shop;
 
+import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -8,9 +9,12 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
+import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,64 +36,43 @@ import java.util.List;
  * Created by admin on 2016/5/11.
  */
 @Controller
-@RequestMapping("/shop")
-//@PreAuthorize("hasAnyRole('Agent')")
-public class ShopController {
+@RequestMapping("/huobanmall/shop")
+public class HBShopController {
 
     @Autowired
-    private ShopService shopService ;
+    private ShopService shopService;
 
     @Autowired
-    private AuthorService authorService ;
+    private AgentLevelService agentLevelService;
 
     /**
      * 跳转门店新增页面
-     * @param customer
      * @param shop
      * @param model
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AuthenticationPrincipal Agent customer, Shop shop, Model model) {
+    public String toAddShopPage(Shop shop, Model model) {
         // TODO: 2016/5/13 等级名称
-        model.addAttribute("agent",customer);
-        if(!"".equals(shop.getId()) && shop.getId()!=null){//编辑
-            shop = shopService.findById(shop.getId());
-            model.addAttribute("shop",shop);
-        }
-        return "shop/addShop";
-    }
-
-    /**
-     *新增门店
-     * @param customer
-     * @param shop
-     * @return
-     */
-    @RequestMapping(value = "/addShop")
-    @ResponseBody
-    public ApiResult addShop(@AuthenticationPrincipal Agent customer, Shop shop) {
-        shop.setParentAuthor(customer);
-        shop = shopService.addShop(shop);
-        ApiResult apiResult ;
-        if(shop!=null){
-            apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        }else {
-            apiResult = ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
-        }
-        return apiResult;
+        shop = shopService.findById(shop.getId());
+        model.addAttribute("shop",shop);
+        return "shop/huobanmall/hb_viewShop";
     }
 
     /**
      * 门店列表
-     * @param customer
      * @param model
      * @return
      */
     @RequestMapping("/shopList")
-    public String showShopList(@AuthenticationPrincipal Agent customer, Model model , ShopSearchCondition searchCondition, @RequestParam(required = false, defaultValue = "1")int pageIndex) {
-        Author author = authorService.findById(customer.getId());
-        searchCondition.setParentAuthor(author);
+    public String showShopList(@RequestAttribute(value = "customerId") String customerIdStr, Model model , ShopSearchCondition searchCondition, @RequestParam(required = false, defaultValue = "1")int pageIndex, String type) {
+        if("list".equals(type)){//门店列表 为非未审核的门店 ?type=list  //1,2,3
+        }else{//门店审核 显示所有状态为待审核且Disabled=0的门店信息 ?type=audit
+
+        }
+        int customerId = Integer.parseInt(customerIdStr);
+        List<AgentLevel> agentLevels =agentLevelService.findByCustomertId(customerId);
+        model.addAttribute("agentLevels", agentLevels);
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("totalPages", totalPages);
@@ -98,7 +81,7 @@ public class ShopController {
         model.addAttribute("searchCondition", searchCondition);
         model.addAttribute("pageIndex", pageIndex);
         model.addAttribute("shopList",shopsList);
-        return "shop/shopList";
+        return "shop/huobanmall/hb_shopList";
     }
 
     /**
@@ -119,14 +102,6 @@ public class ShopController {
         return res;
     }
 
-    @RequestMapping("/delete")
-    @ResponseBody
-    public ApiResult deleteById(int id){
-        shopService.deleteById(id);
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
-    }
-
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
     public ApiResult changeIsDisabled(int id){
@@ -141,9 +116,8 @@ public class ShopController {
      *
      */
     @RequestMapping("exportExcel")
-    public void exportExcel(@AuthenticationPrincipal Agent customer, ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
+    public void exportExcel(ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
                             HttpSession session, HttpServletResponse response) {
-        searchCondition.setParentAuthor(customer);
         int pageSize =  Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
         Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
         List<Shop> shopList = pageInfo.getContent();
@@ -170,5 +144,21 @@ public class ShopController {
             }
             session.setAttribute("state", "open");
         }
+    }
+
+    @RequestMapping("/audit")
+    @ResponseBody
+    public ApiResult toAudit(Shop shop) {
+        shopService.updateStatusAndComment(shop.getStatus(),shop.getComment(),shop.getId());
+        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return res;
+    }
+
+    @RequestMapping("/resetpassword")
+    @ResponseBody
+    public ApiResult resetPassword(Shop shop) {
+        shopService.updatePasswordById(shop.getPassword(),shop.getId());
+        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return res;
     }
 }

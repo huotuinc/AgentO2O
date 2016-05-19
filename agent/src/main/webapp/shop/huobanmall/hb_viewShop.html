@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-<form action="#" th:action="@{/shop/addShop}" method="post" id="shopConfigForm" th:object="${shop}" >
+<form action="#" th:action="@{/huobanmall/shop/addShop}" method="post" id="shopConfigForm" th:object="${shop}" >
     <div class="container">
         <div class="blank10">
         </div>
@@ -93,7 +93,7 @@
                                 <tr>
                                     <th>代理商账户：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="author" readonly="readonly"  th:field="${agent.username}" th:value="${agent.username}" />
+                                        <input type="text" class="input-normal" id="author" readonly="readonly"  th:field="*{parentAuthor.username}" th:value="*{parentAuthor.username}" />
                                     </td>
                                 </tr>
                                 <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
@@ -221,9 +221,7 @@
                     </div>
 
                     <div style="text-align: center;">
-                        <a class="btn-lit" href="javascript:saveShopConfig();" id="saveShopConfig" th:if="*{id}==null or *{status.code}!=2"><span>保存</span></a>
-                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
-                        <!--<a class="btn-lit" href="javascript:subShopConfig();" id="subShopConfig"><span>提交</span></a>-->
+                        <a class="btn-lit" href="javascript:audit();" th:if="*{id}==null or *{status.code}==1"><span>审核</span></a>
                     </div>
 
                 </div>
@@ -231,142 +229,50 @@
         </div>
     </div>
 </form>
-<script>
-
-    /**
-     * 转换form查看
-     */
-    function change2view2form(formId){
-        var winfra = $('#'+formId);
-        try{
-            //替换所有的输入框为文本框
-            winfra.find(":input").each(
-                    function(i) {
-                        var inputType = this.type ? this.type.toLowerCase() : null;
-                        if ( inputType != "hidden") {
-                            if(inputType == "button"){
-                                $(this).remove();
-                            }else{
-                                var tmpvalue = $(this).val();
-                                if(inputType == "select-one"){
-                                    var tmpText = $(this).find("option:selected").text();
-                                    $(this).replaceWith("<span>" + tmpText + "</span>");
-                                }else{
-                                    $(this).replaceWith("<span>" + tmpvalue + "</span>");
-                                }
-                            }
-                        }
-                    });
-        }catch(e){
-        }
+<div id="audit_dialog" style="display: none;"></div>
+<script th:inline="javascript">
+    function audit() {
+        $("#audit_dialog").html($("#audit_template").html());
+        J.ShowDialog("audit_dialog", "审核", function () {
+            debugger;
+            var requestData = checkAudit();
+            if (requestData != null) {
+                $.jBox.tip("正在审批...", "loading");
+                J.GetJsonRespons("/huobanmall/shop/audit", requestData, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("审批成功", "success");
+                        $(self).dialog('close');
+                        window.location.reload();
+                    } else {
+//                        $.jBox.tip("审批失败", error);
+                    }
+                }, function () {
+                }, J.PostMethod);
+            }
+        }, function () {
+            $(this).dialog('close');
+        });
     }
 
-</script>
-<script th:inline="javascript">
-        //保存
-        function saveShopConfig() {
-            var username = $.trim($("#username").val());
-            var password = $.trim($("#password").val());
-            var province = $.trim($("#province").val());
-            var city = $.trim($("#city").val());
-            var district = $.trim($("#district").val());
-            var name = $.trim($("#name").val());
-            var Contact = $.trim($("#Contact").val());
-            var mobile = $.trim($("#mobile").val());
-            var telephone = $.trim($("#telephone").val());
-            var address = $.trim($("#address").val());
-            var lan = $.trim($("#lan").val());
-            var lat = $.trim($("#lat").val());
-            var comment = $.trim($("#comment").val());
-            var serveiceTel = $.trim($("#serveiceTel").val());
-            var afterSalTel = $.trim($("#afterSalTel").val());
-            var afterSalQQ = $.trim($("#afterSalQQ").val());
-            var id = $.trim($("#shopID").val());
-
-            if (username.length == 0 || password.length == 0) {
-                $.jBox.tip("用户名或密码不能为空");
-                return;
-            }
-            if (province.length == 0 || city.length == 0 || district.length == 0) {
-                $.jBox.tip("门店所在区域不能为空");
-                return;
-            }
-            if (name.length == 0) {
-                $.jBox.tip("门店名称不能为空");
-                return;
-            }
-            if (Contact.length == 0 || mobile.length == 0 ) {
-                $.jBox.tip("联系人或手机号码不能为空");
-                return;
-            }
-            if (!J.IsMobile(mobile)) {
-                $.jBox.tip("手机号码格式不正确");
-                return;
-            }
-            if (address.length == 0) {
-                $.jBox.tip("详细地址不能为空");
-                return;
-            }
-            if (lan.length == 0 || lat.length ==0 ) {
-                $.jBox.tip("经纬度不能为空");
-                return;
-            }
-            if (serveiceTel.length == 0  ) {
-                $.jBox.tip("客服电话不能为空");
-                return;
-            }
-            if (!J.IsMobile(serveiceTel)) {
-                $.jBox.tip("客服电话格式不正确");
-                return;
-            }
-            if (afterSalTel.length == 0  ) {
-                $.jBox.tip("售后电话不能为空");
-                return;
-            }
-            if (!J.IsMobile(afterSalTel)) {
-                $.jBox.tip("售后电话格式不正确");
-                return;
-            }
-            if (afterSalQQ.length == 0  ) {
-                $.jBox.tip("售后QQ不能为空");
-                return;
-            }
-
-            $.jBox.tip("正在保存...", "loading");
-            $.ajax({
-                type: 'POST',
-                url: "/shop/addShop",
-                data: {
-                    id:id,
-                    username: username,
-                    password: password,
-                    province: province,
-                    city: city,
-                    district: district,
-                    name:name,
-                    Contact: Contact,
-                    mobile:mobile,
-                    telephone: telephone,
-                    address: address,
-                    lan: lan,
-                    lat: lat,
-                    comment: comment,
-                    serveiceTel: serveiceTel,
-                    afterSalTel: afterSalTel,
-                    afterSalQQ: afterSalQQ
-                },
-                success: function (result) {
-                    if (result.code == 200) {
-                        $.jBox.tip(result.msg, "success");
-                        setTimeout(function(){
-                            window.location.href = "/shop/shopList";
-                        },500);
-                    } else {
-                        $.jBox.tip(result.msg, 'error');
-                    }
-                }
-            });
+    function checkAudit() {
+        var id = $("#shopID").val();
+        var auditVal = $("input[name=audit_radio]:checked").val()
+        var auditComment = $.trim($("#auditcomment").val());
+        if (id.length == 0) {
+            $.jBox.tip("数据损坏");
+            return null;
         }
+        if (auditVal.length == 0) {
+            $.jBox.tip("请选择通过或不通过");
+            return null;
+        }
+        var requestData = {
+            id : id,
+            status: auditVal,
+            comment: auditComment
+        };
+        return requestData;
+    }
 </script>
 <script th:inline="javascript">
     var pro = /*[[${shop.province}]]*/;
@@ -451,3 +357,17 @@
 </script>
 </body>
 </html>
+<script type="text/html" id="audit_template">
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 150px;">
+            <span scope="row">备注：</span>
+            <div>
+                <textarea id="auditcomment" style="margin-top: 10px;margin-bottom: 10px; width: 260px; height: 100px;"></textarea>
+            </div>
+            <div>
+                <input id="audit_pass" type="radio" name="audit_radio" value="CHECKED" checked="checked"/>
+                <label for="audit_pass">通过</label>
+                <input id="audit_nopass" type="radio" name="audit_radio" value="RETURNED"/>
+                <label for="audit_nopass">不通过</label>
+            </div>
+    </div>
+</script>

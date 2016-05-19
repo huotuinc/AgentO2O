@@ -13,7 +13,19 @@ public class ShopSearchCondition {
     private String province;
     private String city;
     private String district;
+    /**
+     * 门店审核状态
+     */
     private int status = -1;
-    private Author author;
+    private Author parentAuthor;
 
+    /**
+     * 上级代理商查询条件
+     */
+    private String parent_name;
+    private String parent_username;
+    private int parent_agentLevel = -1;
+    private String parent_province;
+    private String parent_city;
+    private String parent_district;
 }
