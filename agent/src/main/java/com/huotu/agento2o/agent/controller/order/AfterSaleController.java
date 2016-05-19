@@ -4,6 +4,7 @@ import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallAfterSalesItem;
@@ -59,10 +60,12 @@ public class AfterSaleController {
             modelAndView.addObject("afterSales", afterSales.getContent());
             modelAndView.addObject("pageSize", Constant.PAGESIZE);
             modelAndView.addObject("totalRecords", afterSales.getTotalElements());
+            modelAndView.addObject("shipModeEnums", OrderEnum.ShipMode.values());
             modelAndView.addObject("totalPages", afterSales.getTotalPages());
             modelAndView.addObject("afterSaleSearch", afterSaleSearch);
             modelAndView.addObject("pageIndex", pageIndex);
             modelAndView.addObject("afterSaleStatusList", AfterSaleEnum.AfterSaleStatus.values());
+            modelAndView.addObject("authorType", author.getClass().getSimpleName());
         }
         modelAndView.setViewName("order/afterSales/after_sales_list");
         return modelAndView;
@@ -86,7 +89,6 @@ public class AfterSaleController {
         model.addAttribute("userInfo", userBaseInfo);
         model.addAttribute("order", order);
 
-        model.addAttribute("authorType", author.getClass().getSimpleName());
         return "order/afterSales/after_sales_detail";
     }
 

@@ -136,9 +136,9 @@ public interface OrderEnum {
     /**
      * 发货退货单类型
      */
-    enum DeliveryType implements ICommonEnum{
-        DEVERY("delivery","发货单"),
-        RETURN("return","退货单");
+    enum DeliveryType implements ICommonEnum {
+        DEVERY("delivery", "发货单"),
+        RETURN("return", "退货单");
         private String code;
         private String value;
 
@@ -228,6 +228,41 @@ public interface OrderEnum {
 
         public void setValue(String value) {
             this.value = value;
+        }
+    }
+
+    /**
+     * 发货方式（门店发货还是平台代发）
+     */
+    enum ShipMode implements ICommonEnum {
+//        ALL_MODE(-1, "==所有=="),
+        SHOP_DELIVERY(0, "门店发货"),
+        PLATFORM_DELIVERY(1, "平台代发");
+
+        private Integer code;
+        private String value;
+
+        ShipMode(Integer code, String value) {
+            this.code = code;
+            this.value = value;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public Integer getCode() {
+            return code;
+        }
+
+        public void setCode(Integer code) {
+            this.code = code;
         }
     }
 }

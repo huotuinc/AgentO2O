@@ -223,6 +223,14 @@
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
                         </select>
                         &nbsp;
+                        <label class="first ">发货方式：</label>
+                        <select name="shipMode" id="shipMode">
+                            <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == searchCondition.shipMode}">未发货</option>
+                        </select>
+
+                        &nbsp;
                         <label class="first ">排序：</label>
                         <select name="orderType" id="orderType">
                             <option selected="selected" value="0" th:selected="*{orderType==0}">按下单时间</option>
@@ -441,9 +449,14 @@
                                             </td>
                                             <td class="txt40 c tail">
                                                 <div th:inline="text">
-                                                    <span th:if="${authorType=='Shop'}">
+                                                    <span th:if="${authorType=='Shop'and orders.shop!=null and orders.beneficiaryShop==null}">
                                                         <span th:if="${orders.deliveryable()}">
                                                             <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
+                                                        </span>
+                                                    </span>
+                                                    <span th:if="${authorType=='Shop'and orders.shop==null and orders.beneficiaryShop!=null}">
+                                                        <span th:if="${orders.deliveryable()}">
+                                                            <a href="#" title="无法发货">发货</a> |
                                                         </span>
                                                     </span>
                                                     <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a>

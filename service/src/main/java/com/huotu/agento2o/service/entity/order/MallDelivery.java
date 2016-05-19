@@ -57,6 +57,10 @@ public class MallDelivery {
     @JoinColumn(name = "Agent_Id")
     private Shop shop;
 
+    @ManyToOne
+    @JoinColumn(name = "Beneficiary_Agent_id")
+    private Shop beneficiaryShop;
+
     //    private String dicDeliverItemsStr;//发货数量序列化字段（货品id,发货数量|货品id,发货数量）
     @Column(name = "T_Begin")
     private Date createTime;//单据生成时间

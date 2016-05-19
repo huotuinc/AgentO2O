@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -91,12 +92,16 @@ public class MallOrderServiceImpl implements MallOrderService {
             if (author != null && author instanceof Shop) {
                 predicates.add(cb.or(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()),
                         cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId())));
+                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
+                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
+                judgeShipMode(searchCondition, cb, predicates, p1, p2);
             } else if (author != null && author instanceof Agent) {
-                Join<MallOrder,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
-                Join<MallOrder,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class), JoinType.LEFT);
-                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class),searchCondition.getAgentId());
-                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class),searchCondition.getAgentId());
-                predicates.add(cb.or(p1,p2));
+                Join<MallOrder, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+                Join<MallOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
+                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
+                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
+                judgeShipMode(searchCondition, cb, predicates, p1, p2);
+
             }
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
@@ -159,6 +164,24 @@ public class MallOrderServiceImpl implements MallOrderService {
                 break;
         }
         return orderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, sort));
+    }
+
+    /**
+     * 用于分页查询时判断订单发货的方式
+     * @param searchCondition
+     * @param cb
+     * @param predicates
+     * @param shop
+     * @param beneficiaryShop
+     */
+    private void judgeShipMode(OrderSearchCondition searchCondition, CriteriaBuilder cb, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
+        if (searchCondition.getShipMode() == 0) {
+            predicates.add(shop);
+        } else if (searchCondition.getShipMode() == 1) {
+            predicates.add(beneficiaryShop);
+        } else {
+            predicates.add(cb.or(shop, beneficiaryShop));
+        }
     }
 
     @Override
