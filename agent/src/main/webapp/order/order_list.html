@@ -441,9 +441,14 @@
                                             </td>
                                             <td class="txt40 c tail">
                                                 <div th:inline="text">
-                                                    <span th:if="${authorType=='Shop'}">
+                                                    <span th:if="${authorType=='Shop'and orders.shop!=null and orders.beneficiaryShop==null}">
                                                         <span th:if="${orders.deliveryable()}">
                                                             <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
+                                                        </span>
+                                                    </span>
+                                                    <span th:if="${authorType=='Shop'and orders.shop==null and orders.beneficiaryShop!=null}">
+                                                        <span th:if="${orders.deliveryable()}">
+                                                            <a href="#" title="无法发货">发货</a> |
                                                         </span>
                                                     </span>
                                                     <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a>
