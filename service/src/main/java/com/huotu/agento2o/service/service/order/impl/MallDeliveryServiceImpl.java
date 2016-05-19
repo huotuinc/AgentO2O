@@ -30,6 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -63,14 +64,15 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
         Specification<MallDelivery> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (author != null && author instanceof Shop) {
-                predicates.add(cb.or(cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId()),
-                        cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), deliverySearcher.getAgentId())));
+                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId());
+                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), deliverySearcher.getAgentId());
+                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             } else if (author != null && author instanceof Agent) {
-                Join<MallDelivery,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
-                Join<MallDelivery,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class),JoinType.LEFT);
-                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class),deliverySearcher.getAgentId());
-                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class),deliverySearcher.getAgentId());
-                predicates.add(cb.or(p1,p2));
+                Join<MallDelivery, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+                Join<MallDelivery, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
+                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
+                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
+                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             }
             predicates.add(cb.equal(cb.lower(root.get("type").as(String.class)), type.toLowerCase()));
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
@@ -96,6 +98,23 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
         };
         return deliveryRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, new Sort(Sort.Direction.DESC, "createTime")));
 
+    }
+    /**
+     * 用于分页查询时判断订单发货的方式
+     * @param deliverySearcher
+     * @param cb
+     * @param predicates
+     * @param shop
+     * @param beneficiaryShop
+     */
+    private void judgeShipMode(DeliverySearcher deliverySearcher, CriteriaBuilder cb, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
+        if (deliverySearcher.getShipMode() == 0) {
+            predicates.add(shop);
+        } else if (deliverySearcher.getShipMode() == 1) {
+            predicates.add(beneficiaryShop);
+        } else {
+            predicates.add(cb.or(shop, beneficiaryShop));
+        }
     }
 
     @Override
