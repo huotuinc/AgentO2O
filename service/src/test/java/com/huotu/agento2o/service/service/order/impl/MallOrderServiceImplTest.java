@@ -9,27 +9,26 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
-import com.huotu.agento2o.service.service.order.MallOrderItemService;
+import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 /**
- * Created by AiWelv on 2016/5/18.
+ * Created by Administrator on 2016/5/19.
  */
-public class MallOrderItemServiceImplTest extends CommonTestBase {
+public class MallOrderServiceImplTest extends CommonTestBase {
 
     @Autowired
-    private MallOrderItemService orderItemService;
+    private MallOrderService orderService;
 
     @Test
-    public void testFindMallOrderItemByOrderId() throws Exception {
-        List<MallOrderItem> orderItemList = orderItemService.findMallOrderItemByOrderId("2014081986758464");
-        Assert.assertTrue(orderItemList.size()==3);
+    public void testFindOrderDetail() throws Exception{
+        String orderId = "2014022661976526";
+        OrderDetailModel detail = orderService.findOrderDetail(orderId);
+        Assert.assertTrue(detail!=null);
     }
 
 }
