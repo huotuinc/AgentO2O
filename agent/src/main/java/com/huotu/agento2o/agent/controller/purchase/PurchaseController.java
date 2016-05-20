@@ -84,7 +84,7 @@ public class PurchaseController {
         if (author.getParentAuthor() == null) {
             goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), 0, goodsSearcher);
         } else {
-            goodsPage = goodsService.findByAgentId(author.getParentAuthor().getId(), goodsSearcher);
+            goodsPage = goodsService.findByAgentId(author.getParentAuthor(), goodsSearcher);
         }
         List<MallGoods> goodsList = goodsPage.getContent();
         resourceService.setListUri(goodsList,"thumbnailPic","picUri");

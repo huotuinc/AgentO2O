@@ -40,7 +40,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
-   @Rollback(value = false)
+//   @Rollback(value = false)
     public void testAddAgent() throws Exception{
 //        String userName = UUID.randomUUID().toString();
 //        String passWord = UUID.randomUUID().toString();

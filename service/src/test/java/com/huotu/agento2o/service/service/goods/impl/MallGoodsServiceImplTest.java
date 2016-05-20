@@ -63,14 +63,14 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
         AgentProduct mockAgentProduct = mockAgentProduct(mockProduct,mockAgent);
         GoodsSearcher searcher = new GoodsSearcher();
         searcher.setPageNo(1);
-        Page<MallGoods> agentGoodsList = mallGoodsService.findByAgentId(mockAgent.getId(),searcher);
+        Page<MallGoods> agentGoodsList = mallGoodsService.findByAgentId(mockAgent,searcher);
         Assert.assertEquals(agentGoodsList.getTotalElements(),1);
         MallGoods searchGoods = agentGoodsList.getContent().get(0);
         Assert.assertEquals(mockGoods.getName(),searchGoods.getName());
 
         //根据商品名称搜索
         searcher.setGoodsName(mockGoods.getName());
-        Page<MallGoods> agentGoodsListByName = mallGoodsService.findByAgentId(mockAgent.getId(),searcher);
+        Page<MallGoods> agentGoodsListByName = mallGoodsService.findByAgentId(mockAgent,searcher);
         Assert.assertEquals(agentGoodsListByName.getTotalElements(),1);
         Assert.assertEquals(mockGoods.getName(),agentGoodsListByName.getContent().get(0).getName());
     }

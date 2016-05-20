@@ -74,6 +74,7 @@ public class AgentPurchaseOrderController {
         model.addObject("totalRecords", purchaseOrderPage.getTotalElements());
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
         return model;
     }
 
@@ -125,6 +126,19 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
+    @RequestMapping(value = "/receive" ,method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult receivePurchaseOrder(
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam(required = true) String pOrderId) throws Exception{
+        ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        if (StringUtil.isEmptyStr(pOrderId)) {
+            return result;
+        }
+        result = purchaseOrderService.receiveAgentPurchaseOrder(pOrderId, author);
+        return result;
+    }
+
     /**
      * 显示下级采购单
      *
@@ -137,7 +151,7 @@ public class AgentPurchaseOrderController {
     @RequestMapping("/showAgentPurchaseOrderList")
     public ModelAndView showAgentPurchaseOrderList(@AuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/purchase_order_list");
+        model.setViewName("/purchase/agent_purchase_order_list");
         purchaseOrderSearcher.setParentAgentId(author.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
@@ -147,6 +161,7 @@ public class AgentPurchaseOrderController {
         model.addObject("totalRecords", purchaseOrderPage.getTotalElements());
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
         return model;
     }
 

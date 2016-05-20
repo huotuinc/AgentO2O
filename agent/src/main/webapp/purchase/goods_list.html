@@ -113,18 +113,19 @@
                             <td class="txt80 c">
                                 ￥<span data-th-text="${goods.price}">100</span>
                             </td>
-                            <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![store-freez])}">
+                            <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![usableStore])}">
                                 1000
                             </td>
                             <td class="txt80 c">
                                 <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
-                                       data-th-max="${#aggregates.sum(goods.products.![store-freez])}"/> <span
+                                       data-th-max="${#aggregates.sum(goods.products.![usableStore])}"/> <span
                                     data-th-text="${goods.unit}"></span>
                             </td>
                             <td class="txt80 c">
-                                <a data-th-attr="goodsId=${goods.goodsId},productNum=${goods.products.size()}"
+                                <a data-th-if="${#aggregates.sum(goods.products.![usableStore])}>0" data-th-attr="goodsId=${goods.goodsId},productNum=${goods.products.size()}"
                                    onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
                                    data-th-text="订购"></a>
+                                <span data-th-if="0>${#aggregates.sum(goods.products.![usableStore])}">库存不足</span>
                             </td>
                         </tr>
                         </tbody>

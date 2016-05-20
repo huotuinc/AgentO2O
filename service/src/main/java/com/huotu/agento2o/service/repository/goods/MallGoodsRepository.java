@@ -40,8 +40,8 @@ public interface MallGoodsRepository extends JpaRepository<MallGoods, Integer>,J
      * @param agentId 代理商ID
      * @return
      */
-    @Query("SELECT DISTINCT goods FROM MallGoods goods,MallProduct product,AgentProduct agtProduct " +
-            "WHERE goods.goodsId = product.goods.goodsId AND product.productId = agtProduct.product.productId AND agtProduct.agent.id = ?1")
+    @Query("SELECT DISTINCT goods FROM MallGoods goods,AgentProduct agtProduct " +
+            "WHERE goods.goodsId = agtProduct.goodsId  AND agtProduct.author.id = ?1")
     Page<MallGoods> findByAgentId(Integer agentId, Pageable pageable);
 
     /**
@@ -49,7 +49,9 @@ public interface MallGoodsRepository extends JpaRepository<MallGoods, Integer>,J
      * @param agentId 代理商ID
      * @return
      */
-    @Query("SELECT DISTINCT goods FROM MallGoods goods,MallProduct product,AgentProduct agtProduct " +
-            "WHERE goods.goodsId = product.goods.goodsId AND product.productId = agtProduct.product.productId AND agtProduct.agent.id = ?1 AND goods.name like ?2")
+    @Query("SELECT DISTINCT goods FROM MallGoods goods,AgentProduct agtProduct " +
+            "WHERE goods.goodsId = agtProduct.goodsId AND agtProduct.author.id = ?1 AND goods.name like ?2")
     Page<MallGoods> findByAgentIdAndName(Integer agentId,String name, Pageable pageable);
+
+
 }
