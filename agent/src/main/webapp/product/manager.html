@@ -57,20 +57,6 @@
             <div class="br corner">
             </div>
             <div class="cnt-wp" style="padding: 35px 10px 10px;">
-               <!-- <div class="cnt">
-                    <div class="search-bar">
-                        <div>
-                            <label class="first ">商品名称：</label>
-                            <input name="goodsName" type="text" data-th-value="*{goodsName}" id="goodsName"
-                                   class="input-small" style="width: 120px;"/>
-                            <label>
-                                <a class="btn-lit btn-middle" onclick="searchSettlement()" style="margin-bottom: 3px;">
-                                    <span>查询</span>
-                                </a>
-                            </label>
-                        </div>
-                    </div>
-                </div>-->
             </div>
         </div>
         <div class="blank10">
@@ -104,8 +90,7 @@
                         </tr>
                         </thead>
                         <tbody data-th-remove="all-but-first">
-                        <tr data-th-each="agentProduct,goodsStat:${agentProduct}" class="infotr"
-                            data-th-attr="productId=${agentProduct.product.productId},warnig=${agentProduct.warning},agentId=${agentProduct.agent.id}">
+                        <tr data-th-each="agentProduct,goodsStat:${agentProduct}">
                             <td class="txt20 c" data-th-text="${goodsStat.count}">1</td>
                             <td class="txt160 c js_nametd" data-th-text="${agentProduct.product.name}" >
                                 商品名称
@@ -120,14 +105,16 @@
                                 1000
                             </td>
                             <td class="txt80 c waringtd">
-                                <input style="width: 50px;text-align: center;" type="number" value="0" /> <span data-th-text="${agentProduct.warning}" ></span>
+                                <!--<input style="width: 50px;text-align: center;" type="number" value="0" /> <span data-th-text="${agentProduct.warning}" ></span>-->
+                                <input style="width: 50px;text-align: center;" type="number" value="0" data-th-value="${agentProduct.warning}" class="js_infotr"
+                                       data-th-attr="productId=${agentProduct.product.productId},warnig=${agentProduct.warning},agentId=${agentProduct.agent.id}"/>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
                 <!--分页开始-->
-                <script type="text/javascript" dtat-th-inline="javascript">
+               <!-- <script type="text/javascript" dtat-th-inline="javascript">
                     /*<![CDATA[*/
                     var pageSize = /*[[${pageSize}]]*/ '-1';
                     var pageIndex = /*[[*{pageNo}]]*/ '-1';
@@ -137,7 +124,7 @@
                     //                                    var pageNoStr = 'pageNoStr';
                     Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
                     /*]]>*/
-                </script>
+                </script>-->
                 <!--分页结束-->
             </div>
         </div>
@@ -152,15 +139,20 @@
     /*<![CDATA[*/
     function save() {
 
-        $.jBox.tip("正在保存...", "loading");
+
         var employees = new Array();
-        $('.infotr').each(function(v,i){
+        $('.js_infotr').each(function(v,i){
 /*
             employees.push('{agentId:'+$(this).attr("agentId")+' , productId:'+$(this).attr("productId")+'warning:'+$(this).attr("warnig")+'}');
 */
-            employees.push('{'+$(this).attr("agentId")+','+$(this).attr("productId")+','+$(this).attr("warnig")+'}');
+            if(!$(this).val()>0){
+                $.jBox.tip("预警数量必须大于0","error");
+                return;
+            }
+            employees.push('{'+$(this).attr("agentId")+','+$(this).attr("productId")+','+$(this).val()+'}');
 
         });
+        $.jBox.tip("正在保存...", "loading");
 
  /*       var employees = [
             {'a': 'aa', 'b': 'bb'},
@@ -174,9 +166,8 @@
 
         var info = {};
         info['info']=employees;
-        alert(JSON.stringify(info));
 
-        $.ajax({
+       /* $.ajax({
             type: "POST",
             url: "save",
             contentType:"application/json",
@@ -192,7 +183,7 @@
             error: function () {
                 $.jBox.tip("发生错误", "error");
             }
-        });
+        });*/
     }
     /*]]>*/
 </script>

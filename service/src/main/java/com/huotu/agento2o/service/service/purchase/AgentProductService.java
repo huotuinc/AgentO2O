@@ -35,7 +35,11 @@ public interface AgentProductService {
      * @param agentId
      * @return
      */
-    Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId);
+    /*Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId);*/
+
+    List<AgentProduct> findByAgentId(Integer agentId);
+
+
 
     boolean updateWaring(Integer agentId,Integer productId,Integer warning);
 
