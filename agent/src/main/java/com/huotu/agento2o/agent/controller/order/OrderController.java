@@ -48,7 +48,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/order")
-@PreAuthorize("hasAnyRole('AGENT','ORDER')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
 public class OrderController {
 
     private static final Log log = LogFactory.getLog(OrderController.class);

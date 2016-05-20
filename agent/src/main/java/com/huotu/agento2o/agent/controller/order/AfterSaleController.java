@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/agent/afterSale")
-@PreAuthorize("hasAnyRole('AGENT','ORDER')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
 public class AfterSaleController {
 
     private static final Log log = LogFactory.getLog(AfterSaleController.class);
@@ -89,6 +89,7 @@ public class AfterSaleController {
         model.addAttribute("userInfo", userBaseInfo);
         model.addAttribute("order", order);
 
+        model.addAttribute("authorType", author.getClass().getSimpleName());
         return "order/afterSales/after_sales_detail";
     }
 
