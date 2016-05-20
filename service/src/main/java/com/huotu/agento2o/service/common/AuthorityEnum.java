@@ -14,6 +14,9 @@ public enum AuthorityEnum implements ICommonEnum {
     ROLE_PURCHASE("ROLE_PURCHASE","我的采购"),
     ROLE_AGENT_PURCHASE("ROLE_AGENT_PURCHASE","下级采购"),
     ROLE_BASE_DATA("ROLE_BASE_DATA","基本配置");
+    ROLE_AGENT_PURCHASE("ROLE_AGENT_PURCHASE","下级采购"),
+    ROLE_BASE_DATA("ROLE_BASE_DATA","基本设置"),
+    ROLE_BASE_SHOP("ROLE_BASE_SHOP","门店基本设置");
     private String code;
     private String value;
 
