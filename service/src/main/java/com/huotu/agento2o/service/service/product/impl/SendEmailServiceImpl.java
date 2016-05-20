@@ -42,10 +42,10 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 
     @Async
-    public void sayNumber() throws InterruptedException {
-        Thread.sleep(1000);
+    public void sayNumber(int i) throws InterruptedException {
+        Thread.sleep(100);
         System.out.println("Execute method asynchronously. "
-                + Thread.currentThread().getName());
+                + Thread.currentThread().getName()+"   Say"+i);
 
     }
 

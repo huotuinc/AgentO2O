@@ -10,6 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by elvis on 2016/5/16.
@@ -21,6 +23,12 @@ public class SheduleConfig implements AsyncConfigurer {
 
     @Override
     public Executor getAsyncExecutor() {
+//        ExecutorService executor = Executors.newCachedThreadPool();
+//if(executor instanceof ThreadPoolTaskExecutor){
+//    ((ThreadPoolTaskExecutor) executor).setCorePoolSize(7);
+//
+//}
+
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(7);
         executor.setMaxPoolSize(15);

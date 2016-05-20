@@ -13,6 +13,6 @@ public interface SendEmailService {
     public void sendEmail();
 
     @Async
-    public void sayNumber() throws InterruptedException;
+    public void sayNumber(int i) throws InterruptedException;
 
 }
