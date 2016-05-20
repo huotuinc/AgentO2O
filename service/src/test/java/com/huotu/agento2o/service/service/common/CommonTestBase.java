@@ -16,6 +16,7 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
@@ -23,6 +24,7 @@ import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
+import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -52,6 +54,8 @@ public abstract class CommonTestBase {
     protected MallProductRepository productRepository;
     @Autowired
     protected AgentProductRepository agentProductRepository;
+    @Autowired
+    private AgentLevelService agentLevelService;
 
 
     protected MallCustomer mockMallCustomer(){
@@ -127,5 +131,16 @@ public abstract class CommonTestBase {
         agentProduct.setWarning(0);
         agentProduct.setDisabled(false);
         return agentProductRepository.saveAndFlush(agentProduct);
+    }
+
+    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer){
+        AgentLevel agentLevel = new AgentLevel();
+        agentLevel.setLevelName(UUID.randomUUID().toString());
+        agentLevel.setComment(UUID.randomUUID().toString());
+        agentLevel.setLevel(random.nextInt());
+        agentLevel.setCustomer(mockCustomer);
+        agentLevel = agentLevelService.addAgentLevel(agentLevel);
+        agentLevelService.flush();
+        return agentLevel;
     }
 }

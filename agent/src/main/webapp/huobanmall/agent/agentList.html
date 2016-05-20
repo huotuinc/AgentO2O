@@ -1,0 +1,442 @@
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.searchOrder
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>代理商列表</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <link href="../../resource/css/shouji.css" rel="stylesheet" th:href="@{/resource/css/shouji.css}" type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
+            th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script src="resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
+            th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.cityselect.js"
+            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
+    </script>
+    <style type="text/css">
+        .over {
+            background-color: #CCCCCC;
+        }
+
+        #bg {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1001;
+            -moz-opacity: 0.8;
+            opacity: .80;
+            filter: alpha(opacity=88);
+        }
+
+        #loading {
+            position: absolute;
+            left: 45%;
+            top: 2%;
+            padding: 2px;
+            z-index: 20001;
+            height: auto;
+        }
+    </style>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        //#region 导出助手
+        var exportHelper = {};
+        exportHelper.init = function () {
+            $('.OnlyNum').OnlyNum();
+        };
+        exportHelper.checkPage = function (txtBeginPage, txtEndPage) {
+            var numberBug = pageCount;//总页数
+            if (txtBeginPage == '' || txtEndPage == '') {
+                return {flag: false, msg: '请输入正确的起止页码'};
+            }
+            var beginPage = parseInt(txtBeginPage);
+            var endPage = parseInt(txtEndPage);
+            if (endPage < beginPage) {
+                return {flag: false, msg: '结束页不能小于起始页'};
+            }
+            if (endPage > numberBug) {
+                return {flag: false, msg: '结束页不能大于总页数'};
+            }
+            var _maxPage = 500;
+            if (endPage - beginPage >= _maxPage) {
+                $('#txtEndPage').focus().select();
+                return {flag: false, msg: '最多导出' + _maxPage + '页'};
+            }
+            return {flag: true};
+        };
+
+        exportHelper.exportAgent = function () {
+            var txtBeginPage = $("#txtBeginPage").val();
+            var txtEndPage = $("#txtEndPage").val();
+            var chkResult = this.checkPage(txtBeginPage, txtEndPage);
+            if (!chkResult.flag) {
+                jBox.tip(chkResult.msg, 'info');
+                return;
+            }
+            var province = $("#province").val();
+            var city = $("#city").val();
+            var district = $("#district").val();
+            var levelId = $("#levelId").val();
+            var agentName = $("#agentName").val();
+            var agentLoginName = $("#agentLoginName").val();
+            var agentStatus = $("#agentStatus").val();
+            var beginTime = $("#beginTime").val();
+            var endTime = $("#endTime").val();
+            debugger;
+            if (province == null) {
+                province = "";
+            }
+            if (city == null) {
+                city = "";
+            }
+            if (district == null) {
+                district = "";
+            }
+            var url = ajaxUrl + "exportExcel";
+            url += '?rnd=' + Math.random()
+            + '&province=' + province
+            + '&city=' + city
+            + '&district=' + district
+            + '&levelId=' + levelId
+            + '&agentName=' + agentName
+            + '&agentLoginName=' + agentLoginName
+            + '&agentStatus=' + agentStatus
+            + '&beginTime=' + beginTime
+            + '&endTime=' + endTime
+            + '&txtBeginPage=' + txtBeginPage
+            + '&txtEndPage=' + txtEndPage
+            ;
+            window.location.href = url;
+        };
+
+        $(function () {
+            exportHelper.init();
+
+            if (0 == 0) {
+                $(".shipFunc").hide();
+            }
+        });
+
+        var viewModel;
+        /*]]>*/
+    </script>
+</head>
+<body>
+
+<form method="post" action="agentList" id="form1" th:object="${agentSearcher}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>代理商筛选</h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+
+                    <div class="search-bar">
+                        <label class="first ">代理商名称：</label>
+                        <input name="agentName" type="text" th:value="*{agentName}" id="agentName" class="input-small"
+                               style="width: 120px;"/>
+                        <label class="first ">代理商账号：</label>
+                        <input name="agentLoginName" type="text" th:value="*{agentLoginName}" id="agentLoginName"
+                               class="input-small" style="width: 120px;"/>
+
+
+                        <br/>
+                        <br/>
+
+                        <label class="first ">代理商等级：</label>
+                        <select name="levelId" id="levelId">
+                            <option selected="selected" value="-1" th:selected="*{levelId == -1}">==所有==</option>
+                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
+                                    th:text="${agentLevel.levelName}"
+                                    th:selected="${agentLevel.levelId == agentSearcher.levelId}">省级代理商
+                            </option>
+                        </select>
+
+                        <label class="first ">代理商状态：</label>
+                        <select name="agentStatus" id="agentStatus">
+                            <option selected="selected" value="-1" th:selected="*{agentStatus == -1}">==所有==</option>
+                            <option th:each="agentStatusEnum:${agentActiveEnums}" th:value="${agentStatusEnum.code}"
+                                    th:text="${agentStatusEnum.value}"
+                                    th:selected="${agentStatusEnum.code == agentSearcher.agentStatus}">激活
+                            </option>
+                        </select>
+                        <label class="first ">所在区域:</label>
+                        <span id="citys">
+                            <select class="prov" id="province" th:value="${agentSearcher.province}"
+                                    name="province"></select>
+                            <select class="city" id="city" disabled="disabled" th:value="${agentSearcher.city}"
+                                    name="city"></select>
+                            <select class="dist" id="district" disabled="disabled" th:value="${agentSearcher.district}"
+                                    name="district"></select>
+                        </span>
+
+                        <style type="text/css">
+                            #raSortType label {
+                                padding-left: 0px;
+                            }
+                        </style>
+
+                        <br/>
+                        <br/>
+
+                        <label class="first ">创建时间：</label>
+
+                        <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
+                               class="input-normal Wdate" th:value="*{beginTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                        <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
+                               class="input-normal Wdate" th:value="*{endTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+                        <label><a class="btn-lit btn-middle" id="search" href="javascript:agentHandler.searchAgent();"
+                                  style="margin-bottom: 3px;"><span>搜索</span></a></label>
+                        <label><a class="btn-lit btn-middle" id="searchAll"
+                                  href="javascript:agentHandler.searchAgentAll();"
+                                  style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                        <br/>
+                        <br/>
+                        <label class="first ">导出代理商：</label>
+                        第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
+                                style="height:15px;width:28px;"/>页
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${page.totalPages}"
+                                  class="input-small OnlyNum"
+                                  style="height:15px;width:28px;"/>页
+                        <label>
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;"
+                               href="javascript:exportHelper.exportAgent();">
+                                <span>导出代理商</span>
+                            </a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">代理商管理 </h3>
+
+                <div class="bar">
+                    <a class="btn-lit aucontrol" href="#" th:href="@{/huobanmall/agent/showAgent(id=0)}">
+                        <span>新增代理商</span></a>
+                </div>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr>
+                            <th scope="col" style="width: 4%">序号</th>
+                            <th scope="col" style="width: 12%">代理商名称
+                            </th>
+                            <th scope="col" style="width: 12%">用户名
+                            </th>
+                            <th scope="col" style="width: 10%">联系人
+                            </th>
+                            <th scope="col" style="width: 12%">手机号码
+                            </th>
+                            <th scope="col" style="width: 12%">地区
+                            </th>
+                            <th scope="col" style="width: 12%">等级
+                            </th>
+                            <th scope="col" style="width: 12%">账号状态
+                            </th>
+                            <th scope="col" style="width: 12%">操作
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+
+                        <tr th:each="agent:${page.content}">
+                            <td class=" txt40 c" th:text="${agentStat.count}">
+                                1
+                            </td>
+                            <td class="txt80 c" th:text="${agent.name}">
+                                明月江南批发部
+                            </td>
+                            <td class="txt80 c" th:text="${agent.username}">
+                                DLmyjn01
+                            </td>
+                            <td class="txt80 c" th:text="${agent.Contact}">
+                                孙斌
+                            </td>
+                            <td class="txt40 c" th:text="${agent.mobile}">
+                                13888888000
+                            </td>
+                            <td class="txt40 c"
+                                th:text="${#strings.defaultString(agent.province,'')}+' '+${#strings.defaultString(agent.city,'')}+' '+${#strings.defaultString(agent.district,'')}">
+                                浙江杭州西湖区
+                            </td>
+                            <td class="txt40 c" th:text="${agent.agentLevel}==null?'':${agent.agentLevel.levelName}">
+                                省级代理商
+                            </td>
+                            <td class="txt40 c" th:text="${agent.isAccountNonLocked()}?'激活':'冻结'">
+                                激活
+                            </td>
+
+                            <td class="txt80 c tail">
+                                <div style='cursor: pointer'>
+                                    <a href="#"
+                                       th:href="@{/huobanmall/agent/showAgent(id=${agent.id})}"> 编辑 </a>
+                                    <a th:if="${!agent.isAccountNonLocked()}"
+                                       href="javascript:agentHandler.updateStatus(1,1)"
+                                       th:href="|javascript:agentHandler.updateStatus(1,${agent.id})|"> 解冻 </a>
+                                    <a th:if="${agent.isAccountNonLocked()}"
+                                       href="javascript:agentHandler.updateStatus(0,1)"
+                                       th:href="|javascript:agentHandler.updateStatus(0,${agent.id})|"> 冻结 </a>
+                                    <a href="javascript:agentHandler.deleteAgent(1)"
+                                       th:href="|javascript:agentHandler.deleteAgent(${agent.id})|"> 删除 </a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--分页开始-->
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${page.size}]]*/ '0';
+                    var pageIndex = /*[[${page.number}+1]]*/ '1';
+                    var pageCount = /*[[${page.totalPages}]]*/ '1';
+                    var recordCount = /*[[${page.TotalElements}]]*/ '0';
+                    var formName = 'form1';
+                    //                                    var pageNoStr = 'pageNoStr';
+                    Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+                <!--分页结束-->
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var agentHandler = {
+        searchAgent: function () {
+            $('#current-index').val(1);
+            $('#form1').submit();
+        },
+        searchAgentAll: function () {
+            window.location.href = /*[[@{/huobanmall/agent/agentList}]]*/ "";
+        },
+        deleteAgent: function (agentId) {
+            J.jboxConfirm("确定要删除该代理商?", function () {
+                $.jBox.tip("正在删除...", "loading");
+
+                J.GetJsonRespons(ajaxUrl + "delete", {
+                    agentId: agentId
+                }, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("删除成功", "success");
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 400);
+                    } else if (json.code == 801) {
+                        $.jBox.tip("无法删除,该代理商已被绑定", "error");
+                    } else {
+                        $.jBox.tip("删除失败", "error");
+                    }
+                }, function () {
+                }, J.PostMethod);
+            });
+        },
+        updateStatus: function (status, agentId) {
+            /* 0是激活状态，1是冻结状态*/
+            var tittle = status == 0 ? "冻结" : "解冻";
+            $.jBox.tip("正在" + tittle + "...", "loading");
+
+            J.GetJsonRespons(ajaxUrl + "updateStatus", {
+                agentId: agentId,
+                status: status
+            }, function (json) {
+                if (json.code == 200) {
+                    $.jBox.tip(tittle + "成功", "success");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 400);
+                } else {
+                    $.jBox.tip(tittle + "失败", "error");
+                }
+            }, function () {
+            }, J.PostMethod);
+        }
+    }
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    var pro = /*[[${agentSearcher.province==null?'':agentSearcher.province}]]*/;
+    var city = /*[[${agentSearcher.city}]]*/;
+    var dist = /*[[${agentSearcher.district}]]*/;
+    debugger;
+    $(function () {
+        if (pro.length != 0) {
+            $("#citys").citySelect({
+                url: "/resource/3rdParty/js/jquery.cityselect.js",
+                prov: pro,
+                city: city,
+                dist: dist,
+                nodata: null,
+                required: true
+            });
+        } else {
+            $("#citys").citySelect();
+        }
+        ;
+    })
+
+</script>
+</body>
+</html>

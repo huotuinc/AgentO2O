@@ -2,12 +2,14 @@ package com.huotu.agento2o.service.entity.author;
 
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -93,7 +95,9 @@ public abstract class Author implements Serializable,UserDetails{
     @ManyToOne
     private Agent parentAuthor;
 
-    // TODO: 2016/5/11 小伙伴信息
+    @OneToOne
+    @JoinColumn(name = "UB_UserID")
+    private UserBaseInfo userBaseInfo;
 
     /**
      * 省
@@ -130,6 +134,11 @@ public abstract class Author implements Serializable,UserDetails{
     @Column(name = "Comment")
     private String comment;
 
+    /**
+     * 创建时间
+     */
+    @Column(name = "CreateTime")
+    private Date createTime;
 
     public boolean isAccountNonLocked() {
         return this.isDisabled == false;
