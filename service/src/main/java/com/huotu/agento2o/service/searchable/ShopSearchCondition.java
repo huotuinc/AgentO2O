@@ -9,15 +9,21 @@ import lombok.Data;
  */
 @Data
 public class ShopSearchCondition {
+    /**
+     * 门店查询条件
+     */
     private String name;
     private String province;
     private String city;
     private String district;
-    /**
-     * 门店审核状态
-     */
     private int status = -1;
     private Author parentAuthor;
+
+    /**
+     * list 平台门店管理列表
+     * audit 平台门店审核列表
+     */
+    private String type ;
 
     /**
      * 上级代理商查询条件

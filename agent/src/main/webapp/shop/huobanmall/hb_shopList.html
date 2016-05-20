@@ -30,21 +30,21 @@
 </head>
 <script th:inline="javascript">
     function init() {
-        var pro = /*[[${searchCondition.province}]]*/;
-        var city = /*[[${searchCondition.city}]]*/;
-        var dist = /*[[${searchCondition.district}]]*/;
+        var shopPro = /*[[${searchCondition.province}]]*/;
+        var shopCity = /*[[${searchCondition.city}]]*/;
+        var shopDist = /*[[${searchCondition.district}]]*/;
         $("#citys").citySelect({
             url:"/resource/3rdParty/js/jquery.cityselect.js",
-            prov:pro!=null ? pro :'',
-            city:city!=null ? city :'',
-            dist:dist!=null ? dist :'',
+            prov:shopPro!=null ? shopPro :'',
+            city:shopCity!=null ? shopCity :'',
+            dist:shopDist!=null ? shopDist :'',
             nodata:null,
             required:true
         });
 
         var par_pro = /*[[${searchCondition.parent_province}]]*/;
         var par_city = /*[[${searchCondition.parent_city}]]*/;
-        var par_dist = /*[[${searchCondition.parent_district}]]*/
+        var par_dist = /*[[${searchCondition.parent_district}]]*/;
         $("#agent_citys").citySelect({
             url:"/resource/3rdParty/js/jquery.cityselect.js",
             prov:par_pro!=null ? par_pro :'',
@@ -87,7 +87,7 @@
     }
 
     function searchShopAll(){
-        window.location.href = '/huobanmall/shop/shopList';
+        window.location.href = '/huobanmall/shop/shopList?type='+ /*[[${searchCondition.type}]]*/;
     }
 </script>
 <script type="text/javascript" th:inline="javascript">
@@ -132,16 +132,21 @@
         var city = $("#city").val();
         var district = $("#district").val();
         var status = $("#status").val();
-        var url = /*[[@{/huobanmall/shop/exportExcel}]]*/ "";
-        if(province == null){
-            province = '' ;
-        }
-        if(city == null){
-            city = '' ;
-        }
-        if(district == null){
-            district = '' ;
-        }
+        var type = $("#type").val();
+        var parent_name = $("#parent_name").val();
+        var parent_username = $("#parent_username").val();
+        var parent_agentLevel = $("#parent_agentLevel").val();
+        var parent_province = $("#parent_province").val();
+        var parent_city = $("#parent_city").val();
+        var parent_district = $("#parent_district").val();
+
+        var url = /*[[@{/huobanmall/shop/exportExcel}]]*/ ;
+        if(province==null){province='';}
+        if(city==null){city='';}
+        if(district==null){district='';}
+        if(parent_province==null){parent_province='';}
+        if(parent_city==null){parent_city='';}
+        if(parent_district==null){parent_district='';}
 
         url += '?rnd=' + Math.random()
                 + '&name=' + name
@@ -151,6 +156,13 @@
                 + '&status=' + status
                 + '&txtBeginPage=' + txtBeginPage
                 + '&txtEndPage=' + txtEndPage
+                + '&type=' + type
+                + '&parent_name=' + parent_name
+                + '&parent_username=' + parent_username
+                + '&parent_agentLevel=' + parent_agentLevel
+                + '&parent_province=' + parent_province
+                + '&parent_city=' + parent_city
+                + '&parent_district=' + parent_district
         ;
         window.location.href = url;
     };
@@ -210,14 +222,14 @@
     function resetPassword(obj) {
         $("#audit_dialog").html($("#resetpassword_template").html());
         J.ShowDialog("audit_dialog", "重置密码", function () {
-            debugger;
             var passwordData = checkPassword(obj);
             if (passwordData != null) {
                 $.jBox.tip("正在重置...", "loading");
                 J.GetJsonRespons("/huobanmall/shop/resetpassword", passwordData, function (json) {
                     if (json.code == 200) {
+                        $(self).dialog('close');
                         $.jBox.tip("重置成功", "success");
-                        $(this).dialog('close');
+                        window.location.reload();
                     } else {
                         $.jBox.tip("重置失败", error);
                     }
@@ -257,16 +269,16 @@
             <div class="cnt-wp">
                 <div class="cnt">
                     <div class="search-bar">
+                        <input style="display: none" id="type" th:field="*{type}" th:value="*{type}"/>
                         <label class="first ">上级代理商名称：</label>
                         <input name="parent_name" type="text" id="parent_name" class="input-small" style="width: 120px;" th:value="*{parent_name}"/>
                         <label class="first ">上级代理商账号：</label>
                         <input name="parent_username" type="text" id="parent_username" class="input-small" style="width: 120px;" th:value="*{parent_username}"/>
                         <label class="first ">上级代理商等级：</label>
                         <select name="parent_agentLevel" id="parent_agentLevel">
-                            <option value="0" th:selected="*{parent_agentLevel==-1}">请选择</option>
+                            <option value="-1" th:selected="*{parent_agentLevel==-1}">请选择</option>
                             <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}" th:selected="*{parent_agentLevel}==${agentLevel.levelId}?true" th:text="${agentLevel.levelName}"></option>
                         </select>
-
                         <label class="first ">上级代理商区域：</label>
                         <span id="agent_citys">
                             <select class="prov" name="parent_province" id="parent_province" th:value="*{parent_province}"></select>
@@ -276,22 +288,22 @@
 
                         <br/>
                         <br/>
-                        <!--<label class="first ">门店名称：</label>-->
-                        <!--<input name="name" type="text" id="name" class="input-small" style="width: 120px;" th:value="*{name}"/>-->
-                        <!--<label class="first ">门店区域：</label>-->
-                        <!--<span id="citys">-->
-                            <!--<select class="prov" name="province" id="province" th:value="*{province}"></select>-->
-                            <!--<select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>-->
-                            <!--<select class="dist" name="district" id="district" disabled="disabled" th:value="*{district}"></select>-->
-                        <!--</span>-->
-                        <!--<label class="first ">审核状态：</label>-->
-                        <!--<select name="status" id="status">-->
-                            <!--<option selected="selected"  value="-1" >==所有==</option>-->
-                            <!--<option value="0" th:selected="*{status==0}">未提交</option>-->
-                            <!--<option value="1" th:selected="*{status==1}">待审核</option>-->
-                            <!--<option value="2" th:selected="*{status==2}">审核通过</option>-->
-                            <!--<option value="3" th:selected="*{status==3}">审核不通过</option>-->
-                        <!--</select>-->
+                        <label class="first ">门店名称：</label>
+                        <input name="name" type="text" id="name" class="input-small" style="width: 120px;" th:value="*{name}"/>
+                        <label class="first ">门店区域：</label>
+                        <span id="citys">
+                            <select class="prov" name="province" id="province" th:value="*{province}"></select>
+                            <select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>
+                            <select class="dist" name="district" id="district" disabled="disabled" th:value="*{district}"></select>
+                        </span>
+                        <label class="first ">审核状态：</label>
+                        <select name="status" id="status">
+                            <option selected="selected"  value="-1" >==所有==</option>
+                            <option value="0" th:selected="*{status==0}">未提交</option>
+                            <option value="1" th:selected="*{status==1}">待审核</option>
+                            <option value="2" th:selected="*{status==2}">审核通过</option>
+                            <option value="3" th:selected="*{status==3}">审核不通过</option>
+                        </select>
                         <label><a class="btn-lit btn-middle" id="search" href="javascript:searchShop();"
                                   style="margin-bottom: 3px;"><span>搜索</span></a></label>
                         <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchShopAll();"
@@ -385,9 +397,6 @@
                                             </td>
                                             <td class="txt40 c tail">
                                                 <div >
-                                                    <!--<a href="javascript:void(0)" onclick="changeStatus(this)" th:attr="shopid=${shop.id}" th:if="${shop.status.code} == 0 or ${shop.status.code}==3" >提交&nbsp;</a>-->
-                                                    <!--<a href="javascript:void(0)" onclick="toEdit(this)" th:attr="shopid=${shop.id}"  th:if="${shop.status.code}!=2">编辑&nbsp;</a>-->
-                                                    <!--<a href="javascript:void(0)" onclick="toDel(this)" th:attr="shopid=${shop.id}"  th:if="${shop.status.code}==0 or ${shop.status.code}==1" >删除&nbsp;</a>-->
                                                     <a href="javascript:void(0)" onclick="resetPassword(this)" th:attr="shopid=${shop.id}">重置密码&nbsp;</a>
                                                     <a href="javascript:void(0)" onclick="audit(this)" th:attr="shopid=${shop.id}" th:if="${shop.status.code}==1">审核&nbsp;</a>
                                                     <a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${shop.isAccountNonLocked()}">冻结&nbsp;</a>

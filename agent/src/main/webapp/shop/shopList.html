@@ -25,9 +25,19 @@
         }
     </style>
 </head>
-<script>
+<script th:inline="javascript">
     function init() {
-        $("#citys").citySelect({});
+        var pro = /*[[${searchCondition.province}]]*/;
+        var city = /*[[${searchCondition.city}]]*/;
+        var dist = /*[[${searchCondition.district}]]*/;
+        $("#citys").citySelect({
+            url:"/resource/3rdParty/js/jquery.cityselect.js",
+            prov:pro!=null ? pro :'',
+            city:city!=null ? city :'',
+            dist:dist!=null ? dist :'',
+            nodata:null,
+            required:true
+        });
     }
     
     function changeStatus(obj) {
@@ -43,7 +53,6 @@
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
                     setTimeout(function(){
-                        //$(obj).remove();
                         window.location.reload();
                     },500);
                 } else {
@@ -91,9 +100,7 @@
             success: function (result) {
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
-                    setTimeout(function(){
-                        window.location.reload();
-                    },500);
+                    window.location.reload();
                 } else {
                     $.jBox.tip(result.msg, 'error');
                 }
@@ -107,8 +114,87 @@
     }
     
     function searchShop() {
+        $('#current-index').val(1);
         $('#form1').submit();
     }
+
+    function searchShopAll(){
+        window.location.href = '/shop/shopList';
+    }
+</script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    //#region 导出助手
+    var exportHelper = {};
+    exportHelper.init = function () {
+        $('.OnlyNum').OnlyNum();
+    };
+
+    exportHelper.checkPage = function (txtBeginPage, txtEndPage) {
+        var numberBug = pageCount;//总页数
+        if (txtBeginPage == '' || txtEndPage == '') {
+            return {flag: false, msg: '请输入正确的起止页码'};
+        }
+        var beginPage = parseInt(txtBeginPage);
+        var endPage = parseInt(txtEndPage);
+        if (endPage < beginPage) {
+            return {flag: false, msg: '结束页不能小于起始页'};
+        }
+        if (endPage > numberBug) {
+            return {flag: false, msg: '结束页不能大于总页数'};
+        }
+        var _maxPage = 500;
+        if (endPage - beginPage >= _maxPage) {
+            $('#txtEndPage').focus().select();
+            return {flag: false, msg: '最多导出' + _maxPage + '页'};
+        }
+        return {flag: true};
+    };
+
+    exportHelper.showDialogV2 = function () {
+        var txtBeginPage = $("#txtBeginPage").val();
+        var txtEndPage = $("#txtEndPage").val();
+        var chkResult = this.checkPage(txtBeginPage, txtEndPage);
+        if (!chkResult.flag) {
+            jBox.tip(chkResult.msg, 'info');
+            return;
+        }
+        var name = $("#name").val();
+        var province = $("#province").val();
+        var city = $("#city").val();
+        var district = $("#district").val();
+        var status = $("#status").val();
+        var url = /*[[@{/shop/exportExcel}]]*/ "";
+        if(province == null){
+            province = '' ;
+        }
+        if(city == null){
+            city = '' ;
+        }
+        if(district == null){
+            district = '' ;
+        }
+
+        url += '?rnd=' + Math.random()
+                + '&name=' + name
+                + '&province=' + province
+                + '&city=' + city
+                + '&district=' + district
+                + '&status=' + status
+                + '&txtBeginPage=' + txtBeginPage
+                + '&txtEndPage=' + txtEndPage
+        ;
+        window.location.href = url;
+    };
+    //#endregion
+    $(function () {
+        exportHelper.init();
+        if (0 == 0) {
+            $(".shipFunc").hide();
+        }
+    });
+    var viewModel;
+    /*]]>*/
 </script>
 <body marginwidth="0" marginheight="0" onload="init()">
 <form method="get" action="/order/getOrdersPage" th:action="@{/shop/shopList}" id="form1" th:object="${searchCondition}" >
@@ -127,10 +213,9 @@
                         <input name="name" type="text" id="name" class="input-small" style="width: 120px;" th:value="*{name}"/>
                         <label class="first ">门店区域：</label>
                         <span id="citys">
-                            <select class="prov" name="province" id="province" th:value="*{province}">
-                            </select>
-                            <select class="city" name="city" id="city" th:value="*{city}"></select>
-                            <select class="dist" name="district" id="district" th:value="*{district}"></select>
+                            <select class="prov" name="province" id="province" th:value="*{province}"></select>
+                            <select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>
+                            <select class="dist" name="district" id="district" disabled="disabled" th:value="*{district}"></select>
                         </span>
                         <label class="first ">审核状态：</label>
                         <select name="status" id="status">
@@ -140,8 +225,6 @@
                             <option value="2" th:selected="*{status==2}">审核通过</option>
                             <option value="3" th:selected="*{status==3}">审核不通过</option>
                         </select>
-                        <br/>
-                        <br/>
                         <style type="text/css">
                             #raSortType label {
                                 padding-left: 0px;
@@ -149,8 +232,20 @@
                         </style>
                         <label><a class="btn-lit btn-middle" id="search" href="javascript:searchShop();"
                                   style="margin-bottom: 3px;"><span>搜索</span></a></label>
-                        <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchOrderAll();"
+                        <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchShopAll();"
                                   style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                        <br/>
+                        <br/>
+                        <label class="first ">导出门店：</label>
+                        第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
+                                style="height:15px;width:28px;"/>页
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                                  style="height:15px;width:28px;"/>页
+                        <label>
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;" href="javascript:exportHelper.showDialogV2();">
+                                <span>导出门店信息</span>
+                            </a>
+                        </label>
                     </div>
                 </div>
             </div>

@@ -10,13 +10,11 @@
 
 package com.huotu.agento2o.service.service.author.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
@@ -26,7 +24,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,11 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,14 +46,8 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    /**
-     * 根据登录名查找未删除的门店
-     * @param userName
-     * @return
-     */
     @Override
     public Shop findByUserName(String userName) {
-//        return shopRepository.findByUsernameAndStatus(userName, AgentStatusEnum.CHECKED);
         return shopRepository.findByUsername(userName);
     }
 
@@ -108,12 +96,6 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public List<Shop> findByParentAuthor(Author author) {
-        List<Shop> shops = shopRepository.findByParentAuthorAndIsDeleted(author,false);
-        return shops;
-    }
-
-    @Override
     @Transactional
     public void updateStatus(AgentStatusEnum Status, int id) {
         shopRepository.updateStatus(Status,id);
@@ -153,6 +135,7 @@ public class ShopServiceImpl implements ShopService {
         return shop;
     }
 
+    @Override
     public Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition){
         Specification<Shop> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -173,6 +156,7 @@ public class ShopServiceImpl implements ShopService {
             if (searchCondition.getStatus() != -1) {
                 predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,searchCondition.getStatus())));
             }
+            predicates.add(cb.equal(root.get("isDeleted").as(Boolean.class),false));
 
             //上级代理商过滤条件
             if(searchCondition.getParentAuthor()!=null){
@@ -180,6 +164,9 @@ public class ShopServiceImpl implements ShopService {
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_name())) {
                 predicates.add(cb.like(root.get("parentAuthor").get("name").as(String.class), "%" + searchCondition.getParent_name() + "%"));
+            }
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_username())) {
+                predicates.add(cb.like(root.get("parentAuthor").get("username").as(String.class), "%" + searchCondition.getParent_username() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_province())) {
                 predicates.add(cb.like(root.get("parentAuthor").get("province").as(String.class), "%" + searchCondition.getParent_province() + "%"));
@@ -192,14 +179,18 @@ public class ShopServiceImpl implements ShopService {
             }
 
             //等级过滤
-            // TODO: 2016/5/18
             if (searchCondition.getParent_agentLevel()!=-1) {
                 predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class),  searchCondition.getParent_agentLevel() ));
             }
 
-            // TODO: 2016/5/18 未提交状态显示条件
-//            predicates.add(cb.notEqual(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,0)));
-            predicates.add(cb.equal(root.get("isDeleted").as(Boolean.class),false));
+            //平台显示列表
+            if("list".equals(searchCondition.getType())){//门店列表
+                predicates.add(cb.notEqual(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,0)));
+            }else if("audit".equals(searchCondition.getType())){//门店审核
+                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,1)));
+                predicates.add(cb.equal(root.get("isDisabled").as(Boolean.class),false));
+            }
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
 

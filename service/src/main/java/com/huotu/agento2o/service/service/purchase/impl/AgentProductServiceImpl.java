@@ -47,7 +47,7 @@ public class AgentProductServiceImpl implements AgentProductService {
         return null;
     }
 
-    @Override
+   /* @Override
     public Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId) {
         Specification<AgentProduct> specification = new Specification<AgentProduct>() {
             @Override
@@ -58,6 +58,11 @@ public class AgentProductServiceImpl implements AgentProductService {
             }
         };
         return agentProductRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
+    }*/
+
+    @Override
+    public List<AgentProduct> findByAgentId(Integer agentId) {
+        return agentProductRepository.findByAgentId(agentId);
     }
 
     @Override
