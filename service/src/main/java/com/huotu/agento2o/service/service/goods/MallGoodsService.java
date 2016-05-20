@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.goods;
 
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import org.springframework.data.domain.Page;
@@ -29,10 +30,10 @@ public interface MallGoodsService {
 
     /**
      * 根据 AgentId 查找指定代理商商品
-     * @param agentId 代理商ID
+     * @param author 代理商ID
      * @return
      */
-    Page<MallGoods> findByAgentId(Integer agentId, GoodsSearcher goodsSearcher);
+    Page<MallGoods> findByAgentId(Author author, GoodsSearcher goodsSearcher);
 
     /**
      * 根据 商品ID 查找商品

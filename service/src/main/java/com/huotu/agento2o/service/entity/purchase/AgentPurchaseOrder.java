@@ -143,7 +143,12 @@ public class AgentPurchaseOrder {
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "Last_update_time")
     private Date lastUpdateTime;
-
+    /**
+     * 确认收货时间
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "Received_Time")
+    private Date receivedTime;
     /**
      * 发货方备注
      */
@@ -188,6 +193,15 @@ public class AgentPurchaseOrder {
         return status == PurchaseEnum.OrderStatus.CHECKED
                 && payStatus == PurchaseEnum.PayStatus.PAYED
                 && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
+    }
+
+    //采购状态为已审核 且支付状态为 已支付 且发货状态为已发货 且确认收货时间为空
+    //可确认收货
+    public boolean receivable(){
+        return status == PurchaseEnum.OrderStatus.CHECKED
+                && payStatus == PurchaseEnum.PayStatus.PAYED
+                && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
+                && receivedTime == null;
     }
 
 }

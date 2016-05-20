@@ -36,7 +36,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
     @Override
     public List<AgentProduct> findAgentProductsByAgentId(Integer agentId) {
-        return agentProductRepository.findAgentProductByAgent_Id(agentId);
+        return agentProductRepository.findByAuthor_IdAndDisabledFalse(agentId);
     }
 
     @Override

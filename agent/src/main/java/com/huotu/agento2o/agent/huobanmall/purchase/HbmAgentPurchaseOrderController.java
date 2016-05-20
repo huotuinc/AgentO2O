@@ -64,6 +64,7 @@ public class HbmAgentPurchaseOrderController {
         model.addObject("totalRecords", purchaseOrderPage.getTotalElements());
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
         return model;
     }
 

@@ -39,16 +39,16 @@ public class AgentReturnOrderItemServiceImpl implements AgentReturnOrderItemServ
     }
 
     @Override
-    public List<AgentReturnedOrderItem> addReturnOrderItemList(AgentReturnedOrder agentReturnedOrder,Integer[]productIds,Integer[] productNums) {
+    public List<AgentReturnedOrderItem> addReturnOrderItemList(AgentReturnedOrder agentReturnedOrder, Integer[] productIds, Integer[] productNums) {
 
         boolean flag = true;
         List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
         List<AgentReturnedOrderItem> savedAgentReturnedOrderItems = null;
 
-        if(agentReturnedOrder != null){
-            for(int i=0;i<productIds.length;i++){
+        if (agentReturnedOrder != null) {
+            for (int i = 0; i < productIds.length; i++) {
                 AgentProduct agentProduct = agentProductRepository.findByProduct_productId(productIds[i]);
-                if(productNums[i] > (agentProduct.getStore()-agentProduct.getFreez()) ){
+                if (productNums[i] > (agentProduct.getStore() - agentProduct.getFreez())) {
                     flag = false;
                     break;
                 }
@@ -56,13 +56,13 @@ public class AgentReturnOrderItemServiceImpl implements AgentReturnOrderItemServ
                 AgentReturnedOrderItem agentReturnedOrderItem = new AgentReturnedOrderItem();
                 agentReturnedOrderItem.setReturnedOrder(agentReturnedOrder);
                 MallProduct mallProduct = mallProductRepository.findOne(productIds[i]);
-                if(mallProduct != null){
+                if (mallProduct != null) {
                     agentReturnedOrderItem.setProduct(mallProduct);
                     agentReturnedOrderItem.setBn(mallProduct.getBn());
                     agentReturnedOrderItem.setName(mallProduct.getName());
                     agentReturnedOrderItem.setPrice(mallProduct.getPrice());
                     agentReturnedOrderItem.setNum(productNums[i]);
-                    agentReturnedOrderItem.setPrice(5*mallProduct.getPrice());
+                    agentReturnedOrderItem.setPrice(5 * mallProduct.getPrice());
                     agentReturnedOrderItem.setThumbnailPic("fixme");// FIXME: 2016/5/18
                     agentReturnedOrderItem.setPdtDesc(mallProduct.getStandard());
                     agentReturnedOrderItem.setUnit(mallProduct.getUnit());
@@ -71,15 +71,15 @@ public class AgentReturnOrderItemServiceImpl implements AgentReturnOrderItemServ
             }
         }
 
-        if(flag){
+        if (flag) {
             savedAgentReturnedOrderItems = agentReturnOrderItemRepository.save(agentReturnedOrderItems);
-            for(int i=0;i<productIds.length;i++){
+            for (int i = 0; i < productIds.length; i++) {
                 AgentProduct agentProduct = agentProductRepository.findByProduct_productId(productIds[i]);
-                agentProduct.setFreez(agentProduct.getFreez()+productNums[i]);
+                agentProduct.setFreez(agentProduct.getFreez() + productNums[i]);
                 agentProductRepository.save(agentProduct);
             }
 
-        }else{
+        } else {
             agentReturnedOrder.setDisabled(true);
             agentReturnOrderRepository.save(agentReturnedOrder);
         }

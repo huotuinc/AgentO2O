@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.entity.purchase;
 
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 /**
- * 代理商/平台方库存
+ * 代理商/门店库存
  * Created by helloztt on 2016/5/11.
  */
 @Entity
@@ -33,11 +34,16 @@ public class AgentProduct {
     private Integer id;
 
     /**
-     * 代理商(门店直接映射商品)
+     * 代理商/门店
      */
     @JoinColumn(name = "Agent_Id")
     @ManyToOne
-    private Agent agent;
+    private Author author;
+    /**
+     * 商品ID
+     */
+    @Column(name = "Goods_Id")
+    private Integer goodsId;
 
     /**
      * 货品

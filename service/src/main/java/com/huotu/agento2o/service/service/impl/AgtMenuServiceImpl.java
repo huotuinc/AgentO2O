@@ -31,6 +31,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
     private AgtMenuRepository menuRepository;
 
     @PostConstruct
+    @Transactional
     public void init(){
         //01
         initOrderMenu();
@@ -129,7 +130,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             wdcgd = menuRepository.save(wdcgd);
             subMenu2.clear();
             //二级菜单 我的采购单
-            AgtMenu cgd = new AgtMenu(2,"/purchase","我的采购单",0,wdcgd,"PURCHASE",0,"020201");
+            AgtMenu cgd = new AgtMenu(2,"/purchaseOrder/showPurchaseOrderList","我的采购单",0,wdcgd,"PURCHASE",0,"020201");
             cgd = menuRepository.save(cgd);
             subMenu2.add(cgd);
             AgtMenu thsq = new AgtMenu(2,"/purchase","退货申请",1,wdcgd,"PURCHASE",0,"020202");
@@ -142,20 +143,32 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             subMenu1.add(wdcgd);
 
             //一级订单 下级采购管理
-            AgtMenu xjcggl = new AgtMenu(1,"","下级采购管理",2,purchaseMenu,"PURCHASE",0,"0203");
+            AgtMenu xjcggl = new AgtMenu(1,"","下级采购管理",2,purchaseMenu,"AGENT_PURCHASE",0,"0203");
             xjcggl = menuRepository.save(xjcggl);
             subMenu2.clear();
             //二级菜单 下级采购单
-            AgtMenu xjcgd = new AgtMenu(2,"/purchase","下级采购单",0,xjcggl,"PURCHASE",0,"020301");
+            AgtMenu xjcgd = new AgtMenu(2,"/purchaseOrder/showAgentPurchaseOrderList","下级采购单",0,xjcggl,"AGENT_PURCHASE",0,"020301");
             xjcgd = menuRepository.save(xjcgd);
             subMenu2.add(xjcgd);
             //二级菜单 下级退货单
-            AgtMenu xjthd = new AgtMenu(2,"/purchase","下级退货单",1,xjcggl,"PURCHASE",0,"020302");
+            AgtMenu xjthd = new AgtMenu(2,"/purchase","下级退货单",1,xjcggl,"AGENT_PURCHASE",0,"020302");
             xjthd = menuRepository.save(xjthd);
             subMenu2.add(xjthd);
             xjcggl.setChildren(subMenu2);
             xjcggl = menuRepository.save(xjcggl);
             subMenu1.add(xjcggl);
+
+            //一级菜单 库存管理
+            AgtMenu kcgl = new AgtMenu(1,"","库存管理",3,purchaseMenu,"PURCHASE",0,"0204");
+            kcgl = menuRepository.save(kcgl);
+            subMenu2.clear();
+            //二级采购单 库存预警
+            AgtMenu kcyj = new AgtMenu(2,"/product/managerUI","库存预警",0,kcgl,"PURCHASE",0,"020401");
+            kcyj = menuRepository.save(kcyj);
+            subMenu2.add(kcyj);
+            kcgl.setChildren(subMenu2);
+            kcgl = menuRepository.save(kcgl);
+            subMenu1.add(kcgl);
 
             purchaseMenu.setChildren(subMenu1);
             purchaseMenu = menuRepository.save(purchaseMenu);

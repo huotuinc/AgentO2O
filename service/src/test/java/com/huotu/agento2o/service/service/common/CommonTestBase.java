@@ -102,9 +102,15 @@ public abstract class CommonTestBase {
         return productRepository.saveAndFlush(mockMallProduct);
     }
 
+    /**
+     * 代理商货品
+     * @param mockMallProduct
+     * @param mockAgent
+     * @return
+     */
     protected AgentProduct mockAgentProduct(MallProduct mockMallProduct,Agent mockAgent){
         AgentProduct agentProduct = new AgentProduct();
-        agentProduct.setAgent(mockAgent);
+        agentProduct.setAuthor(mockAgent);
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setStore(random.nextInt());
         agentProduct.setFreez(0);

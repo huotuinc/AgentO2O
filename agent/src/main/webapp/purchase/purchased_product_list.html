@@ -67,7 +67,6 @@
                         </tr>
                         </thead>
                         <tbody data-th-remove="all-but-first">
-                        <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
                         <tr data-th-each="agentProduct,agentProductStat:${agentProductList}" data-th-id="${agentProduct.id}">
                             <td class="txt20 c">
                                 <input type="checkbox" name="checkProduct" th:value="${agentProduct.product.productId}" />

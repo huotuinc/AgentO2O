@@ -146,4 +146,8 @@ public abstract class Author implements Serializable,UserDetails{
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
+    public boolean isAgent(){
+        return this instanceof Agent;
+    }
 }
