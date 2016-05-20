@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,11 +79,16 @@ public class IndexController {
     ) {
         if (!StringUtils.isEmpty(parentId)) {
             List<AgtMenu> menus = menuService.findByParent(parentId, 0);
-
-            model.addAttribute("menus", menus);
+            List<AgtMenu> isAuthorMenus = new ArrayList<>();
+            for (AgtMenu menu : menus) {
+                if (menu.isAuthor()) {
+                    isAuthorMenus.add(menu);
+                }
+            }
+            model.addAttribute("menus", isAuthorMenus);
             AgtMenu activeMenu;
             if (StringUtils.isEmpty(activeMenuId)) {
-                activeMenu = menus.get(0).getChildren().get(0);
+                activeMenu = isAuthorMenus.get(0).getChildren().get(0);
             } else {
                 activeMenu = menuService.findById(activeMenuId);
             }
