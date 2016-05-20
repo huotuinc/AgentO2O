@@ -23,10 +23,10 @@ public interface MallGoodsService {
      * 根据 CustomerId 和 AgentId 查找指定门店商品，AgentId=0 表示平台方商品
      *
      * @param customerId 平台方ID
-     * @param agentId    门店ID
+     * @param author    门店ID
      * @return
      */
-    Page<MallGoods> findByCustomerIdAndAgentId(Integer customerId, Integer agentId, GoodsSearcher goodsSearcher);
+    Page<MallGoods> findByCustomerIdAndAgentId(Integer customerId, Author author, GoodsSearcher goodsSearcher);
 
     /**
      * 根据 AgentId 查找指定代理商商品

@@ -80,6 +80,12 @@ public class MallProduct {
     @Transient
     private int usableStore;
 
+    /**
+     * 当前代理商/门店库存
+     */
+    @Transient
+    private int authorStore = 0;
+
     @Column(name = "Marketable", nullable = false)
     private boolean marketable;
 
@@ -87,4 +93,5 @@ public class MallProduct {
     private boolean isLocalStock;
 
     // TODO: 3/17/16
+    
 }

@@ -53,6 +53,8 @@
                         </th>
                         <th scope="col">库存
                         </th>
+                        <th scope="col">当前库存
+                        </th>
                         <th scope="col">订购数量/单位
                         </th>
                         <th scope="col">操作
@@ -70,6 +72,9 @@
                             ￥<span data-th-text="${product.price}">100</span>
                         </td>
                         <td class="txt20 c" data-th-text="${product.usableStore}">
+                            1000
+                        </td>
+                        <td class="txt20 c" data-th-text="${product.authorStore}">
                             1000
                         </td>
                         <td class="txt40 c">

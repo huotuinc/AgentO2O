@@ -94,6 +94,8 @@
                             </th>
                             <th scope="col">库存
                             </th>
+                            <th scope="col">当前库存
+                            </th>
                             <th scope="col">订购数量/单位
                             </th>
                             <th scope="col">操作
@@ -116,6 +118,7 @@
                             <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![usableStore])}">
                                 1000
                             </td>
+                            <td class="txt80 c" th:text="${#aggregates.sum(goods.products.![authorStore])}"></td>
                             <td class="txt80 c">
                                 <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
                                        data-th-max="${#aggregates.sum(goods.products.![usableStore])}"/> <span
@@ -125,7 +128,7 @@
                                 <a data-th-if="${#aggregates.sum(goods.products.![usableStore])}>0" data-th-attr="goodsId=${goods.goodsId},productNum=${goods.products.size()}"
                                    onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
                                    data-th-text="订购"></a>
-                                <span data-th-if="0>${#aggregates.sum(goods.products.![usableStore])}">库存不足</span>
+                                <span style="color: red" data-th-if="0>=${#aggregates.sum(goods.products.![usableStore])}">库存不足</span>
                             </td>
                         </tr>
                         </tbody>

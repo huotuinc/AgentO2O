@@ -13,6 +13,7 @@ package com.huotu.agento2o.service.service.common;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
@@ -61,7 +62,7 @@ public abstract class CommonTestBase {
         return customerService.newCustomer(customer);
     }
 
-    protected Agent mockAgent(MallCustomer mockCustomer){
+    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent){
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
@@ -73,6 +74,9 @@ public abstract class CommonTestBase {
         agent.setAddress(UUID.randomUUID().toString());
         agent.setDisabled(false);
         agent.setDeleted(false);
+        if(parentAgent != null){
+            agent.setParentAuthor(parentAgent);
+        }
         agent = agentService.addAgent(agent);
         agentService.flush();
         return agent;
@@ -83,7 +87,12 @@ public abstract class CommonTestBase {
         mockMallGoods.setCost(random.nextDouble());
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
-        mockMallGoods.setAgentId(agentId);
+        //平台方商品
+        if(agentId == null){
+            mockMallGoods.setAgentId(0);
+        }else {
+            mockMallGoods.setAgentId(agentId);
+        }
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());
@@ -112,6 +121,7 @@ public abstract class CommonTestBase {
         AgentProduct agentProduct = new AgentProduct();
         agentProduct.setAuthor(mockAgent);
         agentProduct.setProduct(mockMallProduct);
+        agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
         agentProduct.setStore(random.nextInt());
         agentProduct.setFreez(0);
         agentProduct.setWarning(0);

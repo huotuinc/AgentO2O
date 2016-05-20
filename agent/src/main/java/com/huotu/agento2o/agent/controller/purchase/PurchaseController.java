@@ -82,12 +82,12 @@ public class PurchaseController {
         //如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
         // TODO: 2016/5/17 代理商/门店进货价读取
         if (author.getParentAuthor() == null) {
-            goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), 0, goodsSearcher);
+            goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), author, goodsSearcher);
         } else {
-            goodsPage = goodsService.findByAgentId(author.getParentAuthor(), goodsSearcher);
+            goodsPage = goodsService.findByAgentId(author, goodsSearcher);
         }
         List<MallGoods> goodsList = goodsPage.getContent();
-        resourceService.setListUri(goodsList,"thumbnailPic","picUri");
+        resourceService.setListUri(goodsList, "thumbnailPic", "picUri");
         model.addObject("goodsList", goodsList);
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", goodsSearcher.getPageNo());
@@ -163,7 +163,7 @@ public class PurchaseController {
         model.setViewName("purchase/product_list");
         List<MallProduct> productList = null;
         if (goodsId != null && goodsId != 0) {
-            productList = productService.findByGoodsId(goodsId);
+            productList = productService.findByGoodsId(author, goodsId);
         }
         model.addObject("productList", productList);
         return model;

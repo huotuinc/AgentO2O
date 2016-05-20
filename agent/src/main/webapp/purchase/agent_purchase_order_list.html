@@ -70,6 +70,12 @@
                         &nbsp;
                         <label class="first ">商品名称：</label>
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
+                        &nbsp;
+                        <label class="first ">下级代理商/门店：</label>
+                        <select name="agentId" id="agentId">
+                            <option selected="selected"  value="-1"  th:selected="*{agentId == 0}">==所有==</option>
+                            <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == purchaseOrderSearcher.agentId}">代理商/门店</option>
+                        </select>
                         <br/>
                         <br/>
                         <label class="first ">付款状态：</label>
