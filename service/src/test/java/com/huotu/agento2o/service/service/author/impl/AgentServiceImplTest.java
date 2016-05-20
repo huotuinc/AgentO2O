@@ -80,7 +80,7 @@ public class AgentServiceImplTest extends CommonTestBase {
         //平台方
         MallCustomer mockCustomer = mockMallCustomer();
         //代理商
-        Agent mockAgent = mockAgent(mockCustomer);
+        Agent mockAgent = mockAgent(mockCustomer,null);
         AgentSearcher searcher = new AgentSearcher();
         searcher.setPageNo(1);
         Page<Agent> agentPage = agentService.getAgentList(mockCustomer.getCustomerId(),searcher);
@@ -91,7 +91,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     @Test
     public void testDeleteAgent(){
         MallCustomer mockCustomer = mockMallCustomer();
-        Agent mockAgent = mockAgent(mockCustomer);
+        Agent mockAgent = mockAgent(mockCustomer,null);
         Assert.assertTrue(!mockAgent.isDeleted());
         agentService.deleteAgent(mockAgent.getId());
         mockAgent = agentService.findById(mockAgent.getId());
@@ -103,7 +103,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     @Test
     public void testUpdateDisabledStatus(){
         MallCustomer mockCustomer = mockMallCustomer();
-        Agent mockAgent = mockAgent(mockCustomer);
+        Agent mockAgent = mockAgent(mockCustomer,null);
         Assert.assertTrue(!mockAgent.isDisabled());
         agentService.freezeAgent(mockAgent.getId());
         mockAgent = agentService.findById(mockAgent.getId());
@@ -124,7 +124,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     @Test
     public void testAddOrUpdate(){
         MallCustomer mockCustomer = mockMallCustomer();
-        Agent mockAgent = mockAgent(mockCustomer);
+        Agent mockAgent = mockAgent(mockCustomer,null);
         Integer customerId = mockCustomer.getCustomerId();
         AgentLevel agentLevel = mockAgentLevel(mockCustomer);
         String hotUserName = null;
