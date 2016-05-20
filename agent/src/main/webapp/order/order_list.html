@@ -114,7 +114,7 @@
             var txtBeginPaytime = $("#beginPayTime").val();
             var url = /*[[@{/order/orderExport}]]*/ "";
             url += '?rnd=' + Math.random()
-                    + '&customerId=' + customerId
+                    + '&agentId=' + agentId
                     + '&txtOrderId=' + txtOrderId
                     + '&ddlShipStatus=' + ddlShipStatus
                     + '&ddlPayStatus=' + ddlPayStatus
@@ -223,6 +223,14 @@
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
                         </select>
                         &nbsp;
+                        <label class="first ">发货方式：</label>
+                        <select name="shipMode" id="shipMode">
+                            <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == searchCondition.shipMode}">未发货</option>
+                        </select>
+
+                        &nbsp;
                         <label class="first ">排序：</label>
                         <select name="orderType" id="orderType">
                             <option selected="selected" value="0" th:selected="*{orderType==0}">按下单时间</option>
@@ -315,8 +323,11 @@
                     <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
                         <span>批量发货</span></a>
                         -->
-                    <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
-                        <span>批量发货</span></a>
+                    <span th:if="${authorType=='Shop'}">
+                        <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
+                            <span>批量发货</span>
+                        </a>
+                    </span>
                 </div>
 
             </div>
@@ -438,13 +449,21 @@
                                             </td>
                                             <td class="txt40 c tail">
                                                 <div th:inline="text">
-                                                    <span th:if="${orders.deliveryable()}">
-                                                        <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
+                                                    <span th:if="${authorType=='Shop'and orders.shop!=null and orders.beneficiaryShop==null}">
+                                                        <span th:if="${orders.deliveryable()}">
+                                                            <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
+                                                        </span>
                                                     </span>
-                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a> |
-                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
-
-                                                    <!--<a th:attr="orderId=''+${orders.orderId}" onclick="showRefunds(this)" title="退货" th:if="${orders.returnable()}">退货</a>-->
+                                                    <span th:if="${authorType=='Shop'and orders.shop==null and orders.beneficiaryShop!=null}">
+                                                        <span th:if="${orders.deliveryable()}">
+                                                            <a href="#" title="无法发货">发货</a> |
+                                                        </span>
+                                                    </span>
+                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a>
+                                                    <span th:if="${authorType=='Shop'}">
+                                                        |<a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
+                                                    </span>
+                                                    <!--/*<a th:attr="orderId=''+${orders.orderId}" onclick="showRefunds(this)" title="退货" th:if="${orders.returnable()}">退货</a>*/-->
                                                 </div>
                                             </td>
                                         </tr>
@@ -513,6 +532,7 @@
 
     function searchOrder() {
         $("input[name=orderRule]").val($("input[name=raSortType]:checked").val());
+        $("#pageIndex").val(1);
         $('#form1').submit();
     }
     function searchOrderAll() {

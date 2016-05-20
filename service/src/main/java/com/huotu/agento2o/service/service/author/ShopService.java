@@ -14,6 +14,7 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +34,33 @@ public interface ShopService extends UserDetailsService {
 
     void flush();
 
-    List<Shop> findByParentAuthor(Author author);
-
+    /**
+     * 更新审核状态
+     * @param Status
+     * @param id
+     */
     void updateStatus(AgentStatusEnum Status, int id);
+
+    /**
+     * 更新审核状态和备注
+     * @param Status
+     * @param id
+     */
+    void updateStatusAndComment(AgentStatusEnum Status, String comment, int id);
 
     void deleteById(int id);
 
+    /**
+     * 冻结解冻
+     * @param isDisabled
+     * @param id
+     */
     void updateIsDisabledById(boolean isDisabled , int id);
 
+    void updatePasswordById(String password , int id);
+
     Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
+
+    HSSFWorkbook createWorkBook(List<Shop> shops);
+
 }

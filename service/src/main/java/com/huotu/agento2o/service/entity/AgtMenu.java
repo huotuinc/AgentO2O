@@ -23,6 +23,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Agt_Menu")
+@Cacheable(value = false)
 @Getter
 @Setter
 public class AgtMenu {

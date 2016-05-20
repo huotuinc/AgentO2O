@@ -74,6 +74,13 @@ public class MallAfterSales {
     @Column(name = "Apply_Mobile")
     private String applyMobile;
 
+    /**
+     *拆单时的受益方
+     */
+    @JoinColumn(name = "Beneficiary_Agent_id")
+    @ManyToOne
+    private Shop beneficiaryShop;
+
     public boolean refundable() {
         if (afterSaleType == AfterSaleEnum.AfterSaleType.REFUND) {
             return afterSaleStatus == AfterSaleEnum.AfterSaleStatus.APPLYING;

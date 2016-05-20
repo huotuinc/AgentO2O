@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * 采购购物车
@@ -44,4 +45,7 @@ public class ShoppingCart {
 
     @Column(name = "Num")
     private Integer num;
+
+    @Column(name = "Createtime")
+    private Date createTime;
 }

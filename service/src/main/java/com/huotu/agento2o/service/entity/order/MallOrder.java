@@ -129,21 +129,21 @@ public class MallOrder {
     private int receiveStatus;
     @Column(name = "BNList")
     private String bnList;
-//    /**
-//     * 供应商备注等级
-//     *
-//     * @return
-//     */
-//    @Column(name = "Supplier_Mark_Type")
-//    private String supplierMarkType;
-//
-//    /**
-//     * 供应商备注
-//     *
-//     * @return
-//     */
-//    @Column(name = "Supplier_Mark_Text")
-//    private String supplierMarkText;
+    /**
+     * 门店备注等级
+     *
+     * @return
+     */
+    @Column(name = "Agent_Mark_Type")
+    private String agentMarkType;
+
+    /**
+     * 门店备注
+     *
+     * @return
+     */
+    @Column(name = "Agent_Mark_Text")
+    private String agentMarkText;
 
     @Column(name = "SourceType")
     private OrderEnum.OrderSourceType orderSourceType;
@@ -153,6 +153,13 @@ public class MallOrder {
 
     @OneToMany(mappedBy = "order")
     private List<MallOrderItem> orderItems;
+
+    /**
+     *拆单时的受益方
+     */
+    @JoinColumn(name = "Beneficiary_Agent_id")
+    @ManyToOne
+    private Shop beneficiaryShop;
 
 
     //发货状态为 未发货，部分发货，部分退货

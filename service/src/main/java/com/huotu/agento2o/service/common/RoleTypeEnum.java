@@ -6,7 +6,8 @@ package com.huotu.agento2o.service.common;
 public enum RoleTypeEnum {
     AGENT(0,"代理登录"),
     SHOP(1,"门店登录"),
-    OPERATOR(2,"操作员登录");
+    OPERATOR(2,"操作员登录"),
+    MALL(3,"平台登陆");
     private int code;
     private String name;
 

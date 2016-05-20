@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-<form action="#" th:action="@{/shop/addShop}" method="post" id="supConfigForm" th:object="${shop}" >
+<form action="#" th:action="@{/shop/addShop}" method="post" id="shopConfigForm" th:object="${shop}" >
     <div class="container">
         <div class="blank10">
         </div>
@@ -87,13 +87,13 @@
                                 <tr>
                                     <th>代理商等级：</th>
                                     <td>
-                                        <input type="text" class="input-normal"/>
+                                        <input type="text" class="input-normal"  readonly="readonly" th:value="${agent.agentLevel.levelName}" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>代理商账户：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="author" readonly="readonly"  th:field="${agent.username}" th:value="${agent.username}" />
+                                        <input type="text" class="input-normal" id="author" readonly="readonly" th:field="${agent.username}" th:value="${agent.username}" />
                                     </td>
                                 </tr>
                                 <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
@@ -182,7 +182,7 @@
                                 <tr>
                                     <th>备注:</th>
                                     <td>
-                                        <textarea rows="6" style="width: 80%" id="comment" th:field="*{comment}" th:value="*{comment}"></textarea>
+                                        <textarea type="text" rows="6" style="width: 80%" id="comment" th:field="*{comment}" th:value="*{comment}"></textarea>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -234,7 +234,6 @@
 <script th:inline="javascript">
         //保存
         function saveShopConfig() {
-            debugger;
             var username = $.trim($("#username").val());
             var password = $.trim($("#password").val());
             var province = $.trim($("#province").val());
@@ -350,7 +349,7 @@
             city:city,
             dist:dist,
             nodata:null,
-            required:true
+            required:false
         });
         $("#password").parent().parent().hide();
     }else{

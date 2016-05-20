@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>
+        我的采购单列表
+    </title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!--/*@thymesVar id="purchaseOrderSearcher" type="com.huotu.agento2o.service.searchable.PurchaseOrderSearcher"*/-->
+<form method="get" action="/purchaseOrder/showPurchaseOrderList" th:action="@{/purchaseOrder/showPurchaseOrderList}" id="form1" th:object="${purchaseOrderSearcher}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+                <h3>采购单筛选</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+
+                    <div class="search-bar">
+                        <label class="first ">采购单号：</label>
+                        <input name="pOrderId" type="text" th:value="*{pOrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
+                        <label class="first ">商品名称：</label>
+                        <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
+                        <br/>
+                        <br/>
+                        <label class="first ">付款状态：</label>
+                        <select name="payStatusCode" id="payStatusCode">
+                            <option selected="selected"  value="-1"  th:selected="*{payStatusCode == -1}">==所有==</option>
+                            <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == purchaseOrderSearcher.payStatusCode}">未支付</option>
+                        </select>
+
+                        <label class="first ">发货状态：</label>
+                        <select name="shipStatusCode" id="shipStatusCode">
+                            <option selected="selected" value="-1"  th:selected="*{shipStatusCode == -1}">==所有==</option>
+                            <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == purchaseOrderSearcher.shipStatusCode}">未发货</option>
+                        </select>
+                        &nbsp;
+                        <br/>
+                        <br/>
+
+                        <label class="first ">下单时间：</label>
+                        <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
+                               class="input-normal Wdate" th:value="*{beginTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                        <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
+                               class="input-normal Wdate" th:value="*{endTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+                        <br/>
+                        <br/>
+                        <label class="first ">支付时间：</label>
+                        <input name="beginPayTime" type="text" id="beginPayTime" th:value="*{beginPayTime}" placeholder=" [开始日期]"
+                               class="input-normal Wdate"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                        <input name="endPayTime" type="text" id="endPayTime" th:value="*{endPayTime}" placeholder=" [结束日期]"
+                               class="input-normal Wdate"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginPayTime\')}'})"/>
+
+                        <label><a class="btn-lit btn-middle" id="search" href="javascript:searchOrder();"
+                                  style="margin-bottom: 3px;"><span>搜索</span></a></label>
+                        <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchOrderAll();"
+                                  style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+                <h3 style="float: left; width: 144px;">采购单管理 </h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0"
+                           cellspacing="0"
+                           cellpadding="0">
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">采购单号
+                            </th>
+                            <th scope="col">货品名称
+                            </th>
+                            <th scope="col">下单时间
+                            </th>
+                            <th scope="col">支付时间
+                            </th>
+                            <th scope="col">总额
+                            </th>
+                            <th scope="col">付款状态
+                            </th>
+                            <th scope="col">发货状态
+                            </th>
+                            <th scope="col">审核状态
+                            </th>
+                            <th scope="col" width="70px">操作
+                            </th>
+                        </tr>
+                        <tbody>
+                        <!--/*@thymesVar id="purchaseOrderList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder>"*/-->
+                        <tr th:each="pOrder,pOrderStat:${purchaseOrderList}">
+                            <td class="txt20 c" th:text="${pOrderStat.count}">
+                                1
+                            </td>
+                            <td class="txt80 c">
+                                <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.pOrderId}"></a>
+                            </td>
+                            <td class="txt160 c">
+                                <span th:text="${pOrder.orderItemList.size()}>0?${pOrder.orderItemList[0].name}"></span>
+                                <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
+                            </td>
+                            <td class="txt80 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                                2015/9/21 20:18:01
+                            </td>
+                            <td class="txt80 c">
+                                                <span style='color:#ccc;'
+                                                      th:if="${pOrder.payTime!=null and pOrder.payTime!=''}"
+                                                      th:text="${#dates.format(pOrder.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
+                            </td>
+                            <td class="txt40 c">￥
+                                <span th:text="${pOrder.finalAmount}">100</span>
+                            </td>
+                            <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus} != null ? ${pOrder.payStatus.value}">
+                                未支付
+                            </td>
+                            <td style="color:red;" class="txt40 c" th:text="${pOrder.shipStatus} != null ? ${pOrder.shipStatus.value}">
+                                未发货
+                            </td>
+                            <td style="color:red;" class="txt40 c" th:text="${pOrder.status.value}">
+                                待审核
+                            </td>
+                            <td class="txt40 c tail">
+                                <div th:inline="text">
+                                    <!--<span th:if="${orders.deliverable()}">
+                                        <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliverable()}">发货</a> |
+                                    </span>-->
+                                    <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
+                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="删除"> | 删除</a>
+                                    <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="payOrder(this)" title="支付"> | 支付</a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'form1';
+                    Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="application/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var baseUrl = /*[[@{/purchaseOrder}]]*/ "/purchaseOrder";
+
+    //查看详细
+    function showDetail(obj) {
+        var pOrderId = $(obj).attr("pOrderId");
+        window.location.href = baseUrl + "/showPurchaseOrderDetail?pOrderId=" + pOrderId;
+    }
+    //删除采购单
+    function deleteOrder(obj){
+        $.jBox.confirm("确定要删除该采购单吗？","提示",function(v){
+            if(v == 'ok'){
+                var pOrderId = $(obj).attr("pOrderId");
+                $.jBox.tip("正在删除...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "/deletePurchaseOrder",
+                    data: {
+                        pOrderId: pOrderId
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip("删除成功!",'success');
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                })
+            }
+        })
+    }
+    //支付采购单
+    function payOrder(obj){
+        $.jBox.confirm("请确认已线下支付","提示",function(v){
+            if(v == 'ok'){
+                var pOrderId = $(obj).attr("pOrderId");
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "/payPurchaseOrder",
+                    data: {
+                        pOrderId: pOrderId
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip("支付成功!",'success');
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+
+    function searchOrder() {
+        $("#pageIndex").val(1);
+        $('#form1').submit();
+    }
+    function searchOrderAll() {
+        window.location.href = /*[[@{/purchaseOrder/showPurchaseOrderList}]]*/ "/purchaseOrder/showPurchaseOrderList";
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

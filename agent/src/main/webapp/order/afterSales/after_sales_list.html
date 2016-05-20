@@ -35,7 +35,7 @@
     </div>
 
     <!--/*@thymesVar id="afterSaleSearch" type="com.huotu.hotsupplier.hbm.service.searchable.AfterSaleSearch"*/-->
-    <form method="get" id="searchForm" th:action="@{/supplier/afterSale/afterSaleList}" th:object="${afterSaleSearch}">
+    <form method="get" id="searchForm" th:action="@{/agent/afterSale/afterSaleList}" th:object="${afterSaleSearch}">
         <div class="search block" style="display: block;">
             <div class="h">
                 <span class="icon-sprite icon-magnifier"></span>
@@ -69,6 +69,12 @@
                             <input name="orderId" type="text" th:value="*{orderId}" id="orderId" class="input-small" style="width: 120px;"/>
                             <br/>
                             <br/>
+                            <label class="first ">发货方式：</label>
+                            <select name="shipMode" id="shipMode">
+                                <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
+                                <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                                <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == afterSaleSearch.shipMode}">未发货</option>
+                            </select>
                             <label class="first"> 售后单状态：
                                 <select id="afterSaleStatus" name="afterSaleStatus">
                                     <option th:value="-1" th:selected="*{afterSaleStatus==-1}">请选择</option>
@@ -78,11 +84,11 @@
                                 </select>
                             </label>
                             <label>
-                                <a class="btn-lit btn-middle" href="javascript:$('#searchForm').submit();"
+                                <a class="btn-lit btn-middle" href="javascript:$('pageIndex').val(1);$('#searchForm').submit();"
                                    style="margin-bottom: 3px;">
                                     <span>查询</span>
                                 </a>
-                                <a class="btn-lit btn-middle" th:href="@{/supplier/afterSale/afterSaleList}"
+                                <a class="btn-lit btn-middle" th:href="@{/agent/afterSale/afterSaleList}"
                                    style="margin-bottom: 3px;">
                                     <span>显示全部</span>
                                 </a>
@@ -139,7 +145,8 @@
                             <td class="txt80 c" th:text="${#dates.format(afterSale.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
                             <td class="txt80 c">
-                                <a th:href="@{/supplier/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情</a>
+                                <a th:if="${authorType=='Shop' and afterSale.shop!=null and afterSale.beneficiaryShop==null}" th:title="查看详情" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情</a>
+                                <a th:if="${authorType=='Shop' and afterSale.shop==null and afterSale.beneficiaryShop!=null}" th:title="无法查看详情" href="#" >无法查看</a>
                             </td>
                         </tr>
                         </tbody>

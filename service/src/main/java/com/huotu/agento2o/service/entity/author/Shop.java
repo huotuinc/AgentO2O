@@ -59,7 +59,8 @@ public class Shop extends Author{
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.AGENT_ROOT.getCode()));
-        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
+//        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
+        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOPDATA.getCode()));
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_ORDER.getCode()));
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_PURCHASE.getCode()));
         return authorityList;

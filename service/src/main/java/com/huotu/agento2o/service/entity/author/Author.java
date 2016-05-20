@@ -91,7 +91,7 @@ public abstract class Author implements Serializable,UserDetails{
      */
     @JoinColumn(name = "Parent_Agent_Id")
     @ManyToOne
-    private Author parentAuthor;
+    private Agent parentAuthor;
 
     // TODO: 2016/5/11 小伙伴信息
 

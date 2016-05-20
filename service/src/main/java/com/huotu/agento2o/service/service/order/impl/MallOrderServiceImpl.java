@@ -1,15 +1,28 @@
 package com.huotu.agento2o.service.service.order.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ExcelHelper;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
+import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
+import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,24 +44,40 @@ import java.util.List;
  * Created by AiWelv on 2016/5/12.
  */
 @Service
-public class MallOrderServiceImpl implements MallOrderService{
+public class MallOrderServiceImpl implements MallOrderService {
 
     @Autowired
     private MallOrderRepository orderRepository;
 
+    @Autowired
+    private MallDeliveryRepository deliveryRepository;
+
     @Override
     public MallOrder findByOrderId(String orderId) {
-        return null;
+        return orderRepository.getOne(orderId);
     }
 
     @Override
-    public MallOrder findBySupplierIdAndOrderId(Integer agentId, String orderId) {
-        return null;
+    public MallOrder findByShopAndOrderId(Shop shop, String orderId) {
+        return orderRepository.findByShopAndOrderId(shop, orderId);
     }
 
     @Override
     public void updatePayStatus(String orderId, OrderEnum.PayStatus payStatus) {
+        orderRepository.updatePayStatus(payStatus, orderId);
+    }
 
+    @Override
+    public ApiResult updateRemark(Shop shop, String orderId, String agentMarkType, String agentMarkText) {
+        MallOrder order = orderRepository.findByShopAndOrderId(shop, orderId);
+        if (order == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        } else {
+            order.setAgentMarkText(agentMarkText);
+            order.setAgentMarkType(agentMarkType);
+            orderRepository.save(order);
+        }
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
 //    @Override
@@ -54,11 +86,22 @@ public class MallOrderServiceImpl implements MallOrderService{
 //    }
 
     @Override
-    public Page<MallOrder> findAll(int pageIndex, int pageSize, OrderSearchCondition searchCondition) {
+    public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition) {
         Specification<MallOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (!StringUtils.isEmpty(searchCondition.getAgentType())&&searchCondition.getAgentType().equalsIgnoreCase("shop")) {
-                predicates.add(cb.equal(root.get("shop").get("id").as(Long.class), searchCondition.getAgentId()));
+            if (author != null && author instanceof Shop) {
+                predicates.add(cb.or(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()),
+                        cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId())));
+                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
+                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
+                judgeShipMode(searchCondition, cb, predicates, p1, p2);
+            } else if (author != null && author instanceof Agent) {
+                Join<MallOrder, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+                Join<MallOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
+                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
+                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
+                judgeShipMode(searchCondition, cb, predicates, p1, p2);
+
             }
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
@@ -69,9 +112,7 @@ public class MallOrderServiceImpl implements MallOrderService{
             if (!StringUtils.isEmpty(searchCondition.getOrderId())) {
                 predicates.add(cb.like(root.get("orderId").as(String.class), "%" + searchCondition.getOrderId() + "%"));
             }
-            if (!StringUtils.isEmpty(searchCondition.getAgentType())&&searchCondition.getAgentType().equalsIgnoreCase("agent")) {
-                predicates.add(cb.equal(root.get("shop").get("author").get("id").as(Integer.class), searchCondition.getAgentId()));
-            }
+
             if (!StringUtil.isEmptyStr(searchCondition.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItems").get("name").as(String.class), "%" + searchCondition.getOrderItemName() + "%"));
             }
@@ -125,13 +166,95 @@ public class MallOrderServiceImpl implements MallOrderService{
         return orderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, sort));
     }
 
+    /**
+     * 用于分页查询时判断订单发货的方式
+     * @param searchCondition
+     * @param cb
+     * @param predicates
+     * @param shop
+     * @param beneficiaryShop
+     */
+    private void judgeShipMode(OrderSearchCondition searchCondition, CriteriaBuilder cb, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
+        if (searchCondition.getShipMode() == 0) {
+            predicates.add(shop);
+        } else if (searchCondition.getShipMode() == 1) {
+            predicates.add(beneficiaryShop);
+        } else {
+            predicates.add(cb.or(shop, beneficiaryShop));
+        }
+    }
+
     @Override
     public OrderDetailModel findOrderDetail(String orderId) {
-        return null;
+        OrderDetailModel orderDetailModel = new OrderDetailModel();
+        MallOrder orders = orderRepository.findOne(orderId);
+        List<MallOrderItem> mallOrderItem = orders.getOrderItems();
+        List<MallDelivery> deliveryList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.DEVERY.getCode());
+        List<MallDelivery> refundList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.RETURN.getCode());
+        orderDetailModel.setOrderId(orders.getOrderId());
+        if (deliveryList != null && deliveryList.size() > 0) {
+            orderDetailModel.setDeliveryList(deliveryList);
+        }
+        if (refundList != null && refundList.size() > 0) {
+            orderDetailModel.setRefundsList(refundList);
+        }
+        orderDetailModel.setShipName(orders.getShipName());
+        orderDetailModel.setShipTel(orders.getShipTel());
+        orderDetailModel.setShipMobile(orders.getShipMobile());
+        orderDetailModel.setShipArea(orders.getShipArea());
+        orderDetailModel.setShipAddr(orders.getShipAddr());
+        orderDetailModel.setFinalAmount(orders.getFinalAmount());
+        orderDetailModel.setCostFreight(orders.getCostFreight());
+        orderDetailModel.setCreateTime(StringUtil.DateFormat(orders.getCreateTime(), StringUtil.TIME_PATTERN));
+        orderDetailModel.setPayTime(StringUtil.DateFormat(orders.getPayTime(), StringUtil.TIME_PATTERN));
+        orderDetailModel.setSupOrderItemList(mallOrderItem);
+        orderDetailModel.setRemark(orders.getRemark());
+        orderDetailModel.setMemo(orders.getMemo());
+        orderDetailModel.setAgentRemark(orders.getAgentMarkText());
+
+        double costPrice = 0;
+        for (MallOrderItem orderItem : mallOrderItem) {
+            costPrice += orderItem.getCost() * orderItem.getNums();
+        }
+        orderDetailModel.setCostPrice((double) Math.round(costPrice * 100) / 100);
+        return orderDetailModel;
     }
 
     @Override
     public HSSFWorkbook createWorkBook(List<MallOrder> orders) {
-        return null;
+        List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
+        orders.forEach(order -> {
+            List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
+            cellDescList.add(ExcelHelper.asCell(order.getOrderId()));
+            cellDescList.add(ExcelHelper.asCell(order.getOrderName()));
+            cellDescList.add(ExcelHelper.asCell(order.getOrderStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getItemNum(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getCreateTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getPayTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(order.getPayStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getFinalAmount(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getCostFreight(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getPmtAmount(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getShipName()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipMobile()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipAddr()));
+            cellDescList.add(ExcelHelper.asCell(order.getBnList()));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getMemo())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getRemark())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAgentMarkText())));
+            List<GoodCustomField> goodCustomFields = new ArrayList<>();
+            order.getOrderItems().forEach(item -> {
+                if (!StringUtils.isEmpty(item.getCustomFieldValues())) {
+                    GoodCustomField goodCustomField = JSON.parseObject(item.getCustomFieldValues(), GoodCustomField.class);
+                    goodCustomFields.add(goodCustomField);
+                }
+            });
+            cellDescList.add(ExcelHelper.asCell(JSON.toJSONString(goodCustomFields)));
+
+            rowAndCells.add(cellDescList);
+        });
+        return ExcelHelper.createWorkbook("订单列表", SysConstant.ORDER_EXPORT_HEADER, rowAndCells);
     }
+
 }

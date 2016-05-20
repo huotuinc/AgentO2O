@@ -11,16 +11,23 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.service.StaticResourceService;
+import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.ienum.ICommonEnum;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +39,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +58,10 @@ public class PurchaseController {
     private MallProductService productService;
     @Autowired
     private ShoppingCartService shoppingCartService;
+    @Autowired
+    private StaticResourceService resourceService;
+    @Autowired
+    private AgentPurchaseOrderService purchaseOrderService;
 
     /**
      * 显示商品采购列表
@@ -63,18 +78,21 @@ public class PurchaseController {
             GoodsSearcher goodsSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/goods_list");
-        Page<MallGoods> goodsList;
+        Page<MallGoods> goodsPage;
         //如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
+        // TODO: 2016/5/17 代理商/门店进货价读取
         if (author.getParentAuthor() == null) {
-            goodsList = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), 0, goodsSearcher);
+            goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), 0, goodsSearcher);
         } else {
-            goodsList = goodsService.findByAgentId(author.getParentAuthor().getId(), goodsSearcher);
+            goodsPage = goodsService.findByAgentId(author.getParentAuthor().getId(), goodsSearcher);
         }
+        List<MallGoods> goodsList = goodsPage.getContent();
+        resourceService.setListUri(goodsList,"thumbnailPic","picUri");
         model.addObject("goodsList", goodsList);
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", goodsSearcher.getPageNo());
-        model.addObject("totalPages", goodsList.getTotalPages());
-        model.addObject("totalRecords", goodsList.getTotalElements());
+        model.addObject("totalPages", goodsPage.getTotalPages());
+        model.addObject("totalRecords", goodsPage.getTotalElements());
         return model;
     }
 
@@ -128,6 +146,7 @@ public class PurchaseController {
         cart.setAuthor(author);
         cart.setProduct(product);
         cart.setNum(num);
+        cart.setCreateTime(new Date());
         cart = shoppingCartService.createShoppingCart(cart);
         if (cart != null) {
             result = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -136,7 +155,7 @@ public class PurchaseController {
     }
 
 
-    @RequestMapping(value = "showProductList")
+    @RequestMapping(value = "/showProductList")
     public ModelAndView showProductList(
             @AgtAuthenticationPrincipal Author author,
             Integer goodsId) throws Exception {
@@ -148,6 +167,56 @@ public class PurchaseController {
         }
         model.addObject("productList", productList);
         return model;
+    }
+
+    /**
+     * 采购下单
+     *
+     * @param author
+     * @param agentPurchaseOrder
+     * @param shoppingCartIds
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/addPurchase", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult addPurchase(
+            @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
+            AgentPurchaseOrder agentPurchaseOrder, String... shoppingCartIds) throws Exception {
+        String sendModeCode = request.getParameter("sendModeCode");
+        String taxTypeCode = request.getParameter("taxTypeCode");
+        //采购信息校验
+        if (agentPurchaseOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (shoppingCartIds.length == 0) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (StringUtil.isEmptyStr(agentPurchaseOrder.getShipName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getShipMobile())
+                || StringUtil.isEmptyStr(agentPurchaseOrder.getShipAddr())) {
+            return new ApiResult("请输入收货信息");
+        }
+        if (StringUtil.isEmptyStr(sendModeCode)) {
+            return new ApiResult("请选择配送方式");
+        }
+        if (StringUtil.isEmptyStr(taxTypeCode)) {
+            return new ApiResult("请选择发票类型");
+        }
+        if ("1".equals(taxTypeCode)) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())) {
+                return new ApiResult("请输入普通发票信息");
+            }
+        } else if ("2".equals(taxTypeCode)) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxpayerCode()) || StringUtil.isEmptyStr(agentPurchaseOrder.getBankName())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getAccountNo())) {
+                return new ApiResult("请输入增值税发票信息");
+            }
+        }
+        agentPurchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, Integer.parseInt(sendModeCode)));
+        agentPurchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, Integer.parseInt(taxTypeCode)));
+        ApiResult result = purchaseOrderService.addPurchaseOrder(agentPurchaseOrder, author, shoppingCartIds);
+        return result;
     }
 
 

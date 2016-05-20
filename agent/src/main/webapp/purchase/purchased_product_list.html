@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>商品采购</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+</head>
+<body>
+<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
+<form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
+      data-th-object="${goodsSearcher}">
+
+        <div class="block">
+
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">
+                                <input type="checkbox" id="checkall" />
+                                <!--<span>全选</span>-->
+                            </th>
+                            <th scope="col">序号
+                            </th>
+                            <th scope="col">货品名称
+                            </th>
+                            <th scope="col">单价
+                            </th>
+                            <th scope="col">库存
+                            </th>
+                            <th scope="col">退货数量
+                            </th>
+                            <th scope="col">单位
+                            </th>
+
+                        </tr>
+                        </thead>
+                        <tbody data-th-remove="all-but-first">
+                        <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
+                        <tr data-th-each="agentProduct,agentProductStat:${agentProductList}" data-th-id="${agentProduct.id}">
+                            <td class="txt20 c">
+                                <input type="checkbox" name="checkProduct" th:value="${agentProduct.product.productId}" />
+                            </td>
+                            <td class="txt20 c" data-th-text="${agentProductStat.count}">1</td>
+                            <td class="txt160 c" data-th-text="${agentProduct.product.name}">
+                                货品名称
+                            </td>
+                            <td class="txt80 c">
+                                ￥<span data-th-text="${agentProduct.product.price}">100</span>
+                            </td>
+                            <td class="txt80 c store"  data-th-text="${agentProduct.store-agentProduct.freez}">
+                                1000
+                            </td>
+                            <td class="txt80 c">
+                                <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
+                                       data-th-max="${agentProduct.store-agentProduct.freez}" data-th-min="0"/>
+                            </td>
+                            <td class="txt20 c">
+                                <span data-th-text="${agentProduct.product.unit}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--分页开始-->
+                <!--<script type="text/javascript" th:inline="javascript">-->
+                    <!--/*<![CDATA[*/-->
+                    <!--var pageSize = /*[[${pageSize}]]*/ '-1';-->
+                    <!--var pageIndex = /*[[*{pageNo}]]*/ '-1';-->
+                    <!--var pageCount = /*[[${totalPages}]]*/ '-1';-->
+                    <!--var recordCount = /*[[${totalRecords}]]*/ '-1';-->
+                    <!--var formName = 'form1';-->
+                    <!--Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);-->
+                    <!--/*]]>*/-->
+                <!--</script>-->
+                <!--分页结束-->
+            </div>
+            <div style="float: right; margin-right: 20px;font-size: 14px;">
+
+                <label>
+                    <a class="btn-lit btn-middle" onclick="addReturnOrder()"
+                       style="margin-bottom: 3px;">
+                        <span>提交退货单</span>
+                    </a>
+                </label>
+            </div>
+            <p style="clear: both"></p>
+        </div>
+
+    <div id="managerInfoDialog" style="width: auto; min-height: 49px; height: auto; display: none"
+    class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+    <div class="cnt form" style="padding: 10px; width: 500px; height: 100px;">
+        <table id="contenttable" class="data-form" border="0" cellspacing="1" cellpadding="0"
+               style="background: #e1e1e1;">
+            <tbody>
+            <tr style="color: #e8e8e8">
+                <th scope="row">联系方式：</th>
+                <td>
+                    <input type="text" id="mobile"/>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">配送方式：</th>
+                <td>
+                    <select name="deliverWay" id="deliverWay">
+                        <option value="HOME_DELIVERY">送货上门</option>
+                        <option value="EXPRESS">物流快递</option>
+                    </select>
+                </td>
+            </tr>
+            <tr style="color: rgb(232, 232, 232); display: table-row;" id="passtr" >
+                <th scope="row">备注：</th>
+                <td>
+                    <textarea id="mark"></textarea>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+</form>
+<script type="application/javascript" data-th-inline="javascript">
+    /*<![CDATA[*/
+    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    $("#checkall").click(function () {
+        var option = $("#checkall").prop('checked');
+        $("[name='checkProduct']:checkbox").each(function () {
+
+            if(!$(this).attr("disabled")){
+                $(this).prop("checked", option);
+            }
+
+        });
+
+        console.log(getCheckedItems("checkProduct"));
+    });
+
+    // 默认退货数量都不可编辑
+    $("input[name=num]").each(function(){
+        $(this).attr("disabled","disabled");
+    });
+
+    // 库存为0 的商品不可选择
+    $(".store").each(function(i,e){
+        if($(e).text()==0){
+            var check = $("input[name='checkProduct']").eq(i);
+            $(check).attr("disabled","disabled");
+        }
+    })
+
+    // 选中货品才可编辑退货数量
+    $("input[name='checkProduct']").click(function(){
+        var i = $("input[name='checkProduct']").index($(this));
+        var num = $("input[name='num']").eq(i);
+        if (num.attr("disabled")) {
+            num.attr("disabled", false);
+        }else{
+            num.attr("disabled", true);
+        }
+    });
+
+    $("input[name=num]").change(function(){
+        var max = parseInt($(this).attr("max"));
+        var num = parseInt($(this).val());
+        if(num > max){
+            $.jBox.tip("订购数量大于可用库存！");
+            $(this).val(max);
+        }
+    });
+
+
+    function getCheckedItems() {
+        var checkedObj = $("input[name='checkProduct']:checked");
+        var checkedMenu = "";
+
+        checkedObj.each(function () {
+            checkedMenu += $(this).val() + ",";
+        });
+        return checkedMenu.substring(0, checkedMenu.lastIndexOf(","));
+    }
+
+    function submitForm(productIds,productNums,callback){
+
+        var mobile = $.trim($("#mobile").val());
+        var sendmentStatus = $("#deliverWay option:selected").val();
+        var authorComment = $.trim($("#mark").val());
+
+        if(!J.IsMobile(mobile)){
+            $.jBox.tip("手机号码格式不正确");
+            return;
+        }
+        if(mark.length == 0){
+            $.jBox.tip("备注不能为空");
+            return;
+        }
+
+        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type: "POST",
+            url: basicUrl+"/addReturnOrder",
+            data: {
+                productIds: productIds,
+                productNums:productNums,
+                mobile:mobile,
+                sendmentStatus:sendmentStatus,
+                authorComment:authorComment
+            },
+            dataType: "json",
+            success: function (result) {
+                callback(result);
+            },
+            error: function () {
+                $.jBox.tip("发生错误", "error");
+            }
+        });
+    }
+
+
+    function addReturnOrder(){
+
+        var self2 = this;
+        var productIds = getCheckedItems();
+        var productNums = "";
+        if(productIds.length == 0){
+            $.jBox.tip("请选择退货商品");
+            return;
+        }
+        $("input[name='checkProduct']").each(function(i,v){
+            if(v.checked){
+                var num = $("input[name='num']").eq(i).val();
+                productNums += num +",";
+            }
+        });
+
+        J.ShowDialog("managerInfoDialog", "填写退货单信息", function () {
+
+            submitForm(productIds,productNums,function (result) {
+                if (result.code == 200) {
+//                        self.setList(result);
+                    $.jBox.tip(result.msg, "success");
+                    $(self2).dialog('close');
+                    location.reload();
+                } else {
+                    $.jBox.tip(result.msg, "error");
+                }
+            });
+
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

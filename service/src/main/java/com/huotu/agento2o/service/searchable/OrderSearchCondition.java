@@ -34,8 +34,8 @@ public class OrderSearchCondition {
     private String orderItemName;
 
     /**
-     *代理商类型
-     * shop or agent
+     * 发货形式（代发or自发）
      */
-    private String agentType;
+    private int shipMode = -1;
+
 }

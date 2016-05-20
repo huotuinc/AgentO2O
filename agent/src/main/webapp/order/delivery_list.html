@@ -50,6 +50,12 @@
                             <input name="deliveryNo" type="text" th:value="*{deliveryNo}" class="input-small" style="width: 120px;"/>
                             <label class="first ">订单编号：</label>
                             <input name="orderId" type="text" th:value="*{orderId}" class="input-small" style="width: 120px;"/>
+                            <label class="first ">发货方式：</label>
+                            <select name="shipMode" id="shipMode">
+                                <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
+                                <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                                <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == deliverySearcher.shipMode}">未发货</option>
+                            </select>
                             <br/>
                             <br/>
                             <label class="first ">起始时间：</label>
@@ -62,7 +68,7 @@
                                    class="input-normal Wdate" th:value="*{endTime}"
                                    onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'txtCreateBeginTime\')}'})"/>
                             <label>
-                                <a class="btn-lit btn-middle" href="javascript:$('#searchForm').submit();"
+                                <a class="btn-lit btn-middle" href="javascript:$('pageIndex').val(1);$('#searchForm').submit();"
                                    style="margin-bottom: 3px;">
                                     <span>查询</span>
                                 </a>

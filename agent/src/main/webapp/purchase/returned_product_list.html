@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>商品采购</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+</head>
+<body>
+<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
+<form method="get" action="/purchase/showReturnedOrderList" data-th-action="@{/purchase/showReturnedOrderList}" id="form1"
+      th:object="${searchCondition}">
+
+
+    <div class="blank10">
+    </div>
+    <div class="search block" style="display: block;">
+        <div class="h">
+            <span class="icon-sprite icon-magnifier"></span>
+            <h3>商品采购</h3>
+        </div>
+        <div class="tl corner">
+        </div>
+        <div class="tr corner">
+        </div>
+        <div class="br corner">
+        </div>
+        <div class="cnt-wp" style="padding: 35px 10px 10px;">
+            <div class="cnt">
+                <div class="search-bar">
+                    <div>
+                        <label class="first">退货单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
+                        <input name="rOrderId" type="text" th:value="*{rOrderId}"  id="goodsName"
+                               class="input-small" style="width: 120px;"/>
+                        <br />
+                        <br />
+
+                        <label class="first ">审核状态：</label>
+                        <select name="orderStatus" id="orderStatus">
+                            <option selected="selected" value="-1" th:selected="*{orderStatus == -1}" >==所有==</option><!--th:selected="*{shipStatus == -1}"-->
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option th:each="orderStatusEnum:${orderStatusEnums}" th:value="${orderStatusEnum.code}" th:text="${orderStatusEnum.value}" th:selected="${orderStatusEnum.code == searchCondition.orderStatus}">未发货</option>
+                        </select>
+
+                        <label class="first ">退货状态：</label>
+                        <select name="shipStatus" id="shipStatus">
+                            <option selected="selected" value="-1" th:selected="*{shipStatus == -1}" >==所有==</option><!--th:selected="*{shipStatus == -1}"-->
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
+                        </select>
+
+                        <label class="first ">退款状态：</label>
+                        <select name="payStatus" id="payStatus">
+                            <option selected="selected" value="-1" th:selected="*{payStatus == -1}">==所有==</option><!--th:selected="*{shipStatus == -1}"-->
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == searchCondition.payStatus}">未发货</option>
+                        </select>
+
+                        <br />
+                        <br />
+
+                        <label class="first ">申请时间：</label>
+                        <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
+                               class="input-normal Wdate" th:value="*{beginTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                        <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
+                               class="input-normal Wdate" th:value="*{endTime}"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+
+                        <label>
+                            <a class="btn-lit btn-middle" onclick="searchReturnedOrder()" style="margin-bottom: 3px;">
+                                <span>查询</span>
+                            </a>
+                        </label>
+                        <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchReturnOrderAll();"
+                                  style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="block">
+
+        <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+            <div class="cnt">
+                <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <thead>
+                    <tr class="even">
+
+                        <th scope="col">退单号
+                        </th>
+                        <th scope="col">退单状态
+                        </th>
+                        <th scope="col">申请时间
+                        </th>
+                        <th scope="col">配送方式
+                        </th>
+                        <th scope="col">原因说明
+                        </th>
+                        <th scope="col">金额
+                        </th>
+                        <th scope="col">操作
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody data-th-remove="all-but-first">
+                    <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
+                    <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.rOrderId}">
+
+                        <td class="txt20 c" data-th-text="${agentReturnOrder.rOrderId}">1</td>
+                        <td class="txt160 c" data-th-text="${agentReturnOrder.payStatus.getValue()}">
+                            货品名称
+                        </td>
+                        <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                            申请时间
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.sendmentStatus.getValue()}">
+                            物流快递
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.authorComment}">
+                            1000
+                        </td>
+                        <td class="txt80 c">
+                             ￥<span data-th-text="${agentReturnOrder.finalAmount}">100</span>
+                        </td>
+                        <td class="txt80 c">
+                            <span>取消退货</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--分页开始-->
+            <script type="text/javascript" th:inline="javascript">
+            /*<![CDATA[*/
+            var pageSize = /*[[${pageSize}]]*/ '-1';
+            var pageIndex = /*[[${pageIndex}]]*/ '-1';
+            var pageCount = /*[[${totalPages}]]*/ '-1';
+            var recordCount = /*[[${totalRecords}]]*/ '-1';
+            var formName = 'form1';
+            Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+            /*]]>*/
+            </script>
+            <!--分页结束-->
+        </div>
+
+        <p style="clear: both"></p>
+    </div>
+</form>
+<script type="application/javascript" data-th-inline="javascript">
+    /*<![CDATA[*/
+    function searchReturnedOrder() {
+
+        $("#pageIndex").val(1);
+        $('#form1').submit();
+    }
+
+    function searchReturnOrderAll(){
+        window.location.href = /*[[@{/purchase/showReturnedOrderList}]]*/ "";
+    }
+
+    /*]]>*/
+</script>
+</body>
+</html>

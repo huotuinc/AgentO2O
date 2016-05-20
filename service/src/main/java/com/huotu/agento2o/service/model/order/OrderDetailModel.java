@@ -116,7 +116,7 @@ public class OrderDetailModel {
      */
     private String memo;
     /**
-     * 供应商备注
+     * 代理商备注
      */
-    private String supplierRemark;
+    private String agentRemark;
 }

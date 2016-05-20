@@ -16,11 +16,8 @@ import java.util.List;
  */
 @Repository(value = "shopRepository")
 public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecificationExecutor {
-    Shop findByUsernameAndStatus(String userName, AgentStatusEnum status);
 
     Shop findByUsername(String userName);
-
-    List<Shop> findByParentAuthorAndIsDeleted(Author author , Boolean isDeleted);
 
     @Query("update Shop shop set shop.status=?1 where shop.id=?2")
     @Modifying
@@ -33,4 +30,12 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecifi
     @Query("update Shop shop set shop.isDisabled= ?1 where shop.id=?2")
     @Modifying
     void updateIsDisabled(boolean isDisabled , int id);
+
+    @Query("update Shop shop set shop.status=?1, shop.comment=?2 where shop.id=?3")
+    @Modifying
+    void updateStatusAndComment(AgentStatusEnum Status, String comment, int id);
+
+    @Query("update Shop shop set shop.password=?1 where shop.id=?2")
+    @Modifying
+    void updatePassword(String password, int id);
 }

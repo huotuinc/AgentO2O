@@ -114,10 +114,10 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             cggl = menuRepository.save(cggl);
             subMenu2.clear();
             //二级菜单 采购管理
-            AgtMenu spcg = new AgtMenu(2,"/purchase","商品采购",0,cggl,"PURCHASE",0,"020101");
+            AgtMenu spcg = new AgtMenu(2,"/purchase/showGoodsList","商品采购",0,cggl,"PURCHASE",0,"020101");
             spcg = menuRepository.save(spcg);
             subMenu2.add(spcg);
-            AgtMenu gwc = new AgtMenu(2,"/purchase","购物车",1,cggl,"PURCHASE",0,"020102");
+            AgtMenu gwc = new AgtMenu(2,"/shoppingCart/showShoppingCart","购物车",1,cggl,"PURCHASE",0,"020102");
             gwc = menuRepository.save(gwc);
             subMenu2.add(gwc);
             cggl.setChildren(subMenu2);
@@ -166,9 +166,8 @@ public class AgtMenuServiceImpl implements AgtMenuService {
      * 初始化门店管理模块， 门店管理模块以 03 开头
      */
     private void initShopMenu(){
-        // TODO: 2016/5/12
         //判断是否存在订单模块
-        if(menuRepository.findOne("03") == null) {
+//        if(menuRepository.findOne("03") == null) {
             //一级子菜单列表
             List<AgtMenu> subMenu1 = new ArrayList<>();
             //二级子菜单列表
@@ -198,9 +197,22 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             mdgl = menuRepository.save(mdgl);
             subMenu1.add(mdgl);
 
+            //门店资料
+            AgtMenu mdzl = new AgtMenu(1, "", "门店资料", 0, shopMenu, "SHOPDATA", 0, "0302");
+            mdzl = menuRepository.save(mdzl);
+            subMenu2.clear();
+            //修改基本资料
+            AgtMenu xgjbzi = new AgtMenu(2, "/shop/addShopPage", "修改基本资料", 0, mdzl, "SHOPDATA", 0, "030201");
+            xgjbzi = menuRepository.save(xgjbzi);
+            subMenu2.add(xgjbzi);
+
+            mdzl.setChildren(subMenu2);
+            mdzl = menuRepository.save(mdzl);
+            subMenu1.add(mdzl);
+
             shopMenu.setChildren(subMenu1);
             menuRepository.save(shopMenu);
-        }
+//        }
     }
 
     /**

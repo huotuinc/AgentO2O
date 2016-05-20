@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>购物车列表</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+</head>
+<body>
+<form method="post" action="/purchase/showProductList" data-th-action="@{/shoppingCart/showShoppingCart}" id="form1">
+    <div class="block">
+        <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+            <div class="cnt">
+                <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <thead>
+                    <tr class="even">
+                        <th scope="col">
+                            <input type="checkbox" id="checkall"/>全选
+                        </th>
+                        <th scope="col">序号
+                        </th>
+                        <th scope="col">商品名称
+                        </th>
+                        <th scope="col">规格
+                        </th>
+                        <th scope="col">单价
+                        </th>
+                        <th scope="col">库存
+                        </th>
+                        <th scope="col">订购数量/单位
+                        </th>
+                        <th scope="col">操作
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody data-th-remove="all-but-first">
+                    <!--@thymesVar id="shoppingCartList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.ShoppingCart>"-->
+                    <tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}">
+                        <td class="txt20 c">
+                            <input type="checkbox" name="choice" th:value="${shoppingCart.id}"
+                                                   th:if="${shoppingCart.product.store - shoppingCart.product.freez > shoppingCart.num}"/>
+                        </td>
+                        <td class="txt20 c" data-th-text="${shoppingCartStat.count}">1</td>
+                        <td class="txt120 c">
+                           <span style="width: 20%;float: left;">
+                               <img th:src="${shoppingCart.product.goods.picUri}!=null?${shoppingCart.product.goods.picUri}"
+                                    style="vertical-align: top;width: 59px;height: 59px;border: 1px solid #eaeaea;"/>
+                           </span>
+                            <span  style="width: 75%;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
+                            -webkit-line-clamp: 2;-webkit-box-orient: vertical;float: left;margin-right: 20px;"
+                                   data-th-text="${shoppingCart.product.name}">商品名称</span>
+                        </td>
+                        <td class="txt40 c" data-th-text="${shoppingCart.product.standard}">
+                            规格描述
+                        </td>
+                        <td class="txt40 c" name="td-price">
+                            ￥<span data-th-text="${shoppingCart.product.price}" name="price">100</span>
+                        </td>
+                        <td class="txt40 c" data-th-text="${shoppingCart.product.store - shoppingCart.product.freez}">
+                            1000
+                        </td>
+                        <td class="txt40 c" name="td-num">
+                            <input name="num" style="width: 50px;text-align: center;" type="number" disabled="disabled"
+                                   data-th-value="${shoppingCart.num}"
+                                   data-th-max="${shoppingCart.product.store - shoppingCart.product.freez}"/>
+                            <span data-th-text="${shoppingCart.product.unit}"></span>
+                            <a data-th-attr="shoppingCartId=${shoppingCart.id}"
+                               onclick="editNum(this)" href="javascript:void(0)">编辑</a>
+                        </td>
+                        <td class="txt40 c">
+                            <a data-th-attr="shoppingCartId=${shoppingCart.id}"
+                               onclick="deleteShoppingCart(this)" href="javascript:void(0)">删除</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="float: right; margin-right: 20px;font-size: 14px;">
+            总价：￥
+            <span id="totalAmount" style="color: red;">0.0</span>
+            <label>
+                <a class="btn-lit btn-middle" onclick="addPurchase()"
+                   style="margin-bottom: 3px;">
+                    <span>结算</span>
+                </a>
+            </label>
+            <label>
+                <a class="btn-lit btn-middle" onclick="deleteAll()"
+                   style="margin-bottom: 3px;">
+                    <span>清空购物车</span>
+                </a>
+            </label>
+        </div>
+        <p style="clear: both"></p>
+    </div>
+</form>
+<script type="application/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var basicUrl = /*[[@{/shoppingCart}]]*/ "/shoppingCart";
+
+
+    $("input[name=num]").change(function () {
+        var max = parseInt($(this).attr("max"));
+        var num = parseInt($(this).val());
+        if (num > max) {
+            $.jBox.tip("订购数量大于可用库存！");
+            $(this).val(max);
+        }
+        calculateAmount();
+    })
+
+    //全选
+    $("#checkall").click(function () {
+        var option = $("#checkall").prop('checked');
+        $("[name='choice']:checkbox").each(function () {
+            $(this).prop("checked", option);
+        })
+        calculateAmount();
+    })
+
+    //计算 totalAmount
+    function calculateAmount(){
+        var totalAmount = 0.0;
+        $("input[name=choice]:checked").each(function(index,obj){
+            var price = parseFloat($(obj).parent().nextAll("td[name=td-price]").children("span[name=price]").text());
+            var num = parseInt($(obj).parent().nextAll("td[name=td-num]").children("input[name=num]").val());
+            totalAmount += price*num;
+        })
+        $("#totalAmount").text(totalAmount);
+    }
+
+    $("input[name=choice]").on("click",function(){
+        calculateAmount();
+    })
+
+
+    //编辑数量
+    function editNum(obj){
+        if($(obj).text() == '编辑'){
+            $(obj).prevAll("input[name=num]").removeAttr("disabled");
+            $(obj).text("完成");
+        }else if($(obj).text() == '完成'){
+            var shoppingCartId = $(obj).attr("shoppingCartId");
+            var num = $(obj).prevAll("input[name=num]").val();
+            $.ajax({
+                type: "POST",
+                url: basicUrl + "/editNum",
+                data: {
+                    shoppingCartId: shoppingCartId,
+                    num:num
+                },
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code == 200) {
+                        $(obj).prevAll("input[name=num]").attr("disabled","disabled");
+                        $(obj).text("编辑");
+                    } else {
+                        $.jBox.tip(msg.msg, 'error');
+                    }
+                }
+            });
+        }
+    }
+
+    //删除
+    function deleteShoppingCart(obj) {
+        var shoppingCartId = $(obj).attr("shoppingCartId");
+        $.ajax({
+            type: "POST",
+            url: basicUrl + "/delete",
+            data: {
+                shoppingCartId: shoppingCartId
+            },
+            dataType: "json",
+            success: function (msg) {
+                if (msg.code == 200) {
+                    window.location.reload();
+                } else {
+                    $.jBox.tip(msg.msg, 'error');
+                }
+            }
+        });
+    }
+
+    //清空购物车
+    function deleteAll(){
+        $.jBox.confirm("确定要清空购物车吗？","清空提示",function(v){
+            if(v == 'ok'){
+                $.ajax({
+                    type: "POST",
+                    url: basicUrl + "/deleteAll",
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            window.location.reload();
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                });
+            }
+        })
+    }
+
+    //确认结算
+    function addPurchase(){
+        var shoppingCatIds = "";
+        $("input[name=choice]:checked").each(function(){
+            shoppingCatIds += $(this).val() + ",";
+        })
+        shoppingCatIds = shoppingCatIds.substring(0, shoppingCatIds.lastIndexOf(","));
+        if(shoppingCatIds == ""){
+            $.jBox.tip("请选择要采购的货品！");
+            return;
+        }
+        url = basicUrl + "/addPurchase?shoppingCartId=" + shoppingCatIds;
+        window.location.href = url ;
+
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
