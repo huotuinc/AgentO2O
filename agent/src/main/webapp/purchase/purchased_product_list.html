@@ -269,7 +269,9 @@
 //                        self.setList(result);
                     $.jBox.tip(result.msg, "success");
                     $(self2).dialog('close');
-                    location.reload();
+                    setTimeout(function(){
+                        top.document.getElementById("content_left").contentDocument.getElementById("id_020203").getElementsByTagName("a")[0].click();
+                    },500)
                 } else {
                     $.jBox.tip(result.msg, "error");
                 }

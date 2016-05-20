@@ -120,7 +120,11 @@
 
                         <th scope="col">退单号
                         </th>
-                        <th scope="col">退单状态
+                        <th scope="col">审核状态
+                        </th>
+                        <th scope="col">发货状态
+                        </th>
+                        <th scope="col">付款状态
                         </th>
                         <th scope="col">申请时间
                         </th>
@@ -139,9 +143,19 @@
                     <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
                     <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.rOrderId}">
 
-                        <td class="txt20 c" data-th-text="${agentReturnOrder.rOrderId}">1</td>
-                        <td class="txt160 c" data-th-text="${agentReturnOrder.payStatus.getValue()}">
-                            货品名称
+                        <td class="txt20 c">
+                            <a th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" onclick="showReturnedOrderDetail()">
+                                <span th:text="${agentReturnOrder.rOrderId}">rOrderId</span>
+                            </a>
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}">
+                            审核状态
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}">
+                            发货状态
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.payStatus.getValue()}">
+                            付款状态
                         </td>
                         <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                             申请时间
@@ -156,7 +170,7 @@
                              ￥<span data-th-text="${agentReturnOrder.finalAmount}">100</span>
                         </td>
                         <td class="txt80 c">
-                            <span>取消退货</span>
+                            <span><a th:onclick="|cancelReturnedOrder('${agentReturnOrder.rOrderId}')|" onclick="cancelReturnedOrder()">取消退货</a></span>
                         </td>
                     </tr>
                     </tbody>
@@ -181,14 +195,50 @@
 </form>
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
+
+    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+
     function searchReturnedOrder() {
 
         $("#pageIndex").val(1);
         $('#form1').submit();
     }
 
+    function cancelReturnedOrder(rOrderId){
+
+        $.jBox.confirm("确定要取消该退货申请吗？","提示",function(v){
+            if(v == 'ok'){
+
+                $.jBox.tip("正在取消...", "loading");
+                $.ajax({
+                    url:basicUrl+"/cancelReturnOrder",
+                    type:"get",
+                    data:{
+                        rOrderId:rOrderId
+                    },
+                    dataType: "json",
+                    success:function(result){
+                        if(result.code == 200){
+                            $.jBox.tip(result.msg, "success");
+                            location.reload();
+                        }else{
+                            $.jBox.tip(result.msg, "error");
+                        }
+                    },
+                    error: function () {
+                        $.jBox.tip("发生错误", "error");
+                    }
+                });
+            }
+        });
+    }
+
     function searchReturnOrderAll(){
         window.location.href = /*[[@{/purchase/showReturnedOrderList}]]*/ "";
+    }
+
+    function showReturnedOrderDetail(rOrderId){
+        window.location.href = basicUrl + "/showReturnedOrderDetail?rOrderId=" + rOrderId;
     }
 
     /*]]>*/

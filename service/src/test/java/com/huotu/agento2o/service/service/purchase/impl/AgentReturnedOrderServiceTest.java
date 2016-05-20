@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.test.annotation.Rollback;
 
 import java.util.Date;
 import java.util.List;
@@ -52,33 +51,45 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
     @Test
     public void testFindAll(){
         ReturnedOrderSearch returnedOrderSearch = new ReturnedOrderSearch();
-        returnedOrderSearch.setAgentId(1);
+
+//        returnedOrderSearch.setAgentId(2);
+        returnedOrderSearch.setParentAgentId(71);
 
 
         Author author = new Agent();
-        author.setId(1);
+        author.setId(2);
 
-        Page<AgentReturnedOrder> agentReturnedOrderPage = agentReturnedOrderService.findAll(1,3,author,returnedOrderSearch);
+        Page<AgentReturnedOrder> agentReturnedOrderPage = agentReturnedOrderService.findAll(1,10,author,returnedOrderSearch);
 
         List<AgentReturnedOrder> agentReturnedOrders = agentReturnedOrderPage.getContent();
+
         System.out.println("**************");
         agentReturnedOrderPage.forEach(agentReturnedOrder -> {
             System.out.println(agentReturnedOrder.getROrderId());
         });
         System.out.println("**************");
 
-
-//        List<AgentReturnedOrder> agentReturnedOrders = agentReturnedOrderService.findAll(agentId);
-//        System.out.println(agentReturnedOrders.size());
     }
 
     @Test
-    @Rollback(value = false)
     public void testAddReturnOrder(){
         AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
         agentReturnedOrder.setROrderId(SerialNo.create());
         agentReturnedOrder.setCreateTime(new Date());
         agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
+    }
+
+    @Test
+    public void testCancelReturnOrder(){
+        String rOrderId = "20160520094427115743";
+        agentReturnedOrderService.cancelReturnOrder(rOrderId);
+    }
+
+    @Test
+    public void testFindByRorderId(){
+        String rOrderId = "20160520094427115743";
+        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByROrderIdAndDisabledFalse(rOrderId);
+        System.out.println(agentReturnedOrder);
     }
 
 }
