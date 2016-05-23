@@ -29,9 +29,9 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecifi
 
     @Query("update Shop shop set shop.isDisabled= ?1 where shop.id=?2")
     @Modifying
-    void updateIsDisabled(boolean isDisabled , int id);
+    void updateIsDisabled(boolean isDisabled, int id);
 
-    @Query("update Shop shop set shop.status=?1, shop.comment=?2 where shop.id=?3")
+    @Query("update Shop shop set shop.status=?1, shop.auditComment=?2 where shop.id=?3")
     @Modifying
     void updateStatusAndComment(AgentStatusEnum Status, String comment, int id);
 

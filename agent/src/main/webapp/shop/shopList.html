@@ -6,19 +6,32 @@
     <title>
         门店列表
     </title>
-    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
-    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.8.3.min.js" th:src="@{/resource/3rdParty/js/jquery-1.8.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
-    <link href="../resource/3rdParty/omTabs/themes/default/operamasks-ui.min.css" th:href="@{/resource/3rdParty/omTabs/themes/default/operamasks-ui.min.css}" rel="stylesheet" type="text/css"/>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <script src="../resource/3rdParty/Knockout/knockout-2.3.0.js" th:src="@{/resource/3rdParty/Knockout/knockout-2.3.0.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}"
+          rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.8.3.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.8.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <link href="../resource/3rdParty/omTabs/themes/default/operamasks-ui.min.css"
+          th:href="@{/resource/3rdParty/omTabs/themes/default/operamasks-ui.min.css}" rel="stylesheet" type="text/css"/>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <script src="../resource/3rdParty/Knockout/knockout-2.3.0.js"
+            th:src="@{/resource/3rdParty/Knockout/knockout-2.3.0.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
+            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
     <style>
         #jbox {
             left: 20%;
@@ -31,71 +44,78 @@
         var city = /*[[${searchCondition.city}]]*/;
         var dist = /*[[${searchCondition.district}]]*/;
         $("#citys").citySelect({
-            url:"/resource/3rdParty/js/jquery.cityselect.js",
-            prov:pro!=null ? pro :'',
-            city:city!=null ? city :'',
-            dist:dist!=null ? dist :'',
-            nodata:null,
-            required:true
+            url: "/resource/3rdParty/js/jquery.cityselect.js",
+            prov: pro != null ? pro : '',
+            city: city != null ? city : '',
+            dist: dist != null ? dist : '',
+            nodata: null,
+            required: true
         });
     }
-    
+
     function changeStatus(obj) {
         var shopId = $(obj).attr("shopid");
         $.ajax({
             type: 'POST',
             url: "/shop/changeStatus",
             data: {
-                id : shopId ,
-                type : 'ToFactory'
+                id: shopId,
+                type: 'ToFactory'
             },
             success: function (result) {
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
-                    setTimeout(function(){
+                    setTimeout(function () {
                         window.location.reload();
-                    },500);
+                    }, 500);
                 } else {
                     $.jBox.tip(result.msg, 'error');
                 }
             }
         });
     }
-    
+
     function toEdit(obj) {
         var shopId = $(obj).attr("shopid");
-        window.location.href = '/shop/addShopPage?id='+shopId;
+        window.location.href = '/shop/addShopPage?id=' + shopId;
     }
-    
+
     function toDel(obj) {
         var shopId = $(obj).attr("shopid");
-        $.ajax({
-            type: 'POST',
-            url: "/shop/delete",
-            data: {
-                id : shopId
-            },
-            success: function (result) {
+        jboxConfirm("确定删除?", function () {
+            $.jBox.tip("正在删除...", "loading");
+            J.GetJsonRespons("/shop/delete", {
+                id: shopId
+            }, function (result) {
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
-                    setTimeout(function(){
-//                        $(obj).remove();
+                    setTimeout(function () {
                         window.location.reload();
-                    },500);
+                    }, 500);
                 } else {
                     $.jBox.tip(result.msg, 'error');
                 }
-            }
+            }, function () {
+            }, J.PostMethod);
         });
     }
-    
+
+    function jboxConfirm(msg, callback) {
+        jBox.confirm(msg, '提示', function (v, h, f) {
+            if (v == "ok") {
+                callback();
+            }
+            return true;
+        });
+    }
+
     function changeIsDisabled(obj) {
         var shopId = $(obj).attr("shopid");
         $.ajax({
             type: 'POST',
             url: "/shop/changeIsDisabled",
             data: {
-                id : shopId
+                id: shopId
             },
             success: function (result) {
                 if (result.code == 200) {
@@ -107,18 +127,18 @@
             }
         });
     }
-    
+
     function showDetail(obj) {
         var shopId = $(obj).attr("shopid");
-        window.location.href = '/shop/addShopPage?id='+shopId;
+        window.location.href = '/shop/addShopPage?id=' + shopId;
     }
-    
+
     function searchShop() {
         $('#current-index').val(1);
         $('#form1').submit();
     }
 
-    function searchShopAll(){
+    function searchShopAll() {
         window.location.href = '/shop/shopList';
     }
 </script>
@@ -165,14 +185,14 @@
         var district = $("#district").val();
         var status = $("#status").val();
         var url = /*[[@{/shop/exportExcel}]]*/ "";
-        if(province == null){
-            province = '' ;
+        if (province == null) {
+            province = '';
         }
-        if(city == null){
-            city = '' ;
+        if (city == null) {
+            city = '';
         }
-        if(district == null){
-            district = '' ;
+        if (district == null) {
+            district = '';
         }
 
         url += '?rnd=' + Math.random()
@@ -197,7 +217,8 @@
     /*]]>*/
 </script>
 <body marginwidth="0" marginheight="0" onload="init()">
-<form method="get" action="/order/getOrdersPage" th:action="@{/shop/shopList}" id="form1" th:object="${searchCondition}" >
+<form method="get" action="/order/getOrdersPage" th:action="@{/shop/shopList}" id="form1"
+      th:object="${searchCondition}">
     <div class="container">
         <div class="blank10">
         </div>
@@ -210,16 +231,18 @@
                 <div class="cnt">
                     <div class="search-bar">
                         <label class="first ">门店名称：</label>
-                        <input name="name" type="text" id="name" class="input-small" style="width: 120px;" th:value="*{name}"/>
+                        <input name="name" type="text" id="name" class="input-small" style="width: 120px;"
+                               th:value="*{name}"/>
                         <label class="first ">门店区域：</label>
                         <span id="citys">
                             <select class="prov" name="province" id="province" th:value="*{province}"></select>
                             <select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>
-                            <select class="dist" name="district" id="district" disabled="disabled" th:value="*{district}"></select>
+                            <select class="dist" name="district" id="district" disabled="disabled"
+                                    th:value="*{district}"></select>
                         </span>
                         <label class="first ">审核状态：</label>
                         <select name="status" id="status">
-                            <option selected="selected"  value="-1" >==所有==</option>
+                            <option selected="selected" value="-1">==所有==</option>
                             <option value="0" th:selected="*{status==0}">未提交</option>
                             <option value="1" th:selected="*{status==1}">待审核</option>
                             <option value="2" th:selected="*{status==2}">审核通过</option>
@@ -239,10 +262,12 @@
                         <label class="first ">导出门店：</label>
                         第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
                                 style="height:15px;width:28px;"/>页
-                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}"
+                                  class="input-small OnlyNum"
                                   style="height:15px;width:28px;"/>页
                         <label>
-                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;" href="javascript:exportHelper.showDialogV2();">
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;"
+                               href="javascript:exportHelper.showDialogV2();">
                                 <span>导出门店信息</span>
                             </a>
                         </label>
@@ -266,93 +291,102 @@
             <div class="br corner">
             </div>
             <div class="cnt-wp">
-                    <div class="om-tabs-panels om-widget-content om-corner-bottom">
-                        <div class="om-widget om-panel ">
-                            <div id="Div2"
-                                 class="om-panel-body om-widget-content om-panel-noheader om-state-nobd">
-                                <div class="cnt">
-                                    <table class="data-table even1" width="100%" border="0"
-                                           cellspacing="0"
-                                           cellpadding="0">
-                                        <tr>
-                                            <th scope="col"></th>
+                <div class="om-tabs-panels om-widget-content om-corner-bottom">
+                    <div class="om-widget om-panel ">
+                        <div id="Div2"
+                             class="om-panel-body om-widget-content om-panel-noheader om-state-nobd">
+                            <div class="cnt">
+                                <table class="data-table even1" width="100%" border="0"
+                                       cellspacing="0"
+                                       cellpadding="0">
+                                    <tr>
+                                        <th scope="col"></th>
 
-                                            <th scope="col">门店名称
-                                            </th>
+                                        <th scope="col">门店名称
+                                        </th>
 
-                                            <th scope="col">用户名
-                                            </th>
+                                        <th scope="col">用户名
+                                        </th>
 
-                                            <th scope="col">联系人
-                                            </th>
+                                        <th scope="col">联系人
+                                        </th>
 
-                                            <th scope="col">手机号码
-                                            </th>
+                                        <th scope="col">手机号码
+                                        </th>
 
-                                            <th scope="col">地区
-                                            </th>
+                                        <th scope="col">地区
+                                        </th>
 
-                                            <th scope="col">门店审核状态
-                                            </th>
+                                        <th scope="col">门店审核状态
+                                        </th>
 
-                                            <th scope="col">账号状态
-                                            </th>
+                                        <th scope="col">账号状态
+                                        </th>
 
-                                            <th scope="col" width="70px">操作
-                                            </th>
-                                        </tr>
-                                        <tbody>
-                                        <tr th:each="shop:${shopList}" >
-                                            <td class="txt20 c" th:text="${shopStat.count}">
-                                                1
-                                            </td>
-                                            <td class="txt80">
-                                                <a href="javascript:void(0)" onclick="showDetail(this)" style="color: #6699d5" th:attr="shopid=${shop.id}" th:text="${shop.name}"></a>
-                                            </td>
-                                            <td class="txt80" th:text="${shop.username}">
-                                            </td>
-                                            <td class="txt80" th:text="${shop.Contact}">
-                                            </td>
-                                            <td class="txt80" th:text="${shop.mobile}">
-                                            </td>
-                                            <td class="txt80" th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
-                                            </td>
-                                            <td class="txt40" th:text="${shop.status.value}">
-                                            </td>
-                                            <td class="txt40" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
-                                            </td>
-                                            <td class="txt40 c tail">
-                                                <div >
-                                                    <a href="javascript:void(0)" onclick="changeStatus(this)" th:attr="shopid=${shop.id}" th:if="${shop.status.code} == 0 or ${shop.status.code}==3" >提交&nbsp;</a>
-                                                    <a href="javascript:void(0)" onclick="toEdit(this)" th:attr="shopid=${shop.id}"  th:if="${shop.status.code}!=2">编辑&nbsp;</a>
-                                                    <a href="javascript:void(0)" onclick="toDel(this)" th:attr="shopid=${shop.id}"  th:if="${shop.status.code}==0 or ${shop.status.code}==1" >删除&nbsp;</a>
-                                                    <a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${shop.isAccountNonLocked()}">冻结&nbsp;</a>
-                                                    <a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${!shop.isAccountNonLocked()}">激活</a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <th scope="col" width="70px">操作
+                                        </th>
+                                    </tr>
+                                    <tbody>
+                                    <tr th:each="shop:${shopList}">
+                                        <td class="txt20 c" th:text="${shopStat.count}">
+                                            1
+                                        </td>
+                                        <td class="txt80">
+                                            <a href="javascript:void(0)" onclick="showDetail(this)"
+                                               style="color: #6699d5" th:attr="shopid=${shop.id}"
+                                               th:text="${shop.name}"></a>
+                                        </td>
+                                        <td class="txt80" th:text="${shop.username}">
+                                        </td>
+                                        <td class="txt80" th:text="${shop.Contact}">
+                                        </td>
+                                        <td class="txt80" th:text="${shop.mobile}">
+                                        </td>
+                                        <td class="txt80"
+                                            th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
+                                        </td>
+                                        <td class="txt40" th:text="${shop.status.value}">
+                                        </td>
+                                        <td class="txt40" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                        </td>
+                                        <td class="txt40 c tail">
+                                            <div>
+                                                <a href="javascript:void(0)" onclick="changeStatus(this)"
+                                                   th:attr="shopid=${shop.id}"
+                                                   th:if="${shop.status.code} == 0 or ${shop.status.code}==3">提交&nbsp;</a>
+                                                <a href="javascript:void(0)" onclick="toEdit(this)"
+                                                   th:attr="shopid=${shop.id}"
+                                                   th:if="${shop.status.code}!=2">编辑&nbsp;</a>
+                                                <a href="javascript:void(0)" onclick="toDel(this)"
+                                                   th:attr="shopid=${shop.id}"
+                                                   th:if="${shop.status.code}==0 or ${shop.status.code}==1">删除&nbsp;</a>
+                                                <!--<a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${shop.isAccountNonLocked()}">冻结&nbsp;</a>-->
+                                                <!--<a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${!shop.isAccountNonLocked()}">激活</a>-->
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <script type="text/javascript" th:inline="javascript">
-                                    /*<![CDATA[*/
-                                    var pageSize = /*[[${pageSize}]]*/ '-1';
-                                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
-                                    var pageCount = /*[[${totalPages}]]*/ '-1';
-                                    var recordCount = /*[[${totalRecords}]]*/ '-1';
-                                    var formName = 'form1';
-                                    //                                    var pageNoStr = 'pageNoStr';
-                                    Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
-
-                                    /*]]>*/
-                                </script>
+                                    </tbody>
+                                </table>
                             </div>
+                            <script type="text/javascript" th:inline="javascript">
+                                /*<![CDATA[*/
+                                var pageSize = /*[[${pageSize}]]*/ '-1';
+                                var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                                var pageCount = /*[[${totalPages}]]*/ '-1';
+                                var recordCount = /*[[${totalRecords}]]*/ '-1';
+                                var formName = 'form1';
+                                //                                    var pageNoStr = 'pageNoStr';
+                                Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+
+                                /*]]>*/
+                            </script>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </form>
 </body>
 </html>
