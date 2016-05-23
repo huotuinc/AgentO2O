@@ -75,7 +75,7 @@
     </style>
 </head>
 <body>
-<form action="#" th:action="@{/agent/addAgent}" method="post" id="supConfigForm" th:object="${agent}">
+<form action="#" th:action="@{/agent/addAgent}" method="post" id="agentForm" th:object="${agent}">
     <div class="container">
         <div class="blank10">
         </div>
@@ -296,7 +296,6 @@
         var parentAgentId = $.trim($("#parentAgentId").val());
         var agentLevelId = $.trim($("#levelId").val());
         var hotUserName = $.trim($("#hotUserName").val());
-        debugger;
         if (username.length == 0) {
             $.jBox.tip("用户名不能为空");
             return;
@@ -353,7 +352,7 @@
                 comment: comment,
                 agentLevelId: agentLevelId,
                 parentAgentId: parentAgentId,
-                hotUserName:hotUserName
+                hotUserName: hotUserName
             },
             success: function (result) {
                 if (result.code == 200) {
@@ -365,7 +364,7 @@
                     $.jBox.tip("用户名已存在", "success");
                 } else if (result.code == 803) {
                     $.jBox.tip("小伙伴账号不存在", "error");
-                }else if (result.code == 804) {
+                } else if (result.code == 804) {
                     $.jBox.tip("小伙伴账号已被绑定", "error");
                 } else {
                     $.jBox.tip("保存失败", "error");
@@ -381,7 +380,6 @@
     var dist = /*[[${agent.district}]]*/;
     var id = /*[[${agent.id}]]*/;
     var parentAgentLevelId = /*[[${parentAgentLevelId}]]*/;
-    debugger;
     $(function () {
         if (id > 0) {
             $("#citys").citySelect({
@@ -399,8 +397,7 @@
         }
         ;
         getPrentAgent(parentAgentLevelId);
-    })
-
+    });
 
 </script>
 </body>

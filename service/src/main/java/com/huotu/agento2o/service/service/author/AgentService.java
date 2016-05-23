@@ -122,4 +122,11 @@ public interface AgentService extends UserDetailsService {
      */
     Agent findByUserBaseInfoId(Integer id);
 
+    /**
+     * 根据代理商id重置代理商密码
+     * @param id
+     * @param password
+     */
+    void resetPassword(Integer id,String password);
+
 }

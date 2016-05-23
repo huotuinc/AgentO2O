@@ -118,8 +118,8 @@ public class HbmAgentController {
         if (agentId > 0) {
             Agent oldAgent = agentService.findById(agentId);
             //获取上级代理商的代理商等级
-            if (oldAgent.getParentAuthor() != null && oldAgent.getParentAuthor().getAgentLevel() != null) {
-                parentAgentLevelId = oldAgent.getParentAuthor().getAgentLevel().getLevelId();
+            if (oldAgent.getParentAuthor() != null && ((Agent) oldAgent.getParentAuthor()).getAgentLevel() != null) {
+                parentAgentLevelId = ((Agent) oldAgent.getParentAuthor()).getAgentLevel().getLevelId();
             }
             model.addAttribute("agent", agentService.findById(agentId));
         }
