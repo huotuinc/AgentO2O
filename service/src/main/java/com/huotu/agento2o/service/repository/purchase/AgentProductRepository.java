@@ -32,9 +32,12 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
 
     @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2 and disabled = false ")
     @Modifying
-    int updateWaring(Integer agentId, Integer productId, Integer warning);
+    int updateWaring(Integer agentId,Integer productId,Integer warning);
 
     AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
+
+    // TODO: 2016/5/20 delete
+    AgentProduct findByProduct_productId(Integer productId);
 
 
 }

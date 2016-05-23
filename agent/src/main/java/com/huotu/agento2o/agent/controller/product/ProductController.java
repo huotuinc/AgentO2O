@@ -43,26 +43,13 @@ public class ProductController {
         return model;
     }
 
-    @SuppressWarnings("unchecked")
     @RequestMapping("save")
-    public
-    @ResponseBody
+    public @ResponseBody
     ApiResult saveInfo(@RequestBody JSONObject products) {
-
         boolean success = false;
-        List<String> l = (List) products.get("info");
-        for (String str : l) {
-            String _item = str.substring(1, str.length() - 1);
-            String[] item = _item.split(",");
-            if (item.length == 3) {
-                //更新
-                success = agentProductService.updateWaring(Integer.parseInt(item[0].trim()),
-                        Integer.parseInt(item[1].trim()),
-                        Integer.parseInt(item[2].trim()));
-            }
-        }
-        return success ? ApiResult.resultWith(ResultCodeEnum.SUCCESS):ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
+        List<String> info = (List) products.get("info");
+        //更新
+        success = agentProductService.updateWaring(info);
+        return success ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
     }
-
-
 }
