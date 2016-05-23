@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>门店基本资料设置</title>
+    <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <link href="../resource/css/shouji.css" rel="stylesheet" th:href="@{/resource/css/shouji.css}" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script src="../resource/3rdParty/js/jquery.tzCheckbox.js"
+            th:src="@{/resource/3rdParty/js/jquery.tzCheckbox.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
+            th:src="@{/resource/lib/ajaxfileupload.js}"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
+            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+
+    <style type="text/css">
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+
+        .spModuleTitle {
+            padding: 3px 10px 0px 10px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 微软雅黑;
+        }
+    </style>
+</head>
+<body>
+<form action="#" method="post" id="shopConfigForm" th:object="${shop}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+                <h3><B style="font-size: 120%">门店基本资料设置</B></h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt form">
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">登录信息</span>
+                        <div class="division">
+                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="shopID"/>
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>用户名：</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="username"
+                                              th:text="*{username}"></span>
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                    <!--<th>登陆密码：</th>-->
+                                    <!--<td>-->
+                                        <!--<span type="text" class="input-normal" id="password"-->
+                                              <!--th:text="*{password}"></span>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">账号绑定</span>
+                        <div class="division">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
+                                </tr>
+                                <tr>
+                                    <th>代理商等级：</th>
+                                    <td>
+                                        <span type="text" class="input-normal" readonly="readonly"
+                                              th:text="*{parentAuthor.agentLevel.levelName}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>代理商账户：</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="author" readonly="readonly"
+                                              th:text="*{parentAuthor.username}"></span>
+                                    </td>
+                                </tr>
+                                <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
+                                <!--<tr>-->
+                                <!--<th>小伙伴用户名：</th>-->
+                                <!--<td>-->
+                                <!--<input type="text" class="input-normal"/>-->
+                                <!--</td>-->
+                                <!--</tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">门店基本资料</span>
+                        <div class="division">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>门店所在区域:</th>
+                                    <td>
+                                        <div id="citys">
+                                            <span th:text="|*{province}—*{city}—*{district}|"></span>
+                                            <!--<select class="prov" id="province"></select>-->
+                                            <!--<select class="city" id="city" disabled="disabled"></select>-->
+                                            <!--<select class="dist" id="district" disabled="disabled"></select>-->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>门店名称:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="name" th:text="*{name}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>联系人:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="Contact" th:text="*{Contact}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>手机号码:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="mobile" th:text="*{mobile}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>电话号码:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="telephone"
+                                              th:text="*{telephone}"></span>
+                                    </td>
+                                </tr>
+                                <!--<tr>-->
+                                <!--<th>传真:</th>-->
+                                <!--<td>-->
+                                <!--<input type="text" class="input-normal"/>-->
+                                <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                <!--<th>E-mail:</th>-->
+                                <!--<td>-->
+                                <!--<input type="text" class="input-normal"/>-->
+                                <!--</td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <th>详细地址:</th>
+                                    <td>
+                                        <span type="text" id="address" th:text="*{address}"
+                                              class="input-normal" style="width: 300px;"></span><br/>
+                                        <div style="margin-top:10px; ">
+                                            经度:
+                                            <span type="text" readonly="readonly" id="lan" th:text="*{lan}"
+                                                  class="input-normal" style="width: 100px;"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            纬度:
+                                            <span type="text" readonly="readonly" id="lat" th:text="*{lat}"
+                                                  class="input-normal" style="width: 100px;"></span>
+                                        </div>
+                                        <div id="addrMap"
+                                             style="margin-top:10px;
+                                             width: 500px;height: 300px;
+                                             border: 1px solid gray;">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>备注:</th>
+                                    <td>
+                                        <span type="text" rows="6" style="width: 80%" id="comment"
+                                              th:text="*{comment}"></span>
+                                    </td>
+                                </tr>
+                                <tr th:if="*{auditComment!=null and auditComment!=''} ">
+                                    <th>审核意见:</th>
+                                    <td>
+                                        <span type="text" rows="6" style="width: 80%"
+                                              th:text="*{auditComment}"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">售后信息</span>
+                        <div class="division">
+
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>客服电话:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="serveiceTel"
+                                              th:text="*{serveiceTel}"></span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>售后电话:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="afterSalTel"
+                                              th:text="*{afterSalTel}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>售后QQ:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="afterSalQQ"
+                                              th:text="*{afterSalQQ}"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <a class="btn-lit" href="javascript:audit();"
+                           th:if="*{id}==null or *{status.code}==1"><span>审核</span></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="audit_dialog" style="display: none;"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function audit() {
+        $("#audit_dialog").html($("#audit_template").html());
+
+        $("#auditComment").html(/*[[${shop.auditComment}]]*/);
+        J.ShowDialog("audit_dialog", "审核", function () {
+            var requestData = checkAudit();
+            if (requestData != null) {
+                $.jBox.tip("正在审批...", "loading");
+                J.GetJsonRespons("/huobanmall/shop/audit", requestData, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("审批成功", "success");
+                        $(self).dialog('close');
+                        window.location.reload();
+                    } else {
+//                        $.jBox.tip("审批失败", error);
+                    }
+                }, function () {
+                }, J.PostMethod);
+            }
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+
+    function checkAudit() {
+        var id = $("#shopID").val();
+        var auditVal = $("input[name=audit_radio]:checked").val()
+        var auditComment = $.trim($("#auditComment").val());
+        if (id.length == 0) {
+            $.jBox.tip("数据损坏");
+            return null;
+        }
+        if (auditVal.length == 0) {
+            $.jBox.tip("请选择通过或不通过");
+            return null;
+        }
+        if (auditVal == 'RETURNED' && auditComment.length == 0) {
+            $.jBox.tip("请填写不通过备注");
+            return null;
+        }
+        var requestData = {
+            id: id,
+            status: auditVal,
+            auditComment: auditComment
+        };
+        return requestData;
+    }
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    /*百度地图API相关*/
+    var map = new BMap.Map("addrMap");
+    var shoplan = /*[[${shop.lan}]]*/;
+    var shoplat = /*[[${shop.lat}]]*/;
+    map.centerAndZoom(new BMap.Point(shoplan, shoplat), 10);
+    map.enableScrollWheelZoom(true);    //启用滚轮放大缩小，默认禁用
+    map.enableContinuousZoom(true);     //启用地图惯性拖拽，默认禁用
+    map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
+    map.addControl(new BMap.OverviewMapControl()); //添加默认缩略地图控件
+    var geoc = new BMap.Geocoder();     //地址逆向解析
+    var localSearch = new BMap.LocalSearch(map); //搜索范围
+    localSearch.enableAutoViewport(); //允许自动调节窗体大小
+
+    function setmarker(lng, lat) {
+        var marker = new BMap.Marker(new BMap.Point(lng, lat));  // 创建标注，为要查询的地方对应的经纬度
+        map.clearOverlays(); //清空原来的标注
+        map.addOverlay(marker);
+    }
+
+    //添加标注
+    if ($.trim($("#lan").text()).length != 0 && $.trim($("#lat").text()).length) {
+        setmarker($("#lan").text(), $("#lat").text());
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
+<script type="text/html" id="audit_template">
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 150px;">
+        <span scope="row">备注：</span>
+        <div>
+            <textarea id="auditComment"
+                      style="margin-top: 10px;margin-bottom: 10px; width: 260px; height: 100px;"></textarea>
+        </div>
+        <div>
+            <input id="audit_pass" type="radio" name="audit_radio" value="CHECKED" checked="checked"/>
+            <label for="audit_pass">通过</label>
+            <input id="audit_nopass" type="radio" name="audit_radio" value="RETURNED"/>
+            <label for="audit_nopass">不通过</label>
+        </div>
+    </div>
+</script>

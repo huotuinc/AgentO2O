@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>
+        门店列表
+    </title>
+    <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <link href="../resource/css/shouji.css" rel="stylesheet" th:href="@{/resource/css/shouji.css}" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script src="../resource/3rdParty/js/jquery.tzCheckbox.js"
+            th:src="@{/resource/3rdParty/js/jquery.tzCheckbox.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
+            th:src="@{/resource/lib/ajaxfileupload.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
+            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <style>
+        #jbox {
+            left: 20%;
+        }
+    </style>
+</head>
+<script th:inline="javascript">
+    function init() {
+        var shopPro = /*[[${searchCondition.province}]]*/;
+        var shopCity = /*[[${searchCondition.city}]]*/;
+        var shopDist = /*[[${searchCondition.district}]]*/;
+        $("#citys").citySelect({
+            url: "/resource/3rdParty/js/jquery.cityselect.js",
+            prov: shopPro != null ? shopPro : '',
+            city: shopCity != null ? shopCity : '',
+            dist: shopDist != null ? shopDist : '',
+            nodata: null,
+            required: true
+        });
+
+        var par_pro = /*[[${searchCondition.parent_province}]]*/;
+        var par_city = /*[[${searchCondition.parent_city}]]*/;
+        var par_dist = /*[[${searchCondition.parent_district}]]*/;
+        $("#agent_citys").citySelect({
+            url: "/resource/3rdParty/js/jquery.cityselect.js",
+            prov: par_pro != null ? par_pro : '',
+            city: par_city != null ? par_city : '',
+            dist: par_dist != null ? par_dist : '',
+            nodata: null,
+            required: true
+        });
+    }
+
+    function changeIsDisabled(obj) {
+        var shopId = $(obj).attr("shopid");
+        $.ajax({
+            type: 'POST',
+            url: "/huobanmall/shop/changeIsDisabled",
+            data: {
+                id: shopId
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    $.jBox.tip(result.msg, "success");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    $.jBox.tip(result.msg, 'error');
+                }
+            }
+        });
+    }
+
+    function showDetail(obj) {
+        var shopId = $(obj).attr("shopid");
+        window.location.href = '/huobanmall/shop/addShopPage?id=' + shopId;
+    }
+
+    function searchShop() {
+        $('#current-index').val(1);
+        $('#form1').submit();
+    }
+
+    function searchShopAll() {
+        window.location.href = '/huobanmall/shop/shopList?type=' + /*[[${searchCondition.type}]]*/;
+    }
+</script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    //#region 导出助手
+    var exportHelper = {};
+    exportHelper.init = function () {
+        $('.OnlyNum').OnlyNum();
+    };
+
+    exportHelper.checkPage = function (txtBeginPage, txtEndPage) {
+        var numberBug = pageCount;//总页数
+        if (txtBeginPage == '' || txtEndPage == '') {
+            return {flag: false, msg: '请输入正确的起止页码'};
+        }
+        var beginPage = parseInt(txtBeginPage);
+        var endPage = parseInt(txtEndPage);
+        if (endPage < beginPage) {
+            return {flag: false, msg: '结束页不能小于起始页'};
+        }
+        if (endPage > numberBug) {
+            return {flag: false, msg: '结束页不能大于总页数'};
+        }
+        var _maxPage = 500;
+        if (endPage - beginPage >= _maxPage) {
+            $('#txtEndPage').focus().select();
+            return {flag: false, msg: '最多导出' + _maxPage + '页'};
+        }
+        return {flag: true};
+    };
+
+    exportHelper.showDialogV2 = function () {
+        var txtBeginPage = $("#txtBeginPage").val();
+        var txtEndPage = $("#txtEndPage").val();
+        var chkResult = this.checkPage(txtBeginPage, txtEndPage);
+        if (!chkResult.flag) {
+            jBox.tip(chkResult.msg, 'info');
+            return;
+        }
+        var name = $("#name").val();
+        var province = $("#province").val();
+        var city = $("#city").val();
+        var district = $("#district").val();
+        var status = $("#status").val();
+        var type = $("#type").val();
+        var parent_name = $("#parent_name").val();
+        var parent_username = $("#parent_username").val();
+        var parent_agentLevel = $("#parent_agentLevel").val();
+        var parent_province = $("#parent_province").val();
+        var parent_city = $("#parent_city").val();
+        var parent_district = $("#parent_district").val();
+
+        var url = /*[[@{/huobanmall/shop/exportExcel}]]*/;
+        if (province == null) {
+            province = '';
+        }
+        if (city == null) {
+            city = '';
+        }
+        if (district == null) {
+            district = '';
+        }
+        if (parent_province == null) {
+            parent_province = '';
+        }
+        if (parent_city == null) {
+            parent_city = '';
+        }
+        if (parent_district == null) {
+            parent_district = '';
+        }
+
+        url += '?rnd=' + Math.random()
+                + '&name=' + name
+                + '&province=' + province
+                + '&city=' + city
+                + '&district=' + district
+                + '&status=' + status
+                + '&txtBeginPage=' + txtBeginPage
+                + '&txtEndPage=' + txtEndPage
+                + '&type=' + type
+                + '&parent_name=' + parent_name
+                + '&parent_username=' + parent_username
+                + '&parent_agentLevel=' + parent_agentLevel
+                + '&parent_province=' + parent_province
+                + '&parent_city=' + parent_city
+                + '&parent_district=' + parent_district
+        ;
+        window.location.href = url;
+    };
+    //#endregion
+    $(function () {
+        exportHelper.init();
+        if (0 == 0) {
+            $(".shipFunc").hide();
+        }
+    });
+    var viewModel;
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function audit(obj) {
+        $("#audit_dialog").html($("#audit_template").html());
+        debugger;
+        var auditComment = $(obj).attr("audit");
+        $("#auditComment").text(auditComment);
+        J.ShowDialog("audit_dialog", "审核", function () {
+            var requestData = checkAudit(obj);
+            if (requestData != null) {
+                $.jBox.tip("正在审批...", "loading");
+                J.GetJsonRespons("/huobanmall/shop/audit", requestData, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("审批成功", "success");
+                        $(self).dialog('close');
+                        window.location.reload();
+                    } else {
+                        $.jBox.tip("审批失败", error);
+                    }
+                }, function () {
+                }, J.PostMethod);
+            }
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+
+    function checkAudit(obj) {
+        var id = $(obj).attr("shopid");
+        var auditVal = $("input[name=audit_radio]:checked").val()
+        var auditComment = $.trim($("#auditComment").val());
+        if (id.length == 0) {
+            $.jBox.tip("数据损坏");
+            return null;
+        }
+        if (auditVal.length == 0) {
+            $.jBox.tip("请选择通过或不通过");
+            return null;
+        }
+        var requestData = {
+            id: id,
+            status: auditVal,
+            auditComment: auditComment
+        };
+        if (auditVal == 'RETURNED' && auditComment.length == 0) {
+            $.jBox.tip("请填写不通过备注");
+            return null;
+        }
+        return requestData;
+    }
+
+    function resetPassword(obj) {
+        $("#audit_dialog").html($("#resetpassword_template").html());
+        J.ShowDialog("audit_dialog", "重置密码", function () {
+            var passwordData = checkPassword(obj);
+            if (passwordData != null) {
+                $.jBox.tip("正在重置...", "loading");
+                J.GetJsonRespons("/huobanmall/shop/resetpassword", passwordData, function (json) {
+                    if (json.code == 200) {
+                        $(self).dialog('close');
+                        $.jBox.tip("重置成功", "success");
+                        window.location.reload();
+                    } else {
+                        $.jBox.tip("重置失败", error);
+                    }
+                }, function () {
+                }, J.PostMethod);
+            }
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+
+    function checkPassword(obj) {
+        var id = $(obj).attr("shopid");
+        var password = $.trim($("#password").val());
+        if (password.length == 0) {
+            $.jBox.tip("密码不能为空");
+            return null;
+        }
+        var passwordData = {
+            id: id,
+            password: password
+        };
+        return passwordData;
+    }
+    /*]]>*/
+</script>
+<body marginwidth="0" marginheight="0" onload="init()">
+<form method="get" action="/order/getOrdersPage" th:action="@{/huobanmall/shop/shopList}" id="form1"
+      th:object="${searchCondition}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+                <h3>门店筛选</h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <input style="display: none" id="type" th:field="*{type}" th:value="*{type}"/>
+                        <label class="first ">上级代理商名称：</label>
+                        <input name="parent_name" type="text" id="parent_name" class="input-small" style="width: 120px;"
+                               th:value="*{parent_name}"/>
+                        <label class="first ">上级代理商账号：</label>
+                        <input name="parent_username" type="text" id="parent_username" class="input-small"
+                               style="width: 120px;" th:value="*{parent_username}"/>
+                        <label class="first ">上级代理商等级：</label>
+                        <select name="parent_agentLevel" id="parent_agentLevel">
+                            <option value="-1" th:selected="*{parent_agentLevel==-1}">请选择</option>
+                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
+                                    th:selected="*{parent_agentLevel}==${agentLevel.levelId}?true"
+                                    th:text="${agentLevel.levelName}"></option>
+                        </select>
+                        <label class="first ">上级代理商区域：</label>
+                        <span id="agent_citys">
+                            <select class="prov" name="parent_province" id="parent_province"
+                                    th:value="*{parent_province}"></select>
+                            <select class="city" name="parent_city" id="parent_city" disabled="disabled"
+                                    th:value="*{parent_city}"></select>
+                            <select class="dist" name="parent_district" id="parent_district" disabled="disabled"
+                                    th:value="*{parent_district}"></select>
+                        </span>
+
+                        <br/>
+                        <br/>
+                        <label class="first ">门店名称：</label>
+                        <input name="name" type="text" id="name" class="input-small" style="width: 120px;"
+                               th:value="*{name}"/>
+                        <label class="first ">门店区域：</label>
+                        <span id="citys">
+                            <select class="prov" name="province" id="province" th:value="*{province}"></select>
+                            <select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>
+                            <select class="dist" name="district" id="district" disabled="disabled"
+                                    th:value="*{district}"></select>
+                        </span>
+                        <label class="first ">审核状态：</label>
+                        <select name="status" id="status">
+                            <option selected="selected" value="-1">==所有==</option>
+                            <option value="0" th:selected="*{status==0}">未提交</option>
+                            <option value="1" th:selected="*{status==1}">待审核</option>
+                            <option value="2" th:selected="*{status==2}">审核通过</option>
+                            <option value="3" th:selected="*{status==3}">审核不通过</option>
+                        </select>
+                        <label><a class="btn-lit btn-middle" id="search" href="javascript:searchShop();"
+                                  style="margin-bottom: 3px;"><span>搜索</span></a></label>
+                        <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchShopAll();"
+                                  style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                        <br/>
+                        <br/>
+                        <label class="first ">导出门店：</label>
+                        第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
+                                style="height:15px;width:28px;"/>页
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}"
+                                  class="input-small OnlyNum"
+                                  style="height:15px;width:28px;"/>页
+                        <label>
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;"
+                               href="javascript:exportHelper.showDialogV2();">
+                                <span>导出门店信息</span>
+                            </a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+                <h3 style="float: left; width: 144px;">门店管理 </h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="om-tabs-panels om-widget-content om-corner-bottom">
+                    <div class="om-widget om-panel ">
+                        <div id="Div2"
+                             class="om-panel-body om-widget-content om-panel-noheader om-state-nobd">
+                            <div class="cnt">
+                                <table class="data-table even1" width="100%" border="0"
+                                       cellspacing="0"
+                                       cellpadding="0">
+                                    <tr>
+                                        <th scope="col"></th>
+
+                                        <th scope="col">门店名称
+                                        </th>
+
+                                        <th scope="col">用户名
+                                        </th>
+
+                                        <th scope="col">联系人
+                                        </th>
+
+                                        <th scope="col">手机号码
+                                        </th>
+
+                                        <th scope="col">地区
+                                        </th>
+
+                                        <th scope="col">门店审核状态
+                                        </th>
+
+                                        <th scope="col">账号状态
+                                        </th>
+
+                                        <th scope="col" width="70px">操作
+                                        </th>
+                                    </tr>
+                                    <tbody>
+                                    <tr th:each="shop:${shopList}">
+                                        <td class="txt20 c" th:text="${shopStat.count}">
+                                            1
+                                        </td>
+                                        <td class="txt80">
+                                            <a href="javascript:void(0)" onclick="showDetail(this)"
+                                               style="color: #6699d5" th:attr="shopid=${shop.id}"
+                                               th:text="${shop.name}"></a>
+                                        </td>
+                                        <td class="txt80" th:text="${shop.username}">
+                                        </td>
+                                        <td class="txt80" th:text="${shop.Contact}">
+                                        </td>
+                                        <td class="txt80" th:text="${shop.mobile}">
+                                        </td>
+                                        <td class="txt80"
+                                            th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
+                                        </td>
+                                        <td class="txt40" th:text="${shop.status.value}">
+                                        </td>
+                                        <td class="txt40" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                        </td>
+                                        <td class="txt40 c tail">
+                                            <input style="display: none" th:value="${shop.auditComment}"/>
+                                            <div>
+                                                <a href="javascript:void(0)" onclick="audit(this)"
+                                                   th:attr="shopid=${shop.id},audit=${shop.auditComment}"
+                                                   th:if="${shop.status.code}==1">审核&nbsp;</a>
+                                                <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
+                                                   th:attr="shopid=${shop.id}" th:if="${shop.isAccountNonLocked()}">冻结&nbsp;</a>
+                                                <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
+                                                   th:attr="shopid=${shop.id}"
+                                                   th:if="${!shop.isAccountNonLocked()}">激活</a>
+                                                <a href="javascript:void(0)" onclick="resetPassword(this)"
+                                                   th:attr="shopid=${shop.id}">重置密码&nbsp;</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <script type="text/javascript" th:inline="javascript">
+                                /*<![CDATA[*/
+                                var pageSize = /*[[${pageSize}]]*/ '-1';
+                                var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                                var pageCount = /*[[${totalPages}]]*/ '-1';
+                                var recordCount = /*[[${totalRecords}]]*/ '-1';
+                                var formName = 'form1';
+                                //                                    var pageNoStr = 'pageNoStr';
+                                Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+
+                                /*]]>*/
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="audit_dialog" style="display: none;"></div>
+</body>
+</html>
+<script type="text/html" id="audit_template">
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 150px;">
+        <span scope="row">备注：</span>
+        <div>
+            <textarea id="auditComment"
+                      style="margin-top: 10px;margin-bottom: 10px; width: 260px; height: 100px;"></textarea>
+        </div>
+        <div>
+            <input id="audit_pass" type="radio" name="audit_radio" value="CHECKED" checked="checked"/>
+            <label for="audit_pass">通过</label>
+            <input id="audit_nopass" type="radio" name="audit_radio" value="RETURNED"/>
+            <label for="audit_nopass">不通过</label>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="resetpassword_template">
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 30px;">
+        <span scope="row">设置密码：</span>
+        <input id="password"/>
+    </div>
+</script>
