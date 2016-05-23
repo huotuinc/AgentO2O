@@ -65,7 +65,7 @@ public class AgentPurchaseOrderController {
      * @throws Exception
      */
     @RequestMapping("/showPurchaseOrderList")
-    public ModelAndView showPurchaseOrderList(@AuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
+    public ModelAndView showPurchaseOrderList(@AgtAuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/purchase_order_list");
         purchaseOrderSearcher.setAgentId(author.getId());
@@ -152,7 +152,7 @@ public class AgentPurchaseOrderController {
      */
     @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
     @RequestMapping("/showAgentPurchaseOrderList")
-    public ModelAndView showAgentPurchaseOrderList(@AuthenticationPrincipal Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
+    public ModelAndView showAgentPurchaseOrderList(@AgtAuthenticationPrincipal Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/agent_purchase_order_list");
         purchaseOrderSearcher.setParentAgentId(agent.getId());

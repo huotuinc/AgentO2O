@@ -28,9 +28,6 @@ import java.util.List;
 @Repository
 public interface AgentProductRepository extends JpaRepository<AgentProduct, Integer>, JpaSpecificationExecutor<AgentProduct> {
 
-//    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.author.id = ?1 AND product.disabled = false ")
-//    List<Integer> findGoodsListByAgentId(Integer agentId);
-
     List<AgentProduct> findByAuthor_IdAndDisabledFalse(Integer agentId);
 
     @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2 and disabled = false ")
@@ -38,9 +35,6 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
     int updateWaring(Integer agentId, Integer productId, Integer warning);
 
     AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
-
-    // TODO: 2016/5/20 delete
-    AgentProduct findByProduct_productId(Integer productId);
 
 
 }

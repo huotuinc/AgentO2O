@@ -1,5 +1,6 @@
 package com.huotu.agento2o.agent.controller.shop;
 
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -48,7 +49,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AuthenticationPrincipal Agent customer, Shop shop, Model model) {
+    public String toAddShopPage(@AgtAuthenticationPrincipal Agent customer, Shop shop, Model model) {
         model.addAttribute("agent",customer);
         if(!"".equals(shop.getId()) && shop.getId()!=null){//编辑
             shop = shopService.findById(shop.getId());
@@ -65,7 +66,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/addShop")
     @ResponseBody
-    public ApiResult addShop(@AuthenticationPrincipal Agent customer, Shop shop) {
+    public ApiResult addShop(@AgtAuthenticationPrincipal Agent customer, Shop shop) {
         shop.setParentAuthor(customer);
         shop = shopService.addShop(shop);
         ApiResult apiResult ;
@@ -84,7 +85,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/shopList")
-    public String showShopList(@AuthenticationPrincipal Agent customer,
+    public String showShopList(@AgtAuthenticationPrincipal Agent customer,
                                Model model ,
                                ShopSearchCondition searchCondition,
                                @RequestParam(required = false, defaultValue = "1")int pageIndex) {
@@ -150,7 +151,7 @@ public class ShopController {
      *
      */
     @RequestMapping("exportExcel")
-    public void exportExcel(@AuthenticationPrincipal Agent customer,
+    public void exportExcel(@AgtAuthenticationPrincipal Agent customer,
                             ShopSearchCondition searchCondition,
                             int txtBeginPage, int txtEndPage,
                             HttpSession session,

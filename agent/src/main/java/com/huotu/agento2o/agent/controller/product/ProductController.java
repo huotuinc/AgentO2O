@@ -1,6 +1,7 @@
 package com.huotu.agento2o.agent.controller.product;
 
 import com.alibaba.fastjson.JSONObject;
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -34,7 +35,7 @@ public class ProductController {
 
     @RequestMapping("managerUI")
     public ModelAndView managerUI(
-            @AuthenticationPrincipal Author author) throws Exception {
+            @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName(PRODUCT_MANAGER_URL);
         List<AgentProduct> agentProduct = agentProductService.findByAgentId(author.getId());

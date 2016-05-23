@@ -23,4 +23,6 @@ public interface InvoiceService {
 
     Boolean updateInvoice(Author author, InvoiceConfig invoiceConfig);
 
+    InvoiceConfig findDefaultByAuthor(Author author);
+
 }
