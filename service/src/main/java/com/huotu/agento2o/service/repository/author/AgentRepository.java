@@ -34,4 +34,8 @@ public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpeci
 
     Agent findByUserBaseInfo_userId(Integer userId);
 
+    @Modifying
+    @Query("update Agent a set a.password = ?2 where a.id = ?1")
+    void resetPassword(Integer id,String password);
+
 }

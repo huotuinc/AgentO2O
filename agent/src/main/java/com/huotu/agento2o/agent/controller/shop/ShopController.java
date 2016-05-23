@@ -1,16 +1,13 @@
 package com.huotu.agento2o.agent.controller.shop;
 
-import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
-import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,60 +32,84 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/shop")
-@PreAuthorize("hasAnyRole('AGENT','SHOP')")
+@PreAuthorize("hasAnyRole('SHOP','BASE_DATA','BASE_SHOP')")
 public class ShopController {
 
     @Autowired
-    private ShopService shopService ;
+    private ShopService shopService;
 
     /**
      * 门店新增页面
+     *
      * @param customer
      * @param shop
      * @param model
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AgtAuthenticationPrincipal Agent customer, Shop shop, Model model) {
-        model.addAttribute("agent",customer);
-        if(!"".equals(shop.getId()) && shop.getId()!=null){//编辑
+    public String toAddShopPage(@AuthenticationPrincipal Agent customer, Shop shop, Model model) {
+        model.addAttribute("agent", customer);
+        if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
             shop = shopService.findById(shop.getId());
-            model.addAttribute("shop",shop);
+            model.addAttribute("shop", shop);
         }
         return "shop/addShop";
     }
 
     /**
-     *保存门店
+     * 门店基本资料设置
+     *
+     * @return
+     */
+    @RequestMapping("/baseConfig")
+    public String baseConfig(@AuthenticationPrincipal Shop customer, Model model) {
+        Shop shop = shopService.findById(customer.getId());
+        model.addAttribute("shop", shop);
+        model.addAttribute("agent", shop.getParentAuthor());
+        return "shop/BaseConfigShop";
+    }
+
+    /**
+     * 门店基本资料更新
+     *
+     * @param shop
+     * @return
+     */
+    @RequestMapping(value = "/updateShop")
+    @ResponseBody
+    public ApiResult updateShop(Shop shop, String hotUserName) {
+        ApiResult apiResult = shopService.addShop(shop, hotUserName);
+        return apiResult;
+    }
+
+
+    /**
+     * 保存门店
+     *
      * @param customer
      * @param shop
      * @return
      */
     @RequestMapping(value = "/addShop")
     @ResponseBody
-    public ApiResult addShop(@AgtAuthenticationPrincipal Agent customer, Shop shop) {
+    public ApiResult addShop(@AuthenticationPrincipal Agent customer, Shop shop, String hotUserName) {
         shop.setParentAuthor(customer);
-        shop = shopService.addShop(shop);
-        ApiResult apiResult ;
-        if(shop!=null){
-            apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        }else {
-            apiResult = ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
-        }
+        ApiResult apiResult = shopService.addShop(shop, hotUserName);
         return apiResult;
     }
 
     /**
      * 门店列表
+     *
      * @param customer
      * @param model
      * @return
      */
     @RequestMapping("/shopList")
-    public String showShopList(@AgtAuthenticationPrincipal Agent customer,
-                               Model model ,
+    public String showShopList(@AuthenticationPrincipal Agent customer,
+                               Model model,
                                ShopSearchCondition searchCondition,
-                               @RequestParam(required = false, defaultValue = "1")int pageIndex) {
+                               @RequestParam(required = false, defaultValue = "1") int pageIndex) {
         searchCondition.setParentAuthor(customer);
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
@@ -97,36 +118,38 @@ public class ShopController {
         model.addAttribute("pageSize", shopsList.getSize());
         model.addAttribute("searchCondition", searchCondition);
         model.addAttribute("pageIndex", pageIndex);
-        model.addAttribute("shopList",shopsList);
+        model.addAttribute("shopList", shopsList);
         return "shop/shopList";
     }
 
     /**
      * 更改门店审核状态
+     *
      * @param id
      * @param type
      * @return
      */
     @RequestMapping("/changeStatus")
     @ResponseBody
-    public ApiResult changeStatus(int id,String type){
+    public ApiResult changeStatus(int id, String type) {
         AgentStatusEnum statusEnum = AgentStatusEnum.NOT_CHECK;
-        if("ToFactory".equals(type)){
-            statusEnum = AgentStatusEnum.CHECKING ;
+        if ("ToFactory".equals(type)) {
+            statusEnum = AgentStatusEnum.CHECKING;
         }
-        shopService.updateStatus(statusEnum,id);
+        shopService.updateStatus(statusEnum, id);
         ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         return res;
     }
 
     /**
      * 删除门店
+     *
      * @param id
      * @return
      */
     @RequestMapping("/delete")
     @ResponseBody
-    public ApiResult deleteById(int id){
+    public ApiResult deleteById(int id) {
         shopService.deleteById(id);
         ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         return res;
@@ -134,30 +157,44 @@ public class ShopController {
 
     /**
      * 冻结解冻
+     *
      * @param id
      * @return
      */
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
-    public ApiResult changeIsDisabled(int id){
+    public ApiResult changeIsDisabled(int id) {
         Shop shop = shopService.findById(id);
-        shopService.updateIsDisabledById(!shop.isDisabled(),id);
+        shopService.updateIsDisabledById(!shop.isDisabled(), id);
+        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return res;
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param shop
+     * @return
+     */
+    @RequestMapping("/resetpassword")
+    @ResponseBody
+    public ApiResult resetPassword(Shop shop) {
+        shopService.updatePasswordById(shop.getPassword(), shop.getId());
         ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         return res;
     }
 
     /**
      * 导出Excel
-     *
      */
-    @RequestMapping("exportExcel")
-    public void exportExcel(@AgtAuthenticationPrincipal Agent customer,
+    @RequestMapping("/exportExcel")
+    public void exportExcel(@AuthenticationPrincipal Agent customer,
                             ShopSearchCondition searchCondition,
                             int txtBeginPage, int txtEndPage,
                             HttpSession session,
                             HttpServletResponse response) {
         searchCondition.setParentAuthor(customer);
-        int pageSize =  Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
+        int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
         Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
         List<Shop> shopList = pageInfo.getContent();
         session.setAttribute("state", null);

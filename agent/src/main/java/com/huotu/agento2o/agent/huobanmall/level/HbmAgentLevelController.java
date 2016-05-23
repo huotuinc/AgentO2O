@@ -32,6 +32,7 @@ public class HbmAgentLevelController {
 
     /**
      * 增加或修改代理商等级
+     *
      * @param customerIdStr
      * @param requestAgentLevel
      * @param levelId
@@ -39,22 +40,23 @@ public class HbmAgentLevelController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") String customerIdStr,AgentLevel requestAgentLevel,Integer levelId) {
+    public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") String customerIdStr, AgentLevel requestAgentLevel, Integer levelId) {
         int customerId = Integer.parseInt(customerIdStr);
-        boolean result = agentLevelService.addOrUpdate(levelId,customerId,requestAgentLevel);
-        return result ? ApiResult.resultWith(ResultCodeEnum.SUCCESS):ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        boolean result = agentLevelService.addOrUpdate(levelId, customerId, requestAgentLevel);
+        return result ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
     }
 
     /**
      * 删除代理商等级
+     *
      * @param levelId
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteLevel(Integer levelId) {
-        if(agentService.findByAgentLevelId(levelId).size() > 0){
-            return new ApiResult("等级已被绑定",800);
+        if (agentService.findByAgentLevelId(levelId).size() > 0) {
+            return new ApiResult("等级已被绑定", 800);
         }
         agentLevelService.deleteAgentLevel(levelId);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -62,6 +64,7 @@ public class HbmAgentLevelController {
 
     /**
      * 根据id获取代理商等级
+     *
      * @param levelId
      * @return
      */
@@ -77,6 +80,7 @@ public class HbmAgentLevelController {
 
     /**
      * 展示代理商等级列表
+     *
      * @param customerIdStr
      * @param model
      * @return

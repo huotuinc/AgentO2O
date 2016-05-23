@@ -180,7 +180,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
      */
     private void initShopMenu(){
         //判断是否存在订单模块
-//        if(menuRepository.findOne("03") == null) {
+        if(menuRepository.findOne("03") == null) {
             //一级子菜单列表
             List<AgtMenu> subMenu1 = new ArrayList<>();
             //二级子菜单列表
@@ -210,29 +210,44 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             mdgl = menuRepository.save(mdgl);
             subMenu1.add(mdgl);
 
-            //门店资料
-            AgtMenu mdzl = new AgtMenu(1, "", "门店资料", 0, shopMenu, "SHOPDATA", 0, "0302");
-            mdzl = menuRepository.save(mdzl);
-            subMenu2.clear();
-            //修改基本资料
-            AgtMenu xgjbzi = new AgtMenu(2, "/shop/addShopPage", "修改基本资料", 0, mdzl, "SHOPDATA", 0, "030201");
-            xgjbzi = menuRepository.save(xgjbzi);
-            subMenu2.add(xgjbzi);
-
-            mdzl.setChildren(subMenu2);
-            mdzl = menuRepository.save(mdzl);
-            subMenu1.add(mdzl);
-
             shopMenu.setChildren(subMenu1);
             menuRepository.save(shopMenu);
-//        }
+        }
     }
 
     /**
      * 初始化基本设置模块，基本设置模块以 04 开头
      */
     private void initConfigMenu(){
-        // TODO: 2016/5/12
+        //判断是否存在基本设置
+        if(menuRepository.findOne("04") == null) {
+            //一级子菜单列表
+            List<AgtMenu> subMenu1 = new ArrayList<>();
+            //二级子菜单列表
+            List<AgtMenu> subMenu2 = new ArrayList<>();
+
+            //基本设置
+            AgtMenu baseMenu = new AgtMenu(0, "", "基本设置", 0, null, "BASE_DATA", 0, "04");
+            baseMenu = menuRepository.save(baseMenu);
+            subMenu1.clear();
+
+            //基本设置
+            AgtMenu jbse = new AgtMenu(1, "", "资料设置", 0, baseMenu, "BASE_SHOP", 0, "0401");
+            jbse = menuRepository.save(jbse);
+            subMenu2.clear();
+
+            //门店基本设置
+            AgtMenu mdjbsz = new AgtMenu(2, "/shop/baseConfig", "修改资料", 0, jbse, "BASE_SHOP", 0, "040101");
+            mdjbsz = menuRepository.save(mdjbsz);
+            subMenu2.add(mdjbsz);
+
+            jbse.setChildren(subMenu2);
+            jbse = menuRepository.save(jbse);
+            subMenu1.add(jbse);
+
+            baseMenu.setChildren(subMenu1);
+            menuRepository.save(baseMenu);
+        }
     }
 
     @Override

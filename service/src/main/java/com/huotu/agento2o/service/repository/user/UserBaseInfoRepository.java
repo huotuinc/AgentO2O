@@ -20,4 +20,6 @@ import org.springframework.stereotype.Repository;
 public interface UserBaseInfoRepository extends JpaRepository<UserBaseInfo, Integer> {
 
     UserBaseInfo findByLoginNameAndMallCustomer_customerId(String logingName,Integer customerId);
+
+    UserBaseInfo findByLoginName(String logingName);
 }
