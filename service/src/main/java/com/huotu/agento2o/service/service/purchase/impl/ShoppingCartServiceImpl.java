@@ -64,13 +64,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         //判断上级库存是否充足
-        if(author.getParentAuthor() == null){
-            if(shoppingCart.getProduct().getStore() - shoppingCart.getProduct().getFreez() < num){
+        if (author.getParentAuthor() == null) {
+            if (shoppingCart.getProduct().getStore() - shoppingCart.getProduct().getFreez() < num) {
                 return new ApiResult("库存不足");
             }
-        }else{
-            AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(),shoppingCart.getProduct());
-            if(parentAgentProduct.getStore() - parentAgentProduct.getFreez() < num){
+        } else {
+            AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), shoppingCart.getProduct());
+            if (parentAgentProduct.getStore() - parentAgentProduct.getFreez() < num) {
                 return new ApiResult("库存不足");
             }
         }
@@ -85,14 +85,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         //设置可用库存和当前库存
         if (shoppingCartList != null && shoppingCartList.size() > 0) {
             shoppingCartList.forEach(p -> {
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, p.getProduct());
-                p.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
-                if (author.getParentAuthor() == null) {
-                    //上级为 平台方
-                    p.getProduct().setUsableStore(p.getProduct().getStore() - p.getProduct().getFreez());
-                } else {
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), p.getProduct());
-                    p.getProduct().setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                if (p.getProduct() != null) {
+                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, p.getProduct());
+                    if (agentProduct != null) {
+                        p.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                    }
+                    if (author.getParentAuthor() == null) {
+                        //上级为 平台方
+                        p.getProduct().setUsableStore(p.getProduct().getStore() - p.getProduct().getFreez());
+                    } else {
+                        AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), p.getProduct());
+                        p.getProduct().setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                    }
                 }
             });
         }
