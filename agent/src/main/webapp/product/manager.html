@@ -138,20 +138,23 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     function save() {
-
-
         var employees = new Array();
+        var flag = true;
         $('.js_infotr').each(function(v,i){
-/*
-            employees.push('{agentId:'+$(this).attr("agentId")+' , productId:'+$(this).attr("productId")+'warning:'+$(this).attr("warnig")+'}');
-*/
-            if(!$(this).val()>0){
-                $.jBox.tip("预警数量必须大于0","error");
+            var waringNum = parseInt($(this).val());
+            if(waringNum <0){
+                flag = false;
                 return;
             }
             employees.push('{'+$(this).attr("agentId")+','+$(this).attr("productId")+','+$(this).val()+'}');
 
         });
+
+        if(flag==false){
+            $.jBox.tip("预警数量必须大于0！");
+            return;
+        }
+
         $.jBox.tip("正在保存...", "loading");
 
  /*       var employees = [
@@ -167,7 +170,7 @@
         var info = {};
         info['info']=employees;
 
-       /* $.ajax({
+        $.ajax({
             type: "POST",
             url: "save",
             contentType:"application/json",
@@ -183,7 +186,7 @@
             error: function () {
                 $.jBox.tip("发生错误", "error");
             }
-        });*/
+        });
     }
     /*]]>*/
 </script>

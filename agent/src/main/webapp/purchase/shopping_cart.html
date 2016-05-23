@@ -41,7 +41,7 @@
 <form method="post" action="/purchase/showProductList" data-th-action="@{/shoppingCart/showShoppingCart}" id="form1">
     <div class="block">
         <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
-            <div class="cnt">
+            <div class="cnt" >
                 <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
                     <thead>
                     <tr class="even">
@@ -58,6 +58,8 @@
                         </th>
                         <th scope="col">库存
                         </th>
+                        <th scope="col">当前库存
+                        </th>
                         <th scope="col">订购数量/单位
                         </th>
                         <th scope="col">操作
@@ -69,7 +71,7 @@
                     <tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}">
                         <td class="txt20 c">
                             <input type="checkbox" name="choice" th:value="${shoppingCart.id}"
-                                                   th:if="${shoppingCart.product.store - shoppingCart.product.freez > shoppingCart.num}"/>
+                                                   th:if="${shoppingCart.product.usableStore >= shoppingCart.num }"/>
                         </td>
                         <td class="txt20 c" data-th-text="${shoppingCartStat.count}">1</td>
                         <td class="txt120 c">
@@ -87,14 +89,18 @@
                         <td class="txt40 c" name="td-price">
                             ￥<span data-th-text="${shoppingCart.product.price}" name="price">100</span>
                         </td>
-                        <td class="txt40 c" data-th-text="${shoppingCart.product.store - shoppingCart.product.freez}">
+                        <td class="txt40 c" data-th-text="${shoppingCart.product.usableStore}">
+                            1000
+                        </td>
+                        <td class="txt40 c" data-th-text="${shoppingCart.product.authorStore}">
                             1000
                         </td>
                         <td class="txt40 c" name="td-num">
                             <input name="num" style="width: 50px;text-align: center;" type="number" disabled="disabled"
                                    data-th-value="${shoppingCart.num}"
-                                   data-th-max="${shoppingCart.product.store - shoppingCart.product.freez}"/>
+                                   data-th-max="${shoppingCart.product.usableStore}"/>
                             <span data-th-text="${shoppingCart.product.unit}"></span>
+                            <span style="color: red" th:if="${shoppingCart.num} > ${shoppingCart.product.usableStore}">库存不足</span>
                             <a data-th-attr="shoppingCartId=${shoppingCart.id}"
                                onclick="editNum(this)" href="javascript:void(0)">编辑</a>
                         </td>
@@ -174,6 +180,12 @@
         }else if($(obj).text() == '完成'){
             var shoppingCartId = $(obj).attr("shoppingCartId");
             var num = $(obj).prevAll("input[name=num]").val();
+            var max = $(obj).prevAll("input[name=num]").attr("max");
+            if (num > max) {
+                $.jBox.tip("订购数量大于可用库存！");
+                $(obj).prevAll("input[name=num]").val(max);
+                return;
+            }
             $.ajax({
                 type: "POST",
                 url: basicUrl + "/editNum",
@@ -184,11 +196,13 @@
                 dataType: "json",
                 success: function (msg) {
                     if (msg.code == 200) {
-                        $(obj).prevAll("input[name=num]").attr("disabled","disabled");
-                        $(obj).text("编辑");
+                        $.jBox.tip(msg.msg,'success');
                     } else {
                         $.jBox.tip(msg.msg, 'error');
                     }
+                    setTimeout(function(){
+                        window.location.reload();
+                    },500);
                 }
             });
         }

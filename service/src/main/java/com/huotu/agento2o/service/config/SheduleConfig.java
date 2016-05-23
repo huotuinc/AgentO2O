@@ -9,9 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created by elvis on 2016/5/16.
@@ -29,12 +27,17 @@ public class SheduleConfig implements AsyncConfigurer {
 //
 //}
 
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(7);
-        executor.setMaxPoolSize(15);
-        /*executor.setQueueCapacity(100);*/
-        executor.setThreadNamePrefix("eamilThread-");
-        executor.initialize();
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(7);
+//        executor.setMaxPoolSize(15);
+//        /*executor.setQueueCapacity(100);*/
+//        executor.setThreadNamePrefix("eamilThread-");
+//        executor.initialize();
+
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(5,12,3,
+                TimeUnit.SECONDS, new LinkedBlockingDeque<>(500),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+
         return executor;
     }
 

@@ -25,10 +25,9 @@ public class SheduleWaringTest {
     }
 
 
-
     @Async
     public void sayNumber() throws InterruptedException {
-Thread.sleep(1000);
+        Thread.sleep(1000);
         System.out.println("Execute method asynchronously. "
                 + Thread.currentThread().getName());
 

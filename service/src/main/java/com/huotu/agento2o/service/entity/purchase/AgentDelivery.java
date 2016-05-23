@@ -47,6 +47,7 @@ public class AgentDelivery {
 //    private Agent parentAgentId;
     @Column(name = "Parent_Agent_Id")
     private Integer parentAgentId;
+    // delivery 发货；return 退货
     @Column(name = "DType")
     private String type;
     @Column(name = "Logi_Name")

@@ -1,5 +1,6 @@
 package com.huotu.agento2o.agent.controller;
 
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.service.AgtMenuService;
@@ -10,7 +11,6 @@ import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.statistics.IndexStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -36,8 +36,6 @@ public class IndexController {
     @Autowired
     private AgtMenuService menuService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
     private AuthorService authorService;
 
     @RequestMapping(value = {"", "/", "/login"})
@@ -53,7 +51,7 @@ public class IndexController {
     }
 
     @RequestMapping(value = "index")
-    public String loginSuccess(@AuthenticationPrincipal Author author,
+    public String loginSuccess(@AgtAuthenticationPrincipal Author author,
                                String activeMenuId,
                                Model model) {
         model.addAttribute("authorId", author.getId());
@@ -64,7 +62,7 @@ public class IndexController {
     }
 
     @RequestMapping(value = "home")
-    public String home(@AuthenticationPrincipal Author author, Model model) {
+    public String home(@AgtAuthenticationPrincipal Author author, Model model) {
         IndexStatistics indexStatistics = indexStatisticsService.orderStatistics(author.getId());
         model.addAttribute("indexStatistics", indexStatistics);
         return "index";
@@ -72,7 +70,7 @@ public class IndexController {
 
     @RequestMapping("/leftMenu")
     public String leftMenu(
-            @AuthenticationPrincipal Author author,
+            @AgtAuthenticationPrincipal Author author,
             String parentId,
             String activeMenuId,
             Model model
@@ -116,7 +114,7 @@ public class IndexController {
      */
     @RequestMapping(value = "/modifyPwd", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult modifyPwd(@AuthenticationPrincipal UserDetails user, String oldPwd, String password) throws Exception {
+    public ApiResult modifyPwd(@AgtAuthenticationPrincipal UserDetails user, String oldPwd, String password) throws Exception {
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(oldPwd)) {
             return ApiResult.resultWith(ResultCodeEnum.PASSWORD_NULL);
         }

@@ -10,13 +10,27 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
+import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
+import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +49,7 @@ public class AgentProductServiceImpl implements AgentProductService {
     }
 
    /* @Override
-    public Page<AgentProduct> findByAuthor_IdAndDisabledFalse(int pageIndex, int pageSize,Integer agentId) {
+    public Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId) {
         Specification<AgentProduct> specification = new Specification<AgentProduct>() {
             @Override
             public Predicate toPredicate(Root<AgentProduct> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -53,7 +67,26 @@ public class AgentProductServiceImpl implements AgentProductService {
     }
 
     @Override
-    public boolean updateWaring(Integer agentId, Integer productId, Integer warning) {
-        return agentProductRepository.updateWaring(agentId,productId,warning)>0 ? true:false;
+    @Transactional
+    public boolean updateWaring(List<String> info) {
+        for (String str : info) {
+            String _item = str.substring(1, str.length() - 1);
+            String[] item = _item.split(",");
+            if (item.length == 3) {
+                //更新
+                Integer agentId = Integer.parseInt(item[0].trim());
+                Integer productId = Integer.parseInt(item[1].trim());
+                Integer warning = Integer.parseInt(item[2].trim());
+                if (agentProductRepository.updateWaring(agentId, productId, warning) <= 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<String> findNeedWaringAgent() {
+        return null;
     }
 }

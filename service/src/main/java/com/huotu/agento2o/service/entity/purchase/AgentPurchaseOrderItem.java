@@ -23,6 +23,7 @@ import java.net.URI;
  */
 @Entity
 @Table(name = "Agt_Purchase_Order_Item")
+@Cacheable(value = false)
 @Getter
 @Setter
 public class AgentPurchaseOrderItem {

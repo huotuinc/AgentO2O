@@ -115,12 +115,12 @@ public class PurchaseController {
             @RequestParam(required = true) Integer num) throws Exception {
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
         //校验数量
-        if (num == null || num == 0) {
+        if (num == null || num.equals(0)) {
             return new ApiResult("请输入要订购的数量");
         }
         //校验商品
         MallGoods goods = null;
-        if (goodsId != null && goodsId != 0) {
+        if (goodsId != null && !goodsId.equals(0)) {
             goods = goodsService.findByGoodsId(goodsId);
             if (goods == null) {
                 return new ApiResult("请选择要订购的商品！");
@@ -129,7 +129,7 @@ public class PurchaseController {
         //校验货品
         MallProduct product = null;
         //货品未空时，如果商品只有一件货品，则取第一个货品；否则提示请选择货品
-        if (productId == null || productId == 0) {
+        if (productId == null || productId.equals(0)) {
             if (goods != null && goods.getProducts() != null && goods.getProducts().size() == 1) {
                 product = goods.getProducts().get(0);
             } else {
@@ -162,7 +162,7 @@ public class PurchaseController {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/product_list");
         List<MallProduct> productList = null;
-        if (goodsId != null && goodsId != 0) {
+        if (goodsId != null && !goodsId.equals(0)) {
             productList = productService.findByGoodsId(author, goodsId);
         }
         model.addObject("productList", productList);
