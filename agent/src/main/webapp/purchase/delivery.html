@@ -26,21 +26,14 @@
     <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
 
     <script th:inline="javascript">
-        var baseUrl = /*[[@{/purchaseOrder/delivery}]]*/ "/purchaseOrder/delivery";
-
+        var baseUrl = /*[[@{/}]]*/ "/";
         function submitForm() {
-            var orderId = $("#orderId").val();
+            var orderId = $("#pOrderId").val();
             var logisticsName = $("#logisticsName").val();
             var logisticsNo = $("#logisticsNo").val();
             var logisticsCode = $("#selLogiName").val();
             var freight = $.trim($("#freight").val());
             var remark = $("#remark").val();
-            var shipAddr = $("#shipAddr").val();
-            var shipName = $("#shipName").val();
-            var shipZip = $("#shipZip").val();
-            var shipMobile = $("#shipMobile").val();
-            var shipTel = $("#shipTel").val();
-            var reason = $("#reason").val();
             var sendItems = getCheckedSendBn("choice");
 
             if (freight.length == 0) {
@@ -67,24 +60,17 @@
                 logiCode: logisticsCode,
                 freight: freight,
                 remark: remark,
-                shipAddr: shipAddr,
-                shipName: shipName,
-                shipZip: shipZip,
-                shipMobile: shipMobile,
-                shipTel: shipTel,
-                reason: reason,
                 sendItems: sendItems
             };
             $.jBox.tip("正在保存...", "loading");
             setTimeout(function () {
-                J.GetJsonRespons(baseUrl + "delivery", requestData, function (result) {
+                J.GetJsonRespons(baseUrl + "purchaseOrder/delivery/delivery", requestData, function (result) {
                     if (result.code != 200) {
-                        $.jBox.tip("发货失败--" + result.msg);
+                        $.jBox.tip("发货失败--" + result.msg,'error');
                     } else {
                         $.jBox.tip("发货成功", "success");
                         setTimeout(function () {
-                            top.$('#loading').show();
-                            top.$('#content').hide().attr('src', baseUrl + "getOrdersPage?pageIndex=" + pageIndex);
+                            window.parent.location.reload();
                         }, 400);
                     }
                 }, function () {
@@ -200,11 +186,11 @@
             <tr>
                 <th>发货单备注:</th>
                 <td colspan="3">
-                    <textarea name="remark" id="remark"style="width: 95%"></textarea></td>
+                    <textarea name="remark" id="remark" style="width: 95%"></textarea></td>
             </tr>
             <tr>
                 <th>下级备注:</th>
-                <td colspan="3"  th:value="*{authorComment}" >
+                <td colspan="3"  th:text="*{authorComment}" >
                     上架备注
                 </td>
             </tr>

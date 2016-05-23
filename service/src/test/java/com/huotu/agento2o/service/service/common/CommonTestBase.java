@@ -13,8 +13,10 @@ package com.huotu.agento2o.service.service.common;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
@@ -22,6 +24,7 @@ import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
+import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -51,6 +54,8 @@ public abstract class CommonTestBase {
     protected MallProductRepository productRepository;
     @Autowired
     protected AgentProductRepository agentProductRepository;
+    @Autowired
+    private AgentLevelService agentLevelService;
 
 
     protected MallCustomer mockMallCustomer(){
@@ -61,7 +66,7 @@ public abstract class CommonTestBase {
         return customerService.newCustomer(customer);
     }
 
-    protected Agent mockAgent(MallCustomer mockCustomer){
+    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent){
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
@@ -73,6 +78,9 @@ public abstract class CommonTestBase {
         agent.setAddress(UUID.randomUUID().toString());
         agent.setDisabled(false);
         agent.setDeleted(false);
+        if(parentAgent != null){
+            agent.setParentAuthor(parentAgent);
+        }
         agent = agentService.addAgent(agent);
         agentService.flush();
         return agent;
@@ -83,7 +91,12 @@ public abstract class CommonTestBase {
         mockMallGoods.setCost(random.nextDouble());
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
-        mockMallGoods.setAgentId(agentId);
+        //平台方商品
+        if(agentId == null){
+            mockMallGoods.setAgentId(0);
+        }else {
+            mockMallGoods.setAgentId(agentId);
+        }
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());
@@ -102,14 +115,32 @@ public abstract class CommonTestBase {
         return productRepository.saveAndFlush(mockMallProduct);
     }
 
+    /**
+     * 代理商货品
+     * @param mockMallProduct
+     * @param mockAgent
+     * @return
+     */
     protected AgentProduct mockAgentProduct(MallProduct mockMallProduct,Agent mockAgent){
         AgentProduct agentProduct = new AgentProduct();
-        agentProduct.setAgent(mockAgent);
+        agentProduct.setAuthor(mockAgent);
         agentProduct.setProduct(mockMallProduct);
+        agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
         agentProduct.setStore(random.nextInt());
         agentProduct.setFreez(0);
         agentProduct.setWarning(0);
         agentProduct.setDisabled(false);
         return agentProductRepository.saveAndFlush(agentProduct);
+    }
+
+    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer){
+        AgentLevel agentLevel = new AgentLevel();
+        agentLevel.setLevelName(UUID.randomUUID().toString());
+        agentLevel.setComment(UUID.randomUUID().toString());
+        agentLevel.setLevel(random.nextInt());
+        agentLevel.setCustomer(mockCustomer);
+        agentLevel = agentLevelService.addAgentLevel(agentLevel);
+        agentLevelService.flush();
+        return agentLevel;
     }
 }

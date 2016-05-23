@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/huobanmall/level")
-public class AgentLevelController {
+public class HbmAgentLevelController {
 
     @Autowired
     private AgentLevelService agentLevelService;
@@ -41,8 +41,8 @@ public class AgentLevelController {
     @ResponseBody
     public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") String customerIdStr,AgentLevel requestAgentLevel,Integer levelId) {
         int customerId = Integer.parseInt(customerIdStr);
-        agentLevelService.addOrUpdate(levelId,customerId,requestAgentLevel);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        boolean result = agentLevelService.addOrUpdate(levelId,customerId,requestAgentLevel);
+        return result ? ApiResult.resultWith(ResultCodeEnum.SUCCESS):ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
     }
 
     /**
@@ -54,7 +54,7 @@ public class AgentLevelController {
     @ResponseBody
     public ApiResult deleteLevel(Integer levelId) {
         if(agentService.findByAgentLevelId(levelId).size() > 0){
-            return new ApiResult("等级已被使用",800);
+            return new ApiResult("等级已被绑定",800);
         }
         agentLevelService.deleteAgentLevel(levelId);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -86,7 +86,7 @@ public class AgentLevelController {
         int customerId = Integer.parseInt(customerIdStr);
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         model.addAttribute("agentLevels", agentLevels);
-        return "level/agentLevelList";
+        return "huobanmall/level/agentLevelList";
     }
 
 }

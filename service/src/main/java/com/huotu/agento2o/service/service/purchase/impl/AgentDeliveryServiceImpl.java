@@ -10,14 +10,12 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.repository.purchase.AgentDeliveryRepository;
@@ -25,11 +23,9 @@ import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -95,7 +91,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
                 deliveryItem.setDelivery(agentDelivery);
                 if (agentId != null) {
                     //代理商货品
-                    AgentProduct agentProduct = agentProductRepository.findByAgentAndProduct(purchaseOrder.getAuthor().getParentAuthor(), orderItem.getProduct());
+                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(purchaseOrder.getAuthor().getParentAuthor(), orderItem.getProduct());
                     deliveryItem.setAgentProductId(agentProduct.getId());
                 }
                 //平台货品

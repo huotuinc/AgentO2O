@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/order")
-@PreAuthorize("hasAnyRole('AGENT','ORDER')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
 public class DeliveryController {
     private static final Log log = LogFactory.getLog(DeliveryController.class);
 

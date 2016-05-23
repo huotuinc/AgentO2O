@@ -11,7 +11,9 @@ import java.util.List;
  * Created by wuxiongliu on 2016/5/18.
  */
 @Repository
-public interface AgentReturnOrderRepository extends JpaRepository<AgentReturnedOrder,Integer>, JpaSpecificationExecutor<AgentReturnedOrder> {
+public interface AgentReturnOrderRepository extends JpaRepository<AgentReturnedOrder,String>, JpaSpecificationExecutor<AgentReturnedOrder> {
 
     List<AgentReturnedOrder> findByAuthor_IdAndDisabledFalse(Integer agentId);
+
+    AgentReturnedOrder findByROrderIdAndDisabledFalse(String rOrderId);
 }

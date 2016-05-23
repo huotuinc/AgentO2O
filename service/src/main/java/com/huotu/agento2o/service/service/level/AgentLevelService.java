@@ -54,6 +54,7 @@ public interface AgentLevelService {
      * @param levelId 当levelId大于0时修改，否则增加
      * @param customerId
      * @param agentLevel
+     * @return
      */
-    void addOrUpdate(Integer levelId,Integer customerId,AgentLevel agentLevel);
+    boolean addOrUpdate(Integer levelId,Integer customerId,AgentLevel agentLevel);
 }

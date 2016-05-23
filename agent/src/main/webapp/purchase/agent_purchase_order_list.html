@@ -67,8 +67,15 @@
                     <div class="search-bar">
                         <label class="first ">采购单号：</label>
                         <input name="pOrderId" type="text" th:value="*{pOrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
+                        &nbsp;
                         <label class="first ">商品名称：</label>
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
+                        &nbsp;
+                        <label class="first ">下级代理商/门店：</label>
+                        <select name="agentId" id="agentId">
+                            <option selected="selected"  value="-1"  th:selected="*{agentId == 0}">==所有==</option>
+                            <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == purchaseOrderSearcher.agentId}">代理商/门店</option>
+                        </select>
                         <br/>
                         <br/>
                         <label class="first ">付款状态：</label>
@@ -76,20 +83,26 @@
                             <option selected="selected"  value="-1"  th:selected="*{payStatusCode == -1}">==所有==</option>
                             <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == purchaseOrderSearcher.payStatusCode}">未支付</option>
                         </select>
-
+                        &nbsp;
                         <label class="first ">发货状态：</label>
                         <select name="shipStatusCode" id="shipStatusCode">
                             <option selected="selected" value="-1"  th:selected="*{shipStatusCode == -1}">==所有==</option>
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == purchaseOrderSearcher.shipStatusCode}">未发货</option>
                         </select>
                         &nbsp;
+                        <label class="first ">审核状态：</label>
+                        <select name="statusCode" id="statusCode">
+                            <option selected="selected" value="-1"  th:selected="*{statusCode == -1}">==所有==</option>
+                            <option th:each="orderStatusEnum:${orderStatusEnums}" th:value="${orderStatusEnum.code}" th:text="${orderStatusEnum.value}" th:selected="${orderStatusEnum.code == purchaseOrderSearcher.statusCode}">待审核</option>
+                        </select>
                         <br/>
                         <br/>
 
                         <label class="first ">下单时间：</label>
                         <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
                                class="input-normal Wdate" th:value="*{beginTime}"
-                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>
+                        &nbsp;---&nbsp;
                         <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
                                class="input-normal Wdate" th:value="*{endTime}"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
@@ -98,7 +111,8 @@
                         <label class="first ">支付时间：</label>
                         <input name="beginPayTime" type="text" id="beginPayTime" th:value="*{beginPayTime}" placeholder=" [开始日期]"
                                class="input-normal Wdate"
-                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>
+                        &nbsp;---&nbsp;
                         <input name="endPayTime" type="text" id="endPayTime" th:value="*{endPayTime}" placeholder=" [结束日期]"
                                class="input-normal Wdate"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginPayTime\')}'})"/>
@@ -138,6 +152,8 @@
                             </th>
                             <th scope="col">货品名称
                             </th>
+                            <th scope="col">采购方(代理商/门店)
+                            </th>
                             <th scope="col">下单时间
                             </th>
                             <th scope="col">支付时间
@@ -165,6 +181,10 @@
                             <td class="txt160 c">
                                 <span th:text="${pOrder.orderItemList.size()}>0?${pOrder.orderItemList[0].name}"></span>
                                 <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
+                            </td>
+                            <td class="txt80" >
+                                <span th:text="${pOrder.author.name}"></span>
+                                <span style="color: red" th:text="${pOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
                             </td>
                             <td class="txt80 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                 2015/9/21 20:18:01
@@ -316,7 +336,7 @@
     //采购单发货
     function deliveryOrder(obj){
         var pOrderId = $(obj).attr("pOrderId");
-        var deliveryUrl = /*[[@{/purchaseOrder/delivery/delivery}]]*/ "/purchaseOrder/delivery/delivery";
+        var deliveryUrl = /*[[@{/purchaseOrder/delivery/showDelivery}]]*/ "/purchaseOrder/delivery/showDelivery";
         var url =  deliveryUrl + "?pOrderId=" + pOrderId;
         J.PopupIFrame(url, "采购单发货", 900, 480, "ifrm", "", "auto", "");
     }
@@ -326,7 +346,7 @@
         $('#form1').submit();
     }
     function searchOrderAll() {
-        window.location.href = /*[[@{/purchaseOrder/showPurchaseOrderList}]]*/ "/purchaseOrder/showPurchaseOrderList";
+        window.location.href = /*[[@{/purchaseOrder/showAgentPurchaseOrderList}]]*/ "/purchaseOrder/showAgentPurchaseOrderList";
     }
     /*]]>*/
 </script>

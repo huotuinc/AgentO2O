@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.purchase;
 
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 
@@ -10,6 +11,23 @@ import java.util.List;
  */
 public interface AgentReturnOrderItemService  {
 
+    /**
+     * 增加退货单列表
+     * @param agentReturnedOrderItems
+     * @return
+     */
     List<AgentReturnedOrderItem> addReturnOrderItemList(List<AgentReturnedOrderItem> agentReturnedOrderItems);
-    List<AgentReturnedOrderItem> addReturnOrderItemList(AgentReturnedOrder agentReturnedOrder, Integer[]productIds,Integer[] productNums);
+
+    /**
+     *
+     * @param agentReturnedOrder
+     * @param productIds
+     * @param productNums
+     * @return
+     */
+    List<AgentReturnedOrderItem> addReturnOrderItemList(Author author, AgentReturnedOrder agentReturnedOrder, Integer[]productIds, Integer[] productNums);
+
+    List<AgentReturnedOrderItem> findAll(String rOrderId);
+
+
 }

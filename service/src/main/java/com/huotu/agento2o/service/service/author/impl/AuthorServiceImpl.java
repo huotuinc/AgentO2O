@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.repository.author.AuthorRepository;
 import com.huotu.agento2o.service.service.author.AuthorService;
@@ -25,6 +26,11 @@ public class AuthorServiceImpl implements AuthorService {
 
     public List<Author> findByCustomerId(Integer customerId) {
         return authorRepository.findByCustomer_CustomerId(customerId);
+    }
+
+    @Override
+    public List<Author> findByParentAgentId(Agent agent) {
+        return authorRepository.findByParentAuthor(agent);
     }
 
     public Author addAuthor(Author author) {

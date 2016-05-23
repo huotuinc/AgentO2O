@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.entity.user;
 
+import com.huotu.agento2o.service.entity.MallCustomer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,4 +27,7 @@ public class UserBaseInfo {
     private String realName;
     @Column(name = "UB_UserMobile")
     private String mobile;
+    @ManyToOne
+    @JoinColumn(name = "UB_CustomerID")
+    private MallCustomer mallCustomer;
 }

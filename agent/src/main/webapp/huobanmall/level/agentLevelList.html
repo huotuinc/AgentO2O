@@ -1,4 +1,13 @@
 <!DOCTYPE html >
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  -->
+
 <html xmlns:th="http://www.thymeleaf.org">
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -133,9 +142,11 @@
                 }, function (json) {
                     if (json.code == 200) {
                         $.jBox.tip("删除成功", "success");
-                        window.location.reload();
+                        setTimeout(function(){
+                            window.location.reload();
+                        },400);
                     } else if (json.code == 800){
-                        $.jBox.tip("无法删除,该等级已被代理商使用", "error");
+                        $.jBox.tip("无法删除,该等级已被代理商绑定", "error");
                     } else {
                         $.jBox.tip("删除失败", "error");
                     }
@@ -164,9 +175,11 @@
                         if (json.code == 200) {
                             $.jBox.tip("保存成功", "success");
                             $(self).dialog('close');
-                            window.location.reload();
+                            setTimeout(function(){
+                                window.location.reload();
+                            },400);
                         } else {
-                            $.jBox.tip("保存失败", error);
+                            $.jBox.tip("保存失败", "error");
                         }
                     }, function () {
                     }, J.PostMethod);

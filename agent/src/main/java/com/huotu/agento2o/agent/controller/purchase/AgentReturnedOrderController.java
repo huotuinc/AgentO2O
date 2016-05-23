@@ -6,10 +6,13 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
+import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
+import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +42,9 @@ public class AgentReturnedOrderController {
     private AgentReturnedOrderService agentReturnedOrderService;
     @Autowired
     private AgentReturnOrderItemService agentReturnOrderItemService;
+
+    @Autowired
+    private MallProductService mallProductService;
 
     /**
      *  显示已采购商品列表
@@ -75,10 +82,20 @@ public class AgentReturnedOrderController {
         agentReturnedOrder.setAuthorComment(returnOrderInfo.getAuthorComment());
         agentReturnedOrder.setShipMobile(returnOrderInfo.getMobile());
         agentReturnedOrder.setSendmentStatus(returnOrderInfo.getSendmentStatus());
+        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
+        agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
+        agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
         agentReturnedOrder.setCreateTime(new Date());
 
+        double finalPrice = 0.0;
+        for(int i=0;i<productIds.length;i++){
+            MallProduct mallProduct = mallProductService.findByProductId(productIds[i]);
+            finalPrice += mallProduct.getPrice()*productNums[i];
+        }
+        agentReturnedOrder.setFinalAmount(finalPrice);// FIXME: 2016/5/20 fixed
+
         AgentReturnedOrder agentReturnedOrder1 = agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
-        agentReturnOrderItemService.addReturnOrderItemList(agentReturnedOrder1,productIds,productNums);
+        agentReturnOrderItemService.addReturnOrderItemList(author,agentReturnedOrder1,productIds,productNums);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
@@ -112,6 +129,26 @@ public class AgentReturnedOrderController {
         model.addAttribute("pageIndex", pageIndex);
         model.addAttribute("authorType", author.getClass().getSimpleName());
         return "purchase/returned_product_list";
+    }
+
+    @RequestMapping(value = "/cancelReturnOrder")
+    @ResponseBody
+    public ApiResult cancelReturnOrer(String rOrderId){
+        ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(rOrderId);
+        return apiResult;
+    }
+
+    @RequestMapping(value = "/showReturnedOrderDetail")
+    public ModelAndView showReturnOrderDetail(String rOrderId){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("purchase/returned_product_detail");
+        AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
+        List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
+        agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
+
+        modelAndView.addObject("agentReturnOrder",agentReturnedOrder);
+        modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
+        return modelAndView;
     }
 
 

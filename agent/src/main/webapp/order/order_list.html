@@ -21,6 +21,12 @@
     <script src="../resource/3rdParty/Knockout/knockout-2.3.0.js" th:src="@{/resource/3rdParty/Knockout/knockout-2.3.0.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
     <script type="text/javascript" th:inline="javascript">
+        function submitShip() {
+            $.jBox.tip("库存不足，由平台代发");
+        }
+
+    </script>
+    <script type="text/javascript" th:inline="javascript">
         var agentId = /*[[${agentId}]]*/ 1;
 
         /*<![CDATA[*/
@@ -456,7 +462,7 @@
                                                     </span>
                                                     <span th:if="${authorType=='Shop'and orders.shop==null and orders.beneficiaryShop!=null}">
                                                         <span th:if="${orders.deliveryable()}">
-                                                            <a href="#" title="无法发货">发货</a> |
+                                                            <a href="javascript:submitShip();" title="平台代发">发货</a> |
                                                         </span>
                                                     </span>
                                                     <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a>

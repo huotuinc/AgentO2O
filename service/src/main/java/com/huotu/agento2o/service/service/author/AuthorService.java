@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.author;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import org.springframework.data.domain.Page;
 
@@ -30,6 +31,10 @@ public interface AuthorService {
      * 根据平台方ID 查找代理商列表
      */
     List<Author> findByCustomerId(Integer customerId);
+    /**
+     * 查找下级代理商/门店
+     */
+    List<Author> findByParentAgentId(Agent agent);
 
     /**
      * 新建代理商

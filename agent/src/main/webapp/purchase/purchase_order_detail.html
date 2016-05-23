@@ -234,6 +234,8 @@
                                     </th>
                                     <th scope="col" style="text-align: center;">订购数量/单位
                                     </th>
+                                    <th scope="col" style="text-align: center;">发货数量
+                                    </th>
                                     <th scope="col" style="text-align: center;">小计
                                     </th>
                                 </tr>
@@ -258,6 +260,9 @@
                                     </td>
                                     <td class="txt40 c" name="td-num">
                                         <span data-th-text="${orderItem.num} +' ' + ${orderItem.unit}"></span>
+                                    </td>
+                                    <td class="txt40 c" name="td-num">
+                                        <span data-th-text="${orderItem.sendNum}"></span>
                                     </td>
                                     <td class="txt40 c" data-th-text="${orderItem.price * orderItem.num}">
                                     </td>

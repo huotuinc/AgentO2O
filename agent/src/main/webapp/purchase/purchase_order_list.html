@@ -66,6 +66,7 @@
                     <div class="search-bar">
                         <label class="first ">采购单号：</label>
                         <input name="pOrderId" type="text" th:value="*{pOrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
+                        &nbsp;
                         <label class="first ">商品名称：</label>
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
                         <br/>
@@ -75,20 +76,26 @@
                             <option selected="selected"  value="-1"  th:selected="*{payStatusCode == -1}">==所有==</option>
                             <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == purchaseOrderSearcher.payStatusCode}">未支付</option>
                         </select>
-
+                        &nbsp;
                         <label class="first ">发货状态：</label>
                         <select name="shipStatusCode" id="shipStatusCode">
                             <option selected="selected" value="-1"  th:selected="*{shipStatusCode == -1}">==所有==</option>
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == purchaseOrderSearcher.shipStatusCode}">未发货</option>
                         </select>
                         &nbsp;
+                        <label class="first ">审核状态：</label>
+                        <select name="statusCode" id="statusCode">
+                            <option selected="selected" value="-1"  th:selected="*{statusCode == -1}">==所有==</option>
+                            <option th:each="orderStatusEnum:${orderStatusEnums}" th:value="${orderStatusEnum.code}" th:text="${orderStatusEnum.value}" th:selected="${orderStatusEnum.code == purchaseOrderSearcher.statusCode}">待审核</option>
+                        </select>
                         <br/>
                         <br/>
 
                         <label class="first ">下单时间：</label>
                         <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
                                class="input-normal Wdate" th:value="*{beginTime}"
-                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>
+                        &nbsp;---&nbsp;
                         <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
                                class="input-normal Wdate" th:value="*{endTime}"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
@@ -97,7 +104,8 @@
                         <label class="first ">支付时间：</label>
                         <input name="beginPayTime" type="text" id="beginPayTime" th:value="*{beginPayTime}" placeholder=" [开始日期]"
                                class="input-normal Wdate"
-                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>
+                        &nbsp;---&nbsp;
                         <input name="endPayTime" type="text" id="endPayTime" th:value="*{endPayTime}" placeholder=" [结束日期]"
                                class="input-normal Wdate"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginPayTime\')}'})"/>
@@ -193,6 +201,7 @@
                                     <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
                                     <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="删除"> | 删除</a>
                                     <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="payOrder(this)" title="支付"> | 支付</a>
+                                    <a th:if="${pOrder.receivable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="receiveOrder(this)" title="确认收货"> | 确认收货</a>
                                 </div>
                             </td>
                         </tr>
@@ -265,6 +274,34 @@
                     success: function (msg) {
                         if (msg.code == 200) {
                             $.jBox.tip("支付成功!",'success');
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+    //确认收货
+    function receiveOrder(obj){
+        $.jBox.confirm("请确认已收货","提示",function(v){
+            if(v == 'ok'){
+                var pOrderId = $(obj).attr("pOrderId");
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "/receive",
+                    data: {
+                        pOrderId: pOrderId
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip("确认收货成功!",'success');
                             setTimeout(function(){
                                 window.location.reload();
                             },500);

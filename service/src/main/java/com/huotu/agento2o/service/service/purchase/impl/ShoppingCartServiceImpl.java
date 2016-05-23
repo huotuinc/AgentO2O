@@ -12,7 +12,9 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ import java.util.List;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
+    @Autowired
+    private MallGoodsRepository goodsRepository;
 
 
     @Override
@@ -54,7 +58,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public List<ShoppingCart> findByAgentId(Integer agentId) {
-        return shoppingCartRepository.findByAuthor_IdOrderByCreateTimeDesc(agentId);
+        List<ShoppingCart> shoppingCartList = shoppingCartRepository.findByAuthor_IdOrderByCreateTimeDesc(agentId);
+        return shoppingCartList;
     }
 
     @Override

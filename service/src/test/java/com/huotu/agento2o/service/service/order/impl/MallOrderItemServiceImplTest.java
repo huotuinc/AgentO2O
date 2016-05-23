@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/5/18.
+ * Created by AiWelv on 2016/5/18.
  */
 public class MallOrderItemServiceImplTest extends CommonTestBase {
 

@@ -14,6 +14,11 @@ public class ReturnedOrderSearch {
     private Integer agentId;
 
     /**
+     *  上级代理商id
+     */
+    private Integer parentAgentId;
+
+    /**
      *  退单号
      */
     private String rOrderId;
