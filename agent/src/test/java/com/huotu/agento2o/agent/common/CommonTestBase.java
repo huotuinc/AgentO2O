@@ -8,61 +8,86 @@
  *
  */
 
-package com.huotu.agento2o.service.service.common;
+package com.huotu.agento2o.agent.common;
 
+import com.huotu.agento2o.agent.config.MVCConfig;
+import com.huotu.agento2o.agent.config.SecurityConfig;
+import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
-import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.goods.MallGoodsService;
-import com.huotu.agento2o.service.service.level.AgentLevelService;
+import com.huotu.agento2o.service.service.author.ShopService;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 /**
- * Created by helloztt on 2016/5/14.
+ * Created by helloztt on 2016/5/9.
  */
 @ActiveProfiles("test")
-@ContextConfiguration(classes = ServiceConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MVCConfig.class, ServiceConfig.class})
+@WebAppConfiguration
 @Transactional
-public abstract class CommonTestBase {
+public abstract class CommonTestBase extends SpringWebTest{
+    protected MockHttpSession session;
+    protected Agent mockAgent;
+    protected Shop mockShop;
+
+    protected String passWord = UUID.randomUUID().toString();
+
     protected Random random = new Random();
     @Autowired
     protected MallCustomerService customerService;
     @Autowired
-    protected AgentService agentService;
+    private AgentService agentService;
+    @Autowired
+    private ShopService shopService;
     @Autowired
     protected MallGoodsRepository goodsRepository;
     @Autowired
     protected MallProductRepository productRepository;
     @Autowired
     protected AgentProductRepository agentProductRepository;
-    @Autowired
-    private AgentLevelService agentLevelService;
+
+    protected MockHttpSession loginAs(String userName, String password,String roleType) throws Exception {
+        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
+                .andReturn().getRequest().getSession(true);
+        session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
+                .param("username", userName).param("password", password).param("roleType",roleType))
+                .andReturn().getRequest().getSession();
+        Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
+        saveAuthedSession(session);
+        return session;
+    }
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockMallCustomer(){
         MallCustomer customer = new MallCustomer();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
-        customer.setPassword(UUID.randomUUID().toString());
+        customer.setPassword(passWord);
         return customerService.newCustomer(customer);
     }
 
@@ -71,7 +96,7 @@ public abstract class CommonTestBase {
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
-        agent.setPassword(UUID.randomUUID().toString());
+        agent.setPassword(passWord);
         agent.setName(UUID.randomUUID().toString());
         agent.setContact(UUID.randomUUID().toString());
         agent.setMobile(UUID.randomUUID().toString());
@@ -82,13 +107,34 @@ public abstract class CommonTestBase {
         if(parentAgent != null){
             agent.setParentAuthor(parentAgent);
         }
+        agent.setStatus(AgentStatusEnum.CHECKED);
         agent = agentService.addAgent(agent);
         agentService.flush();
         return agent;
     }
 
-    @SuppressWarnings("Duplicates")
-    protected MallGoods mockMallGoods(Integer customerId,Integer agentId){
+    protected Shop mockShop(MallCustomer mockCustomer,Agent parentAgent){
+        Shop shop = new Shop();
+        shop.setCustomer(mockCustomer);
+        shop.setUsername(UUID.randomUUID().toString());
+        shop.setPassword(passWord);
+        shop.setName(UUID.randomUUID().toString());
+        shop.setContact(UUID.randomUUID().toString());
+        shop.setMobile(UUID.randomUUID().toString());
+        shop.setTelephone(UUID.randomUUID().toString());
+        shop.setAddress(UUID.randomUUID().toString());
+        shop.setDeleted(false);
+        shop.setDisabled(false);
+        shop.setStatus(AgentStatusEnum.CHECKED);
+        if(parentAgent != null){
+            shop.setParentAuthor(parentAgent);
+        }
+        shop = shopService.addShop(shop);
+        shopService.flush();
+        return shop;
+    }
+
+    protected MallGoods mockMallGoods(Integer customerId, Integer agentId){
         MallGoods mockMallGoods = new MallGoods();
         mockMallGoods.setCost(random.nextDouble());
         mockMallGoods.setPrice(random.nextDouble());
@@ -102,6 +148,10 @@ public abstract class CommonTestBase {
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());
+        return mockMallGoods;
+    }
+
+    protected MallGoods mockMallGoods(MallGoods mockMallGoods){
         return goodsRepository.saveAndFlush(mockMallGoods);
     }
 
@@ -115,7 +165,14 @@ public abstract class CommonTestBase {
         mockMallProduct.setName(mockGoods.getName());
         mockMallProduct.setMarketable(true);
         mockMallProduct.setLocalStock(false);
-        return productRepository.saveAndFlush(mockMallProduct);
+        int store = random.nextInt(100);
+        mockMallProduct.setStore(store);
+        if(store > 0){
+            mockMallProduct.setFreez(random.nextInt(store));
+        }else {
+            mockMallProduct.setFreez(0);
+        }
+        return mockMallProduct;
     }
 
     /**
@@ -125,26 +182,16 @@ public abstract class CommonTestBase {
      * @return
      */
     @SuppressWarnings("Duplicates")
-    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct,Agent mockAgent){
+    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Agent mockAgent){
         AgentProduct agentProduct = new AgentProduct();
         agentProduct.setAuthor(mockAgent);
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
-        agentProduct.setStore(random.nextInt());
+        agentProduct.setStore(random.nextInt(100));
         agentProduct.setFreez(0);
         agentProduct.setWarning(0);
         agentProduct.setDisabled(false);
         return agentProductRepository.saveAndFlush(agentProduct);
     }
 
-    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer){
-        AgentLevel agentLevel = new AgentLevel();
-        agentLevel.setLevelName(UUID.randomUUID().toString());
-        agentLevel.setComment(UUID.randomUUID().toString());
-        agentLevel.setLevel(random.nextInt());
-        agentLevel.setCustomer(mockCustomer);
-        agentLevel = agentLevelService.addAgentLevel(agentLevel);
-        agentLevelService.flush();
-        return agentLevel;
-    }
 }

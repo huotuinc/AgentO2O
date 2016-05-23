@@ -28,7 +28,7 @@ public class MallProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Product_Id")
     private Integer productId;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "Goods_Id")
     private MallGoods goods;
     /**
@@ -93,5 +93,5 @@ public class MallProduct {
     private boolean isLocalStock;
 
     // TODO: 3/17/16
-    
+
 }
