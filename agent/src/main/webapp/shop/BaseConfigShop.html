@@ -119,13 +119,16 @@
                                               th:field="${agent.username}" th:text="${agent.username}"></span>
                                     </td>
                                 </tr>
-                                <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
-                                <!--<tr>-->
-                                <!--<th>小伙伴用户名：</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
+                                <tr>
+                                    <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
+                                </tr>
+                                <tr>
+                                    <th>小伙伴用户名：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="hotUserName"
+                                            th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></input>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -273,7 +276,6 @@
     /*<![CDATA[*/
     //保存
     function saveShopConfig() {
-        debugger;
         var name = $.trim($("#name").val());
         var Contact = $.trim($("#Contact").val());
         var mobile = $.trim($("#mobile").val());
@@ -283,6 +285,7 @@
         var afterSalTel = $.trim($("#afterSalTel").val());
         var afterSalQQ = $.trim($("#afterSalQQ").val());
         var id = $.trim($("#shopID").val());
+        var hotUserName = $.trim($("#hotUserName").val());
 
         if (name.length == 0) {
             $.jBox.tip("门店名称不能为空");
@@ -339,7 +342,8 @@
                 serveiceTel: serveiceTel,
                 afterSalTel: afterSalTel,
                 afterSalQQ: afterSalQQ,
-                auditComment:/*[[${shop.auditComment}]]*/
+                auditComment:/*[[${shop.auditComment}]]*/,
+                hotUserName: hotUserName
             },
             success: function (result) {
                 if (result.code == 200) {

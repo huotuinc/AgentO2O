@@ -207,7 +207,6 @@
     /*<![CDATA[*/
     function audit(obj) {
         $("#audit_dialog").html($("#audit_template").html());
-        debugger;
         var auditComment = $(obj).attr("audit");
         $("#auditComment").text(auditComment);
         J.ShowDialog("audit_dialog", "审核", function () {

@@ -12,12 +12,17 @@ package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
+import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -45,6 +50,8 @@ public class ShopServiceImpl implements ShopService {
     private ShopRepository shopRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserBaseInfoRepository userBaseInfoRepository;
 
     @Override
     public Shop findByUserName(String userName) {
@@ -57,13 +64,34 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    @Transactional
     public Shop addShop(Shop shop) {
+        return shopRepository.save(shop);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult addShop(Shop shop, String hotUserName) {
+
+        //小伙伴账号绑定限制
+        UserBaseInfo userBaseInfo = null;
+        if (StringUtil.isNotEmpty(hotUserName)) {
+            userBaseInfo = userBaseInfoRepository.findByLoginName(hotUserName);
+            if (userBaseInfo == null) {
+                return new ApiResult("小伙伴账号不存在", 400);
+            }
+
+            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
+                return new ApiResult("小伙伴账号已被绑定", 400);
+            }
+        }
+        shop.setUserBaseInfo(userBaseInfo);
+
         if (shop.getId() == null) { //新增保存
             //判断门店登录名是否唯一
             Shop checkShop = findByUserName(shop.getUsername());
             if (checkShop != null) {
-                return null;
+                return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
             shop.setStatus(AgentStatusEnum.NOT_CHECK);
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
@@ -86,9 +114,11 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
             oldShop.setAuditComment(shop.getAuditComment());
+            oldShop.setUserBaseInfo(shop.getUserBaseInfo());
             shop = oldShop;
         }
-        return shopRepository.save(shop);
+        shopRepository.save(shop);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
     @Override
@@ -216,7 +246,7 @@ public class ShopServiceImpl implements ShopService {
             cellDescList.add(ExcelHelper.asCell(shop.getAfterSalTel()));
             cellDescList.add(ExcelHelper.asCell(shop.getAfterSalQQ()));
             cellDescList.add(ExcelHelper.asCell(shop.getComment()));
-            cellDescList.add(ExcelHelper.asCell(shop.getAuditComment()==null?"":shop.getAuditComment()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAuditComment() == null ? "" : shop.getAuditComment()));
             cellDescList.add(ExcelHelper.asCell(shop.getStatus().getValue()));
             cellDescList.add(ExcelHelper.asCell(shop.isDisabled() ? "冻结" : "激活"));
             rowAndCells.add(cellDescList);

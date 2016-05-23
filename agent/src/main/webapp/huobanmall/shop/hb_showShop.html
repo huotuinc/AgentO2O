@@ -86,11 +86,11 @@
                                     </td>
                                 </tr>
                                 <!--<tr>-->
-                                    <!--<th>登陆密码：</th>-->
-                                    <!--<td>-->
-                                        <!--<span type="text" class="input-normal" id="password"-->
-                                              <!--th:text="*{password}"></span>-->
-                                    <!--</td>-->
+                                <!--<th>登陆密码：</th>-->
+                                <!--<td>-->
+                                <!--<span type="text" class="input-normal" id="password"-->
+                                <!--th:text="*{password}"></span>-->
+                                <!--</td>-->
                                 <!--</tr>-->
                                 </tbody>
                             </table>
@@ -119,13 +119,15 @@
                                               th:text="*{parentAuthor.username}"></span>
                                     </td>
                                 </tr>
-                                <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
-                                <!--<tr>-->
-                                <!--<th>小伙伴用户名：</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
+                                <tr>
+                                    <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
+                                </tr>
+                                <tr>
+                                    <th>小伙伴用户名：</th>
+                                    <td>
+                                        <span type="text" class="input-normal" th:text="*{UserBaseInfo.loginName}"></span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

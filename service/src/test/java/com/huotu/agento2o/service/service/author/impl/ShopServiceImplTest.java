@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,9 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ShopServiceImplTest {
 
     @Autowired
-    private ShopService shopService ;
+    private ShopService shopService;
     @Autowired
-    private ShopRepository shopRepository ;
+    private PasswordEncoder passwordEncoder;
 
     @Test
     public void testAddShop() throws Exception {
@@ -48,43 +49,78 @@ public class ShopServiceImplTest {
     }
 
     @Test
-//    @Rollback(value = false)
-    public void  findByUserName() throws  Exception{
-        Shop shop =  shopService.findByUserName("123");
-        Assert.assertTrue(shop!=null);
-
+    public void findByUserName() throws Exception {
+        Shop shop = shopService.findByUserName("xl");
+        Assert.assertTrue(shop != null);
     }
 
     @Test
-    public  void addShop(){
+    public void findById() throws Exception {
+        Shop shop = shopService.findById(64);
+        Assert.assertTrue(shop != null);
+    }
+
+    @Test
+    public void addShop() {
         Shop shop = new Shop();
         shop.setStatus(AgentStatusEnum.CHECKED);
         shop.setPassword("1");
-        shop.setUsername("zc");
-
+        shop.setUsername("QWE");
         shop.setDeleted(false);
         shop.setDisabled(false);
-        shopService.addShop(shop);
+        shopService.addShop(shop, "7VGVEU1X9T3");
+        Shop findShop = shopService.findByUserName("QWE");
+        Assert.assertTrue(findShop != null);
     }
 
     @Test
-    public void subToFac(){
-        int id = 50 ;
-        shopService.updateStatus(AgentStatusEnum.RETURNED,id);
+    public void updateStatus() {
+        int id = 110;
+        shopService.updateStatus(AgentStatusEnum.RETURNED, id);
+        Shop shop = shopService.findById(id);
+        Assert.assertTrue(shop.getStatus() == AgentStatusEnum.RETURNED);
     }
 
     @Test
-    public void del(){
-        int id = 57 ;
+    public void updateStatusAndAuditComment() {
+        int id = 110;
+        shopService.updateStatusAndAuditComment(AgentStatusEnum.RETURNED, "不通过2321", id);
+        Shop shop = shopService.findById(id);
+        Assert.assertTrue(shop.getStatus() == AgentStatusEnum.RETURNED &&
+                shop.getAuditComment().equals("不通过2321"));
+
+    }
+
+    @Test
+    public void deleteById() {
+        int id = 110;
         shopService.deleteById(id);
+        Shop shop = shopService.findById(id);
+        Assert.assertTrue(shop.isDeleted() == true);
     }
 
     @Test
-    public void findAll(){
+    public void updateIsDisabledById() {
+        int id = 110;
+        shopService.updateIsDisabledById(true, id);
+        Shop shop = shopService.findById(id);
+        Assert.assertTrue(shop.isDisabled() == true);
+    }
+
+    @Test
+    public void updatePasswordById() {
+        int id = 110;
+        shopService.updatePasswordById("2", id);
+        Shop shop = shopService.findById(id);
+        Assert.assertTrue(shop.getPassword().equals(passwordEncoder.encode("2")));
+    }
+
+    @Test
+    public void findAll() {
         ShopSearchCondition searchCondition = new ShopSearchCondition();
         searchCondition.setParent_agentLevel(41);
         Page<Shop> shops = shopService.findAll(1, 20, searchCondition);
-        Assert.assertTrue(shops.getContent().size()>0);
+        Assert.assertTrue(shops.getContent().size() > 0);
     }
 
 }

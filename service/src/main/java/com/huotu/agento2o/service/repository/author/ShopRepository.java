@@ -1,6 +1,7 @@
 package com.huotu.agento2o.service.repository.author;
 
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,4 +39,6 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecifi
     @Query("update Shop shop set shop.password=?1 where shop.id=?2")
     @Modifying
     void updatePassword(String password, int id);
+
+    Shop findByUserBaseInfo_userId(Integer userId);
 }

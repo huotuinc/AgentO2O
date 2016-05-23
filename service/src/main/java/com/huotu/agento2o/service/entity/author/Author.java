@@ -95,6 +95,9 @@ public abstract class Author implements Serializable,UserDetails{
     @ManyToOne
     private Agent parentAuthor;
 
+    /**
+     * 小伙伴
+     */
     @OneToOne
     @JoinColumn(name = "UB_UserID")
     private UserBaseInfo userBaseInfo;

@@ -232,12 +232,12 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             subMenu1.clear();
 
             //基本设置
-            AgtMenu jbse = new AgtMenu(1, "", "基本设置", 0, baseMenu, "BASE_DATA", 0, "0401");
+            AgtMenu jbse = new AgtMenu(1, "", "资料设置", 0, baseMenu, "BASE_SHOP", 0, "0401");
             jbse = menuRepository.save(jbse);
             subMenu2.clear();
 
             //门店基本设置
-            AgtMenu mdjbsz = new AgtMenu(2, "/shop/baseConfig", "门店基本设置", 0, jbse, "BASE_SHOP", 0, "040101");
+            AgtMenu mdjbsz = new AgtMenu(2, "/shop/baseConfig", "修改资料", 0, jbse, "BASE_SHOP", 0, "040101");
             mdjbsz = menuRepository.save(mdjbsz);
             subMenu2.add(mdjbsz);
 

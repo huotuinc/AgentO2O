@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.author;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -31,6 +32,8 @@ public interface ShopService extends UserDetailsService {
     Shop findById(Integer id);
 
     Shop addShop(Shop shop);
+
+    ApiResult addShop(Shop shop, String hotUserName);
 
     void flush();
 

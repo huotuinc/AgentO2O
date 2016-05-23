@@ -75,7 +75,8 @@
                     <div>
                         <span style="color:#6699d5" class="spModuleTitle">登录信息</span>
                         <div class="division">
-                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="shopID" disabled="hidden"/>
+                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="shopID"
+                                   disabled="hidden"/>
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
@@ -119,13 +120,16 @@
                                               th:field="${agent.username}" th:text="${agent.username}"></span>
                                     </td>
                                 </tr>
-                                <!--<tr><td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td></tr>-->
-                                <!--<tr>-->
-                                <!--<th>小伙伴用户名：</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
+                                <tr>
+                                    <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
+                                </tr>
+                                <tr>
+                                    <th>小伙伴用户名：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="hotUserName"
+                                               th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"/>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -276,30 +280,29 @@
     /**
      * 转换form查看
      */
-    function change2view2form(formId){
-        var winfra = $('#'+formId);
-        try{
+    function change2view2form(formId) {
+        var winfra = $('#' + formId);
+        try {
             //替换所有的输入框为文本框
             winfra.find(":input").each(
-                    function(i) {
-                        debugger;
+                    function (i) {
                         var inputType = this.type ? this.type.toLowerCase() : null;
                         console.log(inputType)
-                        if ( inputType != "hidden") {
-                            if(inputType == "button"){
+                        if (inputType != "hidden") {
+                            if (inputType == "button") {
                                 $(this).remove();
-                            }else{
+                            } else {
                                 var tmpvalue = $(this).val();
-                                if(inputType == "select-one"){
+                                if (inputType == "select-one") {
                                     var tmpText = $(this).find("option:selected").text();
                                     $(this).replaceWith("<span>" + tmpText + "</span>");
-                                }else{
+                                } else {
                                     $(this).replaceWith("<span>" + tmpvalue + "</span>");
                                 }
                             }
                         }
                     });
-        }catch(e){
+        } catch (e) {
         }
     }
 
@@ -326,6 +329,7 @@
         var afterSalQQ = $.trim($("#afterSalQQ").val());
         var auditComment = $("#auditComment").text();
         var id = $.trim($("#shopID").val());
+        var hotUserName = $.trim($("#hotUserName").val());
 
         if (username.length == 0 || password.length == 0) {
             $.jBox.tip("用户名或密码不能为空");
@@ -398,7 +402,8 @@
                 serveiceTel: serveiceTel,
                 afterSalTel: afterSalTel,
                 afterSalQQ: afterSalQQ,
-                auditComment: auditComment
+                auditComment: auditComment,
+                hotUserName:hotUserName
             },
             success: function (result) {
                 if (result.code == 200) {
@@ -432,7 +437,7 @@
     } else {
         $("#citys").citySelect();
     }
-//    change2view2form('shopConfigForm');
+    //    change2view2form('shopConfigForm');
     /*<![CDATA[*/
     /*百度地图API相关*/
     var map = new BMap.Map("addrMap");

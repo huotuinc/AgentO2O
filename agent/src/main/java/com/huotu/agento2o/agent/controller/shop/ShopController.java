@@ -77,14 +77,8 @@ public class ShopController {
      */
     @RequestMapping(value = "/updateShop")
     @ResponseBody
-    public ApiResult updateShop(Shop shop) {
-        shop = shopService.addShop(shop);
-        ApiResult apiResult;
-        if (shop != null) {
-            apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        } else {
-            apiResult = ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
-        }
+    public ApiResult updateShop(Shop shop, String hotUserName) {
+        ApiResult apiResult = shopService.addShop(shop, hotUserName);
         return apiResult;
     }
 
@@ -98,15 +92,9 @@ public class ShopController {
      */
     @RequestMapping(value = "/addShop")
     @ResponseBody
-    public ApiResult addShop(@AuthenticationPrincipal Agent customer, Shop shop) {
+    public ApiResult addShop(@AuthenticationPrincipal Agent customer, Shop shop, String hotUserName) {
         shop.setParentAuthor(customer);
-        shop = shopService.addShop(shop);
-        ApiResult apiResult;
-        if (shop != null) {
-            apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        } else {
-            apiResult = ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
-        }
+        ApiResult apiResult = shopService.addShop(shop, hotUserName);
         return apiResult;
     }
 
@@ -178,6 +166,20 @@ public class ShopController {
     public ApiResult changeIsDisabled(int id) {
         Shop shop = shopService.findById(id);
         shopService.updateIsDisabledById(!shop.isDisabled(), id);
+        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return res;
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param shop
+     * @return
+     */
+    @RequestMapping("/resetpassword")
+    @ResponseBody
+    public ApiResult resetPassword(Shop shop) {
+        shopService.updatePasswordById(shop.getPassword(), shop.getId());
         ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         return res;
     }
