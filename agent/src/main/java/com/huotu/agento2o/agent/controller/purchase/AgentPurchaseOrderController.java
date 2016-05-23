@@ -25,6 +25,7 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
+import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,8 @@ public class AgentPurchaseOrderController {
     private AgentPurchaseOrderService purchaseOrderService;
     @Autowired
     private StaticResourceService resourceService;
+    @Autowired
+    private AuthorService authorService;
 
     /**
      * 显示我的采购单
@@ -74,6 +77,7 @@ public class AgentPurchaseOrderController {
         model.addObject("totalRecords", purchaseOrderPage.getTotalElements());
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
         return model;
     }
 
@@ -125,21 +129,35 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
+    @RequestMapping(value = "/receive" ,method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult receivePurchaseOrder(
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam(required = true) String pOrderId) throws Exception{
+        ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        if (StringUtil.isEmptyStr(pOrderId)) {
+            return result;
+        }
+        result = purchaseOrderService.receiveAgentPurchaseOrder(pOrderId, author);
+        return result;
+    }
+
     /**
      * 显示下级采购单
      *
-     * @param author
+     * @param agent
      * @param purchaseOrderSearcher
      * @return
      * @throws Exception
      */
     @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
     @RequestMapping("/showAgentPurchaseOrderList")
-    public ModelAndView showAgentPurchaseOrderList(@AuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
+    public ModelAndView showAgentPurchaseOrderList(@AuthenticationPrincipal Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/purchase_order_list");
-        purchaseOrderSearcher.setParentAgentId(author.getId());
+        model.setViewName("/purchase/agent_purchase_order_list");
+        purchaseOrderSearcher.setParentAgentId(agent.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
+        List<Author> authorList = authorService.findByParentAgentId(agent);
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", purchaseOrderSearcher.getPageIndex());
@@ -147,6 +165,8 @@ public class AgentPurchaseOrderController {
         model.addObject("totalRecords", purchaseOrderPage.getTotalElements());
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
+        model.addObject("authorList", authorList);
         return model;
     }
 

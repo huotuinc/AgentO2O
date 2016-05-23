@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2015. All rights reserved.
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>票据配置页</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/css/settlements.css}"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.4.2.min.js"
+            th:src="@{/resource/lib/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../resource/js/confirm.js" th:src="@{/resource/js/confirm.js}"></script>
+    <script type="text/javascript" th:src="@{/resource/lib/ajaxfileupload.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        var uploadUrl = /*[[@{/supplier/upload}]]*/;
+        var configHandler = {
+            changeTab: function (tab) {
+                if (tab == 0) {
+                    $("#tab0").addClass("om-tabs-activated").addClass("om-state-active");
+                    $("#tab1").removeClass("om-tabs-activated").removeClass("om-state-active");
+                    $("#infoConfig").show();
+                    $("#addrConfig").hide();
+                } else {
+                    $("#tab1").addClass("om-tabs-activated").addClass("om-state-active");
+                    $("#tab0").removeClass("om-tabs-activated").removeClass("om-state-active");
+                    $("#infoConfig").hide();
+                    $("#addrConfig").show();
+                }
+            },
+            uploadImg: function (btnFile, showImgId, pathId) {
+                $.jBox.tip("正在上传...", "loading");
+                $.ajaxFileUpload({
+                    url: uploadUrl,
+                    secureuri: false,//安全协议
+                    fileElementId: btnFile,//id
+                    dataType: 'json',
+                    type: "post",
+                    data: null,
+                    error: function (data, status, e) {
+
+                    },
+                    success: function (json) {
+                        if (json.result == 1) {
+                            $("#" + showImgId).attr("src", json.fileUrl);
+                            $("#" + pathId).val(json.fileUri);
+                            $.jBox.tip("上传成功", "success");
+                        } else {
+                            $.jBox.tip("上传失败", "error");
+                        }
+                    }
+                });
+            }
+        }
+        /**
+         * 提交发票配置
+         */
+        function submitInvoiceConfig() {
+            //1为增值税发票。0为普通发票
+            var invoiceType = $("input[name='invoiceType']:checked").val();
+            if (invoiceType == 0) {
+                var taxTitle = $.trim($("#taxTitle").val());
+                if (taxTitle.length == 0) {
+                    $.jBox.tip("请填写发票抬头");
+                    return;
+                }
+                var taxContent = $.trim($("#taxContent").val());
+                if (taxContent.length == 0) {
+                    $.jBox.tip("请填写发票内容");
+                    return;
+                }
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: "updateInvoiceConfig",
+                    data: {
+                        taxTitle: taxTitle,
+                        taxContent: taxContent,
+                        invoiceType: invoiceType
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip(msg.msg, 'success');
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                });
+            } else if (invoiceType == 1) {
+                var taxTitle = $.trim($("#tax_taxTitle").val());
+                if (taxTitle.length == 0) {
+                    $.jBox.tip("请填写发票抬头");
+                    return;
+                }
+                var taxContent = $.trim($("#tax_taxContent").val());
+                if (taxContent.length == 0) {
+                    $.jBox.tip("请填写发票内容");
+                    return;
+                }
+                var bankName = $.trim($("#tax_bankName").val());
+                if (bankName.length == 0) {
+                    $.jBox.tip("请填写开户银行名称");
+                    return;
+                }
+                var accountNo = $.trim($("#tax_accountNo").val());
+                if (accountNo.length == 0) {
+                    $.jBox.tip("请填写开户银行账号");
+                    return;
+                }
+                var taxpayerCode = $.trim($("#tax_taxpayerCode").val());
+                if (taxpayerCode.length == 0) {
+                    $.jBox.tip("请填写纳税人识别码");
+                    return;
+                }
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: "updateInvoiceConfig",
+                    data: {
+                        taxTitle: taxTitle,
+                        taxContent: taxContent,
+                        taxpayerCode: taxpayerCode,
+                        accountNo: accountNo,
+                        bankName: bankName,
+                        invoiceType: invoiceType
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip(msg.msg, 'success');
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                });
+            }
+        }
+        function firstLoad() {
+            if ($.trim($("#rcf_uri").val()).length > 0) {
+                $("#uploadRCF").attr("src", $("#rcf_uri").val());
+            }
+            if ($.trim($("#gcf_uri").val()).length > 0) {
+                $("#uploadGCF").attr("src", $("#gcf_uri").val());
+            }
+            if ($("input[name='invoiceType']:checked").val() == 1) {
+                $("#taxInvoiceConfig").show();
+                $("#normalInvoice").hide();
+            } else {
+                $("#taxInvoiceConfig").hide();
+                $("#normalInvoice").show();
+            }
+        }
+        $(function () {
+            $("input[name='invoiceType']").change(function () {
+                if ($(this).val() == 1) {
+                    $("#taxInvoiceConfig").show();
+                    $("#normalInvoice").hide();
+                } else {
+                    $("#taxInvoiceConfig").hide();
+                    $("#normalInvoice").show();
+                }
+            })
+        })
+    </script>
+</head>
+<body onload="firstLoad()">
+<form method="post" id="form1" enctype="multipart/form-data">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>票据管理</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div id="make-tab" class="cnt om-tabs om-widget om-widget-content om-corner-all"
+                     style="width: auto; height: auto;">
+                    <div class="om-tabs-headers om-helper-reset om-helper-clearfix om-widget-header om-corner-all header-no-border"
+                         style="height: 28px;">
+                        <ul style="height: 28px; line-height: 28px;">
+                            <span class="left-placeholder"></span>
+                            <li id="tab0" class="om-state-default om-corner-top om-tabs-activated om-state-active"><span
+                                    class="lileft"></span><span class="lileft"></span>
+                                <a href="javascript:configHandler.changeTab(0)" tabid="om-tabs-7c1f-0"
+                                   class="om-tabs-inner"
+                                   style="width: auto; height: 27px;">
+                                    资质信息
+                                </a>
+                                <span class="liright"></span></li>
+                            <span class="right-placeholder"></span>
+                        </ul>
+                    </div>
+
+                    <!--默认发票配置-->
+                    <div id="infoConfig" class="om-tabs-panels om-widget-content om-corner-bottom">
+                        <div class="om-widget om-panel">
+                            <div class="cnt">
+                                <div class="search-bar">
+                                    <label>
+                                        <input type="radio" name="invoiceType" value="1" id="invoiceType1"
+                                               style="vertical-align: text-top;"
+                                               th:checked="${configType==1?true:false}"/>增值税发票
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="invoiceType" value="0" id="invoiceType2"
+                                               onclick="javascript:change(2)" style="vertical-align: text-top;"
+                                               th:checked="${configType==0?true:false}"/>
+                                        普通发票
+                                    </label>
+                                </div>
+                            </div>
+                            <!--增值税发票配置-->
+                            <div id="taxInvoiceConfig"
+                                 class="om-panel-body om-widget-content om-panel-noheader om-state-nobd"
+                                 th:object="${taxConfig}">
+                                <div class="division">
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <th>发票抬头:</th>
+                                            <td><span id="lblTaxTitle"></span>
+                                                <input name="taxTitle" type="text" id="tax_taxTitle"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${taxConfig}==null?'':*{taxTitle}"/></td>
+                                            <th>发票内容:</th>
+                                            <td><span id="lblTaxContent">
+                                                <input name="taxContent" type="text" id="tax_taxContent"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${taxConfig}==null?'':*{taxContent}"/></span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>开户银行名称:</th>
+                                            <td>
+                                                <input name="bankName" type="text" id="tax_bankName"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${taxConfig}==null?'':*{bankName}"/>
+                                            </td>
+                                            <th>开户银行账号:</th>
+                                            <td>
+                                                <input name="accountNo" type="text" id="tax_accountNo"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${taxConfig}==null?'':*{accountNo}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>纳税人识别码:</th>
+                                            <td><span id="lblCreateTime">
+                                                <input name="taxpayerCode" type="text" id="tax_taxpayerCode"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${taxConfig}==null?'':*{taxpayerCode}"/></span>
+                                            </td>
+
+                                        </tr>
+                                       <!--/* <tr>
+                                            <th>税务登记证:</th>
+                                            <td>
+                                                <img id="uploadRCF"
+                                                     style="width: 80px; height: 80px; border: 1px solid #ccc; float: left; background: #efefef; line-height: 80px; text-align: center; color: #ccc;"/>
+                                                <input style="margin-left: 10px;cursor: pointer;" type="button"
+                                                       value="上传"
+                                                       onclick="javascript:$('#btnTaxRegisterCertificateFile').click();"/>
+                                                <input onchange="configHandler.uploadImg('btnTaxRegisterCertificateFile','uploadRCF','taxRegisterCertificateFile')"
+                                                       id="btnTaxRegisterCertificateFile" name="btnFile"
+                                                       style="display: none;" type="file"/>
+                                                <input type="hidden" id="taxRegisterCertificateFile"
+                                                       th:value="${taxConfig}==null?'':*{taxRegistCertificateUrl}"/>
+                                                <input type="hidden" id="rcf_uri"
+                                                       th:value="${rcf_uri}==null?'':${rcf_uri}"/>
+                                            </td>
+                                            <th>一般纳税人资格证:</th>
+                                            <td>
+                                                <img id="uploadGCF"
+                                                     style="width: 80px; height: 80px; border: 1px solid #ccc; float: left; background: #efefef; line-height: 80px; text-align: center; color: #ccc;"/>
+                                                <input style="margin-left: 10px;cursor: pointer;" type="button"
+                                                       value="上传"
+                                                       onclick="javascript:$('#btnGeneralCertificateFile').click();"/>
+                                                <input onchange="configHandler.uploadImg('btnGeneralCertificateFile','uploadGCF','generalCertificateFile')"
+                                                       id="btnGeneralCertificateFile" name="btnFile"
+                                                       style="display:none;" type="file"/>
+                                                <input type="hidden" id="generalCertificateFile"
+                                                       th:value="${taxConfig}==null?'':*{generalCertificateUrl}"/>
+                                                <input type="hidden" id="gcf_uri"
+                                                       th:value="${gcf_uri}==null?'':${gcf_uri}"/>
+                                            </td>
+                                        </tr>*/-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--普通发票配置-->
+                            <div id="normalInvoice" style="display: none;"
+                                 class="om-panel-body om-widget-content om-panel-noheader om-state-nobd"
+                                 th:object="${normalConfig}">
+                                <div class="division">
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <th>发票抬头:</th>
+                                            <td><span id="lblTaxTitle"></span>
+                                                <input name="taxTitle" type="text" id="taxTitle"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${normalConfig}==null?'':*{taxTitle}"/></td>
+                                            <th>发票内容:</th>
+                                            <td><span id="lblTaxContent">
+                                                <input name="taxContent" type="text" id="taxContent"
+                                                       class="input-normal" placeholder=""
+                                                       th:value="${normalConfig}==null?'':*{taxContent}"/></span>
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center;">
+                            <div style="display: none;">
+                                <input type="submit" name="btnSave" value=""/>
+                            </div>
+                            <a class="btn-lit" href="javascript:submitInvoiceConfig();">
+                                <span>保存并设为默认</span>
+                            </a>
+                        </div>
+                        <p style="height: 10px;"></p>
+                    </div>
+
+                    <!--发票地址配置-->
+                    <!--/* <div style="display: none;" id="addrConfig"
+                          class="om-tabs-panels om-widget-content om-corner-bottom">
+                         <div class="om-widget om-panel">
+                             <div class="cnt">
+                                 <div class="search-bar">
+                                     <div>
+                                         <label class="first ">发票邮寄地址</label>
+                                         <br/>
+                                         <br/>
+                                         <label class="first ">联 系 人 ：</label>
+                                         <input name="shipName" type="text" id="shipName" class="input-normal"
+                                                placeholder=""
+                                                th:value="${configType}==1?(${taxConfig}==null?'':${taxConfig.shipName}):(${normalConfig}==null?'':${normalConfig.shipName})"/>
+                                         <br/>
+                                         <br/>
+                                         <label class="first ">联系电话：</label>
+                                         <input name="shipMobile" type="text" id="shipMobile" class="input-normal"
+                                                placeholder=""
+                                                th:value="${configType}==1?(${taxConfig}==null?'':${taxConfig.shipMobile}):(${normalConfig}==null?'':${normalConfig.shipMobile})"/>
+                                         <br/>
+                                         <br/>
+                                         <label class="first ">详细地址：</label>
+                                         <input name="shipAddr" type="text" id="shipAddr" class="input-normal"
+                                                placeholder="" style=" width: 485px;"
+                                                th:value="${configType}==1?(${taxConfig}==null?'':${taxConfig.shipAddr}):(${normalConfig}==null?'':${normalConfig.shipAddr})"/>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <p style="height: 10px;"></p>
+
+                         <div style="text-align: center;">
+                             <div style="display: none;">
+                                 <input type="submit" name="btnSave" value=""/>
+                             </div>
+                             <a class="btn-lit" href="javascript:submitShipConfig();">
+                                 <span>保存</span>
+                             </a>
+                         </div>
+                         <p style="height: 10px;"></p>
+                     </div>
+                     */-->
+                </div>
+            </div>
+
+            <div class="blank10">
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

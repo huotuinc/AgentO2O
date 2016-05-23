@@ -10,7 +10,11 @@
 
 package com.huotu.agento2o.service.service.author;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.searchable.AgentSearcher;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -47,7 +51,7 @@ public interface AgentService extends UserDetailsService {
     void flush();
 
     /**
-     * 根据代理商等级id获取代理商集合
+     * 根据代理商等级id获取未删除的代理商集合
      * @param id
      * @return
      */
@@ -59,5 +63,63 @@ public interface AgentService extends UserDetailsService {
      * @return true--可用
      */
     boolean ifEnable(String userName);
+
+    /**
+     * 根据平台方id和搜索条件获取代理商页面
+     * @param customerId
+     * @param agentSearcher
+     * @return
+     */
+    Page<Agent> getAgentList(Integer customerId,AgentSearcher agentSearcher);
+
+    /**
+     * 根据唯一id删除代理商，实际上是修改isDeleted的状态
+     * @param id
+     */
+    void deleteAgent(Integer id);
+
+    /**
+     * 根据唯一id冻结代理商账号
+     * @param id
+     */
+    void freezeAgent(Integer id);
+
+    /**
+     * 根据唯一id解冻代理商账号
+     * @param id
+     */
+    void unfreezeAgent(Integer id);
+
+    /**
+     * 根据父代理商id获取代理商集合
+     * @param id
+     * @return
+     */
+    List<Agent> findByParentAgentId(Integer id);
+
+    /**
+     * 增加或修改代理商
+     * @param customerId
+     * @param agentLevelId
+     * @param parentAgentId
+     * @param hotUserName
+     * @param requestAgent 当id>0时为修改
+     * @return
+     */
+    ApiResult addOrUpdate(Integer customerId,Integer agentLevelId,Integer parentAgentId,String hotUserName,Agent requestAgent);
+
+    /**
+     * 将代理商信息导出到excel
+     * @param agents
+     * @return
+     */
+    HSSFWorkbook createWorkBook(List<Agent> agents);
+
+    /**
+     * g根据小伙伴id查找绑定的代理商
+     * @param id
+     * @return
+     */
+    Agent findByUserBaseInfoId(Integer id);
 
 }

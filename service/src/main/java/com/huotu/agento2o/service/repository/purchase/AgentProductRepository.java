@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.repository.purchase;
 
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,22 +26,20 @@ import java.util.List;
  * Created by helloztt on 2016/5/12.
  */
 @Repository
-public interface AgentProductRepository extends JpaRepository<AgentProduct,Integer>, JpaSpecificationExecutor<AgentProduct> {
+public interface AgentProductRepository extends JpaRepository<AgentProduct, Integer>, JpaSpecificationExecutor<AgentProduct> {
 
-    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.agent.id = ?1")
-    List<Integer> findGoodsListByAgentId(Integer agentId);
+//    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.author.id = ?1 AND product.disabled = false ")
+//    List<Integer> findGoodsListByAgentId(Integer agentId);
 
-    @Query
-    List<AgentProduct> findByAgentId(Integer agentId);
+    List<AgentProduct> findByAuthor_IdAndDisabledFalse(Integer agentId);
 
-    @Query("update AgentProduct  set warning=?3 where agent.id=?1 and product.productId=?2")
+    @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2 and disabled = false ")
     @Modifying
-    int updateWaring(Integer agentId,Integer productId,Integer warning);
+    int updateWaring(Integer agentId, Integer productId, Integer warning);
 
-    AgentProduct findByAgentAndProduct(Agent agent, MallProduct product);
+    AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
 
-    List<AgentProduct> findAgentProductByAgent_Id(Integer agentId);
-
+    // TODO: 2016/5/20 delete
     AgentProduct findByProduct_productId(Integer productId);
 
 

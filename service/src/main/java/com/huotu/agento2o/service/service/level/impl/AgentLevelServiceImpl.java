@@ -55,7 +55,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
 
     @Override
     @Transactional
-    public void addOrUpdate(Integer levelId, Integer customerId,AgentLevel agentLevel) {
+    public boolean addOrUpdate(Integer levelId, Integer customerId,AgentLevel agentLevel) {
         AgentLevel newAgentLevel;
         if (levelId > 0) {
             newAgentLevel = findById(levelId);
@@ -64,7 +64,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
             newAgentLevel = new AgentLevel();
             MallCustomer customer = customerRepository.findOne(customerId);
             if(customer == null){
-                return;
+                return false;
             }
             newAgentLevel.setCustomer(customer);
             //等级依次递增，初始值为0
@@ -73,5 +73,6 @@ public class AgentLevelServiceImpl implements AgentLevelService {
         newAgentLevel.setLevelName(agentLevel.getLevelName());
         newAgentLevel.setComment(agentLevel.getComment());
         addAgentLevel(newAgentLevel);
+        return true;
     }
 }

@@ -145,8 +145,8 @@
                             <td class="txt80 c" th:text="${#dates.format(afterSale.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
                             <td class="txt80 c">
-                                <a th:if="${authorType=='Shop' and afterSale.shop!=null and afterSale.beneficiaryShop==null}" th:title="查看详情" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情</a>
-                                <a th:if="${authorType=='Shop' and afterSale.shop==null and afterSale.beneficiaryShop!=null}" th:title="无法查看详情" href="#" >无法查看</a>
+                                <a th:if="${afterSale.shop!=null and afterSale.beneficiaryShop==null}" th:title="查看详情" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情(门店发货)</a>
+                                <a th:if="${afterSale.shop==null and afterSale.beneficiaryShop!=null}" th:title="查看详情" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情(平台代发)</a>
                             </td>
                         </tr>
                         </tbody>

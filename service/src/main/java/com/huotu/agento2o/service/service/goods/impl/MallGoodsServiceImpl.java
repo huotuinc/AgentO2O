@@ -12,7 +12,10 @@ package com.huotu.agento2o.service.service.goods.impl;
 
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
@@ -41,31 +44,43 @@ public class MallGoodsServiceImpl implements MallGoodsService {
      * 根据 CustomerId 和 AgentId 查找指定门店商品，AgentId=0 表示平台方商品
      *
      * @param customerId 平台方ID
-     * @param agentId    门店ID
+     * @param author     门店ID
      * @return
      */
     @Override
-    public Page<MallGoods> findByCustomerIdAndAgentId(Integer customerId, Integer agentId, GoodsSearcher goodsSearcher) {
+    public Page<MallGoods> findByCustomerIdAndAgentId(Integer customerId, Author author, GoodsSearcher goodsSearcher) {
         Specification<MallGoods> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
-            predicates.add(cb.equal(root.get("agentId").as(Integer.class), agentId));
+            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        return goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
+            goodsPage.getContent().forEach(goods -> {
+                goods.getProducts().forEach(product -> {
+                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
+                    if (agentProduct != null) {
+                        product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                    }
+                    product.setUsableStore(product.getStore() - product.getFreez());
+                });
+            });
+        }
+        return goodsPage;
     }
 
     /**
      * 根据 AgentId 查找指定代理商商品
      *
-     * @param agentId 代理商ID
+     * @param author 代理商/门店
      * @return
      */
     @Override
-    public Page<MallGoods> findByAgentId(Integer agentId, GoodsSearcher goodsSearcher) {
+    public Page<MallGoods> findByAgentId(Author author, GoodsSearcher goodsSearcher) {
         //// TODO: 2016/5/14 cb.in() error to solve
         /*List<Integer> goodsIdList = agentProductRepository.findGoodsListByAgentId(agentId);
         Specification<MallGoods> specification = (root, query, cb) -> {
@@ -78,11 +93,27 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         return goodsRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));*/
+        Page<MallGoods> goodsPage = null;
         if (StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
-            return goodsRepository.findByAgentId(agentId, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+            goodsPage = goodsRepository.findByAgentId(author.getParentAuthor().getId(), new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
         } else {
-            return goodsRepository.findByAgentIdAndName(agentId, "%" + goodsSearcher.getGoodsName() + "%", new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+            goodsPage = goodsRepository.findByAgentIdAndName(author.getParentAuthor().getId(), "%" + goodsSearcher.getGoodsName() + "%", new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
         }
+        if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
+            goodsPage.getContent().forEach(goods -> {
+                goods.getProducts().forEach(product -> {
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
+                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
+                    if (agentProduct != null) {
+                        product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                    }
+                    if (parentAgentProduct != null) {
+                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                    }
+                });
+            });
+        }
+        return goodsPage;
     }
 
     @Override

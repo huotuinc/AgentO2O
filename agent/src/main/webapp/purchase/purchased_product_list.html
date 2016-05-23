@@ -67,7 +67,6 @@
                         </tr>
                         </thead>
                         <tbody data-th-remove="all-but-first">
-                        <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
                         <tr data-th-each="agentProduct,agentProductStat:${agentProductList}" data-th-id="${agentProduct.id}">
                             <td class="txt20 c">
                                 <input type="checkbox" name="checkProduct" th:value="${agentProduct.product.productId}" />
@@ -270,7 +269,9 @@
 //                        self.setList(result);
                     $.jBox.tip(result.msg, "success");
                     $(self2).dialog('close');
-                    location.reload();
+                    setTimeout(function(){
+                        top.document.getElementById("content_left").contentDocument.getElementById("id_020203").getElementsByTagName("a")[0].click();
+                    },500)
                 } else {
                     $.jBox.tip(result.msg, "error");
                 }

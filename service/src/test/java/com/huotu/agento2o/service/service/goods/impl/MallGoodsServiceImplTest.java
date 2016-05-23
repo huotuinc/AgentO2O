@@ -38,12 +38,14 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindByCustomerIdAndAgentId() throws Exception {
-        Integer randomCustomerId = random.nextInt();
-        Integer agentId = 0;
-        MallGoods goods = mockMallGoods(randomCustomerId,agentId);
+        //平台方
+        MallCustomer mockCustomer = mockMallCustomer();
+        //代理商
+        Agent mockAgent = mockAgent(mockCustomer,null);
+        MallGoods goods = mockMallGoods(mockCustomer.getCustomerId(),null);
         GoodsSearcher searcher = new GoodsSearcher();
         searcher.setPageNo(1);
-        Page<MallGoods> customerGoodsList = mallGoodsService.findByCustomerIdAndAgentId(randomCustomerId,agentId,searcher);
+        Page<MallGoods> customerGoodsList = mallGoodsService.findByCustomerIdAndAgentId(mockCustomer.getCustomerId(),mockAgent,searcher);
         Assert.assertEquals(customerGoodsList.getTotalElements(),1);
         MallGoods searchGoods = customerGoodsList.getContent().get(0);
         Assert.assertEquals(goods.getName(),searchGoods.getName());
@@ -54,23 +56,24 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
         //平台方
         MallCustomer mockCustomer = mockMallCustomer();
         //代理商
-        Agent mockAgent = mockAgent(mockCustomer);
+        Agent parentMockAgent = mockAgent(mockCustomer,null);
+        Agent mockAgent = mockAgent(mockCustomer,parentMockAgent);
         //平台方商品
-        MallGoods mockGoods = mockMallGoods(mockCustomer.getCustomerId(),mockAgent.getId());
+        MallGoods mockGoods = mockMallGoods(mockCustomer.getCustomerId(),null);
         //平台方货品
         MallProduct mockProduct = mockMallProduct(mockGoods);
         //代理商货品
-        AgentProduct mockAgentProduct = mockAgentProduct(mockProduct,mockAgent);
+        AgentProduct mockAgentProduct = mockAgentProduct(mockProduct,parentMockAgent);
         GoodsSearcher searcher = new GoodsSearcher();
         searcher.setPageNo(1);
-        Page<MallGoods> agentGoodsList = mallGoodsService.findByAgentId(mockAgent.getId(),searcher);
+        Page<MallGoods> agentGoodsList = mallGoodsService.findByAgentId(mockAgent,searcher);
         Assert.assertEquals(agentGoodsList.getTotalElements(),1);
         MallGoods searchGoods = agentGoodsList.getContent().get(0);
         Assert.assertEquals(mockGoods.getName(),searchGoods.getName());
 
         //根据商品名称搜索
         searcher.setGoodsName(mockGoods.getName());
-        Page<MallGoods> agentGoodsListByName = mallGoodsService.findByAgentId(mockAgent.getId(),searcher);
+        Page<MallGoods> agentGoodsListByName = mallGoodsService.findByAgentId(mockAgent,searcher);
         Assert.assertEquals(agentGoodsListByName.getTotalElements(),1);
         Assert.assertEquals(mockGoods.getName(),agentGoodsListByName.getContent().get(0).getName());
     }

@@ -51,16 +51,27 @@ public interface AgentPurchaseOrderService {
     ApiResult payAgentPurchaseOrder(String pOrderId, Author author);
 
     /**
-     * 代理商/门店 发货
+     * 代理商/门店 确认收货
+     *
+     * @param pOrderId
+     * @param author
+     * @return
+     */
+    ApiResult receiveAgentPurchaseOrder(String pOrderId, Author author)throws Exception;
+
+    /**
+     * 平台方/上级代理商 发货
+     *
      * @param customerId
      * @param authorId
      * @param pOrderId
      * @return
      */
-    ApiResult deliveryAgentPurchaseOrder(Integer customerId,Integer authorId,String pOrderId);
+    ApiResult deliveryAgentPurchaseOrder(Integer customerId, Integer authorId, String pOrderId);
 
     /**
      * 平台方/上级代理商 审核采购单
+     *
      * @param customerId
      * @param authorId
      * @param pOrderId

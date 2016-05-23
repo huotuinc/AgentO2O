@@ -53,6 +53,8 @@
                         </th>
                         <th scope="col">库存
                         </th>
+                        <th scope="col">当前库存
+                        </th>
                         <th scope="col">订购数量/单位
                         </th>
                         <th scope="col">操作
@@ -69,14 +71,17 @@
                         <td class="txt20 c">
                             ￥<span data-th-text="${product.price}">100</span>
                         </td>
-                        <td class="txt20 c" data-th-text="${product.store - product.freez}">
+                        <td class="txt20 c" data-th-text="${product.usableStore}">
+                            1000
+                        </td>
+                        <td class="txt20 c" data-th-text="${product.authorStore}">
                             1000
                         </td>
                         <td class="txt40 c">
-                            <input name="num" style="width: 50px;text-align: center;" type="number" value="0" data-th-max="${product.store - product.freez}"/> <span data-th-text="${product.unit}"></span>
+                            <input name="num" style="width: 50px;text-align: center;" type="number" value="0" data-th-max="${product.usableStore}"/> <span data-th-text="${product.unit}"></span>
                         </td>
                         <td class="txt40 c">
-                            <a data-th-if="${product.store - product.freez > 0}" data-th-attr="productId=${product.productId}"
+                            <a data-th-if="${product.usableStore > 0}" data-th-attr="productId=${product.productId}"
                                onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
                                data-th-text="订购"></a>
                             <span th:if="${product.freez - product.store  > 0}">库存不足</span>

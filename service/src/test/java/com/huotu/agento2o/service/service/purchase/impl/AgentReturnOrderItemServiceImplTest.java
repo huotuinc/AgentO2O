@@ -5,7 +5,6 @@ import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ public class AgentReturnOrderItemServiceImplTest extends CommonTestBase {
     private AgentReturnOrderItemService agentReturnOrderItemService;
 
     @Test
-    @Rollback(value = false)
     public void testAddReturnOrderItems(){
         List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
         for(int i=0;i<5;i++){

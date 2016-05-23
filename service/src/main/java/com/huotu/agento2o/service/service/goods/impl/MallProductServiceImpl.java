@@ -10,8 +10,11 @@
 
 package com.huotu.agento2o.service.service.goods.impl;
 
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
+import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ import java.util.List;
 public class MallProductServiceImpl implements MallProductService {
     @Autowired
     private MallProductRepository productRepository;
+    @Autowired
+    private AgentProductRepository agentProductRepository;
 
 
     @Override
@@ -33,7 +38,25 @@ public class MallProductServiceImpl implements MallProductService {
     }
 
     @Override
-    public List<MallProduct> findByGoodsId(Integer goodsId) {
-        return productRepository.findByGoods_GoodsId(goodsId);
+    public List<MallProduct> findByGoodsId(Author author, Integer goodsId) {
+        List<MallProduct> productList = productRepository.findByGoods_GoodsId(goodsId);
+        if (productList != null && productList.size() > 0) {
+            productList.forEach(product -> {
+                if(author.getParentAuthor() == null){
+                    //平台方商品
+                    product.setUsableStore(product.getStore() - product.getFreez());
+                }else{
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
+                    if (parentAgentProduct != null) {
+                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                    }
+                }
+                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
+                if (agentProduct != null) {
+                    product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                }
+            });
+        }
+        return productList;
     }
 }

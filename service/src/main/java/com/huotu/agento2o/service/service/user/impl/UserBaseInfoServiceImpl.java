@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 /**
  * Created by allan on 12/31/15.
  */
-@Service
+@Service("userBaseInfoService")
 public class UserBaseInfoServiceImpl implements UserBaseInfoService {
     @Autowired
     private UserBaseInfoRepository userBaseInfoRepository;
@@ -27,5 +27,10 @@ public class UserBaseInfoServiceImpl implements UserBaseInfoService {
     @Override
     public UserBaseInfo findById(Integer id) {
         return userBaseInfoRepository.findOne(id);
+    }
+
+    @Override
+    public UserBaseInfo findByNameAndCustomerId(String name,Integer id) {
+        return userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(name,id);
     }
 }

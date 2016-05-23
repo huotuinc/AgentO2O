@@ -72,6 +72,19 @@ public class MallProduct {
      */
     @Column(name = "Freez")
     private int freez;
+    /**
+     * 如果读取平台方库存,则可用库存为 this.[store - freez]
+     * 如果读取上级代理商库存，则可用库存为 agentProdcut.[stroe-freez]
+     * 可用库存
+     */
+    @Transient
+    private int usableStore;
+
+    /**
+     * 当前代理商/门店库存
+     */
+    @Transient
+    private int authorStore = 0;
 
     @Column(name = "Marketable", nullable = false)
     private boolean marketable;
@@ -80,4 +93,5 @@ public class MallProduct {
     private boolean isLocalStock;
 
     // TODO: 3/17/16
+    
 }

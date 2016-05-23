@@ -1,0 +1,407 @@
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>代理商新增</title>
+    <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <link href="../resource/css/shouji.css" rel="stylesheet" th:href="@{/resource/css/shouji.css}" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+            th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+            th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script src="../resource/3rdParty/js/jquery.tzCheckbox.js"
+            th:src="@{/resource/3rdParty/js/jquery.tzCheckbox.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
+            th:src="@{/resource/lib/ajaxfileupload.js}"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
+            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+
+    <style type="text/css">
+        /*鼠标经过*/
+        .over {
+            background-color: #FFFFFF;
+        }
+
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+
+        .spModuleTitle {
+            padding: 3px 10px 0px 10px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 微软雅黑;
+        }
+    </style>
+</head>
+<body>
+<form action="#" th:action="@{/agent/addAgent}" method="post" id="supConfigForm" th:object="${agent}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3><B style="font-size: 120%">代理商编辑</B></h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt form">
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">登录信息</span>
+
+                        <div class="division">
+                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="agentId"/>
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>用户名：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="username" th:field="*{username}"
+                                               th:value="*{username}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>登陆密码：</th>
+                                    <td>
+                                        <input type="password" class="input-normal" id="password" th:field="*{password}"
+                                               th:value="*{password}"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">账号绑定</span>
+
+                        <div class="division">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
+                                </tr>
+                                <tr>
+                                    <th>代理商等级：</th>
+                                    <td>
+                                        <select name="parentAgentLevelId" id="parentAgentLevelId"
+                                                onchange="getPrentAgent(this.value)">
+                                            <option selected="selected" value="-1"
+                                                    th:selected="${parentAgentLevelId == -1}">请选择代理商等级
+                                            </option>
+                                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
+                                                    th:text="${agentLevel.levelName}"
+                                                    th:selected="${agentLevel.levelId == parentAgentLevelId}">省级代理商
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>代理商账户：</th>
+                                    <td>
+                                        <select name="parentAgentId" id="parentAgentId">
+                                            <option selected="selected" value="-1">请选择代理商账户
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
+                                </tr>
+                                <tr>
+                                    <th>小伙伴用户名：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="hotUserName"
+                                               th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">代理商基本资料</span>
+
+                        <div class="division">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>代理商所在区域:</th>
+                                    <td>
+                                        <div id="citys">
+                                            <select class="prov" id="province"></select>
+                                            <select class="city" id="city" disabled="disabled"></select>
+                                            <select class="dist" id="district" disabled="disabled"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>代理商等级:</th>
+                                    <td>
+                                        <select name="levelId" id="levelId">
+                                            <option selected="selected" value="-1" th:selected="*{agentLevel == null}">
+                                                请选择代理商等级
+                                            </option>
+                                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
+                                                    th:text="${agentLevel.levelName}"
+                                                    th:selected="${agent.agentLevel==null? false:agentLevel.levelId == agent.agentLevel.levelId}">
+                                                省级代理商
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>代理商名称:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="name" th:field="*{name}"
+                                               th:value="*{name}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>联系人:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="Contact" th:field="*{Contact}"
+                                               th:value="*{Contact}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>手机号码:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="mobile" th:field="*{mobile}"
+                                               th:value="*{mobile}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>电话号码:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="telephone" th:field="*{telephone}"
+                                               th:value="*{telephone}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>详细地址:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="address" th:field="*{address}"
+                                               th:value="*{address}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>备注:</th>
+                                    <td>
+                                        <textarea rows="6" style="width: 80%" id="comment" th:field="*{comment}"
+                                                  th:value="*{comment}"></textarea>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <a class="btn-lit" href="javascript:saveAgentConfig();" id="saveAgentConfig"><span>保存</span></a>
+                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+                        <!--<a class="btn-lit" href="javascript:subagentConfig();" id="subagentConfig"><span>提交</span></a>-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
+    function getPrentAgent(parentAgentLevelId) {
+        var selectAgent = document.getElementById("parentAgentId");
+        selectAgent.length = 1;
+        if (parentAgentLevelId == -1) {
+            return;
+        }
+        var parentAgentId = /*[[${agent.parentAuthor != null ? agent.parentAuthor.id:-1}]]*/;
+        J.GetJsonRespons(ajaxUrl + "getParentAgents", {
+            parentAgentLevelId: parentAgentLevelId
+        }, function (json) {
+            if (json.code == 200) {
+                $.each(json.data, function () {
+                    var op = document.createElement('OPTION');
+                    op.setAttribute("value", this.id);
+                    op.innerHTML = this.username;
+                    if (this.id == parentAgentId) {
+                        op.setAttribute("selected", "selected");
+                    }
+                    selectAgent.appendChild(op);
+                })
+            }
+        }, function () {
+        }, J.GetMethod);
+    }
+
+    //保存
+    function saveAgentConfig() {
+        var agId = /*[[${agent.id}]]*/;
+        var username = $.trim($("#username").val());
+        var password = $.trim($("#password").val());
+        var province = $.trim($("#province").val());
+        var city = $.trim($("#city").val());
+        var district = $.trim($("#district").val());
+        var name = $.trim($("#name").val());
+        var Contact = $.trim($("#Contact").val());
+        var mobile = $.trim($("#mobile").val());
+        var telephone = $.trim($("#telephone").val());
+        var address = $.trim($("#address").val());
+        var comment = $.trim($("#comment").val());
+        var id = $.trim($("#agentId").val());
+        var parentAgentId = $.trim($("#parentAgentId").val());
+        var agentLevelId = $.trim($("#levelId").val());
+        var hotUserName = $.trim($("#hotUserName").val());
+        debugger;
+        if (username.length == 0) {
+            $.jBox.tip("用户名不能为空");
+            return;
+        }
+        //只有在增加代理商时需要校验密码
+        if (agId == 0 && password.length == 0) {
+            $.jBox.tip("密码不能为空");
+            return;
+        }
+        if (province.length == 0 || city.length == 0 || district.length == 0) {
+            $.jBox.tip("代理商所在区域不能为空");
+            return;
+        }
+        if (agentLevelId == -1) {
+            $.jBox.tip("请选择代理商等级");
+            return;
+        }
+        if (name.length == 0) {
+            $.jBox.tip("代理商名称不能为空");
+            return;
+        }
+        if (Contact.length == 0) {
+            $.jBox.tip("联系人不能为空");
+            return;
+        }
+        if (mobile.length == 0) {
+            $.jBox.tip("手机号码不能为空");
+            return;
+        }
+        if (!J.IsMobile(mobile)) {
+            $.jBox.tip("手机号码格式不正确");
+            return;
+        }
+        if (address.length == 0) {
+            $.jBox.tip("详细地址不能为空");
+            return;
+        }
+        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type: 'POST',
+            url: ajaxUrl + "save",
+            data: {
+                id: id,
+                username: username,
+                password: password,
+                province: province,
+                city: city,
+                district: district,
+                name: name,
+                Contact: Contact,
+                mobile: mobile,
+                telephone: telephone,
+                address: address,
+                comment: comment,
+                agentLevelId: agentLevelId,
+                parentAgentId: parentAgentId,
+                hotUserName:hotUserName
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    $.jBox.tip("保存成功", "success");
+                    setTimeout(function () {
+                        window.location.href = ajaxUrl + "agentList";
+                    }, 400);
+                } else if (result.code == 100) {
+                    $.jBox.tip("用户名已存在", "success");
+                } else if (result.code == 803) {
+                    $.jBox.tip("小伙伴账号不存在", "error");
+                }else if (result.code == 804) {
+                    $.jBox.tip("小伙伴账号已被绑定", "error");
+                } else {
+                    $.jBox.tip("保存失败", "error");
+                }
+            }
+        });
+    }
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    var pro = /*[[${agent.province==null?'':agent.province}]]*/;
+    var city = /*[[${agent.city}]]*/;
+    var dist = /*[[${agent.district}]]*/;
+    var id = /*[[${agent.id}]]*/;
+    var parentAgentLevelId = /*[[${parentAgentLevelId}]]*/;
+    debugger;
+    $(function () {
+        if (id > 0) {
+            $("#citys").citySelect({
+                url: "/resource/3rdParty/js/jquery.cityselect.js",
+                prov: pro,
+                city: city,
+                dist: dist,
+                nodata: null,
+                required: true
+            });
+            $("#password").parent().parent().hide();
+            $("#username").attr("readonly", "readonly");
+        } else {
+            $("#citys").citySelect();
+        }
+        ;
+        getPrentAgent(parentAgentLevelId);
+    })
+
+
+</script>
+</body>
+</html>

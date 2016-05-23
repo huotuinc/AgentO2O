@@ -61,4 +61,16 @@ public class SysConstant {
             "门店审核状态",
             "账号状态"
     };
+
+    public static String[] AGENT_EXPORT_HEADER = {
+            "代理商名称",
+            "用户名",
+            "联系人",
+            "手机号码",
+            "代理商所在区域",
+            "地址",
+            "代理商等級",
+            "账号状态",
+            "创建时间"
+    };
 }
