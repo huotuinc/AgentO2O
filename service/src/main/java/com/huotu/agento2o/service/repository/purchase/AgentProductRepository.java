@@ -30,8 +30,7 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
     @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.agent.id = ?1")
     List<Integer> findGoodsListByAgentId(Integer agentId);
 
-    @Query
-    List<AgentProduct> findByAgentId(Integer agentId);
+    List<AgentProduct> findByAgent_Id(Integer agentId);
 
     @Query("update AgentProduct  set warning=?3 where agent.id=?1 and product.productId=?2")
     @Modifying

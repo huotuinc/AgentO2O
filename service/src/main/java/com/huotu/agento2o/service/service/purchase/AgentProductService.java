@@ -41,15 +41,15 @@ public interface AgentProductService {
 
 
 
-    boolean updateWaring(Integer agentId,Integer productId,Integer warning);
+    boolean updateWaring(List<String> info);
 
     /**
-     * 查找出需要发送库存警告的信息
-     * @param pageIndex
-     * @param pageSize
+     * 查找出需要发送库存警告的信息代理商
      * @return
      */
-    //Page<AgentProduct> findByStoreLessThanWarning(int pageIndex, int pageSize);
+
+    List<String> findNeedWaringAgent();
+
 
 
 
