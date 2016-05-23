@@ -63,7 +63,7 @@ public class AgentProductServiceImpl implements AgentProductService {
 
     @Override
     public List<AgentProduct> findByAgentId(Integer agentId) {
-        return agentProductRepository.findByAgent_Id(agentId);
+        return agentProductRepository.findByAuthor_IdAndDisabledFalse(agentId);
     }
 
     @Override
