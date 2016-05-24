@@ -16,16 +16,20 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
+import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +40,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
@@ -51,9 +56,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @WebAppConfiguration
 @Transactional
 public abstract class CommonTestBase extends SpringWebTest{
-    protected MockHttpSession session;
-    protected Agent mockAgent;
-    protected Shop mockShop;
 
     protected String passWord = UUID.randomUUID().toString();
 
@@ -64,6 +66,8 @@ public abstract class CommonTestBase extends SpringWebTest{
     private AgentService agentService;
     @Autowired
     private ShopService shopService;
+    @Autowired
+    protected ShoppingCartRepository shoppingCartRepository;
     @Autowired
     protected MallGoodsRepository goodsRepository;
     @Autowired
@@ -134,6 +138,12 @@ public abstract class CommonTestBase extends SpringWebTest{
         return shop;
     }
 
+    /**
+     * 平台方商品
+     * @param customerId
+     * @param agentId
+     * @return
+     */
     protected MallGoods mockMallGoods(Integer customerId, Integer agentId){
         MallGoods mockMallGoods = new MallGoods();
         mockMallGoods.setCost(random.nextDouble());
@@ -155,6 +165,11 @@ public abstract class CommonTestBase extends SpringWebTest{
         return goodsRepository.saveAndFlush(mockMallGoods);
     }
 
+    /**
+     * 平台方货品
+     * @param mockGoods
+     * @return
+     */
     @SuppressWarnings("Duplicates")
     protected MallProduct mockMallProduct(MallGoods mockGoods){
         MallProduct mockMallProduct = new MallProduct();
@@ -174,13 +189,13 @@ public abstract class CommonTestBase extends SpringWebTest{
     /**
      * 代理商货品
      * @param mockMallProduct
-     * @param mockAgent
+     * @param mockAuthor
      * @return
      */
     @SuppressWarnings("Duplicates")
-    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Agent mockAgent){
+    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Author mockAuthor){
         AgentProduct agentProduct = new AgentProduct();
-        agentProduct.setAuthor(mockAgent);
+        agentProduct.setAuthor(mockAuthor);
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
         agentProduct.setStore(random.nextInt(100));
@@ -188,6 +203,15 @@ public abstract class CommonTestBase extends SpringWebTest{
         agentProduct.setWarning(0);
         agentProduct.setDisabled(false);
         return agentProductRepository.saveAndFlush(agentProduct);
+    }
+
+    protected ShoppingCart mockShoppingCart(MallProduct mockMallProduct, Author author){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setAuthor(author);
+        shoppingCart.setProduct(mockMallProduct);
+        shoppingCart.setNum(random.nextInt(mockMallProduct.getStore() - mockMallProduct.getFreez()) + 1);
+        shoppingCart.setCreateTime(new Date());
+        return shoppingCartRepository.saveAndFlush(shoppingCart);
     }
 
 }

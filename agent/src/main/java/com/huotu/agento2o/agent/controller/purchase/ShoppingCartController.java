@@ -19,17 +19,15 @@ import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
-import com.huotu.agento2o.service.entity.goods.MallGoods;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.service.config.InvoiceService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -80,7 +78,6 @@ public class ShoppingCartController {
                 }
             }
         });
-
     }
 
     /**
@@ -91,7 +88,7 @@ public class ShoppingCartController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/delete")
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult delete(
             @AgtAuthenticationPrincipal Author author,
@@ -112,6 +109,9 @@ public class ShoppingCartController {
             @RequestParam(required = true, name = "num") Integer num) throws Exception {
         if (id == null || id.equals(0)) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (num.equals(0)) {
+            return new ApiResult("订购数量必须大于0！");
         }
         ApiResult result = shoppingCartService.editShoppingCart(author, id, num);
         return result;
@@ -151,6 +151,14 @@ public class ShoppingCartController {
             return model;
         }
         model.setViewName("/purchase/add_purchase");
+        List<Integer> shoppingCartIds = new ArrayList<>();
+        for (String shoppingCart : shoppingCartId) {
+            shoppingCartIds.add(Integer.valueOf(shoppingCart));
+        }
+        List<ShoppingCart> shoppingCartList = shoppingCartService.findById(shoppingCartIds, author);
+        if(shoppingCartList != null && shoppingCartList.size() > 0){
+            getPicUri(shoppingCartList);
+        }
         // TODO: 2016/5/17 获取 author 默认收货信息
         //获取默认发票类型及基本信息
         int invoiceType = 0;
@@ -160,12 +168,6 @@ public class ShoppingCartController {
         } else if (defaultConfig != null && defaultConfig.getType() == InvoiceEnum.InvoiceTypeStatus.TAXINVOICE) {
             invoiceType = 2;
         }
-        List<Integer> shoppingCartIds = new ArrayList<>();
-        for (String shoppingCart : shoppingCartId) {
-            shoppingCartIds.add(Integer.valueOf(shoppingCart));
-        }
-        List<ShoppingCart> shoppingCartList = shoppingCartService.findById(shoppingCartIds, author);
-        getPicUri(shoppingCartList);
         model.addObject("agentPurchaseOrder", agentPurchaseOrder);
         model.addObject("shoppingCartList", shoppingCartList);
         model.addObject("invoiceType", invoiceType);

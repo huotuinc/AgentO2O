@@ -114,7 +114,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ids.forEach(p -> {
             ShoppingCart cart = findById(p, author);
             if (cart != null) {
-                shoppingCartList.add(cart);
+                //上级为平台方，判断商品可用库存
+                if (author.getParentAuthor() == null) {
+                    if (cart.getProduct().getStore() - cart.getProduct().getFreez() >= cart.getNum()) {
+                        shoppingCartList.add(cart);
+                    }
+                } else {
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), cart.getProduct());
+                    if (parentAgentProduct != null && parentAgentProduct.getStore() - parentAgentProduct.getFreez() >= cart.getNum()) {
+                        shoppingCartList.add(cart);
+                    }
+                }
             }
         });
         return shoppingCartList;
