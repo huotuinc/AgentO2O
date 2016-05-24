@@ -108,10 +108,11 @@ public class HbmAgentController {
      * @param customerIdStr
      * @param model
      * @param agent         当agentId>0时，是修改页面
+     * @param ifShow        true-查看页面
      * @return
      */
     @RequestMapping(value = "/showAgent", method = RequestMethod.GET)
-    public String showAgent(@RequestAttribute(value = "customerId") String customerIdStr, Model model, Agent agent) {
+    public String showAgent(@RequestAttribute(value = "customerId") String customerIdStr, Model model, Agent agent, boolean ifShow) {
         int customerId = Integer.parseInt(customerIdStr);
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
@@ -125,7 +126,8 @@ public class HbmAgentController {
         }
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("parentAgentLevelId", parentAgentLevelId);
-        return "huobanmall/agent/addAgent";
+        model.addAttribute("ifShow", ifShow);
+        return ifShow ? "huobanmall/agent/showAgent" : "huobanmall/agent/addAgent";
     }
 
     /**
@@ -193,5 +195,12 @@ public class HbmAgentController {
             }
             session.setAttribute("state", "open");
         }
+    }
+
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult resetPassword(Integer agentId, String password) {
+        agentService.resetPassword(agentId, password);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }
