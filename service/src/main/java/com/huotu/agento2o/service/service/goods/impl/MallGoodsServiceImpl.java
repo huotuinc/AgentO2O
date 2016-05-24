@@ -53,7 +53,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         Specification<MallGoods> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
-//            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
+            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }

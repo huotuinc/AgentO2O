@@ -19,6 +19,7 @@ import com.huotu.agento2o.service.service.goods.MallProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,23 +41,28 @@ public class MallProductServiceImpl implements MallProductService {
     @Override
     public List<MallProduct> findByGoodsId(Author author, Integer goodsId) {
         List<MallProduct> productList = productRepository.findByGoods_GoodsId(goodsId);
+        List<MallProduct> agentProductList = new ArrayList<>();
         if (productList != null && productList.size() > 0) {
             productList.forEach(product -> {
-                if(author.getParentAuthor() == null){
-                    //平台方商品
-                    product.setUsableStore(product.getStore() - product.getFreez());
-                }else{
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
-                    if (parentAgentProduct != null) {
-                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
-                    }
-                }
+                //当前库存
                 AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
                 if (agentProduct != null) {
                     product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
                 }
+                //上级可用库存
+                if(author.getParentAuthor() == null){
+                    //平台方商品
+                    product.setUsableStore(product.getStore() - product.getFreez());
+                    agentProductList.add(product);
+                }else{
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
+                    if (parentAgentProduct != null) {
+                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                        agentProductList.add(product);
+                    }
+                }
             });
         }
-        return productList;
+        return agentProductList;
     }
 }

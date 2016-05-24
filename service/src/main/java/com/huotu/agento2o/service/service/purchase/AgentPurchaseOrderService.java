@@ -79,5 +79,5 @@ public interface AgentPurchaseOrderService {
      * @param comment
      * @return
      */
-    ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment);
+    ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) throws Exception;
 }
