@@ -1,12 +1,3 @@
-<!--
-  ~ 版权所有:杭州火图科技有限公司
-  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
-  ~
-  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
-  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
-  ~ 2013-2016. All rights reserved.
-  -->
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
@@ -221,6 +212,13 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th>E-mail:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="email" th:field="*{email}"
+                                               th:value="*{email}"/>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>详细地址:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="address" th:field="*{address}"
@@ -240,9 +238,7 @@
                     </div>
 
                     <div style="text-align: center;">
-                        <a class="btn-lit" href="javascript:saveAgentConfig();" id="saveAgentConfig"><span>保存</span></a>
-                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
-                        <!--<a class="btn-lit" href="javascript:subagentConfig();" id="subagentConfig"><span>提交</span></a>-->
+                        <a class="btn-lit" href="javascript:saveAgent();" id="saveAgent"><span>保存</span></a>
                     </div>
 
                 </div>
@@ -253,6 +249,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
+    //根据父代理商等级id获取父代理商选项
     function getPrentAgent(parentAgentLevelId) {
         var selectAgent = document.getElementById("parentAgentId");
         selectAgent.length = 1;
@@ -278,8 +275,8 @@
         }, J.GetMethod);
     }
 
-    //保存
-    function saveAgentConfig() {
+    //保存或修改代理商
+    function saveAgent() {
         var agId = /*[[${agent.id}]]*/;
         var username = $.trim($("#username").val());
         var password = $.trim($("#password").val());
@@ -296,6 +293,7 @@
         var parentAgentId = $.trim($("#parentAgentId").val());
         var agentLevelId = $.trim($("#levelId").val());
         var hotUserName = $.trim($("#hotUserName").val());
+        var email = $.trim($("#email").val());
         if (username.length == 0) {
             $.jBox.tip("用户名不能为空");
             return;
@@ -329,6 +327,18 @@
             $.jBox.tip("手机号码格式不正确");
             return;
         }
+        if (telephone.length == 0) {
+            $.jBox.tip("电话号码不能为空");
+            return;
+        }
+        if (email.length == 0) {
+            $.jBox.tip("E-mail不能为空");
+            return;
+        }
+        if (!J.IsEmail(email)) {
+            $.jBox.tip("E-mail格式不正确");
+            return;
+        }
         if (address.length == 0) {
             $.jBox.tip("详细地址不能为空");
             return;
@@ -352,7 +362,8 @@
                 comment: comment,
                 agentLevelId: agentLevelId,
                 parentAgentId: parentAgentId,
-                hotUserName: hotUserName
+                hotUserName: hotUserName,
+                email: email
             },
             success: function (result) {
                 if (result.code == 200) {
@@ -366,6 +377,8 @@
                     $.jBox.tip("小伙伴账号不存在", "error");
                 } else if (result.code == 804) {
                     $.jBox.tip("小伙伴账号已被绑定", "error");
+                } else if (result.code == 805) {
+                    $.jBox.tip("该代理商已失效", "error");
                 } else {
                     $.jBox.tip("保存失败", "error");
                 }

@@ -167,6 +167,11 @@ public abstract class Author implements Serializable, UserDetails {
     @Column(name = "AccountNo")
     private String accountNo;
 
+    /**
+     * 邮箱
+     */
+    @Column(name = "Email")
+    private String email;
 
     public boolean isAccountNonLocked() {
         return this.isDisabled == false;
