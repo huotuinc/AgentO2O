@@ -241,6 +241,16 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             mdjbsz = menuRepository.save(mdjbsz);
             subMenu2.add(mdjbsz);
 
+            //票据管理
+            AgtMenu pjgl = new AgtMenu(1, "", "票据管理", 1, baseMenu, "BASE_DATA", 0, "0402");
+            pjgl = menuRepository.save(pjgl);
+            subMenu2.clear();
+
+            //票据设置
+            AgtMenu pjsz = new AgtMenu(2, "/config/invoiceConfig", "票据设置", 0, pjgl, "BASE_DATA", 0, "040201");
+            pjsz = menuRepository.save(pjsz);
+            subMenu2.add(pjsz);
+
             jbse.setChildren(subMenu2);
             jbse = menuRepository.save(jbse);
             subMenu1.add(jbse);
