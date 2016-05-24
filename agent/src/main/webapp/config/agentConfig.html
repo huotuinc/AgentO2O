@@ -13,7 +13,7 @@
 
 <head lang="en">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>代理商新增</title>
+    <title>代理商基本设置</title>
     <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
           th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
     <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
@@ -74,7 +74,7 @@
             <div class="h">
                 <span class="icon-sprite icon-list"></span>
 
-                <h3><B style="font-size: 120%">代理商编辑</B></h3>
+                <h3><B style="font-size: 120%">代理商基本设置</B></h3>
             </div>
             <div class="cnt-wp">
                 <div class="cnt form">
@@ -88,15 +88,8 @@
                                 <tr>
                                     <th>用户名：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="username" th:field="*{username}"
-                                               th:value="*{username}"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>登陆密码：</th>
-                                    <td>
-                                        <input type="password" class="input-normal" id="password" th:field="*{password}"
-                                               th:value="*{password}"/>
+                                        <span class="input-normal" id="username" th:field="*{username}"
+                                              th:text="*{username}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -116,25 +109,13 @@
                                 <tr>
                                     <th>代理商等级：</th>
                                     <td>
-                                        <select name="parentAgentLevelId" id="parentAgentLevelId"
-                                                onchange="getPrentAgent(this.value)">
-                                            <option selected="selected" value="-1"
-                                                    th:selected="${parentAgentLevelId == -1}">请选择代理商等级
-                                            </option>
-                                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
-                                                    th:text="${agentLevel.levelName}"
-                                                    th:selected="${agentLevel.levelId == parentAgentLevelId}">省级代理商
-                                            </option>
-                                        </select>
+                                        <span th:text="*{parentAuthor==null || parentAuthor.agentLevel==null ? '':parentAuthor.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>代理商账户：</th>
                                     <td>
-                                        <select name="parentAgentId" id="parentAgentId">
-                                            <option selected="selected" value="-1">请选择代理商账户
-                                            </option>
-                                        </select>
+                                        <span th:text="*{parentAuthor==null ? '':parentAuthor.username}"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -143,8 +124,8 @@
                                 <tr>
                                     <th>小伙伴用户名：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="hotUserName"
-                                               th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"/>
+                                        <span type="text" class="input-normal" id="hotUserName"
+                                              th:text="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -171,16 +152,7 @@
                                 <tr>
                                     <th>代理商等级:</th>
                                     <td>
-                                        <select name="levelId" id="levelId">
-                                            <option selected="selected" value="-1" th:selected="*{agentLevel == null}">
-                                                请选择代理商等级
-                                            </option>
-                                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
-                                                    th:text="${agentLevel.levelName}"
-                                                    th:selected="${agent.agentLevel==null? false:agentLevel.levelId == agent.agentLevel.levelId}">
-                                                省级代理商
-                                            </option>
-                                        </select>
+                                        <span th:text="*{agentLevel==null ? '':agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -236,9 +208,40 @@
                             </table>
                         </div>
                     </div>
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">结算账户</span>
 
+                        <div class="division">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>开户名称：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="accountName"
+                                               th:field="*{accountName}"
+                                               th:value="*{accountName}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>开户银行：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="bankName" th:field="*{bankName}"
+                                               th:value="*{bankName}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>银行卡号：</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="accountNo" th:field="*{accountNo}"
+                                               th:value="*{accountNo}"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <div style="text-align: center;">
-                        <a class="btn-lit" href="javascript:saveAgent();" id="saveAgent"><span>保存</span></a>
+                        <a class="btn-lit" href="javascript:saveAgentConfig();" id="saveAgentConfig"><span>保存</span></a>
                     </div>
 
                 </div>
@@ -248,38 +251,9 @@
 </form>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
-    //根据父代理商等级id获取父代理商选项
-    function getPrentAgent(parentAgentLevelId) {
-        var selectAgent = document.getElementById("parentAgentId");
-        selectAgent.length = 1;
-        if (parentAgentLevelId == -1) {
-            return;
-        }
-        var parentAgentId = /*[[${agent.parentAuthor != null ? agent.parentAuthor.id:-1}]]*/;
-        J.GetJsonRespons(ajaxUrl + "getParentAgents", {
-            parentAgentLevelId: parentAgentLevelId
-        }, function (json) {
-            if (json.code == 200) {
-                $.each(json.data, function () {
-                    var op = document.createElement('OPTION');
-                    op.setAttribute("value", this.id);
-                    op.innerHTML = this.username;
-                    if (this.id == parentAgentId) {
-                        op.setAttribute("selected", "selected");
-                    }
-                    selectAgent.appendChild(op);
-                })
-            }
-        }, function () {
-        }, J.GetMethod);
-    }
-
-    //保存或修改代理商
-    function saveAgent() {
-        var agId = /*[[${agent.id}]]*/;
-        var username = $.trim($("#username").val());
-        var password = $.trim($("#password").val());
+    var ajaxUrl = /*[[@{/config/}]]*/ "/config/";
+    //保存
+    function saveAgentConfig() {
         var province = $.trim($("#province").val());
         var city = $.trim($("#city").val());
         var district = $.trim($("#district").val());
@@ -289,26 +263,13 @@
         var telephone = $.trim($("#telephone").val());
         var address = $.trim($("#address").val());
         var comment = $.trim($("#comment").val());
-        var id = $.trim($("#agentId").val());
-        var parentAgentId = $.trim($("#parentAgentId").val());
-        var agentLevelId = $.trim($("#levelId").val());
-        var hotUserName = $.trim($("#hotUserName").val());
+        var accountName = $.trim($("#accountName").val());
+        var bankName = $.trim($("#bankName").val());
+        var accountNo = $.trim($("#accountNo").val());
         var email = $.trim($("#email").val());
-        if (username.length == 0) {
-            $.jBox.tip("用户名不能为空");
-            return;
-        }
-        //只有在增加代理商时需要校验密码
-        if (agId == 0 && password.length == 0) {
-            $.jBox.tip("密码不能为空");
-            return;
-        }
+        var id = $.trim($("#agentId").val());
         if (province.length == 0 || city.length == 0 || district.length == 0) {
             $.jBox.tip("代理商所在区域不能为空");
-            return;
-        }
-        if (agentLevelId == -1) {
-            $.jBox.tip("请选择代理商等级");
             return;
         }
         if (name.length == 0) {
@@ -343,14 +304,28 @@
             $.jBox.tip("详细地址不能为空");
             return;
         }
+        if (accountName.length == 0) {
+            $.jBox.tip("开户名称不能为空");
+            return;
+        }
+        if (bankName.length == 0) {
+            $.jBox.tip("开户银行不能为空");
+            return;
+        }
+        if (accountNo.length == 0) {
+            $.jBox.tip("银行卡号不能为空");
+            return;
+        }
+        if (!/^[0-9]*$/.test(accountNo)) {
+            $.jBox.tip("银行卡号必须是数字");
+            return;
+        }
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
             type: 'POST',
-            url: ajaxUrl + "save",
+            url: ajaxUrl + "saveAgentConfig",
             data: {
                 id: id,
-                username: username,
-                password: password,
                 province: province,
                 city: city,
                 district: district,
@@ -360,25 +335,19 @@
                 telephone: telephone,
                 address: address,
                 comment: comment,
-                agentLevelId: agentLevelId,
-                parentAgentId: parentAgentId,
-                hotUserName: hotUserName,
+                accountName: accountName,
+                bankName: bankName,
+                accountNo: accountNo,
                 email: email
             },
             success: function (result) {
                 if (result.code == 200) {
                     $.jBox.tip("保存成功", "success");
                     setTimeout(function () {
-                        window.location.href = ajaxUrl + "agentList";
+                        window.location.reload();
                     }, 400);
-                } else if (result.code == 100) {
-                    $.jBox.tip("用户名已存在", "success");
-                } else if (result.code == 803) {
-                    $.jBox.tip("小伙伴账号不存在", "error");
-                } else if (result.code == 804) {
-                    $.jBox.tip("小伙伴账号已被绑定", "error");
                 } else if (result.code == 805) {
-                    $.jBox.tip("该代理商已失效", "error");
+                    $.jBox.tip("该账号暂已失效", "error");
                 } else {
                     $.jBox.tip("保存失败", "error");
                 }
