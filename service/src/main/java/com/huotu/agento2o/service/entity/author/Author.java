@@ -20,7 +20,7 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter
-public abstract class Author implements Serializable,UserDetails{
+public abstract class Author implements Serializable, UserDetails {
     private static final long serialVersionUID = -1578005701688952668L;
 
     @Id
@@ -89,6 +89,7 @@ public abstract class Author implements Serializable,UserDetails{
 
     /**
      * 上级代理商
+     *
      * @return
      */
     @JoinColumn(name = "Parent_Agent_Id")
@@ -104,6 +105,7 @@ public abstract class Author implements Serializable,UserDetails{
 
     /**
      * 省
+     *
      * @return
      */
     @Column(name = "Province")
@@ -111,6 +113,7 @@ public abstract class Author implements Serializable,UserDetails{
 
     /**
      * 市
+     *
      * @return
      */
     @Column(name = "City")
@@ -125,6 +128,7 @@ public abstract class Author implements Serializable,UserDetails{
 
     /**
      * 区
+     *
      * @return
      */
     @Column(name = "District")
@@ -132,6 +136,7 @@ public abstract class Author implements Serializable,UserDetails{
 
     /**
      * 备注
+     *
      * @return
      */
     @Column(name = "Comment")
@@ -142,6 +147,26 @@ public abstract class Author implements Serializable,UserDetails{
      */
     @Column(name = "CreateTime")
     private Date createTime;
+
+
+    /**
+     * 开户银行名称
+     */
+    @Column(name = "BankName")
+    private String bankName;
+
+    /**
+     * 账户名
+     */
+    @Column(name = "AccountName")
+    private String accountName;
+
+    /**
+     * 银行账号
+     */
+    @Column(name = "AccountNo")
+    private String accountNo;
+
 
     public boolean isAccountNonLocked() {
         return this.isDisabled == false;
@@ -159,7 +184,7 @@ public abstract class Author implements Serializable,UserDetails{
         return true;
     }
 
-    public boolean isAgent(){
+    public boolean isAgent() {
         return this instanceof Agent;
     }
 }
