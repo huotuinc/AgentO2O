@@ -36,7 +36,7 @@ public class MallGoods {
      */
     @Column(name = "Brief")
     private String brief;
-    @OneToMany(mappedBy = "goods")
+    @OneToMany(mappedBy = "goods",cascade = CascadeType.ALL)
     private List<MallProduct> products;
     /**
      * 成本价
@@ -55,8 +55,8 @@ public class MallGoods {
     /**
      * 代理商ID，值为0表示平台方代理商品
      */
-    @Column(name = "Agent_Id")
-    private Integer agentId;
+//    @Column(name = "Agent_Id")
+//    private Integer agentId;
 
     @Column(name = "Name")
     private String name;
@@ -79,5 +79,10 @@ public class MallGoods {
      */
     @Column(name = "Unit")
     private String unit;
+    /**
+     * 销量
+     */
+    @Column(name = "SalesCount")
+    private Integer salesCount;
     // TODO: 3/17/16
 }

@@ -141,6 +141,10 @@ public class PurchaseController {
         if (product == null) {
             return new ApiResult("请选择要订购的商品！");
         }
+        //校验库存
+        if(num > product.getStore() - product.getFreez()){
+            return new ApiResult("库存不足！");
+        }
         //增加购物车记录
         ShoppingCart cart = new ShoppingCart();
         cart.setAuthor(author);

@@ -11,7 +11,7 @@
 package com.huotu.agento2o.agent.controller;
 
 import com.huotu.agento2o.agent.common.ExceptionHandler;
-import com.huotu.agento2o.agent.common.WebTest;
+import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * Created by helloztt on 2016/5/9.
  */
 @Transactional
-public class IndexControllerTest extends WebTest{
+public class IndexControllerTest extends CommonTestBase {
 
     @Autowired
     private AgentService agentService;

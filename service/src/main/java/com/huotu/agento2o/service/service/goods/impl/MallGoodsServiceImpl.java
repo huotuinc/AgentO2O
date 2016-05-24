@@ -23,6 +23,7 @@ import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +53,13 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         Specification<MallGoods> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
-            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
+//            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "salesCount")));
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
