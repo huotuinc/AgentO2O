@@ -154,10 +154,10 @@ public class ShoppingCartController {
         // TODO: 2016/5/17 获取 author 默认收货信息
         //获取默认发票类型及基本信息
         int invoiceType = 0;
-        InvoiceConfig defaltConfig = invoiceService.findDefaultByAuthor(author);
-        if (defaltConfig.getType() == InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE) {
+        InvoiceConfig defaultConfig = invoiceService.findDefaultByAuthor(author);
+        if (defaultConfig != null && defaultConfig.getType() == InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE) {
             invoiceType = 1;
-        } else if (defaltConfig.getType() == InvoiceEnum.InvoiceTypeStatus.TAXINVOICE) {
+        } else if (defaultConfig != null && defaultConfig.getType() == InvoiceEnum.InvoiceTypeStatus.TAXINVOICE) {
             invoiceType = 2;
         }
         List<Integer> shoppingCartIds = new ArrayList<>();
@@ -169,7 +169,7 @@ public class ShoppingCartController {
         model.addObject("agentPurchaseOrder", agentPurchaseOrder);
         model.addObject("shoppingCartList", shoppingCartList);
         model.addObject("invoiceType", invoiceType);
-        model.addObject("invoiceConfig", defaltConfig);
+        model.addObject("invoiceConfig", defaultConfig);
         model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         model.addObject("taxTypeEnum", PurchaseEnum.TaxType.values());
         return model;

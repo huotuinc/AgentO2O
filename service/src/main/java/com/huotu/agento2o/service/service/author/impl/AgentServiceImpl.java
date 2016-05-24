@@ -17,9 +17,7 @@ import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +27,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;

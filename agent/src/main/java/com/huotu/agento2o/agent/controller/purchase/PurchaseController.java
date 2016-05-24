@@ -122,7 +122,8 @@ public class PurchaseController {
         MallGoods goods = null;
         if (goodsId != null && !goodsId.equals(0)) {
             goods = goodsService.findByGoodsId(goodsId);
-            if (goods == null) {
+            //判断商品是否为空 或者 是否为平台代理商品
+            if (goods == null || !author.getCustomer().getCustomerId().equals(goods.getCustomerId())) {
                 return new ApiResult("请选择要订购的商品！");
             }
         }
@@ -168,6 +169,8 @@ public class PurchaseController {
         List<MallProduct> productList = null;
         if (goodsId != null && !goodsId.equals(0)) {
             productList = productService.findByGoodsId(author, goodsId);
+        }else {
+            throw new Exception("没有传输数据");
         }
         model.addObject("productList", productList);
         return model;

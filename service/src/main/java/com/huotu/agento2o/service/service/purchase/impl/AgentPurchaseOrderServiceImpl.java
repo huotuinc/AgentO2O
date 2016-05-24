@@ -349,7 +349,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
 
     @Override
     @Transactional
-    public ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) {
+    public ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) throws Exception {
         AgentPurchaseOrder agentPurchaseOrder = findByPOrderId(pOrderId);
         if (agentPurchaseOrder == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
@@ -364,6 +364,20 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         }
         if (!agentPurchaseOrder.checkable()) {
             return new ApiResult("该采购单已审核，无法再次审核！");
+        }
+        //如果审核不通过，减少预占库存
+        if (status == PurchaseEnum.OrderStatus.RETURNED) {
+            List<AgentPurchaseOrderItem> itemList = agentPurchaseOrder.getOrderItemList();
+            for (AgentPurchaseOrderItem item : itemList) {
+                AgentProduct product = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor(), item.getProduct());
+                if (product != null) {
+                    if (item.getNum() > product.getFreez()) {
+                        throw new Exception("库存不足！");
+                    }
+                    product.setFreez(product.getFreez() - item.getNum());
+                    agentProductRepository.save(product);
+                }
+            }
         }
         agentPurchaseOrder.setStatus(status);
         if (status == PurchaseEnum.OrderStatus.RETURNED) {

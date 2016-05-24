@@ -140,11 +140,11 @@ public abstract class CommonTestBase extends SpringWebTest{
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
         //平台方商品
-        /*if(agentId == null){
+        if(agentId == null){
             mockMallGoods.setAgentId(0);
         }else {
             mockMallGoods.setAgentId(agentId);
-        }*/
+        }
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());
@@ -165,13 +165,9 @@ public abstract class CommonTestBase extends SpringWebTest{
         mockMallProduct.setName(mockGoods.getName());
         mockMallProduct.setMarketable(true);
         mockMallProduct.setLocalStock(false);
-        int store = random.nextInt(100);
+        int store = random.nextInt(100) + 1;
         mockMallProduct.setStore(store);
-        if(store > 0){
-            mockMallProduct.setFreez(random.nextInt(store));
-        }else {
-            mockMallProduct.setFreez(0);
-        }
+        mockMallProduct.setFreez(random.nextInt(store));
         return mockMallProduct;
     }
 

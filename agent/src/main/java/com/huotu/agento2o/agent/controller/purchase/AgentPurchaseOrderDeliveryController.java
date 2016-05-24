@@ -14,6 +14,7 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
@@ -42,11 +43,12 @@ public class AgentPurchaseOrderDeliveryController {
 
     @RequestMapping(value = "/showDelivery",method = RequestMethod.GET)
     public ModelAndView showDelivery(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception{
         ModelAndView model = new ModelAndView();
         AgentPurchaseOrder purchaseOrder = agentPurchaseOrderService.findByPOrderId(pOrderId);
-        if(purchaseOrder.getAuthor().getParentAuthor() != null && purchaseOrder.getAuthor().getParentAuthor().getId().equals(agent.getId())){
+        //判断采购单是否是所属 agent
+        if(purchaseOrder.getAuthor().getParentAuthor() != null && purchaseOrder.getAuthor().getParentAuthor().getId().equals(author.getId())){
             model.addObject("purchaseOrder",purchaseOrder);
         }else{
             throw new Exception("没有权限！");
