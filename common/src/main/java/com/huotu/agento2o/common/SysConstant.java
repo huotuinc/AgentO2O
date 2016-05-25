@@ -40,7 +40,7 @@ public class SysConstant {
             "货品列表",
             "买家备注",
             "客服备注",
-            "代理商备注",
+            "门店备注",
             "自定义字段"
     };
     public static String[] SHOP_EXPORT_HEADER = {
