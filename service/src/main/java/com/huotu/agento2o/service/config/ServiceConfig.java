@@ -39,9 +39,7 @@ public class ServiceConfig {
     public JavaMailSenderImpl getJavaMailSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
-        javaMailSender.setHost("");
-        javaMailSender.setUsername("");
-        javaMailSender.setPassword("");
+
 
         return javaMailSender;
     }

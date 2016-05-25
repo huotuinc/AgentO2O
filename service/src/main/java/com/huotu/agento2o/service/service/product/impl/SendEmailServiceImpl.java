@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.product.impl;
 
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.service.product.SendEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 
 /**
  * send email
@@ -25,29 +27,62 @@ public class SendEmailServiceImpl implements SendEmailService {
     private JavaMailSender mailSender;
 
     @Override
-    public void sendEmail() {
+    public void sendEmail(List<AgentProduct> agentProducts) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
-
 
                 mimeMessage.setRecipient(Message.RecipientType.TO,
                         new InternetAddress("897587615@qq.com"));
 
                 mimeMessage.setFrom(new InternetAddress("15620711024@163.com"));
 
-                // use the true flag to indicate you need a multipart message
-                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true,"utf-8");
-                // use the true flag to indicate the text included is HTML
-                helper.setText("<html><body><h1>我说我今天不想吃饭</h1></body></html>", true);
+//                mimeMessage.setRecipient(Message.RecipientType.TO,
+//                        new InternetAddress("15620711024@163.com"));
+//
+//                mimeMessage.setFrom(new InternetAddress("897587615@qq.com"));
+
+                mimeMessage.setSubject("库存预警");
+
+
+                //应指定编码方式，避免中文乱码
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+
+
+                StringBuilder builder = new StringBuilder();
+                builder.append("<html><body><h3><a href=\"http://localhost:8080/login\">尊敬的用户您好！你的以下商品库存已经不足，请及时采购(点击登录采购）：</a></h3><br><table>");
+                for (AgentProduct agentProduct : agentProducts) {
+                    if (agentProduct.getProduct() == null) {
+                        continue;
+                    }
+                    builder.append("<tr><td><span>" +
+                            agentProduct.getProduct().getName());
+                    if (agentProduct.getProduct().getBn() != null && !"".equals(agentProduct.getProduct().getBn())) {
+                        builder.append("--" + agentProduct.getProduct().getBn());
+                    }
+                    if (agentProduct.getProduct().getStandard() != null && !"".equals(agentProduct.getProduct().getStandard())) {
+                        builder.append("--" + agentProduct.getProduct().getStandard());
+                    }
+                    builder.append("</span></td><td style=\"padding-left: 50px\">库存数量为<span style=\"color: red;\">"+ agentProduct.getStore() +"</span>已经低于预警数量<span style=\"color: red;\">" + agentProduct.getWarning() + "</span></td></tr>");
+                }
+                builder.append("</table></body></html>");
+                helper.setText(builder.toString(), true);
+                //helper.setText("今天吃饭了么");
             }
         };
         try {
             this.mailSender.send(preparator);
-        }
-        catch (MailException ex) {
-// simply log it and go on...
-            System.err.println(ex.getMessage());
+        } catch (MailException ex) {
+            //对于连接超时 导致的发送失败，再重试2次
+            try {
+                this.mailSender.send(preparator);
+            }catch (MailException oneExe){
+                try {
+                    this.mailSender.send(preparator);
+                }catch (MailException twoExe){
+                    System.err.println(ex.getMessage());
+                }
+            }
         }
     }
 
@@ -56,10 +91,7 @@ public class SendEmailServiceImpl implements SendEmailService {
     public void sayNumber(int i) throws InterruptedException {
         Thread.sleep(1000);
         System.out.println("Execute method asynchronously. "
-                + Thread.currentThread().getName()+"   Say"+i);
-
+                + Thread.currentThread().getName() + "   Say" + i);
     }
-
-
 
 }

@@ -39,9 +39,27 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
 
     AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
 
-    List<AgentProduct> findAgentProductByAuthor_Id(Integer agentId);
+    List<AgentProduct> findAgentProductByAuthor_Id(Integer authorId);
 
     AgentProduct findByProduct_productId(Integer productId);
+
+    /**
+     * 查询出需要提醒的用户
+     * @return 用户ID
+     */
+    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>product.store")
+    @Modifying
+    List<Object> findNeedWaringAgent();
+
+    /**
+     * 查出需要提醒用户对应的所有需要提醒的商品信息
+     * @param authorId
+     * @return
+     */
+    @Query("select a from AgentProduct a where  a.warning>a.store and a.author.id =?1")
+    List<AgentProduct> findWaringAgentInfo(Integer authorId);
+
+   /* List<AgentProduct> findAgentProductByAuthor_IdAndStoreLessThanWarning(Integer authorId);*/
 
 
 }

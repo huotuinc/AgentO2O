@@ -10,11 +10,8 @@
 
 package com.huotu.agento2o.service.service.purchase;
 
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.searchable.GoodsSearcher;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -48,7 +45,9 @@ public interface AgentProductService {
      * @return
      */
 
-    List<String> findNeedWaringAgent();
+    List<Object> findNeedWaringAgent();
+
+    List<AgentProduct> findWaringAgentInfo(Integer agentId);
 
 
 
