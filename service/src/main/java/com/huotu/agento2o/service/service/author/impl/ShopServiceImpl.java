@@ -17,7 +17,6 @@ import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
@@ -30,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -100,10 +100,17 @@ public class ShopServiceImpl implements ShopService {
             if (checkShop != null) {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
+            shop.setCreateTime(new Date());
             shop.setStatus(AgentStatusEnum.NOT_CHECK);
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
         } else {  //编辑保存 不能修改密码
             Shop oldShop = shopRepository.findOne(shop.getId());
+            if (oldShop.isDisabled()) {
+                return new ApiResult("该门店已被冻结");
+            }
+            if (oldShop.isDeleted()) {
+                return new ApiResult("该门店已被冻结");
+            }
             oldShop.setUsername(shop.getUsername());
             oldShop.setProvince(shop.getProvince());
             oldShop.setCity(shop.getCity());
@@ -122,6 +129,11 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
             oldShop.setAuditComment(shop.getAuditComment());
             oldShop.setUserBaseInfo(shop.getUserBaseInfo());
+            oldShop.setBankName(shop.getBankName());
+            oldShop.setAccountName(shop.getAccountName());
+            oldShop.setAccountNo(shop.getAccountNo());
+            oldShop.setEmail(shop.getEmail());
+
             shop = oldShop;
         }
         shopRepository.save(shop);
@@ -169,6 +181,9 @@ public class ShopServiceImpl implements ShopService {
         Shop shop = findByUserName(username);
         if (shop == null) {
             throw new UsernameNotFoundException("没有该门店");
+        }
+        if (shop.getStatus().getCode() != 2) {
+            throw new DisabledException("没有该门店");
         }
         return shop;
     }
@@ -248,10 +263,12 @@ public class ShopServiceImpl implements ShopService {
             cellDescList.add(ExcelHelper.asCell(shop.getLat()));
             cellDescList.add(ExcelHelper.asCell(shop.getContact()));
             cellDescList.add(ExcelHelper.asCell(shop.getMobile()));
+            cellDescList.add(ExcelHelper.asCell(shop.getTelephone()));
+            cellDescList.add(ExcelHelper.asCell(shop.getEmail()));
             cellDescList.add(ExcelHelper.asCell(shop.getParentAuthor().getUsername()));
-            cellDescList.add(ExcelHelper.asCell(shop.getServeiceTel()));
-            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalTel()));
-            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalQQ()));
+//            cellDescList.add(ExcelHelper.asCell(shop.getServeiceTel()));
+//            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalTel()));
+//            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalQQ()));
             cellDescList.add(ExcelHelper.asCell(shop.getComment()));
             cellDescList.add(ExcelHelper.asCell(shop.getAuditComment() == null ? "" : shop.getAuditComment()));
             cellDescList.add(ExcelHelper.asCell(shop.getStatus().getValue()));

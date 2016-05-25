@@ -114,25 +114,6 @@
         });
     }
 
-    function changeIsDisabled(obj) {
-        var shopId = $(obj).attr("shopid");
-        $.ajax({
-            type: 'POST',
-            url: "/shop/changeIsDisabled",
-            data: {
-                id: shopId
-            },
-            success: function (result) {
-                if (result.code == 200) {
-                    $.jBox.tip(result.msg, "success");
-                    window.location.reload();
-                } else {
-                    $.jBox.tip(result.msg, 'error');
-                }
-            }
-        });
-    }
-
     function showDetail(obj) {
         var shopId = $(obj).attr("shopid");
         window.location.href = '/shop/addShopPage?id=' + shopId;
@@ -147,40 +128,6 @@
         window.location.href = '/shop/shopList';
     }
 
-    function resetPassword(obj) {
-        $("#audit_dialog").html($("#resetpassword_template").html());
-        J.ShowDialog("audit_dialog", "重置密码", function () {
-            var passwordData = checkPassword(obj);
-            if (passwordData != null) {
-                $.jBox.tip("正在重置...", "loading");
-                J.GetJsonRespons("/shop/resetpassword", passwordData, function (json) {
-                    if (json.code == 200) {
-                        $(self).dialog('close');
-                        $.jBox.tip("重置成功", "success");
-                        window.location.reload();
-                    } else {
-                        $.jBox.tip("重置失败", error);
-                    }
-                }, function () {
-                }, J.PostMethod);
-            }
-        }, function () {
-            $(this).dialog('close');
-        });
-    }
-    function checkPassword(obj) {
-        var id = $(obj).attr("shopid");
-        var password = $.trim($("#password").val());
-        if (password.length == 0) {
-            $.jBox.tip("密码不能为空");
-            return null;
-        }
-        var passwordData = {
-            id: id,
-            password: password
-        };
-        return passwordData;
-    }
 </script>
 <script type="text/javascript" th:inline="javascript">
     /*<![CDATA[*/
@@ -400,10 +347,6 @@
                                                 <a href="javascript:void(0)" onclick="toDel(this)"
                                                    th:attr="shopid=${shop.id}"
                                                    th:if="${shop.status.code}==0 or ${shop.status.code}==1">删除&nbsp;</a>
-                                                <a href="javascript:void(0)" onclick="resetPassword(this)"
-                                                   th:attr="shopid=${shop.id}">重置密码&nbsp;</a>
-                                                <!--<a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${shop.isAccountNonLocked()}">冻结&nbsp;</a>-->
-                                                <!--<a href="javascript:void(0)" onclick="changeIsDisabled(this)" th:attr="shopid=${shop.id}" th:if="${!shop.isAccountNonLocked()}">激活</a>-->
                                             </div>
                                         </td>
                                     </tr>
@@ -433,9 +376,3 @@
 <div id="audit_dialog" style="display: none;"></div>
 </body>
 </html>
-<script type="text/html" id="resetpassword_template">
-    <div class="cnt form" style="padding: 10px; width: 300px; height: 30px;">
-        <span scope="row">设置密码：</span>
-        <input id="password"/>
-    </div>
-</script>
