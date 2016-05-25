@@ -13,18 +13,22 @@ package com.huotu.agento2o.agent.common;
 import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
+import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
@@ -41,6 +45,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -74,6 +79,10 @@ public abstract class CommonTestBase extends SpringWebTest{
     protected MallProductRepository productRepository;
     @Autowired
     protected AgentProductRepository agentProductRepository;
+    @Autowired
+    protected AgentPurchaseOrderRepository agentPurchaseOrderRepository;
+    @Autowired
+    protected InvoiceConfigRepository invoiceConfigRepository;
 
     protected MockHttpSession loginAs(String userName, String password,String roleType) throws Exception {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -212,6 +221,45 @@ public abstract class CommonTestBase extends SpringWebTest{
         shoppingCart.setNum(random.nextInt(mockMallProduct.getStore() - mockMallProduct.getFreez()) + 1);
         shoppingCart.setCreateTime(new Date());
         return shoppingCartRepository.saveAndFlush(shoppingCart);
+    }
+
+    protected ShoppingCart mockShoppingCart(AgentProduct agentProduct,Author author){
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setAuthor(author);
+        shoppingCart.setProduct(agentProduct.getProduct());
+        shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
+        shoppingCart.setCreateTime(new Date());
+        return shoppingCartRepository.saveAndFlush(shoppingCart);
+    }
+
+    /**
+     *
+     * @param author
+     * @param type 发票类型：0普通发票；1增值税发票
+     * @return
+     */
+    protected InvoiceConfig mockInvoiceConfig(Author author , int type){
+        InvoiceConfig invoiceConfig = new InvoiceConfig();
+        invoiceConfig.setAuthor(author);
+        if(type == 0){
+            invoiceConfig.setType(InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE);
+            invoiceConfig.setTaxTitle(UUID.randomUUID().toString());
+            invoiceConfig.setTaxContent(UUID.randomUUID().toString());
+        }else if (type == 1){
+            invoiceConfig.setType(InvoiceEnum.InvoiceTypeStatus.TAXINVOICE);
+            invoiceConfig.setTaxTitle(UUID.randomUUID().toString());
+            invoiceConfig.setTaxContent(UUID.randomUUID().toString());
+            invoiceConfig.setTaxpayerCode(UUID.randomUUID().toString());
+            invoiceConfig.setAccountNo(UUID.randomUUID().toString());
+            invoiceConfig.setBankName(UUID.randomUUID().toString());
+        }
+        invoiceConfig.setDefaultType(1);
+        InvoiceConfig otherInvoiceConfig = invoiceConfigRepository.findByAuthorAndDefaultType(author,1);
+        if(otherInvoiceConfig != null){
+            otherInvoiceConfig.setDefaultType(0);
+            invoiceConfigRepository.save(otherInvoiceConfig);
+        }
+        return invoiceConfigRepository.saveAndFlush(invoiceConfig);
     }
 
 }

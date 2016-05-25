@@ -164,57 +164,57 @@
                         <br/>
                         <div class="division" style="height: 40px;" name="invoiceInfo">
                             <span th:each="taxType:${taxTypeEnum}" class="option"
-                                  th:classappend="${taxType.code} == ${invoiceType}?'option_selected'" th:value="${taxType.code}" th:onclick="|changeInvoiceType(${taxType.code})|">
-                                <span class="ononon" th:style="${taxTypeStat.index} == 0?'display: inline;':'display: none;'">
+                                  th:classappend="${taxType.code} == ${agentPurchaseOrder.taxType.code}?'option_selected'" th:value="${taxType.code}" th:onclick="|changeInvoiceType(${taxType.code})|">
+                                <span class="ononon" th:style="${taxType.code} == ${agentPurchaseOrder.taxType.code}?'display: inline;':'display: none;'">
                                     <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${taxType.value}"></th:block>
                             </span>
                         </div>
-                        <div class="division js-normal" th:style="${invoiceType != 1}?'display: none;'" th:object="${invoiceConfig}">
+                        <div class="division js-normal" th:style="${agentPurchaseOrder.taxType.code != 1}?'display: none;'">
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tbody>
                                 <tr>
                                     <th>发票抬头:</th>
                                     <td  style="border-top: 1px solid #ddd;">
                                         <!--/*@thymesVar id="invoiceConfig" type="com.huotu.agento2o.service.entity.config.InvoiceConfig"*/-->
-                                        <input name="taxTitle" type="text" id="taxTitle" class="input-normal" th:value="${invoiceType}==1?*{taxTitle}" style="width: 80%;"/></td>
+                                        <input name="taxTitle" type="text" id="taxTitle" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==1?*{taxTitle}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
                                     <th>发票内容:</th>
                                     <td colspan="3">
-                                        <input name="taxContent" type="text" id="taxContent" class="input-normal" th:value="${invoiceType}==1?*{taxContent}" style="width: 80%;"/></td>
+                                        <input name="taxContent" type="text" id="taxContent" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==1?*{taxContent}" style="width: 80%;"/></td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="division js-tax"  th:style="${invoiceType != 2}?'display: none;'" th:object="${invoiceConfig}">
+                        <div class="division js-tax"  th:style="${agentPurchaseOrder.taxType.code != 2}?'display: none;'">
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tbody>
                                 <tr>
                                     <th>发票抬头:</th>
                                     <td  style="border-top: 1px solid #ddd;">
-                                        <input name="taxTitle" type="text" id="tax_taxTitle" class="input-normal" th:value="${invoiceType}==2?*{taxTitle}" style="width: 80%;"/></td>
+                                        <input name="taxTitle" type="text" id="tax_taxTitle" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==2?*{taxTitle}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
                                     <th>发票内容:</th>
                                     <td colspan="3">
-                                        <input name="taxContent" type="text" id="tax_taxContent" class="input-normal" th:value="${invoiceType}==2?*{taxContent}" style="width: 80%;"/></td>
+                                        <input name="taxContent" type="text" id="tax_taxContent" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==2?*{taxContent}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
                                     <th>纳税人识别码:</th>
                                     <td colspan="3">
-                                        <input name="taxpayerCode" type="text" id="tax_taxpayerCode" class="input-normal" th:value="${invoiceType}==2?*{taxpayerCode}" style="width: 80%;"/></td>
+                                        <input name="taxpayerCode" type="text" id="tax_taxpayerCode" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==2?*{taxpayerCode}" style="width: 80%;"/></td>
                                 </tr>
                                 <tr>
                                     <th>开户银行名称:</th>
                                     <td>
-                                        <input name="bankName" type="text" id="tax_bankName" class="input-normal" th:value="${invoiceType}==2?*{bankName}" style="width: 80%"/>
+                                        <input name="bankName" type="text" id="tax_bankName" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==2?*{bankName}" style="width: 80%"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>开户银行账号:</th>
                                     <td>
-                                        <input name="accountNo" type="text" id="tax_accountNo" class="input-normal" th:value="${invoiceType}==2?*{accountNo}"  style="width: 80%"/>
+                                        <input name="accountNo" type="text" id="tax_accountNo" class="input-normal" th:value="${agentPurchaseOrder.taxType.code}==2?*{accountNo}"  style="width: 80%"/>
                                     </td>
                                 </tr>
                                 </tbody>
