@@ -165,7 +165,7 @@ public class AgentPurchaseOrder {
     @Column(name = "Disabled")
     private boolean disabled = false;
 
-    @OneToMany(mappedBy = "purchaseOrder")
+    @OneToMany(mappedBy = "purchaseOrder",cascade = CascadeType.MERGE)
     private List<AgentPurchaseOrderItem> orderItemList;
 
     //采购状态为 待审核 或 审核不通过

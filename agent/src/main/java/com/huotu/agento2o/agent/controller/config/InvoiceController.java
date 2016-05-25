@@ -9,6 +9,7 @@
 
 package com.huotu.agento2o.agent.controller.config;
 
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -41,7 +42,7 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @RequestMapping(value = "/invoiceConfig")
-    public ModelAndView invoiceConfig(@AuthenticationPrincipal Author author, Model model) throws Exception {
+    public ModelAndView invoiceConfig(@AgtAuthenticationPrincipal Author author, Model model) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("config/invoiceConfig2");
 
@@ -76,7 +77,7 @@ public class InvoiceController {
     @RequestMapping(value = "/updateInvoiceConfig", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public ApiResult updateInvoiceConfig(
-            @AuthenticationPrincipal Author author,
+            @AgtAuthenticationPrincipal Author author,
             InvoiceConfig invoiceConfig,
             @RequestParam(value = "invoiceType") int invoiceType
     ) {

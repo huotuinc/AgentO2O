@@ -17,9 +17,7 @@ import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +27,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -64,11 +61,12 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Agent findByUserName(String userName) {
-        return agentRepository.findByUsernameAndStatus(userName,AgentStatusEnum.CHECKED);
+        return agentRepository.findByUsernameAndStatus(userName, AgentStatusEnum.CHECKED);
     }
 
     /**
      * 确保userName和password不能为空
+     *
      * @param agent
      * @return
      */
@@ -76,7 +74,7 @@ public class AgentServiceImpl implements AgentService {
     @Transactional
     public Agent addAgent(Agent agent) {
         //判断代理商登录名是否唯一
-        if(ifEnable(agent.getUsername())){
+        if (ifEnable(agent.getUsername())) {
             agent.setPassword(passwordEncoder.encode(agent.getPassword()));
             agent.setCreateTime(new Date());
             return agentRepository.save(agent);
@@ -101,40 +99,40 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Page<Agent> getAgentList(Integer customerId, AgentSearcher agentSearcher) {
-        Specification<Agent> specification = (root,criteriaQuery,criteriaBuilder) -> {
+        Specification<Agent> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(root.get("customer").get("customerId").as(Integer.class),customerId));
+            predicates.add(criteriaBuilder.equal(root.get("customer").get("customerId").as(Integer.class), customerId));
             predicates.add(criteriaBuilder.equal(root.get("isDeleted").as(Boolean.class), false));
-            if(StringUtil.isNotEmpty(agentSearcher.getAgentLoginName())){
+            if (StringUtil.isNotEmpty(agentSearcher.getAgentLoginName())) {
                 predicates.add(criteriaBuilder.like(root.get("username").as(String.class), "%" + agentSearcher.getAgentLoginName() + "%"));
             }
-            if(StringUtil.isNotEmpty(agentSearcher.getAgentName())){
+            if (StringUtil.isNotEmpty(agentSearcher.getAgentName())) {
                 predicates.add(criteriaBuilder.like(root.get("name").as(String.class), "%" + agentSearcher.getAgentName() + "%"));
             }
-            if(agentSearcher.getAgentStatus() != -1){
+            if (agentSearcher.getAgentStatus() != -1) {
                 predicates.add(criteriaBuilder.equal(root.get("isDisabled").as(Boolean.class), agentSearcher.getAgentStatus() == 1));
             }
-            if(agentSearcher.getLevelId() != -1){
+            if (agentSearcher.getLevelId() != -1) {
                 predicates.add(criteriaBuilder.equal(root.get("agentLevel").get("levelId").as(Integer.class), agentSearcher.getLevelId()));
             }
-            if(StringUtil.isNotEmpty(agentSearcher.getProvince())){
+            if (StringUtil.isNotEmpty(agentSearcher.getProvince())) {
                 predicates.add(criteriaBuilder.equal(root.get("province").as(String.class), agentSearcher.getProvince()));
             }
-            if(StringUtil.isNotEmpty(agentSearcher.getCity())){
+            if (StringUtil.isNotEmpty(agentSearcher.getCity())) {
                 predicates.add(criteriaBuilder.equal(root.get("city").as(String.class), agentSearcher.getCity()));
             }
-            if(StringUtil.isNotEmpty(agentSearcher.getDistrict())){
+            if (StringUtil.isNotEmpty(agentSearcher.getDistrict())) {
                 predicates.add(criteriaBuilder.equal(root.get("district").as(String.class), agentSearcher.getDistrict()));
             }
-            if(StringUtil.isNotEmpty(agentSearcher.getBeginTime())){
+            if (StringUtil.isNotEmpty(agentSearcher.getBeginTime())) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class), StringUtil.DateFormat(agentSearcher.getBeginTime(), StringUtil.TIME_PATTERN)));
             }
-            if(StringUtil.isNotEmpty(agentSearcher.getEndTime())){
+            if (StringUtil.isNotEmpty(agentSearcher.getEndTime())) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Date.class), StringUtil.DateFormat(agentSearcher.getEndTime(), StringUtil.TIME_PATTERN)));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        return agentRepository.findAll(specification,new PageRequest(agentSearcher.getPageNo()-1,agentSearcher.getPageSize()));
+        return agentRepository.findAll(specification, new PageRequest(agentSearcher.getPageNo() - 1, agentSearcher.getPageSize()));
     }
 
     @Override
@@ -146,13 +144,13 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public void freezeAgent(Integer id) {
-        agentRepository.updateDisabledStatus(id,true);
+        agentRepository.updateDisabledStatus(id, true);
     }
 
     @Override
     @Transactional
     public void unfreezeAgent(Integer id) {
-        agentRepository.updateDisabledStatus(id,false);
+        agentRepository.updateDisabledStatus(id, false);
     }
 
     @Override
@@ -169,29 +167,33 @@ public class AgentServiceImpl implements AgentService {
         Agent agent = null;
         UserBaseInfo userBaseInfo = null;
         //必须保证平台方和等级存在才能保存代理商
-        if(customer == null || agentLevel == null){
+        if (customer == null || agentLevel == null) {
             return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
         }
-        if(parentAgentId != -1){
+        if (parentAgentId != -1) {
             parentAgent = agentRepository.findOne(parentAgentId);
         }
         //小伙伴账号绑定限制
-        if(StringUtil.isNotEmpty(hotUserName)){
+        if (StringUtil.isNotEmpty(hotUserName)) {
             userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName, customerId);
-            if(userBaseInfo == null){
-                return new ApiResult("小伙伴账号不存在",803);
+            if (userBaseInfo == null) {
+                return new ApiResult("小伙伴账号不存在", 803);
             }
-            Agent userAgent= agentRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
-            if(userAgent != null && userAgent.getId() != requestAgent.getId()){
-                return new ApiResult("小伙伴账号已被绑定",804);
+            Agent userAgent = agentRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            if (userAgent != null && userAgent.getId() != requestAgent.getId()) {
+                return new ApiResult("小伙伴账号已被绑定", 804);
             }
         }
         //根据代理商的id判断是增加还是修改，当大于0时是修改
-        if(requestAgent.getId() > 0){
+        if (requestAgent.getId() > 0) {
             agent = agentRepository.findOne(requestAgent.getId());
-        }else{
+            //当代理商不存在、已删除情况下无法修改
+            if (agent == null || agent.isDeleted()) {
+                return new ApiResult("该代理商已失效", 805);
+            }
+        } else {
             //判断用户名是否可用
-            if(!ifEnable(requestAgent.getUsername())){
+            if (!ifEnable(requestAgent.getUsername())) {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
             agent = new Agent();
@@ -215,6 +217,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setUserBaseInfo(userBaseInfo);
         agent.setProvince(requestAgent.getProvince());
         agent.setTelephone(requestAgent.getTelephone());
+        agent.setEmail(requestAgent.getEmail());
         agentRepository.save(agent);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
@@ -228,10 +231,10 @@ public class AgentServiceImpl implements AgentService {
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getUsername())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getContact())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getMobile())));
-            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getProvince())+' '+StringUtil.getNullStr(agent.getCity()) + ' ' + StringUtil.getNullStr(agent.getDistrict())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getProvince()) + ' ' + StringUtil.getNullStr(agent.getCity()) + ' ' + StringUtil.getNullStr(agent.getDistrict())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress())));
-            cellDescList.add(ExcelHelper.asCell(agent.getAgentLevel()==null?"":agent.getAgentLevel().getLevelName()));
-            cellDescList.add(ExcelHelper.asCell(agent.isDisabled() ? "冻结": "激活" ));
+            cellDescList.add(ExcelHelper.asCell(agent.getAgentLevel() == null ? "" : agent.getAgentLevel().getLevelName()));
+            cellDescList.add(ExcelHelper.asCell(agent.isDisabled() ? "冻结" : "激活"));
             cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(agent.getCreateTime(), StringUtil.TIME_PATTERN)));
 
             rowAndCells.add(cellDescList);
@@ -245,9 +248,40 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+    @Transactional
+    public void resetPassword(Integer id, String password) {
+        agentRepository.resetPassword(id, passwordEncoder.encode((password)));
+    }
+
+    @Override
+    @Transactional
+    public ApiResult saveAgentConfig(Integer agentId, Agent requestAgent) {
+        Agent agent = agentRepository.findOne(agentId);
+        //当代理商不存在、已删除、已冻结情况下无法修改
+        if (agent == null || agent.isDeleted() || agent.isDisabled()) {
+            return new ApiResult("该账号暂已失效", 805);
+        }
+        agent.setName(requestAgent.getName());
+        agent.setComment(requestAgent.getComment());
+        agent.setAddress(requestAgent.getAddress());
+        agent.setCity(requestAgent.getCity());
+        agent.setContact(requestAgent.getContact());
+        agent.setDistrict(requestAgent.getDistrict());
+        agent.setMobile(requestAgent.getMobile());
+        agent.setProvince(requestAgent.getProvince());
+        agent.setTelephone(requestAgent.getTelephone());
+        agent.setAccountName(requestAgent.getAccountName());
+        agent.setAccountNo(requestAgent.getAccountNo());
+        agent.setBankName(requestAgent.getBankName());
+        agent.setEmail(requestAgent.getEmail());
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Agent agent = findByUserName(username);
-        if(agent == null){
+        if (agent == null) {
             throw new UsernameNotFoundException("没有该代理商");
         }
         return agent;

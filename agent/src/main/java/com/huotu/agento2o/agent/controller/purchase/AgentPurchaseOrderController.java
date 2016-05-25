@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -57,6 +58,56 @@ public class AgentPurchaseOrderController {
     private AuthorService authorService;
 
     /**
+     * 新增采购单
+     *
+     * @param author
+     * @param agentPurchaseOrder
+     * @param shoppingCartIds
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/addPurchase", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult addPurchase(
+            @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
+            AgentPurchaseOrder agentPurchaseOrder, String... shoppingCartIds) throws Exception {
+        String sendModeCode = request.getParameter("sendModeCode");
+        String taxTypeCode = request.getParameter("taxTypeCode");
+        //采购信息校验
+        if (agentPurchaseOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (shoppingCartIds.length == 0) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (StringUtil.isEmptyStr(agentPurchaseOrder.getShipName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getShipMobile())
+                || StringUtil.isEmptyStr(agentPurchaseOrder.getShipAddr())) {
+            return new ApiResult("请输入收货信息");
+        }
+        if (StringUtil.isEmptyStr(sendModeCode)) {
+            return new ApiResult("请选择配送方式");
+        }
+        if (StringUtil.isEmptyStr(taxTypeCode)) {
+            return new ApiResult("请选择发票类型");
+        }
+        if ("1".equals(taxTypeCode)) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())) {
+                return new ApiResult("请输入普通发票信息");
+            }
+        } else if ("2".equals(taxTypeCode)) {
+            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxpayerCode()) || StringUtil.isEmptyStr(agentPurchaseOrder.getBankName())
+                    || StringUtil.isEmptyStr(agentPurchaseOrder.getAccountNo())) {
+                return new ApiResult("请输入增值税发票信息");
+            }
+        }
+        agentPurchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, Integer.parseInt(sendModeCode)));
+        agentPurchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, Integer.parseInt(taxTypeCode)));
+        ApiResult result = purchaseOrderService.addPurchaseOrder(agentPurchaseOrder, author, shoppingCartIds);
+        return result;
+    }
+
+    /**
      * 显示我的采购单
      *
      * @param author
@@ -65,7 +116,7 @@ public class AgentPurchaseOrderController {
      * @throws Exception
      */
     @RequestMapping("/showPurchaseOrderList")
-    public ModelAndView showPurchaseOrderList(@AuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
+    public ModelAndView showPurchaseOrderList(@AgtAuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/purchase_order_list");
         purchaseOrderSearcher.setAgentId(author.getId());
@@ -152,7 +203,7 @@ public class AgentPurchaseOrderController {
      */
     @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
     @RequestMapping("/showAgentPurchaseOrderList")
-    public ModelAndView showAgentPurchaseOrderList(@AuthenticationPrincipal Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
+    public ModelAndView showAgentPurchaseOrderList(@AgtAuthenticationPrincipal Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/agent_purchase_order_list");
         purchaseOrderSearcher.setParentAgentId(agent.getId());

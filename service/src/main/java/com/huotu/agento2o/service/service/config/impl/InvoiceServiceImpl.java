@@ -63,4 +63,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoiceConfigRepository.save(oldInvoiceConfig);
         return true;
     }
+
+    @Override
+    public InvoiceConfig findDefaultByAuthor(Author author) {
+        return invoiceConfigRepository.findByAuthorAndDefaultType(author, 1);
+    }
 }

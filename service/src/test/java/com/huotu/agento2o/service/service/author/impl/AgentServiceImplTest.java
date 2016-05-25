@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 
 import javax.crypto.AEADBadTagException;
@@ -30,6 +31,9 @@ public class AgentServiceImplTest extends CommonTestBase {
     @Autowired
     private AgentService agentService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 //    @Autowired
 //    private UserBaseInfoService userBaseInfoService;
 
@@ -41,13 +45,13 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
-    public void testFindByAgentLevel(){
+    public void testFindByAgentLevel() {
         List<Agent> agetnList = agentService.findByAgentLevelId(38);
-        Assert.assertTrue(agetnList.size()>0);
+        Assert.assertTrue(agetnList.size() > 0);
     }
 
     @Test
-    public void testIfEnable(){
+    public void testIfEnable() {
         boolean bn = agentService.ifEnable("wwww");
         Assert.assertTrue(bn);
         bn = agentService.ifEnable("wj");
@@ -56,7 +60,7 @@ public class AgentServiceImplTest extends CommonTestBase {
 
     @Test
 //    @Rollback(value = false)
-    public void testAddAgent() throws Exception{
+    public void testAddAgent() throws Exception {
 //        String userName = UUID.randomUUID().toString();
 //        String passWord = UUID.randomUUID().toString();
         String userName = "ceshi2";
@@ -76,22 +80,22 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
-    public void testGetAgentList(){
+    public void testGetAgentList() {
         //平台方
         MallCustomer mockCustomer = mockMallCustomer();
         //代理商
-        Agent mockAgent = mockAgent(mockCustomer,null);
+        Agent mockAgent = mockAgent(mockCustomer, null);
         AgentSearcher searcher = new AgentSearcher();
         searcher.setPageNo(1);
-        Page<Agent> agentPage = agentService.getAgentList(mockCustomer.getCustomerId(),searcher);
-        Assert.assertTrue(agentPage.getTotalElements()==1);
+        Page<Agent> agentPage = agentService.getAgentList(mockCustomer.getCustomerId(), searcher);
+        Assert.assertTrue(agentPage.getTotalElements() == 1);
         Assert.assertEquals(agentPage.getContent().get(0).getName(), mockAgent.getName());
     }
 
     @Test
-    public void testDeleteAgent(){
+    public void testDeleteAgent() {
         MallCustomer mockCustomer = mockMallCustomer();
-        Agent mockAgent = mockAgent(mockCustomer,null);
+        Agent mockAgent = mockAgent(mockCustomer, null);
         Assert.assertTrue(!mockAgent.isDeleted());
         agentService.deleteAgent(mockAgent.getId());
         mockAgent = agentService.findById(mockAgent.getId());
@@ -101,9 +105,9 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
-    public void testUpdateDisabledStatus(){
+    public void testUpdateDisabledStatus() {
         MallCustomer mockCustomer = mockMallCustomer();
-        Agent mockAgent = mockAgent(mockCustomer,null);
+        Agent mockAgent = mockAgent(mockCustomer, null);
         Assert.assertTrue(!mockAgent.isDisabled());
         agentService.freezeAgent(mockAgent.getId());
         mockAgent = agentService.findById(mockAgent.getId());
@@ -114,17 +118,17 @@ public class AgentServiceImplTest extends CommonTestBase {
     }
 
     @Test
-    public void testFindByParentAgentid(){
+    public void testFindByParentAgentid() {
         List<Agent> list = agentService.findByParentAgentId(4);
-        Assert.assertTrue(list.size()==1);
+        Assert.assertTrue(list.size() == 1);
         list = agentService.findByParentAgentId(-1);
-        Assert.assertTrue(list.size()==0);
+        Assert.assertTrue(list.size() == 0);
     }
 
     @Test
-    public void testAddOrUpdate(){
+    public void testAddOrUpdate() {
         MallCustomer mockCustomer = mockMallCustomer();
-        Agent mockAgent = mockAgent(mockCustomer,null);
+        Agent mockAgent = mockAgent(mockCustomer, null);
         Integer customerId = mockCustomer.getCustomerId();
         AgentLevel agentLevel = mockAgentLevel(mockCustomer);
         String hotUserName = null;
@@ -141,9 +145,9 @@ public class AgentServiceImplTest extends CommonTestBase {
         agent.setMobile(UUID.randomUUID().toString());
         agent.setTelephone(UUID.randomUUID().toString());
         agent.setAddress(UUID.randomUUID().toString());
-        ApiResult result = agentService.addOrUpdate(customerId,levelId,parentAgentId,hotUserName,agent);
+        ApiResult result = agentService.addOrUpdate(customerId, levelId, parentAgentId, hotUserName, agent);
 //        Assert.assertTrue(result.getCode()==200);
-        Assert.assertTrue(result.getCode()==100);
+        Assert.assertTrue(result.getCode() == 100);
         //测试修改
         agentService.flush();
         agent.setUsername(UUID.randomUUID().toString());
@@ -153,22 +157,33 @@ public class AgentServiceImplTest extends CommonTestBase {
         agent.setMobile(UUID.randomUUID().toString());
         agent.setTelephone(UUID.randomUUID().toString());
         agent.setAddress(UUID.randomUUID().toString());
-        result = agentService.addOrUpdate(customerId,levelId,parentAgentId,hotUserName,agent);
-        Assert.assertTrue(result.getCode()==200);
+        result = agentService.addOrUpdate(customerId, levelId, parentAgentId, hotUserName, agent);
+        Assert.assertTrue(result.getCode() == 200);
         //测试平台方或者等级不存在的情况
         customerId = -1;
-        result = agentService.addOrUpdate(customerId,levelId,parentAgentId,hotUserName,agent);
-        Assert.assertTrue(result.getCode()==400);
+        result = agentService.addOrUpdate(customerId, levelId, parentAgentId, hotUserName, agent);
+        Assert.assertTrue(result.getCode() == 400);
         customerId = mockCustomer.getCustomerId();
         levelId = -1;
-        result = agentService.addOrUpdate(customerId,levelId,parentAgentId,hotUserName,agent);
-        Assert.assertTrue(result.getCode()==400);
+        result = agentService.addOrUpdate(customerId, levelId, parentAgentId, hotUserName, agent);
+        Assert.assertTrue(result.getCode() == 400);
     }
 
     @Test
-    public void testyUserBaseInfoId(){
+    public void testUserBaseInfoId() {
         Agent agent = agentService.findByUserBaseInfoId(12);
         Assert.assertNotNull(agent);
+    }
+
+    @Test
+    public void testResetPassword() {
+        String password = UUID.randomUUID().toString();
+        MallCustomer mockCustomer = mockMallCustomer();
+        Agent agent = mockAgent(mockCustomer, null);
+        agentService.resetPassword(agent.getId(), password);
+        agent = agentService.findById(agent.getId());
+        agentService.flush();
+        Assert.assertEquals(passwordEncoder.encode(password), agent.getPassword());
     }
 
 }

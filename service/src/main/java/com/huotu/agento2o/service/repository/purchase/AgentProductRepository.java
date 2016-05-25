@@ -41,6 +41,7 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
 
     List<AgentProduct> findAgentProductByAuthor_Id(Integer authorId);
 
+    // TODO: 2016/5/20 delete
     AgentProduct findByProduct_productId(Integer productId);
 
     /**

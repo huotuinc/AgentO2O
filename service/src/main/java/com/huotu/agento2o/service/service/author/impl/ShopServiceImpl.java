@@ -12,12 +12,17 @@ package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
+import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -34,6 +39,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +51,8 @@ public class ShopServiceImpl implements ShopService {
     private ShopRepository shopRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserBaseInfoRepository userBaseInfoRepository;
 
     @Override
     public Shop findByUserName(String userName) {
@@ -57,17 +65,44 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    @Transactional
     public Shop addShop(Shop shop) {
-        if(shop.getId()==null){ //新增保存
+        Shop checkShop = findByUserName(shop.getUsername());
+        if(checkShop == null){
+            shop.setPassword(passwordEncoder.encode(shop.getPassword()));
+            shop.setCreateTime(new Date());
+            return shopRepository.save(shop);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ApiResult addShop(Shop shop, String hotUserName) {
+
+        //小伙伴账号绑定限制
+        UserBaseInfo userBaseInfo = null;
+        if (StringUtil.isNotEmpty(hotUserName)) {
+            userBaseInfo = userBaseInfoRepository.findByLoginName(hotUserName);
+            if (userBaseInfo == null) {
+                return new ApiResult("小伙伴账号不存在", 400);
+            }
+
+            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
+                return new ApiResult("小伙伴账号已被绑定", 400);
+            }
+        }
+        shop.setUserBaseInfo(userBaseInfo);
+
+        if (shop.getId() == null) { //新增保存
             //判断门店登录名是否唯一
             Shop checkShop = findByUserName(shop.getUsername());
-            if(checkShop != null){
-                return null;
+            if (checkShop != null) {
+                return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
             shop.setStatus(AgentStatusEnum.NOT_CHECK);
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
-        }else{  //编辑保存 不能修改密码
+        } else {  //编辑保存 不能修改密码
             Shop oldShop = shopRepository.findOne(shop.getId());
             oldShop.setUsername(shop.getUsername());
             oldShop.setProvince(shop.getProvince());
@@ -85,9 +120,12 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setAfterSalTel(shop.getAfterSalTel());
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
+            oldShop.setAuditComment(shop.getAuditComment());
+            oldShop.setUserBaseInfo(shop.getUserBaseInfo());
             shop = oldShop;
         }
-        return shopRepository.save(shop);
+        shopRepository.save(shop);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
     @Override
@@ -98,13 +136,13 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional
     public void updateStatus(AgentStatusEnum Status, int id) {
-        shopRepository.updateStatus(Status,id);
+        shopRepository.updateStatus(Status, id);
     }
 
     @Override
     @Transactional
-    public void updateStatusAndComment(AgentStatusEnum Status, String comment, int id) {
-        shopRepository.updateStatusAndComment(Status, comment, id);
+    public void updateStatusAndAuditComment(AgentStatusEnum Status, String auditComment, int id) {
+        shopRepository.updateStatusAndComment(Status, auditComment, id);
     }
 
     @Override
@@ -115,28 +153,28 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
-    public void updateIsDisabledById(boolean isDisabled ,int id) {
-        shopRepository.updateIsDisabled(isDisabled,id);
+    public void updateIsDisabledById(boolean isDisabled, int id) {
+        shopRepository.updateIsDisabled(isDisabled, id);
     }
 
     @Override
     @Transactional
     public void updatePasswordById(String password, int id) {
         password = passwordEncoder.encode(password);
-        shopRepository.updatePassword(password,id);
+        shopRepository.updatePassword(password, id);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Shop shop = findByUserName(username);
-        if(shop == null){
+        if (shop == null) {
             throw new UsernameNotFoundException("没有该门店");
         }
         return shop;
     }
 
     @Override
-    public Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition){
+    public Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition) {
         Specification<Shop> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -154,12 +192,12 @@ public class ShopServiceImpl implements ShopService {
                 predicates.add(cb.like(root.get("district").as(String.class), "%" + searchCondition.getDistrict() + "%"));
             }
             if (searchCondition.getStatus() != -1) {
-                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,searchCondition.getStatus())));
+                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, searchCondition.getStatus())));
             }
-            predicates.add(cb.equal(root.get("isDeleted").as(Boolean.class),false));
+            predicates.add(cb.equal(root.get("isDeleted").as(Boolean.class), false));
 
             //上级代理商过滤条件
-            if(searchCondition.getParentAuthor()!=null){
+            if (searchCondition.getParentAuthor() != null) {
                 predicates.add(cb.equal(root.get("parentAuthor").as(Author.class), searchCondition.getParentAuthor()));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_name())) {
@@ -179,16 +217,16 @@ public class ShopServiceImpl implements ShopService {
             }
 
             //等级过滤
-            if (searchCondition.getParent_agentLevel()!=-1) {
-                predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class),  searchCondition.getParent_agentLevel() ));
+            if (searchCondition.getParent_agentLevel() != -1) {
+                predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class), searchCondition.getParent_agentLevel()));
             }
 
             //平台显示列表
-            if("list".equals(searchCondition.getType())){//门店列表
-                predicates.add(cb.notEqual(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,0)));
-            }else if("audit".equals(searchCondition.getType())){//门店审核
-                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class),EnumHelper.getEnumType(AgentStatusEnum.class,1)));
-                predicates.add(cb.equal(root.get("isDisabled").as(Boolean.class),false));
+            if ("list".equals(searchCondition.getType())) {//门店列表
+                predicates.add(cb.notEqual(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, 0)));
+            } else if ("audit".equals(searchCondition.getType())) {//门店审核
+                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, 1)));
+                predicates.add(cb.equal(root.get("isDisabled").as(Boolean.class), false));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -202,14 +240,22 @@ public class ShopServiceImpl implements ShopService {
         List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
         shops.forEach(shop -> {
             List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
-
-            cellDescList.add(ExcelHelper.asCell(shop.getName()));
-            cellDescList.add(ExcelHelper.asCell(shop.getProvince()+'—'+shop.getCity()+'—'+shop.getDistrict()));
             cellDescList.add(ExcelHelper.asCell(shop.getUsername()));
+            cellDescList.add(ExcelHelper.asCell(shop.getName()));
+            cellDescList.add(ExcelHelper.asCell(shop.getProvince() + '—' + shop.getCity() + '—' + shop.getDistrict()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAddress()));
+            cellDescList.add(ExcelHelper.asCell(shop.getLan()));
+            cellDescList.add(ExcelHelper.asCell(shop.getLat()));
             cellDescList.add(ExcelHelper.asCell(shop.getContact()));
             cellDescList.add(ExcelHelper.asCell(shop.getMobile()));
+            cellDescList.add(ExcelHelper.asCell(shop.getParentAuthor().getUsername()));
+            cellDescList.add(ExcelHelper.asCell(shop.getServeiceTel()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalTel()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalQQ()));
+            cellDescList.add(ExcelHelper.asCell(shop.getComment()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAuditComment() == null ? "" : shop.getAuditComment()));
             cellDescList.add(ExcelHelper.asCell(shop.getStatus().getValue()));
-            cellDescList.add(ExcelHelper.asCell(shop.isDisabled() ? "冻结": "激活" ));
+            cellDescList.add(ExcelHelper.asCell(shop.isDisabled() ? "冻结" : "激活"));
             rowAndCells.add(cellDescList);
         });
         return ExcelHelper.createWorkbook("门店列表", SysConstant.SHOP_EXPORT_HEADER, rowAndCells);

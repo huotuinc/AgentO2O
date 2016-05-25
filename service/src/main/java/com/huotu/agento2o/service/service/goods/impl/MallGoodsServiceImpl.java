@@ -23,10 +23,11 @@ import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,15 +59,15 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "salesCount")));
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
                     AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
                     if (agentProduct != null) {
-                        product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                        product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
                     }
-                    product.setUsableStore(product.getStore() - product.getFreez());
+                    product.setUsableStore(Math.max(0, product.getStore() - product.getFreez()));
                 });
             });
         }
@@ -81,34 +82,31 @@ public class MallGoodsServiceImpl implements MallGoodsService {
      */
     @Override
     public Page<MallGoods> findByAgentId(Author author, GoodsSearcher goodsSearcher) {
-        //// TODO: 2016/5/14 cb.in() error to solve
-        /*List<Integer> goodsIdList = agentProductRepository.findGoodsListByAgentId(agentId);
         Specification<MallGoods> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("agentId").as(Integer.class), agentId));
-            predicates.add(cb.isTrue(root.get("goodId").in(goodsIdList)));
-            if(!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())){
-                predicates.add(cb.like(root.get("name").as(String.class),goodsSearcher.getGoodsName()));
+            if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
+                predicates.add(cb.like(root.get("name").as(String.class), goodsSearcher.getGoodsName()));
             }
+            //子查询 goodsId in (select distinct goodsId from AgentProduct where author.id= ?1)
+            Subquery subQuery = query.subquery(AgentProduct.class).distinct(true);
+            Root agentProductRoot = subQuery.from(AgentProduct.class);
+            subQuery.where(cb.equal(agentProductRoot.get("author").get("id").as(Integer.class), author.getParentAuthor().getId()));
+            subQuery.select(agentProductRoot.get("goodsId"));
+            predicates.add(root.get("goodsId").in(cb.any(subQuery)));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        return goodsRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));*/
-        Page<MallGoods> goodsPage = null;
-        if (StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
-            goodsPage = goodsRepository.findByAgentId(author.getParentAuthor().getId(), new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
-        } else {
-            goodsPage = goodsRepository.findByAgentIdAndName(author.getParentAuthor().getId(), "%" + goodsSearcher.getGoodsName() + "%", new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
-        }
+        //设置可用库存和当前库存
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
                     AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
                     AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
                     if (agentProduct != null) {
-                        product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                        product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
                     }
                     if (parentAgentProduct != null) {
-                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                        product.setUsableStore(Math.max(0, parentAgentProduct.getStore() - parentAgentProduct.getFreez()));
                     }
                 });
             });

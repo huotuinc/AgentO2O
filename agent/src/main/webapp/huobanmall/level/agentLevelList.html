@@ -15,17 +15,22 @@
     <title>
         代理商等级设置
     </title>
-    <link href="resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
-    <link href="resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}"
+          rel="stylesheet" type="text/css"/>
     <link href="resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
     <link href="resource/3rdParty/jBox/Skins/Green/jbox.css"
           th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
-    <script src="resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script src="resource/3rdParty/js/jquery-1.7.2.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
     <script src="resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
-    <script src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
     <script src="resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script src="resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" th:inline="javascript">
         var ajaxUrl = /*[[@{/huobanmall/level/}]]*/ "/huobanmall/level";
     </script>
@@ -86,7 +91,8 @@
             </div>
             <div class="cnt-wp" style="min-height: 450px;">
                 <div id="bg" style="width: 100%; height: 100%; position: absolute; z-index: 555; display: none;">
-                    <img th:src="@{/resource/3rdParty/images/loading.gif}" src="resource/3rdParty/images/loading.gif" border="0" style="margin-left: 46%; margin-top: 13%;"/>
+                    <img th:src="@{/resource/3rdParty/images/loading.gif}" src="resource/3rdParty/images/loading.gif"
+                         border="0" style="margin-left: 46%; margin-top: 13%;"/>
                 </div>
                 <div class="cnt" id="content" width="1392" style="display: block;">
                     <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -111,8 +117,10 @@
                             <td class="txt40 c" th:text="${agentLevel.level}">一级</td>
                             <td class="txt40 c" th:text="${agentLevel.comment}">6折进货</td>
                             <td class="txt40 c">
-                                <a href="javascript:levelHandler.showEdit(1)" th:href="|javascript:levelHandler.showEdit(${agentLevel.levelId})|">编辑</a> |
-                                <a href="javascript:levelHandler.deleteLevel(1)" th:href="|javascript:levelHandler.deleteLevel(${agentLevel.levelId})|">删除</a>
+                                <a href="javascript:levelHandler.showEdit(1)"
+                                   th:href="|javascript:levelHandler.showEdit(${agentLevel.levelId})|">编辑</a> |
+                                <a href="javascript:levelHandler.deleteLevel(1)"
+                                   th:href="|javascript:levelHandler.deleteLevel(${agentLevel.levelId})|">删除</a>
                             </td>
                         </tr>
 
@@ -142,10 +150,10 @@
                 }, function (json) {
                     if (json.code == 200) {
                         $.jBox.tip("删除成功", "success");
-                        setTimeout(function(){
+                        setTimeout(function () {
                             window.location.reload();
-                        },400);
-                    } else if (json.code == 800){
+                        }, 400);
+                    } else if (json.code == 800) {
                         $.jBox.tip("无法删除,该等级已被代理商绑定", "error");
                     } else {
                         $.jBox.tip("删除失败", "error");
@@ -175,9 +183,9 @@
                         if (json.code == 200) {
                             $.jBox.tip("保存成功", "success");
                             $(self).dialog('close');
-                            setTimeout(function(){
+                            setTimeout(function () {
                                 window.location.reload();
-                            },400);
+                            }, 400);
                         } else {
                             $.jBox.tip("保存失败", "error");
                         }

@@ -24,6 +24,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "Agt_ShoppingCart")
+@Cacheable(value = false)
 @Getter
 @Setter
 public class ShoppingCart {

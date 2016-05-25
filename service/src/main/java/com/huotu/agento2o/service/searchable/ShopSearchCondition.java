@@ -23,7 +23,7 @@ public class ShopSearchCondition {
      * list 平台门店管理列表
      * audit 平台门店审核列表
      */
-    private String type ;
+    private String type;
 
     /**
      * 上级代理商查询条件

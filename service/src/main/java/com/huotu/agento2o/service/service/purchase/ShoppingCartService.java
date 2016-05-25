@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.purchase;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
@@ -23,6 +24,7 @@ public interface ShoppingCartService {
 
     /**
      * 加入购物车
+     *
      * @param shoppingCart
      * @return
      */
@@ -30,21 +32,23 @@ public interface ShoppingCartService {
 
     /**
      * 购物车数量修改
-     * @param shoppingCart
+     *
+     * @param shoppingCartId
      * @return
      */
-    ShoppingCart editShoppingCart(ShoppingCart shoppingCart);
+    ApiResult editShoppingCart(Author author, Integer shoppingCartId, int num);
 
     /**
-     * 根据 agentId 获取采购购物车信息
+     * 根据 author 获取采购购物车信息
      *
-     * @param agentId
+     * @param author
      * @return
      */
-    List<ShoppingCart> findByAgentId(Integer agentId);
+    List<ShoppingCart> findByAgentId(Author author);
 
     /**
      * 根据 ID 和 当前登录用户 查找购物车货品信息
+     *
      * @param id
      * @param author
      * @return
@@ -53,20 +57,23 @@ public interface ShoppingCartService {
 
     /**
      * 根据 ID列表 和 当前登录用户 查找勾选的购物车货品信息
+     *
      * @param ids
      * @param author
      * @return
      */
-    List<ShoppingCart> findById(List<Integer> ids,Author author);
+    List<ShoppingCart> findById(List<Integer> ids, Author author);
 
     /**
      * 删除购物车货品信息
+     *
      * @param shoppingCart
      */
     void deleteShoppingCart(ShoppingCart shoppingCart);
 
     /**
      * 清空购物车
+     *
      * @param agentId
      */
     void deleteAllShoppingCartByAgentId(Integer agentId);

@@ -21,6 +21,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "Agt_Returned_Order_Item")
+@Cacheable(value = false)
 @Getter
 @Setter
 public class AgentReturnedOrderItem {

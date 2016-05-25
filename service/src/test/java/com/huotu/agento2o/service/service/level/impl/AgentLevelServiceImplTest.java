@@ -38,9 +38,11 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindLastLevel() throws Exception {
-        Integer num = agentLevelService.findLastLevel(6340);;
-       Assert.assertTrue(num>0);
-        num = agentLevelService.findLastLevel(-1);;
+        Integer num = agentLevelService.findLastLevel(6340);
+        ;
+        Assert.assertTrue(num > 0);
+        num = agentLevelService.findLastLevel(-1);
+        ;
         Assert.assertNull(num);
     }
 
@@ -48,7 +50,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
     public void testFindByCustomerId() throws Exception {
         //不存在的id查询
         List<AgentLevel> list = agentLevelService.findByCustomertId(-1);
-        Assert.assertTrue(list.size()==0);
+        Assert.assertTrue(list.size() == 0);
         //存在的id查询
         list = agentLevelService.findByCustomertId(6340);
         Assert.assertTrue(list.size() >= 0);
@@ -59,7 +61,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         AgentLevel agentLevel = new AgentLevel();
         agentLevel.setComment("8折进货");
         agentLevel.setLevelName("一级代理商");
-        agentLevelService.addOrUpdate(0,-1,agentLevel);
+        agentLevelService.addOrUpdate(0, -1, agentLevel);
     }
 
     @Test
@@ -68,7 +70,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         agentLevel.setLevel(0);
         agentLevel.setLevelName("一级代理商");
         agentLevel.setComment("5折进货");
-        agentLevel =  agentLevelService.addAgentLevel(agentLevel);
+        agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
         agentLevel = agentLevelService.findById(agentLevel.getLevelId());
         Assert.assertNotNull(agentLevel);
@@ -80,7 +82,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
 
     @Test
 //    @Rollback(value = false)
-    public void testAddAgentLevel() throws Exception{
+    public void testAddAgentLevel() throws Exception {
         AgentLevel agentLevel = new AgentLevel();
         MallCustomer customer = new MallCustomer();
         customer.setCustomerId(6340);
@@ -88,7 +90,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         agentLevel.setLevel(0);
         agentLevel.setLevelName("一级代理商");
         agentLevel.setComment("5折进货");
-        agentLevel =  agentLevelService.addAgentLevel(agentLevel);
+        agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
         agentLevel = agentLevelService.findById(agentLevel.getLevelId());
         Assert.assertNotNull(agentLevel);

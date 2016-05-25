@@ -31,6 +31,7 @@ public class OrderExportModel {
     private String txtBeginPaytime;
     private String txtBeginPage;
     private String txtEndPage;
+    private String ddlShipMode;
 
 
 }

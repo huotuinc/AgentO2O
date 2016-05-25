@@ -11,7 +11,7 @@
 package com.huotu.agento2o.agent.controller;
 
 import com.huotu.agento2o.agent.common.ExceptionHandler;
-import com.huotu.agento2o.agent.common.WebTest;
+import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * Created by helloztt on 2016/5/9.
  */
 @Transactional
-public class IndexControllerTest extends WebTest{
+public class IndexControllerTest extends CommonTestBase {
 
     @Autowired
     private AgentService agentService;
@@ -55,7 +55,7 @@ public class IndexControllerTest extends WebTest{
         agent.setDisabled(false);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -81,7 +81,7 @@ public class IndexControllerTest extends WebTest{
         agent.setDisabled(false);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -106,7 +106,7 @@ public class IndexControllerTest extends WebTest{
         agent.setDisabled(true);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -131,7 +131,7 @@ public class IndexControllerTest extends WebTest{
         agent.setDisabled(false);
         agent.setDeleted(true);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -157,7 +157,7 @@ public class IndexControllerTest extends WebTest{
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -183,7 +183,7 @@ public class IndexControllerTest extends WebTest{
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -208,7 +208,7 @@ public class IndexControllerTest extends WebTest{
         shop.setDeleted(false);
         shop.setDisabled(true);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -233,7 +233,7 @@ public class IndexControllerTest extends WebTest{
         shop.setDeleted(true);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))

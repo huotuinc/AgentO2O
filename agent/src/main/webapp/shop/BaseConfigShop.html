@@ -13,7 +13,7 @@
 
 <head lang="en">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>代理商新增</title>
+    <title>门店基本资料设置</title>
     <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
           th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
     <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
@@ -48,11 +48,6 @@
             th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
 
     <style type="text/css">
-        /*鼠标经过*/
-        .over {
-            background-color: #FFFFFF;
-        }
-
         body, td, th {
             font-family: "微软雅黑", "宋体", Arial;
         }
@@ -66,36 +61,34 @@
     </style>
 </head>
 <body>
-<form action="#" th:action="@{/agent/addAgent}" method="post" id="agentForm" th:object="${agent}">
+<form action="#" th:action="@{/shop/addShop}" method="post" id="shopConfigForm" th:object="${shop}">
     <div class="container">
         <div class="blank10">
         </div>
         <div class="block">
             <div class="h">
                 <span class="icon-sprite icon-list"></span>
-
-                <h3><B style="font-size: 120%">代理商编辑</B></h3>
+                <h3><B style="font-size: 120%">门店基本资料设置</B></h3>
             </div>
             <div class="cnt-wp">
                 <div class="cnt form">
                     <div>
                         <span style="color:#6699d5" class="spModuleTitle">登录信息</span>
-
                         <div class="division">
-                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="agentId"/>
+                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="shopID"/>
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
                                     <th>用户名：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="username" th:field="*{username}"
-                                               th:value="*{username}"/>
+                                        <span type="text" class="input-normal" id="username" th:field="*{username}"
+                                              th:text="*{username}"></span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr style="display:none">
                                     <th>登陆密码：</th>
                                     <td>
-                                        <input type="password" class="input-normal" id="password" th:field="*{password}"
+                                        <input type="text" class="input-normal" id="password" th:field="*{password}"
                                                th:value="*{password}"/>
                                     </td>
                                 </tr>
@@ -106,7 +99,6 @@
 
                     <div>
                         <span style="color:#6699d5" class="spModuleTitle">账号绑定</span>
-
                         <div class="division">
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
@@ -116,25 +108,15 @@
                                 <tr>
                                     <th>代理商等级：</th>
                                     <td>
-                                        <select name="parentAgentLevelId" id="parentAgentLevelId"
-                                                onchange="getPrentAgent(this.value)">
-                                            <option selected="selected" value="-1"
-                                                    th:selected="${parentAgentLevelId == -1}">请选择代理商等级
-                                            </option>
-                                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
-                                                    th:text="${agentLevel.levelName}"
-                                                    th:selected="${agentLevel.levelId == parentAgentLevelId}">省级代理商
-                                            </option>
-                                        </select>
+                                        <span type="text" class="input-normal" readonly="readonly"
+                                              th:text="${agent.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>代理商账户：</th>
                                     <td>
-                                        <select name="parentAgentId" id="parentAgentId">
-                                            <option selected="selected" value="-1">请选择代理商账户
-                                            </option>
-                                        </select>
+                                        <span type="text" class="input-normal" id="author" readonly="readonly"
+                                              th:field="${agent.username}" th:text="${agent.username}"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -144,7 +126,7 @@
                                     <th>小伙伴用户名：</th>
                                     <td>
                                         <input type="text" class="input-normal" id="hotUserName"
-                                               th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"/>
+                                            th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></input>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -153,38 +135,23 @@
                     </div>
 
                     <div>
-                        <span style="color:#6699d5" class="spModuleTitle">代理商基本资料</span>
-
+                        <span style="color:#6699d5" class="spModuleTitle">门店基本资料</span>
                         <div class="division">
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>代理商所在区域:</th>
+                                    <th>门店所在区域:</th>
                                     <td>
                                         <div id="citys">
-                                            <select class="prov" id="province"></select>
-                                            <select class="city" id="city" disabled="disabled"></select>
-                                            <select class="dist" id="district" disabled="disabled"></select>
+                                            <span th:text="|*{province}—*{city}—*{district}|"></span>
+                                            <!--<select class="prov" id="province"></select>-->
+                                            <!--<select class="city" id="city" disabled="disabled"></select>-->
+                                            <!--<select class="dist" id="district" disabled="disabled"></select>-->
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>代理商等级:</th>
-                                    <td>
-                                        <select name="levelId" id="levelId">
-                                            <option selected="selected" value="-1" th:selected="*{agentLevel == null}">
-                                                请选择代理商等级
-                                            </option>
-                                            <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
-                                                    th:text="${agentLevel.levelName}"
-                                                    th:selected="${agent.agentLevel==null? false:agentLevel.levelId == agent.agentLevel.levelId}">
-                                                省级代理商
-                                            </option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>代理商名称:</th>
+                                    <th>门店名称:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="name" th:field="*{name}"
                                                th:value="*{name}"/>
@@ -211,25 +178,84 @@
                                                th:value="*{telephone}"/>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <th>E-mail:</th>
-                                    <td>
-                                        <input type="text" class="input-normal" id="email" th:field="*{email}"
-                                               th:value="*{email}"/>
-                                    </td>
-                                </tr>
+                                <!--<tr>-->
+                                <!--<th>传真:</th>-->
+                                <!--<td>-->
+                                <!--<input type="text" class="input-normal"/>-->
+                                <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                <!--<th>E-mail:</th>-->
+                                <!--<td>-->
+                                <!--<input type="text" class="input-normal"/>-->
+                                <!--</td>-->
+                                <!--</tr>-->
                                 <tr>
                                     <th>详细地址:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="address" th:field="*{address}"
-                                               th:value="*{address}"/>
+                                        <span type="text" id="address" th:field="*{address}" th:text="*{address}"
+                                              class="input-normal" style="width: 300px;"></span><br/>
+                                        <div style="margin-top:10px; ">
+                                            经度:
+                                            <span type="text" readonly="readonly" id="lan" th:field="*{lan}"
+                                                  th:text="*{lan}"
+                                                  class="input-normal" style="width: 100px;"></span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                            纬度:
+                                            <span type="text" readonly="readonly" id="lat" th:field="*{lat}"
+                                                  th:text="*{lat}"
+                                                  class="input-normal" style="width: 100px;"></span>
+                                        </div>
+                                        <div id="addrMap"
+                                             style="margin-top:10px;
+                                             width: 500px;height: 300px;
+                                             border: 1px solid gray;">
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>备注:</th>
                                     <td>
-                                        <textarea rows="6" style="width: 80%" id="comment" th:field="*{comment}"
-                                                  th:value="*{comment}"></textarea>
+                                        <textarea type="text" rows="6" style="width: 80%" id="comment"
+                                                  th:field="*{comment}" th:value="*{comment}"></textarea>
+                                    </td>
+                                </tr>
+                                <tr th:if="*{auditComment!=null} and *{status==2}">
+                                    <th>审核意见:</th>
+                                    <td>
+                                        <span type="text" rows="6" style="width: 80%" th:text="*{auditComment}"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">售后信息</span>
+                        <div class="division">
+
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>客服电话:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="serveiceTel"
+                                               th:field="*{serveiceTel}" th:value="*{serveiceTel}"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>售后电话:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="afterSalTel"
+                                               th:field="*{afterSalTel}" th:value="*{afterSalTel}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>售后QQ:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="afterSalQQ" th:field="*{afterSalQQ}"
+                                               th:value="*{afterSalQQ}"/>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -238,7 +264,7 @@
                     </div>
 
                     <div style="text-align: center;">
-                        <a class="btn-lit" href="javascript:saveAgent();" id="saveAgent"><span>保存</span></a>
+                        <a class="btn-lit" href="javascript:saveShopConfig();" id="saveShopConfig"><span>保存</span></a>
                     </div>
 
                 </div>
@@ -248,139 +274,85 @@
 </form>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
-    //根据父代理商等级id获取父代理商选项
-    function getPrentAgent(parentAgentLevelId) {
-        var selectAgent = document.getElementById("parentAgentId");
-        selectAgent.length = 1;
-        if (parentAgentLevelId == -1) {
-            return;
-        }
-        var parentAgentId = /*[[${agent.parentAuthor != null ? agent.parentAuthor.id:-1}]]*/;
-        J.GetJsonRespons(ajaxUrl + "getParentAgents", {
-            parentAgentLevelId: parentAgentLevelId
-        }, function (json) {
-            if (json.code == 200) {
-                $.each(json.data, function () {
-                    var op = document.createElement('OPTION');
-                    op.setAttribute("value", this.id);
-                    op.innerHTML = this.username;
-                    if (this.id == parentAgentId) {
-                        op.setAttribute("selected", "selected");
-                    }
-                    selectAgent.appendChild(op);
-                })
-            }
-        }, function () {
-        }, J.GetMethod);
-    }
-
-    //保存或修改代理商
-    function saveAgent() {
-        var agId = /*[[${agent.id}]]*/;
-        var username = $.trim($("#username").val());
-        var password = $.trim($("#password").val());
-        var province = $.trim($("#province").val());
-        var city = $.trim($("#city").val());
-        var district = $.trim($("#district").val());
+    //保存
+    function saveShopConfig() {
         var name = $.trim($("#name").val());
         var Contact = $.trim($("#Contact").val());
         var mobile = $.trim($("#mobile").val());
         var telephone = $.trim($("#telephone").val());
-        var address = $.trim($("#address").val());
         var comment = $.trim($("#comment").val());
-        var id = $.trim($("#agentId").val());
-        var parentAgentId = $.trim($("#parentAgentId").val());
-        var agentLevelId = $.trim($("#levelId").val());
+        var serveiceTel = $.trim($("#serveiceTel").val());
+        var afterSalTel = $.trim($("#afterSalTel").val());
+        var afterSalQQ = $.trim($("#afterSalQQ").val());
+        var id = $.trim($("#shopID").val());
         var hotUserName = $.trim($("#hotUserName").val());
-        var email = $.trim($("#email").val());
-        if (username.length == 0) {
-            $.jBox.tip("用户名不能为空");
-            return;
-        }
-        //只有在增加代理商时需要校验密码
-        if (agId == 0 && password.length == 0) {
-            $.jBox.tip("密码不能为空");
-            return;
-        }
-        if (province.length == 0 || city.length == 0 || district.length == 0) {
-            $.jBox.tip("代理商所在区域不能为空");
-            return;
-        }
-        if (agentLevelId == -1) {
-            $.jBox.tip("请选择代理商等级");
-            return;
-        }
+
         if (name.length == 0) {
-            $.jBox.tip("代理商名称不能为空");
+            $.jBox.tip("门店名称不能为空");
             return;
         }
-        if (Contact.length == 0) {
-            $.jBox.tip("联系人不能为空");
-            return;
-        }
-        if (mobile.length == 0) {
-            $.jBox.tip("手机号码不能为空");
+        if (Contact.length == 0 || mobile.length == 0) {
+            $.jBox.tip("联系人或手机号码不能为空");
             return;
         }
         if (!J.IsMobile(mobile)) {
             $.jBox.tip("手机号码格式不正确");
             return;
         }
-        if (telephone.length == 0) {
-            $.jBox.tip("电话号码不能为空");
+        if (serveiceTel.length == 0) {
+            $.jBox.tip("客服电话不能为空");
             return;
         }
-        if (email.length == 0) {
-            $.jBox.tip("E-mail不能为空");
+        if (!J.IsMobile(serveiceTel)) {
+            $.jBox.tip("客服电话格式不正确");
             return;
         }
-        if (!J.IsEmail(email)) {
-            $.jBox.tip("E-mail格式不正确");
+        if (afterSalTel.length == 0) {
+            $.jBox.tip("售后电话不能为空");
             return;
         }
-        if (address.length == 0) {
-            $.jBox.tip("详细地址不能为空");
+        if (!J.IsMobile(afterSalTel)) {
+            $.jBox.tip("售后电话格式不正确");
             return;
         }
+        if (afterSalQQ.length == 0) {
+            $.jBox.tip("售后QQ不能为空");
+            return;
+        }
+
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
             type: 'POST',
-            url: ajaxUrl + "save",
+            url: "/shop/updateShop",
             data: {
                 id: id,
-                username: username,
-                password: password,
-                province: province,
-                city: city,
-                district: district,
+                username: /*[[${shop.username}]]*/,
+                password: /*[[${shop.password}]]*/,
+                province: /*[[${shop.province}]]*/,
+                city: /*[[${shop.city}]]*/,
+                district: /*[[${shop.district}]]*/,
                 name: name,
                 Contact: Contact,
                 mobile: mobile,
                 telephone: telephone,
-                address: address,
+                address: /*[[${shop.address}]]*/,
+                lan: /*[[${shop.lan}]]*/,
+                lat: /*[[${shop.lat}]]*/,
                 comment: comment,
-                agentLevelId: agentLevelId,
-                parentAgentId: parentAgentId,
-                hotUserName: hotUserName,
-                email: email
+                serveiceTel: serveiceTel,
+                afterSalTel: afterSalTel,
+                afterSalQQ: afterSalQQ,
+                auditComment:/*[[${shop.auditComment}]]*/,
+                hotUserName: hotUserName
             },
             success: function (result) {
                 if (result.code == 200) {
-                    $.jBox.tip("保存成功", "success");
+                    $.jBox.tip(result.msg, "success");
                     setTimeout(function () {
-                        window.location.href = ajaxUrl + "agentList";
-                    }, 400);
-                } else if (result.code == 100) {
-                    $.jBox.tip("用户名已存在", "success");
-                } else if (result.code == 803) {
-                    $.jBox.tip("小伙伴账号不存在", "error");
-                } else if (result.code == 804) {
-                    $.jBox.tip("小伙伴账号已被绑定", "error");
-                } else if (result.code == 805) {
-                    $.jBox.tip("该代理商已失效", "error");
+                        window.location.href = '/shop/baseConfig?rnd=' + Math.random;
+                    }, 500);
                 } else {
-                    $.jBox.tip("保存失败", "error");
+                    $.jBox.tip(result.msg, 'error');
                 }
             }
         });
@@ -388,30 +360,32 @@
     /*]]>*/
 </script>
 <script th:inline="javascript">
-    var pro = /*[[${agent.province==null?'':agent.province}]]*/;
-    var city = /*[[${agent.city}]]*/;
-    var dist = /*[[${agent.district}]]*/;
-    var id = /*[[${agent.id}]]*/;
-    var parentAgentLevelId = /*[[${parentAgentLevelId}]]*/;
-    $(function () {
-        if (id > 0) {
-            $("#citys").citySelect({
-                url: "/resource/3rdParty/js/jquery.cityselect.js",
-                prov: pro,
-                city: city,
-                dist: dist,
-                nodata: null,
-                required: true
-            });
-            $("#password").parent().parent().hide();
-            $("#username").attr("readonly", "readonly");
-        } else {
-            $("#citys").citySelect();
-        }
-        ;
-        getPrentAgent(parentAgentLevelId);
-    });
+    /*<![CDATA[*/
+    /*百度地图API相关*/
+    var map = new BMap.Map("addrMap");
+    var shoplan = /*[[${shop.lan}]]*/;
+    var shoplat = /*[[${shop.lat}]]*/;
+    map.centerAndZoom(new BMap.Point(shoplan, shoplat), 10);
+    map.enableScrollWheelZoom(true);    //启用滚轮放大缩小，默认禁用
+    map.enableContinuousZoom(true);     //启用地图惯性拖拽，默认禁用
+    map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
+    map.addControl(new BMap.OverviewMapControl()); //添加默认缩略地图控件
+    var geoc = new BMap.Geocoder();     //地址逆向解析
+    var localSearch = new BMap.LocalSearch(map); //搜索范围
+    localSearch.enableAutoViewport(); //允许自动调节窗体大小
 
+    function setmarker(lng, lat) {
+        var marker = new BMap.Marker(new BMap.Point(lng, lat));  // 创建标注，为要查询的地方对应的经纬度
+        map.clearOverlays(); //清空原来的标注
+        map.addOverlay(marker);
+        map.centerAndZoom(new BMap.Point(lng, lat), 11);
+    }
+
+    //添加标注
+    if ($.trim($("#lan").text()).length != 0 && $.trim($("#lat").text()).length) {
+        setmarker($("#lan").text(), $("#lat").text());
+    }
+    /*]]>*/
 </script>
 </body>
 </html>
