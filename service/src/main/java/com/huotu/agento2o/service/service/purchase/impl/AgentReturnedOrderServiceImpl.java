@@ -1,10 +1,7 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.common.util.SerialNo;
-import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -54,19 +51,23 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     @Autowired
     private AgentDeliveryRepository agentDeliveryRepository;
 
-    @Override
-    public List<AgentProduct> findAgentProductsByAgentId(Integer agentId) {
-        return agentProductRepository.findByAuthor_IdAndDisabledFalse(agentId);
-    }
 
     @Override
     public AgentReturnedOrder findOne(String rOrderId) {
+        if(rOrderId == null){
+            return null;
+        }
         return agentReturnOrderRepository.findOne(rOrderId);
     }
 
     @Override
     public AgentReturnedOrder addReturnOrder(AgentReturnedOrder agentReturnedOrder) {
-        return agentReturnOrderRepository.save(agentReturnedOrder);
+
+        if(agentReturnedOrder == null){
+            return null;
+        }
+        agentReturnedOrder = agentReturnOrderRepository.save(agentReturnedOrder);
+        return agentReturnedOrder;
     }
 
     @Override
@@ -126,7 +127,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         };
         //排序
 
-        return agentReturnOrderRepository.findAll(specification, new PageRequest(returnedOrderSearch.getPageIndex() - 1, 3,new Sort(Sort.Direction.DESC, "createTime")));
+        return agentReturnOrderRepository.findAll(specification, new PageRequest(returnedOrderSearch.getPageIndex() - 1, Constant.PAGESIZE,new Sort(Sort.Direction.DESC, "createTime")));
 
     }
 

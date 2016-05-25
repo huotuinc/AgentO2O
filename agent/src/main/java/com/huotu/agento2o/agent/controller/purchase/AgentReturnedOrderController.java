@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ public class AgentReturnedOrderController {
     private AgentReturnedOrderService agentReturnedOrderService;
     @Autowired
     private AgentReturnOrderItemService agentReturnOrderItemService;
+    @Autowired
+    private AgentProductService agentProductService;
 
     @Autowired
     private MallProductService mallProductService;
@@ -61,7 +64,7 @@ public class AgentReturnedOrderController {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/purchased_product_list");
         List<AgentProduct> agentProductList = null;
-        agentProductList = agentReturnedOrderService.findAgentProductsByAgentId(author.getId());
+        agentProductList = agentProductService.findByAgentId(author.getId());
         model.addObject("agentProductList", agentProductList);
         return model;
     }
@@ -95,10 +98,16 @@ public class AgentReturnedOrderController {
             MallProduct mallProduct = mallProductService.findByProductId(productIds[i]);
             finalPrice += mallProduct.getPrice()*productNums[i];
         }
-        agentReturnedOrder.setFinalAmount(finalPrice);// FIXME: 2016/5/20 fixed
+        agentReturnedOrder.setFinalAmount(finalPrice);
 
-        AgentReturnedOrder agentReturnedOrder1 = agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
-        agentReturnOrderItemService.addReturnOrderItemList(author,agentReturnedOrder1,productIds,productNums);
+        AgentReturnedOrder savedAgentReturnedOrder= agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
+        if(savedAgentReturnedOrder == null){
+            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        }
+        List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemService.addReturnOrderItemList(author,agentReturnedOrder,productIds,productNums);
+        if(agentReturnedOrderItems.size() == 0){
+            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
@@ -278,6 +287,7 @@ public class AgentReturnedOrderController {
     public ApiResult payReturnOrder(@AgtAuthenticationPrincipal Author author,
                                     @RequestParam(required = true) String rOrderId){
         return agentReturnedOrderService.payReturnOrder(null,author.getId(),rOrderId);
+
     }
 
 
