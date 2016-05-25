@@ -3,14 +3,17 @@ package com.huotu.agento2o.service.service.purchase.impl;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
-import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
+import com.huotu.agento2o.service.entity.purchase.*;
+import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
+import com.huotu.agento2o.service.repository.goods.MallProductRepository;
+import com.huotu.agento2o.service.repository.purchase.AgentDeliveryRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
@@ -19,8 +22,10 @@ import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
@@ -43,6 +48,12 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     @Autowired
     private AgentReturnOrderItemRepository agentReturnOrderItemRepository;
 
+    @Autowired
+    private MallProductRepository mallProductRepository;
+
+    @Autowired
+    private AgentDeliveryRepository agentDeliveryRepository;
+
     @Override
     public List<AgentProduct> findAgentProductsByAgentId(Integer agentId) {
         return agentProductRepository.findByAuthor_IdAndDisabledFalse(agentId);
@@ -59,7 +70,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     }
 
     @Override
-    public Page<AgentReturnedOrder> findAll(int pageIndex, int pageSize, Author author, ReturnedOrderSearch returnedOrderSearch) {
+    public Page<AgentReturnedOrder> findAll(ReturnedOrderSearch returnedOrderSearch) {
 
 
         Specification<AgentReturnedOrder> specification = (root, query, cb) -> {
@@ -74,6 +85,10 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 } else {
                     predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId()));
                 }
+            }
+
+            if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
+                predicates.add(cb.equal(root.get("author").get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId()));
             }
 
             if (!StringUtils.isEmpty(returnedOrderSearch.getROrderId())) {
@@ -111,7 +126,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         };
         //排序
 
-        return agentReturnOrderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
+        return agentReturnOrderRepository.findAll(specification, new PageRequest(returnedOrderSearch.getPageIndex() - 1, 3,new Sort(Sort.Direction.DESC, "createTime")));
 
     }
 
@@ -149,5 +164,192 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             agentProducts.add(agentProduct);
         });
         return agentProductRepository.save(agentProducts);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult checkReturnOrder(Integer customerId, Integer authorId, String rOrderId, PurchaseEnum.OrderStatus status, String comment) {
+        AgentReturnedOrder agentReturnedOrder = findOne(rOrderId);
+        if (agentReturnedOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        //若上级代理商为平台，判断平台是否有修改该采购单的权限
+        //判断该平台是否有修改该采购单的权限
+        if (customerId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() == null && agentReturnedOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+            return new ApiResult("对不起，您没有操作权限！");
+        } else if (authorId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() != null && agentReturnedOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+            //判断该代理商是否有修改该采购单的权限
+            return new ApiResult("对不起，您没有操作权限！");
+        }
+        if (!agentReturnedOrder.checkable()) {
+            return new ApiResult("该退货单已审核，无法再次审核！");
+        }
+        agentReturnedOrder.setStatus(status);
+        if (status == PurchaseEnum.OrderStatus.RETURNED) {
+            agentReturnedOrder.setParentComment(comment);
+            // 该订单是否设置为无效？
+            agentReturnedOrder.setDisabled(true);
+            agentReturnedOrder.setLastUpdateTime(new Date());
+            agentReturnOrderRepository.save(agentReturnedOrder);
+
+            // 释放预占库存
+            Author author = agentReturnedOrder.getAuthor();
+            List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(rOrderId);
+            System.out.println(agentReturnedOrderItems);
+
+            agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
+                System.out.println(author);
+                agentProductRepository.findByAuthorAndProductAndDisabledFalse(author,agentReturnedOrderItem.getProduct());
+                AgentProduct agentProduct =  agentProductRepository.findByAuthorAndProductAndDisabledFalse(author,agentReturnedOrderItem.getProduct());
+                agentProduct.setFreez(agentProduct.getFreez()-agentReturnedOrderItem.getNum());
+                agentProductRepository.save(agentProduct);
+            });
+        } else{
+            agentReturnedOrder.setLastUpdateTime(new Date());
+            agentReturnOrderRepository.save(agentReturnedOrder);
+        }
+
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ApiResult pushReturnOrderDelivery(ReturnOrderDeliveryInfo deliveryInfo, Integer agentId) {
+        AgentReturnedOrder agentReturnedOrder = findOne(deliveryInfo.getOrderId());
+        if (agentReturnedOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+
+        AgentDelivery agentDelivery = new AgentDelivery();
+
+        agentDelivery.setDeliveryId(SerialNo.create());
+        agentDelivery.setPurchaseOrder(null);
+        agentDelivery.setAgentReturnedOrder(agentReturnedOrder);
+        agentDelivery.setAgentId(agentReturnedOrder.getAuthor().getId());
+//        agentDelivery.setCustomerId(customerId);
+        agentDelivery.setType(OrderEnum.DeliveryType.RETURN.getValue());
+        agentDelivery.setLogisticsName(deliveryInfo.getLogiName());
+        agentDelivery.setLogisticsNo(deliveryInfo.getLogiNo());
+        agentDelivery.setFreight(deliveryInfo.getFreight());
+        agentDelivery.setCreateTime(new Date());
+        agentDelivery.setShipName(deliveryInfo.getShipName());
+        agentDelivery.setShipAddr(deliveryInfo.getShipAddr());
+        agentDelivery.setShipMobile(deliveryInfo.getShipMobile());
+        agentDelivery.setShipTel(deliveryInfo.getShipTel());
+        agentDelivery.setMemo(deliveryInfo.getRemark());
+        List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(deliveryInfo.getOrderId());
+        List<AgentDeliveryItem> agentDeliveryItems = new ArrayList<>();
+        for (AgentReturnedOrderItem agentReturnedOrderItem : agentReturnedOrderItems) {
+            AgentDeliveryItem deliveryItem = new AgentDeliveryItem();
+            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentReturnedOrder.getAuthor(),agentReturnedOrderItem.getProduct());
+            deliveryItem.setAgentProductId(agentProduct.getId());
+            deliveryItem.setDelivery(agentDelivery);
+            deliveryItem.setNum(agentReturnedOrderItem.getNum());
+            deliveryItem.setProductBn(agentReturnedOrderItem.getBn());
+            deliveryItem.setProductName(agentReturnedOrderItem.getName());
+            deliveryItem.setProductId(deliveryItem.getProductId());
+            deliveryItem.setDelivery(agentDelivery);
+            agentDeliveryItems.add(deliveryItem);
+        }
+
+        agentDelivery.setDeliveryItems(agentDeliveryItems);
+        agentDeliveryRepository.save(agentDelivery);
+
+        agentReturnedOrder.setLastUpdateTime(new Date());
+        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        agentReturnOrderRepository.save(agentReturnedOrder);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ApiResult receiveReturnOrder(Integer customerId, Integer authorId,Integer subAuthorId, String rOrderId) {
+        AgentReturnedOrder subAgentReturnedOrder = findOne(rOrderId);
+        if (subAgentReturnedOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+
+        //若上级代理商为平台，判断平台是否有修改该采购单的权限
+        //判断该平台是否有修改该采购单的权限
+        if (customerId != null && !(subAgentReturnedOrder.getAuthor().getParentAuthor() == null && subAgentReturnedOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+            return new ApiResult("对不起，您没有操作权限！");
+        } else if (authorId != null && !(subAgentReturnedOrder.getAuthor().getParentAuthor() != null && subAgentReturnedOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+            //判断该代理商是否有修改该采购单的权限
+            return new ApiResult("对不起，您没有操作权限！");
+        }
+
+        if (!subAgentReturnedOrder.receivable()) {
+            return new ApiResult("该退货单已确认收货，无法再次确认收货！");
+        }
+
+        // 更新库存
+        // 增加平台方库存，减少一级代理商库存，释放预占库存
+        List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(rOrderId);
+        if(subAgentReturnedOrder.getAuthor().getParentAuthor()== null){
+
+            agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
+                MallProduct mallProduct = agentReturnedOrderItem.getProduct();
+                mallProduct.setFreez(mallProduct.getFreez()-agentReturnedOrderItem.getNum());
+                mallProduct.setStore(mallProduct.getStore()+agentReturnedOrderItem.getNum());
+                mallProductRepository.save(mallProduct);
+
+                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgentReturnedOrder.getAuthor(),mallProduct);
+                agentProduct.setFreez(agentProduct.getFreez()-agentReturnedOrderItem.getNum());
+                agentProduct.setStore(agentProduct.getStore()-agentReturnedOrderItem.getNum());
+                agentProductRepository.save(agentProduct);
+            });
+
+        } else{// 更新上级代理商库存，上级代理商增加库存，下级代理商减少库存，释放预占库存
+            agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
+                MallProduct mallProduct = agentReturnedOrderItem.getProduct();
+                AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgentReturnedOrder.getAuthor().getParentAuthor(),mallProduct);
+                parentAgentProduct.setStore(parentAgentProduct.getStore()+agentReturnedOrderItem.getNum());
+                agentProductRepository.save(parentAgentProduct);
+
+                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgentReturnedOrder.getAuthor(),mallProduct);
+                agentProduct.setFreez(agentProduct.getFreez()-agentReturnedOrderItem.getNum());
+                agentProduct.setStore(agentProduct.getStore()-agentReturnedOrderItem.getNum());
+                agentProductRepository.save(agentProduct);
+            });
+
+        }
+        subAgentReturnedOrder.setReceivedTime(new Date());
+        agentReturnOrderRepository.save(subAgentReturnedOrder);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ApiResult payReturnOrder(Integer customerId, Integer authorId, String rOrderId) {
+        AgentReturnedOrder agentReturnedOrder = findOne(rOrderId);
+        if (agentReturnedOrder == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+
+        //若上级代理商为平台，判断平台是否有修改该采购单的权限
+        //判断该平台是否有修改该采购单的权限
+        if (customerId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() == null && agentReturnedOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+            return new ApiResult("对不起，您没有操作权限！");
+        } else if (authorId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() != null && agentReturnedOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+            //判断该代理商是否有修改该采购单的权限
+            return new ApiResult("对不起，您没有操作权限！");
+        }
+
+        if (!agentReturnedOrder.payabled()) {
+            return new ApiResult("该退货单已付款，无法再次付款！");
+        }
+
+        agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.PAYED);
+        agentReturnOrderRepository.save(agentReturnedOrder);
+
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ApiResult editReturnNum(Author author, Integer productId, Integer num) {
+        MallProduct mallProduct = new MallProduct();
+        mallProduct.setProductId(productId);
+        AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author,mallProduct);
+        if(agentProduct.getStore()-agentProduct.getFreez()<num){
+            return new ApiResult("库存不足");
+        }
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }
