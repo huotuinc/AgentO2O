@@ -12,7 +12,6 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
-import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -23,27 +22,21 @@ import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * 显示采购商品信息
+ * 显示采购商品信息，加入购物车
  * Created by helloztt on 2016/5/23.
  */
 public class PurchaseControllerTest extends CommonTestBase {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     //平台方
     private MallCustomer mockCustomer;
@@ -67,6 +60,7 @@ public class PurchaseControllerTest extends CommonTestBase {
 
 
     @Before
+    @SuppressWarnings("Duplicates")
     public void init() {
         //模拟数据
         //用户相关
@@ -109,9 +103,9 @@ public class PurchaseControllerTest extends CommonTestBase {
         }
         for (int i = 0; i < random.nextInt(mockGoodsWithNProductList.size()) + 1; i++) {
             mockFirstLevelAgentGoodsWithNProductList.add(mockGoodsWithNProductList.get(i));
-            mockGoodsWithNProductList.get(i).getProducts().forEach(product -> {
-                mockFirstLevelAgentProductList.add(mockAgentProduct(product, mockFirstLevelAgent));
-            });
+            for (int j = 0; j < random.nextInt(mockGoodsWithNProductList.get(i).getProducts().size()) + 1; j++) {
+                mockFirstLevelAgentProductList.add(mockAgentProduct(mockGoodsWithNProductList.get(i).getProducts().get(j), mockFirstLevelAgent));
+            }
         }
     }
 
@@ -526,26 +520,107 @@ public class PurchaseControllerTest extends CommonTestBase {
 
     /**
      * 一级代理商登录 显示货品列表
+     *
      * @throws Exception
      */
+    @Test
     public void testShowProductListByFirstLevelAgent() throws Exception {
+        //一级代理商登录
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+
+        //1.goodsId不传
+        MvcResult resultWithNoGoodsId = mockMvc.perform(
+                post("/purchase/showProductList")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoGoodsId = new String(resultWithNoGoodsId.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoGoodsId = JSONObject.parseObject(contentWithNoGoodsId);
+        Assert.assertEquals("500", objWithNoGoodsId.getString("code"));
+        System.out.println(contentWithNoGoodsId);
+        //2.goodsId =0
+        MvcResult resultWithGoodsId0 = mockMvc.perform(
+                post("/purchase/showProductList")
+                        .session(session)
+                        .param("goodsId", "0"))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<MallProduct> productListWithGoodsId0 = (List<MallProduct>) resultWithGoodsId0.getModelAndView().getModel().get("productList");
+        Assert.assertNull(productListWithGoodsId0);
+
+        //3.货品数量校验
+        MvcResult result = mockMvc.perform(
+                post("/purchase/showProductList")
+                        .session(session)
+                        .param("goodsId", String.valueOf(mockGoodsWithNProductList.get(0).getGoodsId())))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<MallProduct> productList = (List<MallProduct>) result.getModelAndView().getModel().get("productList");
+        Assert.assertEquals(mockGoodsWithNProductList.get(0).getProducts().size(), productList.size());
 
     }
 
     /**
      * 一级代理商下级门店登录 显示货品列表
+     *
      * @throws Exception
      */
-    public void testShowProductListByFirstLevelShop() throws Exception{
-
+    @Test
+    public void testShowProductListByFirstLevelShop() throws Exception {
+        //一级代理商下级门店登录
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        testShowProductList(session);
     }
 
     /**
      * 一级代理商下级代理商登录 显示货品列表
+     *
      * @throws Exception
      */
-    public void testShowProductListBySecondLevelShop() throws Exception{
+    @Test
+    public void testShowProductListBySecondLevelShop() throws Exception {
+        //一级代理商下级门店登录
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        testShowProductList(session);
+    }
 
+    private void testShowProductList(MockHttpSession session) throws Exception {
+        //1.goodsId不传
+        MvcResult resultWithNoGoodsId = mockMvc.perform(
+                post("/purchase/showProductList")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoGoodsId = new String(resultWithNoGoodsId.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoGoodsId = JSONObject.parseObject(contentWithNoGoodsId);
+        Assert.assertEquals("500", objWithNoGoodsId.getString("code"));
+        System.out.println(contentWithNoGoodsId);
+
+        //2.goodsId =0
+        MvcResult resultWithGoodsId0 = mockMvc.perform(
+                post("/purchase/showProductList")
+                        .session(session)
+                        .param("goodsId", "0"))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<MallProduct> productListWithGoodsId0 = (List<MallProduct>) resultWithGoodsId0.getModelAndView().getModel().get("productList");
+        Assert.assertNull(productListWithGoodsId0);
+
+        //3.货品数量校验
+        int expectSize = 0;
+        for (AgentProduct agentProduct : mockFirstLevelAgentProductList) {
+            if (agentProduct.getGoodsId().equals(mockFirstLevelAgentGoodsWithNProductList.get(0).getGoodsId())) {
+                expectSize++;
+            }
+        }
+        MvcResult result = mockMvc.perform(
+                post("/purchase/showProductList")
+                        .session(session)
+                        .param("goodsId", String.valueOf(mockFirstLevelAgentGoodsWithNProductList.get(0).getGoodsId())))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<MallProduct> productList = (List<MallProduct>) result.getModelAndView().getModel().get("productList");
+        Assert.assertEquals(expectSize, productList.size());
     }
 
 }

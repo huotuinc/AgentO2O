@@ -55,7 +55,7 @@ public class IndexControllerTest extends CommonTestBase {
         agent.setDisabled(false);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -81,7 +81,7 @@ public class IndexControllerTest extends CommonTestBase {
         agent.setDisabled(false);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -106,7 +106,7 @@ public class IndexControllerTest extends CommonTestBase {
         agent.setDisabled(true);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -131,7 +131,7 @@ public class IndexControllerTest extends CommonTestBase {
         agent.setDisabled(false);
         agent.setDeleted(true);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        this.mockAgent = agentService.addAgent(agent);
+        agentService.addAgent(agent);
         agentService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -157,7 +157,7 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -183,7 +183,7 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -208,7 +208,7 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setDisabled(true);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -233,7 +233,7 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDeleted(true);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        this.mockShop = shopService.addShop(shop);
+        shopService.addShop(shop);
         shopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))

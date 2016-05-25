@@ -303,7 +303,13 @@
 </form>
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
-    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    var basicUrl = /*[[@{/purchaseOrder}]]*/ "/purchaseOrder";
+    var listSize = /*[[${shoppingCartList == null?0:shoppingCartList.size()}]]*/ 1;
+    $(function(){
+        if(listSize == 0){
+            //todo
+        }
+    })
     /*$("#citys").citySelect({
         nodata:null,
         required:true
