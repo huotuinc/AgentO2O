@@ -16,6 +16,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by helloztt on 2016/5/18.
  */
@@ -23,4 +25,6 @@ import org.springframework.stereotype.Repository;
 public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder, String>, JpaSpecificationExecutor<AgentPurchaseOrder> {
 
     AgentPurchaseOrder findByPOrderIdAndAuthor(String pOrderId, Author author);
+
+    List<AgentPurchaseOrder> findByAuthor(Author author);
 }

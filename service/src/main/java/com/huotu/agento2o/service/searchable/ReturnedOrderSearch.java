@@ -19,6 +19,11 @@ public class ReturnedOrderSearch {
     private Integer parentAgentId;
 
     /**
+     *  平台方id
+     */
+    private Integer customerId;
+
+    /**
      *  退单号
      */
     private String rOrderId;
@@ -47,6 +52,8 @@ public class ReturnedOrderSearch {
      *  搜索截止时间
      */
     private String endTime;
+
+    private int pageIndex = 1;
 
 
 }

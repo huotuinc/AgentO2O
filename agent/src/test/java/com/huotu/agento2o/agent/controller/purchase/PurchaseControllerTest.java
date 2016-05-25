@@ -94,16 +94,16 @@ public class PurchaseControllerTest extends CommonTestBase {
         }
 
         //一级代理商货品
-        for (int i = 0; i < random.nextInt(mockGoodsWith1ProductList.size()) + 1; i++) {
+        for (int i = 0; i <= random.nextInt(mockGoodsWith1ProductList.size()); i++) {
             mockFirstLevelAgentGoodsWith1ProductList.add(mockGoodsWith1ProductList.get(i));
             MallGoods mockGoodsWith1Products = mockGoodsWith1ProductList.get(i);
             mockGoodsWith1Products.getProducts().forEach(product -> {
                 mockFirstLevelAgentProductList.add(mockAgentProduct(product, mockFirstLevelAgent));
             });
         }
-        for (int i = 0; i < random.nextInt(mockGoodsWithNProductList.size()) + 1; i++) {
+        for (int i = 0; i <= random.nextInt(mockGoodsWithNProductList.size()); i++) {
             mockFirstLevelAgentGoodsWithNProductList.add(mockGoodsWithNProductList.get(i));
-            for (int j = 0; j < random.nextInt(mockGoodsWithNProductList.get(i).getProducts().size()) + 1; j++) {
+            for (int j = 0; j <= random.nextInt(mockGoodsWithNProductList.get(i).getProducts().size()); j++) {
                 mockFirstLevelAgentProductList.add(mockAgentProduct(mockGoodsWithNProductList.get(i).getProducts().get(j), mockFirstLevelAgent));
             }
         }
