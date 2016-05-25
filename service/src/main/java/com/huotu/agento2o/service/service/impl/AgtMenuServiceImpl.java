@@ -197,12 +197,12 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             subMenu2.clear();
 
             //新增门店
-            AgtMenu xzmd = new AgtMenu(2, "/shop/addShopPage", "新增门店", 0, mdgl, "SHOP", 0, "030101");
+            AgtMenu xzmd = new AgtMenu(2, "/shop/addShopPage", "新增门店", 1, mdgl, "SHOP", 0, "030101");
             xzmd = menuRepository.save(xzmd);
             subMenu2.add(xzmd);
 
             //门店列表
-            AgtMenu shlb = new AgtMenu(2, "/shop/shopList", "门店列表", 1, mdgl, "SHOP", 0, "030102");
+            AgtMenu shlb = new AgtMenu(2, "/shop/shopList", "门店列表", 0, mdgl, "SHOP", 0, "030102");
             shlb = menuRepository.save(shlb);
             subMenu2.add(shlb);
 
@@ -231,19 +231,20 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             baseMenu = menuRepository.save(baseMenu);
             subMenu1.clear();
 
-            //基本设置
-            AgtMenu jbse = new AgtMenu(1, "", "资料设置", 0, baseMenu, "BASE_SHOP", 0, "0401");
-            jbse = menuRepository.save(jbse);
+            //资料设置
+            AgtMenu jbsz = new AgtMenu(1, "", "资料设置", 0, baseMenu, "BASE_SHOP", 0, "0401");
+            jbsz = menuRepository.save(jbsz);
             subMenu2.clear();
 
-            //门店基本设置
-            AgtMenu mdjbsz = new AgtMenu(2, "/shop/baseConfig", "修改资料", 0, jbse, "BASE_SHOP", 0, "040101");
+            //修改资料
+            AgtMenu mdjbsz = new AgtMenu(2, "/shop/baseConfig", "修改资料", 0, jbsz, "BASE_SHOP", 0, "040101");
             mdjbsz = menuRepository.save(mdjbsz);
             subMenu2.add(mdjbsz);
 
-            jbse.setChildren(subMenu2);
-            jbse = menuRepository.save(jbse);
-            subMenu1.add(jbse);
+
+            jbsz.setChildren(subMenu2);
+            jbsz = menuRepository.save(jbsz);
+            subMenu1.add(jbsz);
 
             baseMenu.setChildren(subMenu1);
             menuRepository.save(baseMenu);
