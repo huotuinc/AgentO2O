@@ -37,7 +37,7 @@
 </head>
 <body>
 <!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="get" action="/purchase/showReturnedOrderList" data-th-action="@{/purchase/showReturnedOrderList}" id="form1"
+<form method="get" action="/huobanmall/returnOrder/showReturnedOrderList" data-th-action="@{/huobanmall/returnOrder/showReturnedOrderList}" id="form1"
       th:object="${searchCondition}">
 
 
@@ -120,6 +120,8 @@
 
                         <th scope="col">退单号
                         </th>
+                        <th scope="col">代理商
+                        </th>
                         <th scope="col">审核状态
                         </th>
                         <th scope="col">发货状态
@@ -148,6 +150,9 @@
                                 <span th:text="${agentReturnOrder.rOrderId}">rOrderId</span>
                             </a>
                         </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.author.name}">
+                            代理商
+                        </td>
                         <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}">
                             审核状态
                         </td>
@@ -171,9 +176,9 @@
                         </td>
                         <td class="txt80 c">
                             <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.rOrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="查看详细">查看详细</a>
-                            <a th:if="${agentReturnOrder.deletable()}" href="javascript:void(0)"  th:onclick="|cancelReturnedOrder('${agentReturnOrder.rOrderId}')|" onclick="cancelReturnedOrder()" title="取消退货">| 删除</a>
-                            <a th:if="${agentReturnOrder.deliverable()}" href="javascript:void(0)"  th:onclick="|deliverReturnedOrder('${agentReturnOrder.rOrderId}')|" onclick="deliverReturnedOrder()" title="发货">| 退货</a>
-
+                            <a th:if="${agentReturnOrder.checkable()}" href="javascript:void(0)" th:onclick="|checkReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="checkReturnOrder()" title="审核"> | 审核</a>
+                            <a th:if="${agentReturnOrder.receivable()}" href="javascript:void(0)" th:onclick="|receiveReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="receiveReturnOrder()" title="确认收货"> | 确认收货</a>
+                            <a th:if="${agentReturnOrder.payabled()}" href="javascript:void(0)" th:onclick="|payReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="payReturnOrder()" title="支付"> | 支付</a>
                         </td>
                     </tr>
                     </tbody>
@@ -181,14 +186,14 @@
             </div>
             <!--分页开始-->
             <script type="text/javascript" th:inline="javascript">
-            /*<![CDATA[*/
-            var pageSize = /*[[${pageSize}]]*/ '-1';
-            var pageIndex = /*[[${pageIndex}]]*/ '-1';
-            var pageCount = /*[[${totalPages}]]*/ '-1';
-            var recordCount = /*[[${totalRecords}]]*/ '-1';
-            var formName = 'form1';
-            Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
-            /*]]>*/
+                /*<![CDATA[*/
+                var pageSize = /*[[${pageSize}]]*/ '-1';
+                var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                var pageCount = /*[[${totalPages}]]*/ '-1';
+                var recordCount = /*[[${totalRecords}]]*/ '-1';
+                var formName = 'form1';
+                Pager.Output(formName, 'pageIndex', pageSize, pageIndex, pageCount, recordCount);
+                /*]]>*/
             </script>
             <!--分页结束-->
         </div>
@@ -196,10 +201,51 @@
         <p style="clear: both"></p>
     </div>
 </form>
+
+<!--审核对话框start-->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
+     aria-labelledby="ui-dialog-title-managerInfoDialog"
+     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
+    <div id="checkDialog" style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div style="width:300px">
+                <ul>
+                    <li style="text-align: center ; ">
+                        <label>
+                            <input type="radio" name="RadioGroup" value="1" id="RadioGroup1" style="
+    vertical-align: text-top; text-align: center;
+" onclick="javascript:change(1)"  checked="checked"/>
+                            审核通过</label>
+                        <label>
+                            <input type="radio" name="RadioGroup" value="2" id="RadioGroup2" onclick="javascript:change(2)"  style="vertical-align: text-top;"/>
+                            审核不通过</label>
+                    </li>
+                    <li style="display: none" id="comment">
+                        <label>
+                            审核说明<textarea  name="parentComment" id="parentComment"  style="width: 80%"></textarea>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                    role="button" aria-disabled="false"><span class="ui-button-text">确定</span></button>
+            <button type="button"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
+                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
+        </div>
+    </div>
+</div>
+<!--审核对话框end-->
+
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
 
-    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    var basicUrl = /*[[@{/huobanmall/returnOrder}]]*/ "/huobanmall/returnOrder";
 
     function searchReturnedOrder() {
 
@@ -207,14 +253,13 @@
         $('#form1').submit();
     }
 
-    function cancelReturnedOrder(rOrderId){
-
-        $.jBox.confirm("确定要取消该退货申请吗？","提示",function(v){
+    // 确认收货
+    function receiveReturnOrder(rOrderId){
+        $.jBox.confirm("请确认已收到退货？","提示",function(v){
             if(v == 'ok'){
-
-                $.jBox.tip("正在取消...", "loading");
+                $.jBox.tip("确认收货...", "loading");
                 $.ajax({
-                    url:basicUrl+"/cancelReturnOrder",
+                    url:basicUrl+"/receiveReturnOrder",
                     type:"get",
                     data:{
                         rOrderId:rOrderId
@@ -234,17 +279,87 @@
                 });
             }
         });
+
     }
 
-    //采购单发货
-    function deliverReturnedOrder(rOrderId){
-        var deliveryUrl = /*[[@{/purchase/showDelivery}]]*/ "/purchase/showDelivery";
-        var url =  deliveryUrl + "?rOrderId=" + rOrderId;
-        J.PopupIFrame(url, "采购单发货", 900, 480, "ifrm", "", "auto", "");
+    // 支付
+    function payReturnOrder(rOrderId){
+        $.jBox.confirm("请确认已线下退款给退货方？","提示",function(v){
+            if(v == 'ok'){
+                $.jBox.tip("确认退款...", "loading");
+                $.ajax({
+                    url:basicUrl+"/payReturnOrder",
+                    type:"get",
+                    data:{
+                        rOrderId:rOrderId
+                    },
+                    dataType: "json",
+                    success:function(result){
+                        if(result.code == 200){
+                            $.jBox.tip(result.msg, "success");
+                            location.reload();
+                        }else{
+                            $.jBox.tip(result.msg, "error");
+                        }
+                    },
+                    error: function () {
+                        $.jBox.tip("发生错误", "error");
+                    }
+                });
+            }
+        });
+
+    }
+
+    //审核采购单
+    function checkReturnOrder(rOrderId){
+        J.ShowDialog("checkDialog", "退货单审核", function () {
+            var status = $("input[name='RadioGroup']:checked").val();
+            var data = {
+                'checkStatus':status,
+                'rOrderId':rOrderId,
+            };
+            if(status == '2'){
+                var comment = $.trim($("#parentComment").val());
+                if(comment.length == 0){
+                    $.jBox.tip("请输入审核说明！");
+                    return;
+                }
+                data['parentComment'] = comment;
+            }
+            $.jBox.tip("正在保存...", "loading");
+            $.ajax({
+                type: "POST",
+                url: basicUrl + "/checkAgentReturnOrder",
+                data: data,
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code == 200) {
+                        $.jBox.tip("审核成功！","success");
+                        setTimeout(function(){
+                            window.location.reload();
+                        },500)
+                    } else {
+                        $.jBox.tip(msg.msg, 'error');
+                    }
+                }
+            });
+        },function(){
+            $(this).dialog('close');
+        });
+    }
+
+    //审核状态单选框单击事件
+    function change(type){
+        if(type == 1){
+            document.getElementById('comment').style.display='none';
+        }else{
+            document.getElementById('comment').style.display='';
+        }
     }
 
     function searchReturnOrderAll(){
-        window.location.href = /*[[@{/purchase/showReturnedOrderList}]]*/ "";
+        window.location.href = /*[[@{/huobanmall/returnOrder/showReturnedOrderList}]]*/ "";
     }
 
     function showReturnedOrderDetail(rOrderId){

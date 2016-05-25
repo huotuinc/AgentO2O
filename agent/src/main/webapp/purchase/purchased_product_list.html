@@ -55,7 +55,7 @@
                             </th>
                             <th scope="col">货品名称
                             </th>
-                            <th scope="col">单价
+                            <th scope="col">订购价
                             </th>
                             <th scope="col">库存
                             </th>
@@ -123,12 +123,7 @@
         <table id="contenttable" class="data-form" border="0" cellspacing="1" cellpadding="0"
                style="background: #e1e1e1;">
             <tbody>
-            <tr style="color: #e8e8e8">
-                <th scope="row">联系方式：</th>
-                <td>
-                    <input type="text" id="mobile"/>
-                </td>
-            </tr>
+
             <tr>
                 <th scope="row">配送方式：</th>
                 <td>
@@ -139,7 +134,7 @@
                 </td>
             </tr>
             <tr style="color: rgb(232, 232, 232); display: table-row;" id="passtr" >
-                <th scope="row">备注：</th>
+                <th scope="row">退货说明：</th>
                 <td>
                     <textarea id="mark"></textarea>
                 </td>
@@ -154,15 +149,32 @@
     var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
     $("#checkall").click(function () {
         var option = $("#checkall").prop('checked');
-        $("[name='checkProduct']:checkbox").each(function () {
 
-            if(!$(this).attr("disabled")){
-                $(this).prop("checked", option);
-            }
+        if(option){
+            $("[name='checkProduct']:checkbox").each(function (i) {
+                if(!$(this).attr("disabled")){
+                    $(this).prop("checked", option);
+                }
+            });
+            $("input[name=num]").each(function(i){
 
-        });
-
-        console.log(getCheckedItems("checkProduct"));
+                var store = $(".store").eq(i);
+                if($(store).text() == 0){
+                    $(this).attr("disabled",true);
+                }else{
+                    $(this).attr("disabled",false);
+                }
+            });
+        }else{
+            $("[name='checkProduct']:checkbox").each(function (i) {
+                if(!$(this).attr("disabled")){
+                    $(this).prop("checked", option);
+                }
+            });
+            $("input[name=num]").each(function(i){
+                $(this).attr("disabled",true);
+            });
+        }
     });
 
     // 默认退货数量都不可编辑
@@ -176,7 +188,7 @@
             var check = $("input[name='checkProduct']").eq(i);
             $(check).attr("disabled","disabled");
         }
-    })
+    });
 
     // 选中货品才可编辑退货数量
     $("input[name='checkProduct']").click(function(){
@@ -187,6 +199,38 @@
         }else{
             num.attr("disabled", true);
         }
+    });
+
+    // 验证库存是否可用
+    $("input[name=num]").blur(function(){
+        var i = $("input[name=num]").index($(this));
+        var product = $("input[name='checkProduct']").eq(i);
+        var productId = $(product).val();
+        var num = $(this).val();
+        if(num == 0){
+            $.jBox.tip("请设置退货数量");
+        }else{
+            $.ajax({
+                type: "GET",
+                url: basicUrl + "/editReturnNum",
+                data: {
+                    productId: productId,
+                    num:num
+                },
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code == 200) {
+                        $.jBox.tip(msg.msg,'success');
+                    } else {
+                        $.jBox.tip(msg.msg, 'error');
+                    }
+//                setTimeout(function(){
+//                    window.location.reload();
+//                },500);
+                }
+            });
+        }
+
     });
 
     $("input[name=num]").change(function(){
@@ -215,10 +259,10 @@
         var sendmentStatus = $("#deliverWay option:selected").val();
         var authorComment = $.trim($("#mark").val());
 
-        if(!J.IsMobile(mobile)){
-            $.jBox.tip("手机号码格式不正确");
-            return;
-        }
+//        if(!J.IsMobile(mobile)){
+//            $.jBox.tip("手机号码格式不正确");
+//            return;
+//        }
         if(mark.length == 0){
             $.jBox.tip("备注不能为空");
             return;
@@ -251,16 +295,21 @@
         var self2 = this;
         var productIds = getCheckedItems();
         var productNums = "";
+        var productNumSum = 0;
         if(productIds.length == 0){
             $.jBox.tip("请选择退货商品");
             return;
         }
-        $("input[name='checkProduct']").each(function(i,v){
-            if(v.checked){
-                var num = $("input[name='num']").eq(i).val();
-                productNums += num +",";
-            }
+        $("input[name=num]:enabled").each(function(index, el) {
+            productNums += $(this).val() +",";
+            productNumSum +=$(this).val();
         });
+        console.log(productNums);
+
+        if(productNumSum == 0){
+            $.jBox.tip("请设置退货数量");
+            return;
+        }
 
         J.ShowDialog("managerInfoDialog", "填写退货单信息", function () {
 
