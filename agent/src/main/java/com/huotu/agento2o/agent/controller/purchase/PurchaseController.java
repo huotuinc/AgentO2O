@@ -116,13 +116,14 @@ public class PurchaseController {
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
         //校验数量
         if (num == null || num.equals(0)) {
-            return new ApiResult("请输入要订购的数量");
+            return new ApiResult("订购数量必须大于0！");
         }
         //校验商品
         MallGoods goods = null;
         if (goodsId != null && !goodsId.equals(0)) {
             goods = goodsService.findByGoodsId(goodsId);
-            if (goods == null) {
+            //判断商品是否为空 或者 是否为平台代理商品
+            if (goods == null || !author.getCustomer().getCustomerId().equals(goods.getCustomerId())) {
                 return new ApiResult("请选择要订购的商品！");
             }
         }
@@ -142,7 +143,7 @@ public class PurchaseController {
             return new ApiResult("请选择要订购的商品！");
         }
         //校验库存
-        if(num > product.getStore() - product.getFreez()){
+        if (num > product.getStore() - product.getFreez()) {
             return new ApiResult("库存不足！");
         }
         //增加购物车记录
@@ -159,10 +160,17 @@ public class PurchaseController {
     }
 
 
+    /**
+     * 显示商品的货品列表
+     * @param author
+     * @param goodsId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showProductList")
     public ModelAndView showProductList(
             @AgtAuthenticationPrincipal Author author,
-            Integer goodsId) throws Exception {
+            @RequestParam(value = "goodsId", required = true) Integer goodsId) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/product_list");
         List<MallProduct> productList = null;
@@ -173,55 +181,7 @@ public class PurchaseController {
         return model;
     }
 
-    /**
-     * 采购下单
-     *
-     * @param author
-     * @param agentPurchaseOrder
-     * @param shoppingCartIds
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/addPurchase", method = RequestMethod.POST)
-    @ResponseBody
-    public ApiResult addPurchase(
-            @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
-            AgentPurchaseOrder agentPurchaseOrder, String... shoppingCartIds) throws Exception {
-        String sendModeCode = request.getParameter("sendModeCode");
-        String taxTypeCode = request.getParameter("taxTypeCode");
-        //采购信息校验
-        if (agentPurchaseOrder == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
-        if (shoppingCartIds.length == 0) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
-        if (StringUtil.isEmptyStr(agentPurchaseOrder.getShipName()) || StringUtil.isEmptyStr(agentPurchaseOrder.getShipMobile())
-                || StringUtil.isEmptyStr(agentPurchaseOrder.getShipAddr())) {
-            return new ApiResult("请输入收货信息");
-        }
-        if (StringUtil.isEmptyStr(sendModeCode)) {
-            return new ApiResult("请选择配送方式");
-        }
-        if (StringUtil.isEmptyStr(taxTypeCode)) {
-            return new ApiResult("请选择发票类型");
-        }
-        if ("1".equals(taxTypeCode)) {
-            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())) {
-                return new ApiResult("请输入普通发票信息");
-            }
-        } else if ("2".equals(taxTypeCode)) {
-            if (StringUtil.isEmptyStr(agentPurchaseOrder.getTaxTitle()) || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxContent())
-                    || StringUtil.isEmptyStr(agentPurchaseOrder.getTaxpayerCode()) || StringUtil.isEmptyStr(agentPurchaseOrder.getBankName())
-                    || StringUtil.isEmptyStr(agentPurchaseOrder.getAccountNo())) {
-                return new ApiResult("请输入增值税发票信息");
-            }
-        }
-        agentPurchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, Integer.parseInt(sendModeCode)));
-        agentPurchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, Integer.parseInt(taxTypeCode)));
-        ApiResult result = purchaseOrderService.addPurchaseOrder(agentPurchaseOrder, author, shoppingCartIds);
-        return result;
-    }
+
 
 
 }

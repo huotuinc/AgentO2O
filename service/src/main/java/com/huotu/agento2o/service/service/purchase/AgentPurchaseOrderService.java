@@ -25,7 +25,7 @@ public interface AgentPurchaseOrderService {
 
     Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher);
 
-    ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception;
+    ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds);
 
     AgentPurchaseOrder findByPOrderId(String pOrderId);
 
@@ -79,5 +79,5 @@ public interface AgentPurchaseOrderService {
      * @param comment
      * @return
      */
-    ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment);
+    ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) throws Exception;
 }

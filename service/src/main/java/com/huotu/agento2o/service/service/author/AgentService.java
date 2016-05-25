@@ -26,6 +26,7 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 根据唯一id获取某个代理商
+     *
      * @param id
      * @return
      */
@@ -33,6 +34,7 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 根据登录名获取审核通过的代理商
+     *
      * @param userName
      * @return
      */
@@ -40,6 +42,7 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 增加代理商
+     *
      * @param agent
      * @return
      */
@@ -52,6 +55,7 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 根据代理商等级id获取未删除的代理商集合
+     *
      * @param id
      * @return
      */
@@ -59,6 +63,7 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 判断用户名是否可用
+     *
      * @param userName
      * @return true--可用
      */
@@ -66,32 +71,37 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 根据平台方id和搜索条件获取代理商页面
+     *
      * @param customerId
      * @param agentSearcher
      * @return
      */
-    Page<Agent> getAgentList(Integer customerId,AgentSearcher agentSearcher);
+    Page<Agent> getAgentList(Integer customerId, AgentSearcher agentSearcher);
 
     /**
      * 根据唯一id删除代理商，实际上是修改isDeleted的状态
+     *
      * @param id
      */
     void deleteAgent(Integer id);
 
     /**
      * 根据唯一id冻结代理商账号
+     *
      * @param id
      */
     void freezeAgent(Integer id);
 
     /**
      * 根据唯一id解冻代理商账号
+     *
      * @param id
      */
     void unfreezeAgent(Integer id);
 
     /**
      * 根据父代理商id获取代理商集合
+     *
      * @param id
      * @return
      */
@@ -99,17 +109,19 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 增加或修改代理商
+     *
      * @param customerId
      * @param agentLevelId
      * @param parentAgentId
      * @param hotUserName
-     * @param requestAgent 当id>0时为修改
+     * @param requestAgent  当id>0时为修改
      * @return
      */
-    ApiResult addOrUpdate(Integer customerId,Integer agentLevelId,Integer parentAgentId,String hotUserName,Agent requestAgent);
+    ApiResult addOrUpdate(Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent);
 
     /**
      * 将代理商信息导出到excel
+     *
      * @param agents
      * @return
      */
@@ -117,6 +129,7 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * g根据小伙伴id查找绑定的代理商
+     *
      * @param id
      * @return
      */
@@ -124,9 +137,19 @@ public interface AgentService extends UserDetailsService {
 
     /**
      * 根据代理商id重置代理商密码
+     *
      * @param id
      * @param password
      */
-    void resetPassword(Integer id,String password);
+    void resetPassword(Integer id, String password);
+
+    /**
+     * 保存代理商基本信息
+     *
+     * @param agentId
+     * @param requestAgent
+     * @return
+     */
+    ApiResult saveAgentConfig(Integer agentId, Agent requestAgent);
 
 }

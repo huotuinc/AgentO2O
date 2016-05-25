@@ -55,8 +55,8 @@ public class MallGoods {
     /**
      * 代理商ID，值为0表示平台方代理商品
      */
-//    @Column(name = "Agent_Id")
-//    private Integer agentId;
+    @Column(name = "Agent_Id")
+    private Integer agentId;
 
     @Column(name = "Name")
     private String name;

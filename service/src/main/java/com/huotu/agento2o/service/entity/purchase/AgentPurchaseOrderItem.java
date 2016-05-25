@@ -36,7 +36,7 @@ public class AgentPurchaseOrderItem {
      * 采购单
      */
     @JoinColumn(name = "P_Order_Id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private AgentPurchaseOrder purchaseOrder;
     /**
      * 货品

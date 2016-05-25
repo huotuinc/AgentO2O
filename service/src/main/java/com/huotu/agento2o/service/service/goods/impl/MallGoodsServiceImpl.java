@@ -53,7 +53,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         Specification<MallGoods> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
-//            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
+            predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }
@@ -65,9 +65,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                 goods.getProducts().forEach(product -> {
                     AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
                     if (agentProduct != null) {
-                        product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                        product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
                     }
-                    product.setUsableStore(product.getStore() - product.getFreez());
+                    product.setUsableStore(Math.max(0, product.getStore() - product.getFreez()));
                 });
             });
         }
@@ -103,10 +103,10 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                     AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
                     AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
                     if (agentProduct != null) {
-                        product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                        product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
                     }
                     if (parentAgentProduct != null) {
-                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                        product.setUsableStore(Math.max(0, parentAgentProduct.getStore() - parentAgentProduct.getFreez()));
                     }
                 });
             });

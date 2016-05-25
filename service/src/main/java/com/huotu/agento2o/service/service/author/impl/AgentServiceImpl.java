@@ -17,9 +17,7 @@ import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +27,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -190,6 +187,10 @@ public class AgentServiceImpl implements AgentService {
         //根据代理商的id判断是增加还是修改，当大于0时是修改
         if (requestAgent.getId() > 0) {
             agent = agentRepository.findOne(requestAgent.getId());
+            //当代理商不存在、已删除情况下无法修改
+            if (agent == null || agent.isDeleted()) {
+                return new ApiResult("该代理商已失效", 805);
+            }
         } else {
             //判断用户名是否可用
             if (!ifEnable(requestAgent.getUsername())) {
@@ -216,6 +217,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setUserBaseInfo(userBaseInfo);
         agent.setProvince(requestAgent.getProvince());
         agent.setTelephone(requestAgent.getTelephone());
+        agent.setEmail(requestAgent.getEmail());
         agentRepository.save(agent);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
@@ -249,6 +251,31 @@ public class AgentServiceImpl implements AgentService {
     @Transactional
     public void resetPassword(Integer id, String password) {
         agentRepository.resetPassword(id, passwordEncoder.encode((password)));
+    }
+
+    @Override
+    @Transactional
+    public ApiResult saveAgentConfig(Integer agentId, Agent requestAgent) {
+        Agent agent = agentRepository.findOne(agentId);
+        //当代理商不存在、已删除、已冻结情况下无法修改
+        if (agent == null || agent.isDeleted() || agent.isDisabled()) {
+            return new ApiResult("该账号暂已失效", 805);
+        }
+        agent.setName(requestAgent.getName());
+        agent.setComment(requestAgent.getComment());
+        agent.setAddress(requestAgent.getAddress());
+        agent.setCity(requestAgent.getCity());
+        agent.setContact(requestAgent.getContact());
+        agent.setDistrict(requestAgent.getDistrict());
+        agent.setMobile(requestAgent.getMobile());
+        agent.setProvince(requestAgent.getProvince());
+        agent.setTelephone(requestAgent.getTelephone());
+        agent.setAccountName(requestAgent.getAccountName());
+        agent.setAccountNo(requestAgent.getAccountNo());
+        agent.setBankName(requestAgent.getBankName());
+        agent.setEmail(requestAgent.getEmail());
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+
     }
 
     @Override

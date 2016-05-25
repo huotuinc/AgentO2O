@@ -94,11 +94,11 @@ public abstract class CommonTestBase {
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
         //平台方商品
-        /*if(agentId == null){
+        if(agentId == null){
             mockMallGoods.setAgentId(0);
         }else {
             mockMallGoods.setAgentId(agentId);
-        }*/
+        }
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());

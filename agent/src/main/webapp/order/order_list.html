@@ -115,6 +115,7 @@
             var raSortType_0 = $("input[name=raSortType]:checked").val();
             var txtBeginTime = $("#beginTime").val();
             var txtEndTime = $("#endTime").val();
+            var ddlShipMode = $("#shipMode").val();
 
             var txtEndPaytime = $("#endPayTime").val();
             var txtBeginPaytime = $("#beginPayTime").val();
@@ -132,6 +133,7 @@
                     + '&txtBeginPaytime=' + txtBeginPaytime
                     + '&txtBeginPage=' + txtBeginPage
                     + '&txtEndPage=' + txtEndPage
+                    + '&ddlShipMode=' + ddlShipMode
             ;
 
             J.PopupIFrame(url, "选择导出模版", 330, 230, "ifrm", "", "auto", "");

@@ -66,7 +66,13 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop addShop(Shop shop) {
-        return shopRepository.save(shop);
+        Shop checkShop = findByUserName(shop.getUsername());
+        if(checkShop == null){
+            shop.setPassword(passwordEncoder.encode(shop.getPassword()));
+            shop.setCreateTime(new Date());
+            return shopRepository.save(shop);
+        }
+        return null;
     }
 
     @Override

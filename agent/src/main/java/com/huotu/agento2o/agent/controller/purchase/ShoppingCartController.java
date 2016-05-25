@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
+import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
@@ -19,17 +20,15 @@ import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
-import com.huotu.agento2o.service.entity.goods.MallGoods;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.service.config.InvoiceService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -80,7 +79,6 @@ public class ShoppingCartController {
                 }
             }
         });
-
     }
 
     /**
@@ -91,7 +89,7 @@ public class ShoppingCartController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/delete")
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult delete(
             @AgtAuthenticationPrincipal Author author,
@@ -112,6 +110,9 @@ public class ShoppingCartController {
             @RequestParam(required = true, name = "num") Integer num) throws Exception {
         if (id == null || id.equals(0)) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (num.equals(0)) {
+            return new ApiResult("订购数量必须大于0！");
         }
         ApiResult result = shoppingCartService.editShoppingCart(author, id, num);
         return result;
@@ -135,41 +136,51 @@ public class ShoppingCartController {
      * 填写采购单
      *
      * @param author
-     * @param agentPurchaseOrder
      * @param shoppingCartId
      * @return
      * @throws Exception
      */
     @RequestMapping("/addPurchase")
     public ModelAndView addPurchase(
-            @AgtAuthenticationPrincipal Author author, AgentPurchaseOrder agentPurchaseOrder,
+            @AgtAuthenticationPrincipal Author author,
             String... shoppingCartId) throws Exception {
         ModelAndView model = new ModelAndView();
-        if (shoppingCartId.length == 0) {
+        if (shoppingCartId == null || shoppingCartId.length == 0) {
             //如果没有选中的购物车货品ID，则跳转到购物车
-            model.setViewName("redirect:/shoppingCart/showShoppingCart");
-            return model;
+            return new ModelAndView("redirect:/shoppingCart/showShoppingCart");
         }
         model.setViewName("/purchase/add_purchase");
-        // TODO: 2016/5/17 获取 author 默认收货信息
-        //获取默认发票类型及基本信息
-        int invoiceType = 0;
-        InvoiceConfig defaltConfig = invoiceService.findDefaultByAuthor(author);
-        if (defaltConfig.getType() == InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE) {
-            invoiceType = 1;
-        } else if (defaltConfig.getType() == InvoiceEnum.InvoiceTypeStatus.TAXINVOICE) {
-            invoiceType = 2;
-        }
         List<Integer> shoppingCartIds = new ArrayList<>();
         for (String shoppingCart : shoppingCartId) {
             shoppingCartIds.add(Integer.valueOf(shoppingCart));
         }
         List<ShoppingCart> shoppingCartList = shoppingCartService.findById(shoppingCartIds, author);
-        getPicUri(shoppingCartList);
+        if (shoppingCartList != null && shoppingCartList.size() > 0) {
+            getPicUri(shoppingCartList);
+        } else {
+            //如果没有可采购的购物车货品ID，则跳转到购物车
+            return new ModelAndView("redirect:/shoppingCart/showShoppingCart");
+        }
+        // TODO: 2016/5/17 获取 author 默认收货信息
+        AgentPurchaseOrder agentPurchaseOrder = new AgentPurchaseOrder();
+        //获取默认发票类型及基本信息
+        int invoiceType = 0;
+        InvoiceConfig defaultConfig = invoiceService.findDefaultByAuthor(author);
+        if (defaultConfig != null && defaultConfig.getType() != null && InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE.equals(defaultConfig.getType())) {
+            invoiceType = 1;
+            agentPurchaseOrder.setTaxTitle(defaultConfig.getTaxTitle());
+            agentPurchaseOrder.setTaxContent(defaultConfig.getTaxContent());
+        } else if (defaultConfig != null && defaultConfig.getType() != null && InvoiceEnum.InvoiceTypeStatus.TAXINVOICE.equals(defaultConfig.getType())) {
+            invoiceType = 2;
+            agentPurchaseOrder.setTaxTitle(defaultConfig.getTaxTitle());
+            agentPurchaseOrder.setTaxContent(defaultConfig.getTaxContent());
+            agentPurchaseOrder.setTaxpayerCode(defaultConfig.getTaxpayerCode());
+            agentPurchaseOrder.setBankName(defaultConfig.getBankName());
+            agentPurchaseOrder.setAccountNo(defaultConfig.getAccountNo());
+        }
+        agentPurchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, invoiceType));
         model.addObject("agentPurchaseOrder", agentPurchaseOrder);
         model.addObject("shoppingCartList", shoppingCartList);
-        model.addObject("invoiceType", invoiceType);
-        model.addObject("invoiceConfig", defaltConfig);
         model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         model.addObject("taxTypeEnum", PurchaseEnum.TaxType.values());
         return model;

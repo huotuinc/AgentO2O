@@ -78,7 +78,7 @@ public class MallProduct {
      * 可用库存
      */
     @Transient
-    private int usableStore;
+    private int usableStore = 0;
 
     /**
      * 当前代理商/门店库存
