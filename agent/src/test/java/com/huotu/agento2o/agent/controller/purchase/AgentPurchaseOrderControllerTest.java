@@ -506,5 +506,18 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Assert.assertEquals("库存不足，下单失败！",objWithNumTooMuchId.getString("msg"));
     }
 
+    /**
+     * 一级代理商登录 采购单列表
+     * @throws Exception
+     */
+    @Test
+    public void testShowPurchaseOrderListByFirstLevelAgent() throws Exception{
+        //一级代理商登录
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(),passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+
+        // 1.不带搜索条件
+        // 2.
+    }
+
 
 }

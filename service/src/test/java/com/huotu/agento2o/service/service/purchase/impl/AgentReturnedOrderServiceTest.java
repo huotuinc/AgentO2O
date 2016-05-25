@@ -59,7 +59,8 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Author author = new Agent();
         author.setId(2);
 
-        Page<AgentReturnedOrder> agentReturnedOrderPage = agentReturnedOrderService.findAll(1,10,author,returnedOrderSearch);
+//        Page<AgentReturnedOrder> agentReturnedOrderPage = agentReturnedOrderService.findAll(1,10,author,returnedOrderSearch);
+        Page<AgentReturnedOrder> agentReturnedOrderPage = agentReturnedOrderService.findAll(null);
 
         List<AgentReturnedOrder> agentReturnedOrders = agentReturnedOrderPage.getContent();
 

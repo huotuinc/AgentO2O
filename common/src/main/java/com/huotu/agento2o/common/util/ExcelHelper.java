@@ -53,7 +53,15 @@ public class ExcelHelper {
                 CellDesc cellDesc = rowAndCells.get(i).get(j);
                 HSSFCell cell = row.createCell(j);
                 cell.setCellType(cellDesc.cellType);
-                cell.setCellValue(String.valueOf(cellDesc.getValue()));
+                if (cellDesc.cellType == Cell.CELL_TYPE_NUMERIC) {
+                    if (cellDesc.getValue() != null) {
+                        cell.setCellValue(new Double(String.valueOf(cellDesc.getValue())));
+                    } else {
+                        cell.setCellValue((double) 0);
+                    }
+                } else {
+                    cell.setCellValue(String.valueOf(cellDesc.getValue()));
+                }
             }
         }
         return workbook;

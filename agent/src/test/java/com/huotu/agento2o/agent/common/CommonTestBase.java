@@ -227,7 +227,11 @@ public abstract class CommonTestBase extends SpringWebTest{
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setAuthor(author);
         shoppingCart.setProduct(agentProduct.getProduct());
-        shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
+        if(agentProduct.getStore()-agentProduct.getFreez() == 0){
+            shoppingCart.setNum(0);
+        }else {
+            shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
+        }
         shoppingCart.setCreateTime(new Date());
         return shoppingCartRepository.saveAndFlush(shoppingCart);
     }

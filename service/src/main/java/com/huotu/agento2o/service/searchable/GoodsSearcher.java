@@ -19,6 +19,9 @@ import lombok.Data;
 public class GoodsSearcher {
     String goodsName;
     private int pageNo = 1;
+    //标准类目ID
     String standardTypeId;
+    //自定义类型ID
+    Integer customerTypeId = -1;
 
 }
