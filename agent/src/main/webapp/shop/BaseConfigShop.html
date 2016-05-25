@@ -75,21 +75,15 @@
                     <div>
                         <span style="color:#6699d5" class="spModuleTitle">登录信息</span>
                         <div class="division">
-                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="shopID"/>
+                            <input style="display: none" th:field="*{id}" th:value="*{id}" id="shopID"
+                                   disabled="hidden"/>
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
                                     <th>用户名：</th>
                                     <td>
                                         <span type="text" class="input-normal" id="username" th:field="*{username}"
-                                              th:text="*{username}"></span>
-                                    </td>
-                                </tr>
-                                <tr style="display:none">
-                                    <th>登陆密码：</th>
-                                    <td>
-                                        <input type="text" class="input-normal" id="password" th:field="*{password}"
-                                               th:value="*{password}"/>
+                                               th:text="*{username}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -125,8 +119,8 @@
                                 <tr>
                                     <th>小伙伴用户名：</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="hotUserName"
-                                            th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></input>
+                                        <span type="text" class="input-normal" id="hotUserName"
+                                               th:text="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -143,10 +137,9 @@
                                     <th>门店所在区域:</th>
                                     <td>
                                         <div id="citys">
-                                            <span th:text="|*{province}—*{city}—*{district}|"></span>
-                                            <!--<select class="prov" id="province"></select>-->
-                                            <!--<select class="city" id="city" disabled="disabled"></select>-->
-                                            <!--<select class="dist" id="district" disabled="disabled"></select>-->
+                                            <select class="prov" id="province"></select>
+                                            <select class="city" id="city" disabled="disabled"></select>
+                                            <select class="dist" id="district" disabled="disabled"></select>
                                         </div>
                                     </td>
                                 </tr>
@@ -178,6 +171,13 @@
                                                th:value="*{telephone}"/>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <th>E-mail:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="email" th:field="*{email}"
+                                               th:value="*{email}"/>
+                                    </td>
+                                </tr>
                                 <!--<tr>-->
                                 <!--<th>传真:</th>-->
                                 <!--<td>-->
@@ -193,17 +193,17 @@
                                 <tr>
                                     <th>详细地址:</th>
                                     <td>
-                                        <span type="text" id="address" th:field="*{address}" th:text="*{address}"
-                                              class="input-normal" style="width: 300px;"></span><br/>
+                                        <input type="text" id="address" th:field="*{address}" th:value="*{address}"
+                                               class="input-normal" style="width: 300px;"/><br/>
                                         <div style="margin-top:10px; ">
                                             经度:
-                                            <span type="text" readonly="readonly" id="lan" th:field="*{lan}"
-                                                  th:text="*{lan}"
-                                                  class="input-normal" style="width: 100px;"></span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <input type="text" readonly="readonly" id="lan" th:field="*{lan}"
+                                                   th:value="*{lan}"
+                                                   class="input-normal" style="width: 100px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
                                             纬度:
-                                            <span type="text" readonly="readonly" id="lat" th:field="*{lat}"
-                                                  th:text="*{lat}"
-                                                  class="input-normal" style="width: 100px;"></span>
+                                            <input type="text" readonly="readonly" id="lat" th:field="*{lat}"
+                                                   th:value="*{lat}"
+                                                   class="input-normal" style="width: 100px;"/>
                                         </div>
                                         <div id="addrMap"
                                              style="margin-top:10px;
@@ -219,12 +219,13 @@
                                                   th:field="*{comment}" th:value="*{comment}"></textarea>
                                     </td>
                                 </tr>
-                                <tr th:if="*{auditComment!=null} and *{status==2}">
-                                    <th>审核意见:</th>
-                                    <td>
-                                        <span type="text" rows="6" style="width: 80%" th:text="*{auditComment}"></span>
-                                    </td>
-                                </tr>
+                                <!--<tr th:if="*{auditComment!=null and auditComment!=''} ">-->
+                                    <!--<th>审核意见:</th>-->
+                                    <!--<td>-->
+                                        <!--<span type="text" rows="6" style="width: 80%" id="auditComment"-->
+                                              <!--th:text="*{auditComment}"></span>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
                                 </tbody>
                             </table>
                         </div>
@@ -263,6 +264,39 @@
                         </div>
                     </div>
 
+                    <div>
+                        <span style="color:#6699d5" class="spModuleTitle">结算账户</span>
+                        <div class="division">
+
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th>开户银行名称:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="bankName"
+                                               th:field="*{bankName}" th:value="*{bankName}"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>账户名:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="accountName"
+                                               th:field="*{accountName}" th:value="*{accountName}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>银行账号:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="accountNo"
+                                               th:field="*{accountNo}" th:value="*{accountNo}"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div style="text-align: center;">
                         <a class="btn-lit" href="javascript:saveShopConfig();" id="saveShopConfig"><span>保存</span></a>
                     </div>
@@ -276,17 +310,34 @@
     /*<![CDATA[*/
     //保存
     function saveShopConfig() {
+        var province = $.trim($("#province").val());
+        var city = $.trim($("#city").val());
+        var district = $.trim($("#district").val());
         var name = $.trim($("#name").val());
         var Contact = $.trim($("#Contact").val());
         var mobile = $.trim($("#mobile").val());
         var telephone = $.trim($("#telephone").val());
+        var email = $.trim($("#email").val());
+        var address = $.trim($("#address").val());
+        var lan = $.trim($("#lan").val());
+        var lat = $.trim($("#lat").val());
         var comment = $.trim($("#comment").val());
         var serveiceTel = $.trim($("#serveiceTel").val());
         var afterSalTel = $.trim($("#afterSalTel").val());
         var afterSalQQ = $.trim($("#afterSalQQ").val());
+        var auditComment = $("#auditComment").text();
         var id = $.trim($("#shopID").val());
-        var hotUserName = $.trim($("#hotUserName").val());
 
+        var hotUserName = $.trim($("#hotUserName").text());
+
+        var bankName = $.trim($("#bankName").val());
+        var accountName = $.trim($("#accountName").val());
+        var accountNo = $.trim($("#accountNo").val());
+
+        if (province.length == 0 || city.length == 0 || district.length == 0) {
+            $.jBox.tip("门店所在区域不能为空");
+            return;
+        }
         if (name.length == 0) {
             $.jBox.tip("门店名称不能为空");
             return;
@@ -297,6 +348,26 @@
         }
         if (!J.IsMobile(mobile)) {
             $.jBox.tip("手机号码格式不正确");
+            return;
+        }
+        if (telephone.length == 0) {
+            $.jBox.tip("电话号码不能为空");
+            return;
+        }
+        if (email.length == 0) {
+            $.jBox.tip("E-mail不能为空");
+            return;
+        }
+        if (!J.IsEmail(email)){
+            $.jBox.tip("E-mail格式不正确");
+            return;
+        }
+        if (address.length == 0) {
+            $.jBox.tip("详细地址不能为空");
+            return;
+        }
+        if (lan.length == 0 || lat.length == 0) {
+            $.jBox.tip("经纬度不能为空");
             return;
         }
         if (serveiceTel.length == 0) {
@@ -319,6 +390,22 @@
             $.jBox.tip("售后QQ不能为空");
             return;
         }
+        if (bankName.length == 0) {
+            $.jBox.tip("开户银行名称不能为空");
+            return;
+        }
+        if (accountName.length == 0) {
+            $.jBox.tip("账户名不能为空");
+            return;
+        }
+        if (accountNo.length == 0) {
+            $.jBox.tip("银行账号不能为空");
+            return;
+        }
+        if (!/^[0-9]*$/.test(accountNo)) {
+            $.jBox.tip("银行账号格式不正确");
+            return;
+        }
 
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
@@ -328,28 +415,32 @@
                 id: id,
                 username: /*[[${shop.username}]]*/,
                 password: /*[[${shop.password}]]*/,
-                province: /*[[${shop.province}]]*/,
-                city: /*[[${shop.city}]]*/,
-                district: /*[[${shop.district}]]*/,
+                province: province,
+                city: city,
+                district: district,
                 name: name,
                 Contact: Contact,
                 mobile: mobile,
                 telephone: telephone,
-                address: /*[[${shop.address}]]*/,
-                lan: /*[[${shop.lan}]]*/,
-                lat: /*[[${shop.lat}]]*/,
+                address: address,
+                lan: lan,
+                lat: lat,
                 comment: comment,
                 serveiceTel: serveiceTel,
                 afterSalTel: afterSalTel,
                 afterSalQQ: afterSalQQ,
-                auditComment:/*[[${shop.auditComment}]]*/,
-                hotUserName: hotUserName
+                auditComment: auditComment,
+                hotUserName: hotUserName,
+                bankName: bankName,
+                accountName: accountName,
+                accountNo: accountNo,
+                email: email
             },
             success: function (result) {
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
                     setTimeout(function () {
-                        window.location.href = '/shop/baseConfig?rnd=' + Math.random;
+                        window.location.reload();
                     }, 500);
                 } else {
                     $.jBox.tip(result.msg, 'error');
@@ -360,12 +451,44 @@
     /*]]>*/
 </script>
 <script th:inline="javascript">
+    var pro = /*[[${shop.province}]]*/;
+    var city = /*[[${shop.city}]]*/;
+    var dist = /*[[${shop.district}]]*/;
+    var id = /*[[${shop.id}]]*/;
+    if (id != null) {
+        $("#citys").citySelect({
+            url: "/resource/3rdParty/js/jquery.cityselect.js",
+            prov: pro,
+            city: city,
+            dist: dist,
+            nodata: null,
+            required: false
+        });
+        $("#password").parent().parent().hide();
+    } else {
+        $("#citys").citySelect();
+    }
+    //    change2view2form('shopConfigForm');
     /*<![CDATA[*/
     /*百度地图API相关*/
     var map = new BMap.Map("addrMap");
-    var shoplan = /*[[${shop.lan}]]*/;
-    var shoplat = /*[[${shop.lat}]]*/;
-    map.centerAndZoom(new BMap.Point(shoplan, shoplat), 10);
+
+    //設置地圖中心
+    if (id == null) {
+        //重新定位到当前城市
+        function myFun(result) {
+            var cityName = result.name;
+            map.centerAndZoom(cityName, 10);
+        }
+
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);
+    } else {
+        var shoplan = /*[[${shop.lan}]]*/;
+        var shoplat = /*[[${shop.lat}]]*/;
+        map.centerAndZoom(new BMap.Point(shoplan, shoplat), 10);
+    }
+
     map.enableScrollWheelZoom(true);    //启用滚轮放大缩小，默认禁用
     map.enableContinuousZoom(true);     //启用地图惯性拖拽，默认禁用
     map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
@@ -374,16 +497,46 @@
     var localSearch = new BMap.LocalSearch(map); //搜索范围
     localSearch.enableAutoViewport(); //允许自动调节窗体大小
 
+    $("#address").change(function () {
+        map.clearOverlays();//清空原来的标注
+        var keyword = $(this).val();
+        // 将地址解析结果显示在地图上,并调整地图视野
+        geoc.getPoint(keyword, function (point) {
+            if (point) {
+                lngandlat(point.lng, point.lat);
+                setmarker(point.lng, point.lat);
+                map.centerAndZoom(point, 16);
+            } else {
+                lngandlat('', '');
+                alert("您选择地址没有解析到结果!");
+            }
+        });
+    });
+    map.addEventListener("click", function (e) {
+        var pt = e.point;
+        lngandlat(pt.lng, pt.lat);
+        setmarker(pt.lng, pt.lat);
+        geoc.getLocation(pt, function (rs) {
+            var addComp = rs.addressComponents;
+            $("#address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+        });
+
+    });
+
+    function lngandlat(lng, lat) {
+        $("#lan").val(lng);
+        $("#lat").val(lat);
+    }
+
     function setmarker(lng, lat) {
         var marker = new BMap.Marker(new BMap.Point(lng, lat));  // 创建标注，为要查询的地方对应的经纬度
         map.clearOverlays(); //清空原来的标注
         map.addOverlay(marker);
-        map.centerAndZoom(new BMap.Point(lng, lat), 11);
     }
 
     //添加标注
-    if ($.trim($("#lan").text()).length != 0 && $.trim($("#lat").text()).length) {
-        setmarker($("#lan").text(), $("#lat").text());
+    if ($.trim($("#lan").val()).length != 0 && $.trim($("#lat").val()).length) {
+        setmarker($("#lan").val(), $("#lat").val());
     }
     /*]]>*/
 </script>

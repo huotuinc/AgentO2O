@@ -125,7 +125,8 @@
                                 <tr>
                                     <th>小伙伴用户名：</th>
                                     <td>
-                                        <span type="text" class="input-normal" th:text="*{UserBaseInfo.loginName}"></span>
+                                        <span type="text" class="input-normal"
+                                              th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -172,6 +173,13 @@
                                     <td>
                                         <span type="text" class="input-normal" id="telephone"
                                               th:text="*{telephone}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>E-mail:</th>
+                                    <td>
+                                        <span type="text" class="input-normal" id="email"
+                                              th:text="*{email}"></span>
                                     </td>
                                 </tr>
                                 <!--<tr>-->
@@ -225,39 +233,6 @@
                         </div>
                     </div>
 
-                    <div>
-                        <span style="color:#6699d5" class="spModuleTitle">售后信息</span>
-                        <div class="division">
-
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                <tbody>
-                                <tr>
-                                    <th>客服电话:</th>
-                                    <td>
-                                        <span type="text" class="input-normal" id="serveiceTel"
-                                              th:text="*{serveiceTel}"></span>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>售后电话:</th>
-                                    <td>
-                                        <span type="text" class="input-normal" id="afterSalTel"
-                                              th:text="*{afterSalTel}"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>售后QQ:</th>
-                                    <td>
-                                        <span type="text" class="input-normal" id="afterSalQQ"
-                                              th:text="*{afterSalQQ}"></span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                     <div style="text-align: center;">
                         <a class="btn-lit" href="javascript:audit();"
                            th:if="*{id}==null or *{status.code}==1"><span>审核</span></a>
@@ -281,11 +256,11 @@
                 $.jBox.tip("正在审批...", "loading");
                 J.GetJsonRespons("/huobanmall/shop/audit", requestData, function (json) {
                     if (json.code == 200) {
-                        $.jBox.tip("审批成功", "success");
+                        $.jBox.tip(json.msg, "success");
                         $(self).dialog('close');
                         window.location.reload();
                     } else {
-//                        $.jBox.tip("审批失败", error);
+                        $.jBox.tip(json.msg, 'error');
                     }
                 }, function () {
                 }, J.PostMethod);
