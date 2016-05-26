@@ -274,9 +274,22 @@
                     </div>
                     <div>
                         <div class="division">
-                            <span style="font-size: 14px;">备注：</span>
-                            <span><textarea rows="3" style="width: 90%" name="authorComment"/></span>
-
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr >
+                                    <th >备注:</th>
+                                    <td  style="border-top: 1px solid #ddd;">
+                                        <textarea rows="3" style="width: 90%" th:text="*{authorComment}" name="authorComment"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>审核备注:</th>
+                                    <td>
+                                        <textarea rows="3" style="width: 90%" th:text="*{statusComment}" name="statusComment"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div style="margin: 10px">

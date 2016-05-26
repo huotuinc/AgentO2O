@@ -166,10 +166,11 @@
                             <td class="txt20 c" th:text="${pOrderStat.count}">
                                 1
                             </td>
-                            <td class="txt80 c">
+                            <td class="txt80">
                                 <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.pOrderId}"></a>
+                                <span style="color: red" th:if="${pOrder.disabled}">（已取消）</span>
                             </td>
-                            <td class="txt160 c">
+                            <td class="txt160">
                                 <span th:text="${pOrder.orderItemList.size()}>0?${pOrder.orderItemList[0].name}"></span>
                                 <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
@@ -181,7 +182,7 @@
                                                       th:if="${pOrder.payTime!=null and pOrder.payTime!=''}"
                                                       th:text="${#dates.format(pOrder.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
                             </td>
-                            <td class="txt40 c">￥
+                            <td class="txt40">￥
                                 <span th:text="${pOrder.finalAmount}">100</span>
                             </td>
                             <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus} != null ? ${pOrder.payStatus.value}">
@@ -199,9 +200,9 @@
                                         <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliverable()}">发货</a> |
                                     </span>-->
                                     <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
-                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="删除"> | 删除</a>
                                     <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="payOrder(this)" title="支付"> | 支付</a>
                                     <a th:if="${pOrder.receivable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="receiveOrder(this)" title="确认收货"> | 确认收货</a>
+                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="取消"> | 取消</a>
                                 </div>
                             </td>
                         </tr>
@@ -211,7 +212,7 @@
                 <script type="text/javascript" th:inline="javascript">
                     /*<![CDATA[*/
                     var pageSize = /*[[${pageSize}]]*/ '-1';
-                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                    var pageIndex = /*[[${pageNo}]]*/ '-1';
                     var pageCount = /*[[${totalPages}]]*/ '-1';
                     var recordCount = /*[[${totalRecords}]]*/ '-1';
                     var formName = 'form1';
@@ -231,12 +232,12 @@
         var pOrderId = $(obj).attr("pOrderId");
         window.location.href = baseUrl + "/showPurchaseOrderDetail?pOrderId=" + pOrderId;
     }
-    //删除采购单
+    //取消采购单
     function deleteOrder(obj){
-        $.jBox.confirm("确定要删除该采购单吗？","提示",function(v){
+        $.jBox.confirm("确定要取消该采购单吗？","提示",function(v){
             if(v == 'ok'){
                 var pOrderId = $(obj).attr("pOrderId");
-                $.jBox.tip("正在删除...", "loading");
+                $.jBox.tip("正在取消...", "loading");
                 $.ajax({
                     type: "POST",
                     url: baseUrl + "/deletePurchaseOrder",
@@ -246,7 +247,7 @@
                     dataType: "json",
                     success: function (msg) {
                         if (msg.code == 200) {
-                            $.jBox.tip("删除成功!",'success');
+                            $.jBox.tip("取消采购单成功!",'success');
                             setTimeout(function(){
                                 window.location.reload();
                             },500);

@@ -241,7 +241,7 @@ public class AgentReturnedOrderController {
      * 审核下级退货单
      * @param rOrderId
      * @param checkStatus
-     * @param parentComment
+     * @param statusComment
      * @return
      */
     @RequestMapping(value = "/checkAgentReturnOrder")
@@ -249,7 +249,7 @@ public class AgentReturnedOrderController {
     public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal Author author,
                                            @RequestParam(required = true) String rOrderId,
                                            @RequestParam(required = true) String checkStatus,
-                                           String parentComment){
+                                           String statusComment){
 
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         if (StringUtil.isEmptyStr(rOrderId) || StringUtil.isEmptyStr(checkStatus)) {
@@ -258,10 +258,10 @@ public class AgentReturnedOrderController {
 
         //审核不通过时需输入备注
         if (!(String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode()).equals(checkStatus) ||
-                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(parentComment)))) {
+                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(statusComment)))) {
             return result;
         }
-        return agentReturnedOrderService.checkReturnOrder(null,author.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), parentComment);
+        return agentReturnedOrderService.checkReturnOrder(null,author.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
     }
 
     /**
