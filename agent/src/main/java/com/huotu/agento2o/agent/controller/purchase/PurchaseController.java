@@ -21,11 +21,13 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
+import com.huotu.agento2o.service.service.goods.MallGoodsTypeService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
@@ -62,6 +64,8 @@ public class PurchaseController {
     private StaticResourceService resourceService;
     @Autowired
     private AgentPurchaseOrderService purchaseOrderService;
+    @Autowired
+    private MallGoodsTypeService goodsTypeService;
 
     /**
      * 显示商品采购列表
@@ -88,6 +92,15 @@ public class PurchaseController {
         }
         List<MallGoods> goodsList = goodsPage.getContent();
         resourceService.setListUri(goodsList, "thumbnailPic", "picUri");
+
+        //获取标准类目列表
+        List<MallGoodsType> typeList = goodsTypeService.getAllParentTypeList(goodsSearcher.getStandardTypeId());
+        //获取自定义类型列表
+        List<MallGoodsType> customerTypeList = goodsTypeService.getCustomerTypeList(author.getCustomer().getCustomerId());
+        if(customerTypeList != null && customerTypeList.size() > 0){
+            model.addObject("typeList", typeList);
+        }
+        model.addObject("customerTypeList", customerTypeList);
         model.addObject("goodsList", goodsList);
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", goodsSearcher.getPageNo());
@@ -179,6 +192,29 @@ public class PurchaseController {
         }
         model.addObject("productList", productList);
         return model;
+    }
+
+    /**
+     * 根据标准类目ID，获取其子类目LIST
+     *
+     * @param standardTypeId 父类目ID
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/getType")
+    @ResponseBody
+    public ApiResult getStandardType(
+            @AgtAuthenticationPrincipal Author author,
+            String standardTypeId) throws Exception{
+        if (standardTypeId == null || standardTypeId.length() == 0) {
+            standardTypeId = "0";
+        }
+        List<MallGoodsType> typeList = goodsTypeService.getGoodsTypeByParentId(standardTypeId);
+        if (typeList != null && typeList.size() > 0) {
+            return ApiResult.resultWith(ResultCodeEnum.SUCCESS, typeList);
+        } else {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
     }
 
 

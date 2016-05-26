@@ -121,7 +121,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                         StringUtil.DateFormat(returnedOrderSearch.getEndTime(), StringUtil.TIME_PATTERN)));
             }
 
-            predicates.add(cb.equal(root.get("disabled").as(Boolean.class), false));
+//            predicates.add(cb.equal(root.get("disabled").as(Boolean.class), false));
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -187,7 +187,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         }
         agentReturnedOrder.setStatus(status);
         if (status == PurchaseEnum.OrderStatus.RETURNED) {
-            agentReturnedOrder.setParentComment(comment);
+            agentReturnedOrder.setStatusComment(comment);
             // 该订单是否设置为无效？
             agentReturnedOrder.setDisabled(true);
             agentReturnedOrder.setLastUpdateTime(new Date());

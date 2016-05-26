@@ -11,8 +11,6 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
-import com.huotu.agento2o.agent.controller.common.UploadController;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
@@ -23,14 +21,12 @@ import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,8 +35,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -232,7 +226,7 @@ public class AgentPurchaseOrderController {
      * @param agent
      * @param pOrderId
      * @param checkStatus
-     * @param parentComment
+     * @param statusComment
      * @return
      * @throws Exception
      */
@@ -243,17 +237,17 @@ public class AgentPurchaseOrderController {
             @AgtAuthenticationPrincipal Agent agent,
             @RequestParam(required = true) String pOrderId,
             @RequestParam(required = true) String checkStatus,
-            String parentComment) throws Exception {
+            String statusComment) throws Exception {
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         if (StringUtil.isEmptyStr(pOrderId) || StringUtil.isEmptyStr(checkStatus)) {
             return result;
         }
         //审核不通过时需输入备注
         if (!(String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode()).equals(checkStatus) ||
-                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(parentComment)))) {
+                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(statusComment)))) {
             return result;
         }
-        result = purchaseOrderService.checkPurchaseOrder(null, agent.getId(), pOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), parentComment);
+        result = purchaseOrderService.checkPurchaseOrder(null, agent.getId(), pOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
         return result;
     }
 

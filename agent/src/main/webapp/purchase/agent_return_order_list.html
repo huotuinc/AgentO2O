@@ -37,7 +37,7 @@
 </head>
 <body>
 <!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="get" action="/huobanmall/returnOrder/showReturnedOrderList" data-th-action="@{/huobanmall/returnOrder/showReturnedOrderList}" id="form1"
+<form method="get" action="/purchase/showAgentReturnedOrderList" data-th-action="@{/purchase/showAgentReturnedOrderList}" id="form1"
       th:object="${searchCondition}">
 
 
@@ -61,6 +61,14 @@
                         <label class="first">退货单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
                         <input name="rOrderId" type="text" th:value="*{rOrderId}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
+
+                        &nbsp;
+                        <label class="first ">下级代理商/门店：</label>
+                        <select name="agentId" id="agentId">
+                            <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
+                            <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == searchCondition.agentId}">代理商/门店</option>
+                        </select>
+
                         <br />
                         <br />
 
@@ -249,7 +257,7 @@
 
     function searchReturnedOrder() {
 
-        $("#pageIndex").val(1);
+        $("input[name=pageIndex]").val(1);
         $('#form1').submit();
     }
 

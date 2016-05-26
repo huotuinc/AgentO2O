@@ -149,6 +149,12 @@ public class AgentPurchaseOrder {
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "Received_Time")
     private Date receivedTime;
+
+    /**
+     * 审核备注
+     */
+    @Column(name = "Status_Comment")
+    private String statusComment;
     /**
      * 发货方备注
      */
@@ -165,40 +171,41 @@ public class AgentPurchaseOrder {
     @Column(name = "Disabled")
     private boolean disabled = false;
 
-    @OneToMany(mappedBy = "purchaseOrder",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.PERSIST)
     private List<AgentPurchaseOrderItem> orderItemList;
 
-    //采购状态为 待审核 或 审核不通过
-    //可删除
+    //采购状态为 待审核 或 审核不通过 或 审核通过且未支付
+    //可取消采购单
     public boolean deletable() {
-        return status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED;
+        return disabled == false && (status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED
+                || (status == PurchaseEnum.OrderStatus.CHECKED && payStatus == PurchaseEnum.PayStatus.NOT_PAYED));
     }
 
     //采购状态为 待审核
     //可审核
     public boolean checkable() {
-        return status == PurchaseEnum.OrderStatus.CHECKING;
+        return disabled == false && status == PurchaseEnum.OrderStatus.CHECKING;
     }
 
     //采购状态为已审核,且 支付状态 为空或 未支付
     //可支付
     public boolean payabled() {
-        return status == PurchaseEnum.OrderStatus.CHECKED
+        return disabled == false && status == PurchaseEnum.OrderStatus.CHECKED
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED);
     }
 
     //采购状态为已审核 且支付状态为 已支付 且发货状态 为空 或未发货
     //可发货
     public boolean deliverable() {
-        return status == PurchaseEnum.OrderStatus.CHECKED
+        return disabled == false && status == PurchaseEnum.OrderStatus.CHECKED
                 && payStatus == PurchaseEnum.PayStatus.PAYED
                 && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
     }
 
     //采购状态为已审核 且支付状态为 已支付 且发货状态为已发货 且确认收货时间为空
     //可确认收货
-    public boolean receivable(){
-        return status == PurchaseEnum.OrderStatus.CHECKED
+    public boolean receivable() {
+        return disabled == false && status == PurchaseEnum.OrderStatus.CHECKED
                 && payStatus == PurchaseEnum.PayStatus.PAYED
                 && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
                 && receivedTime == null;

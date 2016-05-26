@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
+import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -184,6 +186,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         agentProductRepository.save(agentProduct);
 
         agentReturnedOrderService.cancelReturnOrder(rOrderId);
+
         // 设置disabled为true
         AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByROrderIdAndDisabledFalse(rOrderId);
         Assert.assertNull(testAgentRturnOrder);
@@ -192,11 +195,97 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         AgentProduct testAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agent,mallProduct);
         Assert.assertEquals(rawFreez,testAgentProduct.getFreez());
 
+        rOrderId = "";
+        agentReturnedOrderService.cancelReturnOrder(rOrderId);// TODO: 2016/5/26
+
     }
 
     @Test
     public void testCheckReturnOrder(){
-        // TODO: 2016/5/25
+        MallCustomer mallCustomer = mockMallCustomer();
+        Agent parentAgent = mockAgent(mallCustomer,null);
+        Agent subAgent = mockAgent(mallCustomer,parentAgent);
+        MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(), parentAgent.getId());
+        MallProduct mallProduct = mockMallProduct(mallGoods);
+        AgentProduct parentAgentProduct = mockAgentProduct(mallProduct,parentAgent);
+        AgentProduct subAgentProduct = mockAgentProduct(mallProduct,subAgent);
+        Integer parentRawFreez = parentAgentProduct.getFreez();
+        Integer subRawFreez = subAgentProduct.getFreez();
+
+        String parentROrderId = SerialNo.create();
+        String subROrderId = SerialNo.create();
+        Integer returnNum = 5;
+        Integer customerId = mallCustomer.getCustomerId();
+
+        // 增加一级代理商货品的预占库存
+        parentAgentProduct.setFreez(parentAgentProduct.getFreez()+returnNum);
+        agentProductRepository.saveAndFlush(parentAgentProduct);
+
+        AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
+        agentReturnedOrder.setROrderId(parentROrderId);
+        agentReturnedOrder.setAuthor(parentAgent);
+        agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
+        agentReturnedOrder.setDisabled(false);
+        agentReturnOrderRepository.save(agentReturnedOrder);
+
+        AgentReturnedOrderItem agentReturnedOrderItem = new AgentReturnedOrderItem();
+        agentReturnedOrderItem.setProduct(mallProduct);
+        agentReturnedOrderItem.setNum(returnNum);
+        agentReturnedOrderItem.setReturnedOrder(agentReturnedOrder);
+        agentReturnOrderItemRepository.save(agentReturnedOrderItem);
+
+        // 平台审核一级代理商退货单 不通过
+        agentReturnedOrderService.checkReturnOrder(customerId,null,parentROrderId,EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(2)), "test");
+        // 设置disabled为true
+        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByROrderIdAndDisabledFalse(parentROrderId);
+        Assert.assertNull(testAgentRturnOrder);
+        // 判断预占库存被释放
+        AgentProduct testAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(parentAgent,mallProduct);
+        Assert.assertEquals(parentRawFreez,testAgentProduct.getFreez());
+
+
+        // 平台审核一级代理商退货单 通过,退单状态为审核通过
+        agentReturnedOrder.setDisabled(false);
+        agentReturnOrderRepository.save(agentReturnedOrder);
+        agentReturnedOrderService.checkReturnOrder(customerId,null,parentROrderId,EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(1)), "test");
+        AgentReturnedOrder passedAgentReturnedOrder =  agentReturnOrderRepository.findOne(parentROrderId);
+        Assert.assertTrue(passedAgentReturnedOrder.getStatus().getCode()==1);
+
+
+        // 一级代理商审核下级代理商退货单
+
+        // 增加一级代理商货品的预占库存
+        subAgentProduct.setFreez(subAgentProduct.getFreez()+returnNum);
+        agentProductRepository.saveAndFlush(subAgentProduct);
+
+        AgentReturnedOrder subAgentReturnedOrder = new AgentReturnedOrder();
+        subAgentReturnedOrder.setROrderId(subROrderId);
+        subAgentReturnedOrder.setAuthor(subAgent);
+        subAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
+        subAgentReturnedOrder.setDisabled(false);
+        agentReturnOrderRepository.save(subAgentReturnedOrder);
+
+        AgentReturnedOrderItem subAgentReturnedOrderItem = new AgentReturnedOrderItem();
+        agentReturnedOrderItem.setProduct(mallProduct);
+        agentReturnedOrderItem.setNum(returnNum);
+        agentReturnedOrderItem.setReturnedOrder(subAgentReturnedOrder);
+        agentReturnOrderItemRepository.save(subAgentReturnedOrderItem);
+        // 不通过
+        agentReturnedOrderService.checkReturnOrder(null,parentAgent.getId(),subROrderId,EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(2)),"test");
+        // 设置disabled为true
+        AgentReturnedOrder testSubAgentRturnOrder = agentReturnOrderRepository.findOne(subROrderId);
+        Assert.assertTrue(testSubAgentRturnOrder.isDisabled()==true);
+        // 判断预占库存被释放
+        AgentProduct testSubAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgent,mallProduct);
+        Assert.assertEquals(subRawFreez,testSubAgentProduct.getFreez());
+
+        //通过
+        subAgentReturnedOrder.setDisabled(false);
+        agentReturnOrderRepository.save(subAgentReturnedOrder);
+        agentReturnedOrderService.checkReturnOrder(null,parentAgent.getId(),subROrderId,EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(1)), "test");
+        AgentReturnedOrder passedSubAgentReturnedOrder =  agentReturnOrderRepository.findOne(subROrderId);
+        Assert.assertTrue(passedSubAgentReturnedOrder.getStatus().getCode()==1);
+
     }
 
     @Test
@@ -211,7 +300,29 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
 
     @Test
     public void testPayReturnOrder(){
-        // TODO: 2016/5/25
+
+        String parentROrderId = SerialNo.create();
+        String subROrderId = SerialNo.create();
+
+        MallCustomer mallCustomer = mockMallCustomer();
+        Agent parentAgent = mockAgent(mallCustomer,null);
+        Agent subAgent = mockAgent(mallCustomer,parentAgent);
+
+        //平台方支付退款给关联的一级代理商
+        AgentReturnedOrder parentAgentReturnedOrder = new AgentReturnedOrder();
+        parentAgentReturnedOrder.setDisabled(false);
+        parentAgentReturnedOrder.setAuthor(parentAgent);
+        parentAgentReturnedOrder.setROrderId(parentROrderId);
+        parentAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        parentAgentReturnedOrder.setReceivedTime(new Date());
+        parentAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        agentReturnOrderRepository.save(parentAgentReturnedOrder);
+
+        agentReturnedOrderService.payReturnOrder(mallCustomer.getCustomerId(),null,parentROrderId);
+
+        // 上级代理商支付给关联的下级代理商
+
+
     }
 
     @Test

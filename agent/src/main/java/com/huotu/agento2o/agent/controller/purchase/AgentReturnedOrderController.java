@@ -16,6 +16,7 @@ import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
+import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
@@ -51,6 +52,8 @@ public class AgentReturnedOrderController {
 
     @Autowired
     private MallProductService mallProductService;
+    @Autowired
+    private AuthorService authorService;
 
     /**
      *  显示已采购商品列表
@@ -139,6 +142,7 @@ public class AgentReturnedOrderController {
         model.addObject("searchCondition", searchCondition);
         model.addObject("pageIndex", searchCondition.getPageIndex());
         model.addObject("authorType", author.getClass().getSimpleName());
+
         return model;
     }
 
@@ -208,17 +212,20 @@ public class AgentReturnedOrderController {
 
     /**
      *  显示退货单列表
-     * @param author 代理商
+     * @param agent 代理商
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/showAgentReturnedOrderList")
     public ModelAndView showAgentReturnedOrderList(
-            @AgtAuthenticationPrincipal Author author,
+            @AgtAuthenticationPrincipal Agent agent,
             ReturnedOrderSearch searchCondition) throws Exception {
 
-        searchCondition.setParentAgentId(author.getId());
+        searchCondition.setParentAgentId(agent.getId());
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
+
+        List<Author> authorList = authorService.findByParentAgentId(agent);
+
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/agent_return_order_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
@@ -228,12 +235,13 @@ public class AgentReturnedOrderController {
         model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
         model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
         model.addObject("totalPages", totalPages);
-        model.addObject("agentId", author.getId());
+        model.addObject("agentId", agent.getId());
         model.addObject("totalRecords", agentReturnedOrderPage.getTotalElements());
         model.addObject("pageSize", agentReturnedOrderPage.getSize());
         model.addObject("searchCondition", searchCondition);
         model.addObject("pageIndex", searchCondition.getPageIndex());
-        model.addObject("authorType", author.getClass().getSimpleName());
+        model.addObject("authorType", agent.getClass().getSimpleName());
+        model.addObject("authorList",authorList);
         return model;
     }
 
@@ -241,7 +249,7 @@ public class AgentReturnedOrderController {
      * 审核下级退货单
      * @param rOrderId
      * @param checkStatus
-     * @param parentComment
+     * @param statusComment
      * @return
      */
     @RequestMapping(value = "/checkAgentReturnOrder")
@@ -249,7 +257,7 @@ public class AgentReturnedOrderController {
     public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal Author author,
                                            @RequestParam(required = true) String rOrderId,
                                            @RequestParam(required = true) String checkStatus,
-                                           String parentComment){
+                                           String statusComment){
 
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         if (StringUtil.isEmptyStr(rOrderId) || StringUtil.isEmptyStr(checkStatus)) {
@@ -258,10 +266,10 @@ public class AgentReturnedOrderController {
 
         //审核不通过时需输入备注
         if (!(String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode()).equals(checkStatus) ||
-                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(parentComment)))) {
+                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(statusComment)))) {
             return result;
         }
-        return agentReturnedOrderService.checkReturnOrder(null,author.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), parentComment);
+        return agentReturnedOrderService.checkReturnOrder(null,author.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
     }
 
     /**

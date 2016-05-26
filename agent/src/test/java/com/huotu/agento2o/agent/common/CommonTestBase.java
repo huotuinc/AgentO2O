@@ -12,8 +12,11 @@ package com.huotu.agento2o.agent.common;
 
 import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
+import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.InvoiceEnum;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -22,15 +25,20 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
+import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
+import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
+import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
@@ -38,6 +46,7 @@ import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
@@ -85,7 +94,19 @@ public abstract class CommonTestBase extends SpringWebTest{
     @Autowired
     protected AgentPurchaseOrderRepository agentPurchaseOrderRepository;
     @Autowired
+    protected AgentPurchaseOrderItemRepository agentPurchaseOrderItemRepository;
+    @Autowired
     protected InvoiceConfigRepository invoiceConfigRepository;
+    @Autowired
+    protected MallGoodsTypeRepository goodsTypeRepository;
+
+    //标准类目 羽绒服
+    protected MallGoodsType standardGoodsType;
+
+    @Before
+    public void initBase(){
+        standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167",-1);
+    }
     @Autowired
     protected MallOrderRepository orderRepository;
 
@@ -153,6 +174,18 @@ public abstract class CommonTestBase extends SpringWebTest{
     }
 
     /**
+     * 商品自定义分类
+     * @return
+     */
+    protected MallGoodsType mockMallGoodsType(Integer customerId){
+        MallGoodsType goodsType = new MallGoodsType();
+        goodsType.setName(UUID.randomUUID().toString());
+        goodsType.setDisabled(false);
+        goodsType.setCustomerId(customerId);
+        return goodsTypeRepository.saveAndFlush( goodsType);
+    }
+
+    /**
      * 平台方商品
      * @param customerId
      * @param agentId
@@ -172,6 +205,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());
+        mockMallGoods.setThumbnailPic(UUID.randomUUID().toString());
         return mockMallGoods;
     }
 
@@ -232,7 +266,11 @@ public abstract class CommonTestBase extends SpringWebTest{
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setAuthor(author);
         shoppingCart.setProduct(agentProduct.getProduct());
-        shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
+        if(agentProduct.getStore()-agentProduct.getFreez() == 0){
+            shoppingCart.setNum(0);
+        }else {
+            shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
+        }
         shoppingCart.setCreateTime(new Date());
         return shoppingCartRepository.saveAndFlush(shoppingCart);
     }
@@ -265,6 +303,77 @@ public abstract class CommonTestBase extends SpringWebTest{
             invoiceConfigRepository.save(otherInvoiceConfig);
         }
         return invoiceConfigRepository.saveAndFlush(invoiceConfig);
+    }
+
+    protected AgentPurchaseOrder mockAgentPurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setAuthor(author);
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class,randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class,randomTaxType));
+        if(randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()){
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+        }else if(randomTaxType == PurchaseEnum.TaxType.TAX.getCode()){
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setBankName(UUID.randomUUID().toString());
+            purchaseOrder.setAccountNo(UUID.randomUUID().toString());
+        }
+        int randomStatus = random.nextInt(3);
+        purchaseOrder.setStatus(EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class,randomStatus));
+        if(randomStatus == PurchaseEnum.OrderStatus.CHECKED.getCode()){
+            //审核通过
+            int randomPayStatus = random.nextInt(2);
+            purchaseOrder.setPayStatus(EnumHelper.getEnumType(PurchaseEnum.PayStatus.class,randomPayStatus));
+            if(randomPayStatus == PurchaseEnum.PayStatus.PAYED.getCode()){
+                //已支付
+                purchaseOrder.setPayTime(new Date());
+                int randomShipStatus = random.nextInt(2);
+                purchaseOrder.setShipStatus(EnumHelper.getEnumType(PurchaseEnum.ShipStatus.class,randomShipStatus));
+                if(randomShipStatus == PurchaseEnum.ShipStatus.DELIVERED.getCode()){
+                }
+            }
+            purchaseOrder.setDisabled(false);
+        }else if(randomStatus == PurchaseEnum.OrderStatus.RETURNED.getCode()){
+            //审核不通过
+            int randomDisabled = random.nextInt(2);
+            if(randomDisabled == 0){
+                purchaseOrder.setDisabled(false);
+            }else {
+                purchaseOrder.setDisabled(true);
+            }
+        }
+        return purchaseOrder;
+    }
+
+    protected AgentPurchaseOrder mockAgentPurchaseOrder(AgentPurchaseOrder mockPurchaseOrder){
+        return agentPurchaseOrderRepository.saveAndFlush(mockPurchaseOrder);
+    }
+
+    protected AgentPurchaseOrderItem mockAgentPurchaseOrderItem(AgentPurchaseOrder agentPurchaseOrder,MallProduct mallProduct){
+        AgentPurchaseOrderItem orderItem = new AgentPurchaseOrderItem();
+        orderItem.setPurchaseOrder(agentPurchaseOrder);
+        orderItem.setNum(random.nextInt(100));
+        orderItem.setProduct(mallProduct);
+        orderItem.setBn(mallProduct.getBn());
+        orderItem.setName(mallProduct.getName());
+        orderItem.setPdtDesc(mallProduct.getStandard());
+        orderItem.setUnit(mallProduct.getUnit());
+        orderItem.setPrice(mallProduct.getPrice());
+        if(PurchaseEnum.ShipStatus.DELIVERED.equals(agentPurchaseOrder.getShipStatus())){
+            orderItem.setSendNum(orderItem.getNum());
+        }else{
+            orderItem.setSendNum(0);
+        }
+        return agentPurchaseOrderItemRepository.saveAndFlush(orderItem);
     }
 
     /**

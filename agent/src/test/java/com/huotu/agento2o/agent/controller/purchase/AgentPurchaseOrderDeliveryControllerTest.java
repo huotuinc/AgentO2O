@@ -8,20 +8,15 @@
  *
  */
 
-package com.huotu.agento2o.service.searchable;
+package com.huotu.agento2o.agent.controller.purchase;
 
-import lombok.Data;
+import java.util.Random;
+
+import static org.junit.Assert.*;
 
 /**
- * Created by helloztt on 2016/5/14.
+ * Created by helloztt on 2016/5/25.
  */
-@Data
-public class GoodsSearcher {
-    String goodsName;
-    private int pageNo = 1;
-    //标准类目ID
-    String standardTypeId;
-    //自定义类型ID
-    Integer customerTypeId = -1;
+public class AgentPurchaseOrderDeliveryControllerTest {
 
 }

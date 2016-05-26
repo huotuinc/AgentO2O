@@ -55,5 +55,7 @@ public class ReturnedOrderSearch {
 
     private int pageIndex = 1;
 
+    private int parent_agentLevel = -1;
+
 
 }

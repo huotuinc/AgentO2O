@@ -146,7 +146,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         }
         //一级代理商下级代理商购物车
         for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()); i++) {
-            ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i), mockSecondLevelAgent);
+            ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i).getProduct(), mockSecondLevelAgent);
             mockSecondLevelAgentShoppingCartList.add(mockShoppingCart);
         }
 

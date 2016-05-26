@@ -79,11 +79,13 @@
                             </th>
                             <th scope="col">商品名称
                             </th>
-                         <!--   <th scope="col">规格
-                            </th>-->
+                            <th scope="col">规格
+                            </th>
                             <th scope="col">单价
                             </th>
                             <th scope="col">库存
+                            </th>
+                            <th scope="col">预占库存
                             </th>
                             <th scope="col">预警数量
                             </th>
@@ -95,13 +97,16 @@
                             <td class="txt160 c js_nametd" data-th-text="${agentProduct.product.name}" >
                                 商品名称
                             </td>
-                           <!-- <td class="txt80 c">
-                                ￥<span data-th-text="${product.price}">100</span>
-                            </td>-->
+                            <td class="txt80 c">
+                                <span data-th-text="${agentProduct.product.standard}">100</span>
+                            </td>
                             <td class="txt80 c">
                                 ￥<span data-th-text="${agentProduct.product.price}">100</span>
                             </td>
                             <td class="txt80 c" data-th-text="${agentProduct.store}">
+                                1000
+                            </td>
+                            <td class="txt80 c" data-th-text="${agentProduct.freez}">
                                 1000
                             </td>
                             <td class="txt80 c waringtd">
@@ -127,9 +132,9 @@
                 </script>-->
                 <!--分页结束-->
             </div>
-        </div>
-        <div style="text-align: center;">
-            <a class="btn-lit" href="javascript:save();"><span>保存</span></a>
+            <div style="text-align: center;">
+                <a class="btn-lit" href="javascript:save();"><span>保存</span></a>
+            </div>
         </div>
     </div>
 </form>

@@ -15,8 +15,10 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
+import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
@@ -40,6 +42,8 @@ public class MallGoodsServiceImpl implements MallGoodsService {
     private MallGoodsRepository goodsRepository;
     @Autowired
     private AgentProductRepository agentProductRepository;
+    @Autowired
+    private MallGoodsTypeRepository goodsTypeRepository;
 
     /**
      * 根据 CustomerId 和 AgentId 查找指定门店商品，AgentId=0 表示平台方商品
@@ -56,6 +60,13 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             predicates.add(cb.equal(root.get("agentId").as(Integer.class), 0));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
+            }
+            if(!StringUtil.isEmptyStr(goodsSearcher.getStandardTypeId())){
+                MallGoodsType type = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId(goodsSearcher.getStandardTypeId(),-1);
+                predicates.add(cb.equal(root.get("typeId").as(Integer.class),type.getTypeId()));
+            }
+            if(goodsSearcher.getCustomerTypeId() != -1){
+                predicates.add(cb.equal(root.get("typeId").as(Integer.class),goodsSearcher.getCustomerTypeId()));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -86,6 +97,13 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             List<Predicate> predicates = new ArrayList<>();
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), goodsSearcher.getGoodsName()));
+            }
+            if(!StringUtil.isEmptyStr(goodsSearcher.getStandardTypeId())){
+                MallGoodsType type = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId(goodsSearcher.getStandardTypeId(),-1);
+                predicates.add(cb.equal(root.get("typeId").as(Integer.class),type.getTypeId()));
+            }
+            if(goodsSearcher.getCustomerTypeId() != -1){
+                predicates.add(cb.equal(root.get("typeId").as(Integer.class),goodsSearcher.getCustomerTypeId()));
             }
             //子查询 goodsId in (select distinct goodsId from AgentProduct where author.id= ?1)
             Subquery subQuery = query.subquery(AgentProduct.class).distinct(true);

@@ -57,6 +57,22 @@
                 <div class="cnt">
                     <div class="search-bar">
                         <div>
+                            <div >
+                                <div style="float: left;padding: 3px 0px" >
+                                    <label class="first ">标准类型：&nbsp;</label>
+                                </div>
+                                <div id="parentTidDiv" class="cc-listwrap" style="float: left"/>
+                                <input name="standardTypeId" type="text" th:value="*{standardTypeId}" id="standardTypeId" class="input-small" style="width: 120px;display: none" />
+                            </div>
+                            <br/>
+                            <br/>
+                            <th:block th:if="${customerTypeList!=null}">
+                                <label class="first">自定义类型：</label>
+                                <select name="customerTypeId" id="customerTypeId">
+                                    <option selected="selected" value="-1"  th:selected="*{customerTypeId == -1}">==所有==</option>
+                                    <option th:each="type:${customerTypeList}" th:value="${type.typeId}" th:text="${type.name}" th:selected="${type.typeId == goodsSearcher.customerTypeId}">自定义类型</option>
+                                </select>
+                            </th:block>
                             <label class="first ">商品名称：</label>
                             <input name="goodsName" type="text" data-th-value="${goodsSearcher.goodsName}" id="goodsName"
                                    class="input-small" style="width: 120px;"/>
@@ -65,6 +81,8 @@
                                     <span>查询</span>
                                 </a>
                             </label>
+                            <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchAll();"
+                                      style="margin-bottom: 3px;"><span>显示全部</span></a></label>
                         </div>
                     </div>
                 </div>
@@ -153,6 +171,124 @@
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
     var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    var stId;
+    $(function(){
+        var typeList = /*[[${typeList}]]*/"";
+        var selectedType = /*[[${goodsSearcher.standardTypeId}]]*/"";
+        typeList = eval(typeList);
+        createTidSelect(typeList,'0',selectedType);
+    })
+
+    //创建类目下拉菜单
+    function createTidSelect (typeLists, grandParentId, selectedType) {
+        var i, j;
+        var parentId;
+        for (i=0; i<typeLists.length;) {
+            parentId = typeLists[i]['parentStandardTypeId'];
+            var selDiv = document.createElement('div');
+            var sel = document.createElement('SELECT');
+            sel.setAttribute('name', 'tid_' + parentId);
+            sel.setAttribute('id', 'tid_' + parentId);
+            var op = document.createElement('OPTION');
+            op.setAttribute('value', 0);
+            op.innerHTML = '--请选择--';
+            sel.appendChild(op);
+            //
+            if (typeLists[i]['disabled'] == false) {
+                var option = document.createElement('OPTION');
+                option.setAttribute('value', typeLists[i]['standardTypeId']);
+                option.innerHTML = typeLists[i]['name'];
+                option.is_parent = typeLists[i]['parent'];//判断是否是子类目
+                option.parent_id = typeLists[i]['parentStandardTypeId'];
+                sel.appendChild(option);
+            }
+            for (j=i+1; j<typeLists.length;j++) {
+                if (typeLists[i]['parentStandardTypeId'] != typeLists[j]['parentStandardTypeId']) {   //是否分级，即不是同一级option
+                    for (var k = 0; k <= (j-i); k++) { //找到下拉框的selected的option
+                        if (sel.options[k].value == typeLists[j]['parentStandardTypeId']) {
+                            sel.options[k].selected = true;
+                            stId = typeLists[j]['parentStandardTypeId'];
+                            break;
+                        }
+                    }
+                    break;
+                }
+                //同一级则继续增加option
+                if (typeLists[j]['disabled'] == false) {
+                    var option = document.createElement('OPTION');
+                    option.setAttribute('value', typeLists[j]['standardTypeId']);
+                    option.innerHTML = typeLists[j]['name'];
+                    option.is_parent = typeLists[j]['parent'];//判断是否是子类目
+                    option.parent_id = typeLists[j]['parentStandardTypeId'];
+                    sel.appendChild(option);
+                }
+            }
+            if (j == typeLists.length) {   //最后一级，找出selected对应的option
+                for (var k = 0; k <= (j-i); k++) {
+                    if (sel.options[k].value == selectedType) {
+                        sel.options[k].selected = true;
+                        stId = selectedType;
+                        break;
+                    }
+                }
+            }
+            i = j;
+            selDiv.appendChild(sel);
+            selDiv.style.cssText = 'float:left;padding:0px 1px';
+            //
+            var tidDiv = document.createElement('div');
+            if( '0' == parentId ) {
+                document.getElementById('parentTidDiv').appendChild(selDiv);
+                document.getElementById('tid_' + parentId).onchange = function(){childTidList(this);};
+                tidDiv.id = 'tid_' + parentId + '_span';
+                tidDiv.style.cssText = 'float:left;padding:0px 1px';
+                document.getElementById('parentTidDiv').appendChild(tidDiv);
+            }
+            else {
+                document.getElementById('tid_' + grandParentId + '_span').appendChild(selDiv);
+                document.getElementById('tid_' + parentId).onchange = function(){childTidList(this);};
+                tidDiv.id = 'tid_' + parentId + '_span';
+                tidDiv.style.cssText = 'float:left;padding:0px 1px';
+                document.getElementById('tid_' + grandParentId + '_span').appendChild(tidDiv);
+            }
+            grandParentId = parentId;
+        }
+    }
+    //子类目监听函数
+    function childTidList(o){
+        var standardTypeId = o.value;
+        stId = standardTypeId;
+        var is_parent=o.options[o.selectedIndex].is_parent;
+        var parent_id=o.options[o.selectedIndex].parent_id;
+        document.getElementById(o.id + '_span').innerHTML = '';
+        if( standardTypeId == 0 ) {
+            stId = o.options[o.selectedIndex+1].parent_id;
+            return;
+        }
+        if(is_parent){
+            //TODO: 刷新等待界面
+            $.ajax({
+                type:"POST",
+                url: basicUrl + "/getType",
+                data:{
+                    standardTypeId:standardTypeId
+                },
+                dataType:"json",
+                success: function (msg) {
+                    if(msg.code == 200){
+                        var typeList = eval(msg.data);
+                        createTidSelect(typeList,parent_id, standardTypeId);
+                    }else{
+                        $.jBox.tip(msg.msg, 'error');
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+
+
     $("input[name=num]").change(function(){
         var max = parseInt($(this).attr("max"));
         var num = parseInt($(this).val());
@@ -164,8 +300,12 @@
 
     //查询
     function searchGoods() {
-        $("#pageNo").val(1);
+        $("#standardTypeId").val((stId=='0')?"":stId);
+        $("#current-index").val(1);
         $("#form1").submit();
+    }
+    function searchAll(){
+        window.location.href = /*[[@{/purchase/showGoodsList}]]*/ "/purchase/showGoodsList";
     }
     //订购
     function putIntoShoppingCart(obj) {
