@@ -34,7 +34,10 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 
 
-                mimeMessage.setFrom(new InternetAddress("15620711024@163.com"));
+                String nick=javax.mail.internet.MimeUtility.encodeText("火图代理商系统");
+                String FromEmail = "15620711024@163.com";
+                String sendFrom  = nick+" <"+FromEmail+">";
+                mimeMessage.setFrom(new InternetAddress(sendFrom));
 
 //                mimeMessage.setRecipient(Message.RecipientType.TO,
 //                        new InternetAddress("15620711024@163.com"));
@@ -49,12 +52,11 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 
                 StringBuilder builder = new StringBuilder();
-                builder.append("<html><body><h3><a href=\"http://localhost:8080/login\">尊敬的用户您好！你的以下商品库存已经不足，请及时采购(点击登录采购）：</a></h3><br><table>");
+                builder.append("<html><body><h3><a href=\"http://localhost:8080/index\">尊敬的用户您好！你的以下商品库存已经不足，请及时采购(点击登录采购）：</a></h3><br><table>");
                 for (AgentProduct agentProduct : agentProducts) {
-                    if (agentProduct.getProduct() == null) {
+                    if (agentProduct.getProduct() == null || agentProduct.getAuthor().getEmail() == null) {
                         continue;
                     }
-
                     mimeMessage.setRecipient(Message.RecipientType.TO,
                             new InternetAddress(agentProduct.getAuthor().getEmail()));
 
