@@ -161,6 +161,15 @@ public class MallOrder {
     @ManyToOne
     private Shop beneficiaryShop;
 
+    /**
+     * Is_Tax  Is_Protect
+     * 测试时模拟数据时用到
+     * 在数据库中该字段不能为空
+     */
+    @Column(name = "Is_Tax")
+    private int isTax;
+    @Column(name = "Is_Protect")
+    private int isProtect;
 
     //发货状态为 未发货，部分发货，部分退货
     //支付状态为 已支付，部分退款

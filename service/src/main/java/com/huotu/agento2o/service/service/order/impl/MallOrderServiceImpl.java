@@ -90,8 +90,6 @@ public class MallOrderServiceImpl implements MallOrderService {
         Specification<MallOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (author != null && author instanceof Shop) {
-                predicates.add(cb.or(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()),
-                        cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId())));
                 Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
                 Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
                 judgeShipMode(searchCondition, cb, predicates, p1, p2);

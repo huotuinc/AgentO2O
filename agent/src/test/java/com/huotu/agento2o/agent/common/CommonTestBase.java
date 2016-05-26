@@ -14,6 +14,7 @@ import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.InvoiceEnum;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -22,11 +23,13 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
+import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
@@ -83,6 +86,8 @@ public abstract class CommonTestBase extends SpringWebTest{
     protected AgentPurchaseOrderRepository agentPurchaseOrderRepository;
     @Autowired
     protected InvoiceConfigRepository invoiceConfigRepository;
+    @Autowired
+    protected MallOrderRepository orderRepository;
 
     protected MockHttpSession loginAs(String userName, String password,String roleType) throws Exception {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -260,6 +265,33 @@ public abstract class CommonTestBase extends SpringWebTest{
             invoiceConfigRepository.save(otherInvoiceConfig);
         }
         return invoiceConfigRepository.saveAndFlush(invoiceConfig);
+    }
+
+    /**
+     * 模拟一个订单
+     *
+     */
+    @SuppressWarnings("Duplicates")
+    protected MallOrder mockMallOrder(Shop shop ){
+
+        MallOrder mallOrder = new MallOrder();
+        mallOrder.setOrderId(random.nextInt()+"1");
+        mallOrder.setAgentMarkType("p2");
+        mallOrder.setAgentMarkText("XXXX"+random.nextInt());
+        mallOrder.setOrderStatus(OrderEnum.OrderStatus.ACTIVE);
+        mallOrder.setPaymentType(OrderEnum.PaymentOptions.ALIPAY_PC);
+        mallOrder.setOrderSourceType(OrderEnum.OrderSourceType.NORMAL);
+        mallOrder.setPayStatus(OrderEnum.PayStatus.PAYED);
+        mallOrder.setShipStatus(OrderEnum.ShipStatus.NOT_DELIVER);
+        mallOrder.setIsTax(0);
+        mallOrder.setIsProtect(0);
+        mallOrder.setCreateTime(new Date());
+        if (random.nextInt()%2 == 0)
+            mallOrder.setShop(shop);
+        else
+            mallOrder.setBeneficiaryShop(shop);
+        return orderRepository.saveAndFlush(mallOrder);
+
     }
 
 }

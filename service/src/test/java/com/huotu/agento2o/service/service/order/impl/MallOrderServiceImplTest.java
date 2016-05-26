@@ -9,6 +9,7 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
@@ -17,47 +18,90 @@ import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Created by Administrator on 2016/5/19.
+ * Created by AiWelv on 2016/5/19.
  */
 public class MallOrderServiceImplTest extends CommonTestBase {
 
     @Autowired
     private MallOrderService orderService;
 
+    //平台方
+    private MallCustomer mockCustomer;
+    //一级代理商
+    private Agent mockFirstLevelAgent;
+    //二级代理商
+    private Agent mockSecondLevelAgent;
+    //一级代理商下级门店
+    private Shop mockFirstLevelShop;
+    //二级代理商下级门店1,门店2
+    private Shop mockSecondLevelShopOne;
+    private Shop mockSecondLevelShopTwo;
+
+    //二级代理商下级门店的订单
+    private List<MallOrder> mockSecondLevelShopOneList = new ArrayList();
+    private List<MallOrder> mockSecondLevelShopTwoList = new ArrayList();
+    //二级代理商所能看见的订单
+    private List<MallOrder> mockSecondLevelAgentList = new ArrayList();
+
+
+    @Before
+    @SuppressWarnings("Duplicates")
+    public void init() {
+        //模拟数据
+        //用户相关
+        mockCustomer = mockMallCustomer();
+        mockFirstLevelAgent = mockAgent(mockCustomer, null);
+        mockFirstLevelShop = mockShop(mockFirstLevelAgent);
+        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent);
+        mockSecondLevelShopOne = mockShop(mockSecondLevelAgent);
+        mockSecondLevelShopTwo = mockShop(mockSecondLevelAgent);
+
+        //二级代理商下级门店1的订单
+        for (int i = 0; i <= random.nextInt(10) + 1; i++) {
+            mockSecondLevelShopOneList.add(mockMallOrder(mockSecondLevelShopOne));
+        }
+
+        //二级代理商下级门店2的订单
+        for (int i = 0; i < random.nextInt(5) + 1; i++) {
+            mockSecondLevelShopTwoList.add(mockMallOrder(mockSecondLevelShopTwo));
+        }
+
+    }
+
     @Test
     public void testFindOrderDetail() throws Exception {
-        String orderId = "2014022661976526";
-        OrderDetailModel detail = orderService.findOrderDetail(orderId);
+        OrderDetailModel detail = orderService.findOrderDetail(mockSecondLevelShopTwoList.get(0).getOrderId());
         Assert.assertTrue(detail != null);
     }
 
     @Test
     public void testFindAll() throws Exception {
-        Shop shop1 = new Shop();
-        shop1.setId(8);
+
         OrderSearchCondition searchCondition1 = new OrderSearchCondition();
-        searchCondition1.setAgentId(shop1.getId());
-        Page<MallOrder> page1 = orderService.findAll(1, shop1, 20, searchCondition1);
+        searchCondition1.setAgentId(mockSecondLevelShopOne.getId());
+        Page<MallOrder> page1 = orderService.findAll(1, mockSecondLevelShopOne, 20, searchCondition1);
         int num1 = page1.getContent().size();
 
-        Shop shop2 = new Shop();
-        shop2.setId(10);
+
         OrderSearchCondition searchCondition2 = new OrderSearchCondition();
-        searchCondition2.setAgentId(shop2.getId());
-        Page<MallOrder> page2 = orderService.findAll(1, shop2, 20, searchCondition2);
+        searchCondition2.setAgentId(mockSecondLevelShopTwo.getId());
+        Page<MallOrder> page2 = orderService.findAll(1, mockSecondLevelShopTwo, 20, searchCondition2);
         int num2 = page2.getContent().size();
 
-        Agent agent = new Agent();
-        agent.setId(2);
+
         OrderSearchCondition searchCondition3 = new OrderSearchCondition();
-        searchCondition3.setAgentId(agent.getId());
-        Page<MallOrder> page3 = orderService.findAll(1, agent, 20, searchCondition3);
+        searchCondition3.setAgentId(mockSecondLevelAgent.getId());
+        Page<MallOrder> page3 = orderService.findAll(1, mockSecondLevelAgent, 20, searchCondition3);
         int num3 = page3.getContent().size();
 
         System.out.println(num1 + "  " + num2 + "  " + num3);
@@ -68,9 +112,17 @@ public class MallOrderServiceImplTest extends CommonTestBase {
 
     @Test
     @Rollback(value = false)
-    public void testFindByOrderId() throws Exception{
-        MallOrder mallOrder = orderService.findByOrderId("2014022661976526");
-        Assert.assertTrue(mallOrder!=null);
+    public void testFindByOrderId() throws Exception {
+        MallOrder mallOrder = null;
+        mallOrder = orderService.findByOrderId(mockSecondLevelShopTwoList.get(0).getOrderId());
+        Assert.assertTrue(mallOrder != null);
+    }
+
+    @Test
+    public void testFindByShopAndOrderId() throws Exception {
+        MallOrder mallOrder = null;
+        mallOrder = orderService.findByShopAndOrderId(mockSecondLevelShopTwo, mockSecondLevelShopTwoList.get(0).getOrderId());
+        Assert.assertTrue(mallOrder != null);
     }
 
 }
