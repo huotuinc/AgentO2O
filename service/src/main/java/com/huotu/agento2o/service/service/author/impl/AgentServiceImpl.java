@@ -41,6 +41,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     private AgentRepository agentRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -168,7 +169,7 @@ public class AgentServiceImpl implements AgentService {
         UserBaseInfo userBaseInfo = null;
         //必须保证平台方和等级存在才能保存代理商
         if (customer == null || agentLevel == null) {
-            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (parentAgentId != -1) {
             parentAgent = agentRepository.findOne(parentAgentId);
@@ -235,7 +236,7 @@ public class AgentServiceImpl implements AgentService {
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress())));
             cellDescList.add(ExcelHelper.asCell(agent.getAgentLevel() == null ? "" : agent.getAgentLevel().getLevelName()));
             cellDescList.add(ExcelHelper.asCell(agent.isDisabled() ? "冻结" : "激活"));
-            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(agent.getCreateTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(StringUtil.DateFormat(agent.getCreateTime(), StringUtil.TIME_PATTERN))));
 
             rowAndCells.add(cellDescList);
         });
@@ -259,7 +260,7 @@ public class AgentServiceImpl implements AgentService {
         Agent agent = agentRepository.findOne(agentId);
         //当代理商不存在、已删除、已冻结情况下无法修改
         if (agent == null || agent.isDeleted() || agent.isDisabled()) {
-            return new ApiResult("该账号暂已失效", 805);
+            return new ApiResult("该账号已失效", 805);
         }
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
