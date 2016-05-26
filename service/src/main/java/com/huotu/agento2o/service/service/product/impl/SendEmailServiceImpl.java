@@ -32,8 +32,7 @@ public class SendEmailServiceImpl implements SendEmailService {
             @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
 
-                mimeMessage.setRecipient(Message.RecipientType.TO,
-                        new InternetAddress("897587615@qq.com"));
+
 
                 mimeMessage.setFrom(new InternetAddress("15620711024@163.com"));
 
@@ -55,6 +54,10 @@ public class SendEmailServiceImpl implements SendEmailService {
                     if (agentProduct.getProduct() == null) {
                         continue;
                     }
+
+                    mimeMessage.setRecipient(Message.RecipientType.TO,
+                            new InternetAddress(agentProduct.getAuthor().getEmail()));
+
                     builder.append("<tr><td><span>" +
                             agentProduct.getProduct().getName());
                     if (agentProduct.getProduct().getBn() != null && !"".equals(agentProduct.getProduct().getBn())) {
