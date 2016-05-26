@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
@@ -38,7 +37,9 @@ public class ServiceConfig {
     @Bean
     public JavaMailSenderImpl getJavaMailSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-
+        javaMailSender.setHost("smtp.163.com");
+        javaMailSender.setUsername("15620711024");
+        javaMailSender.setPassword("liu8975");
 
 
         return javaMailSender;
