@@ -178,18 +178,13 @@
                                                th:value="*{telephone}"/>
                                     </td>
                                 </tr>
-                                <!--<tr>-->
-                                <!--<th>传真:</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
-                                <!--<tr>-->
-                                <!--<th>E-mail:</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
+                                <tr>
+                                    <th>E-mail:</th>
+                                    <td>
+                                        <input type="text" class="input-normal" id="email" th:field="*{email}"
+                                               th:value="*{email}"/>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <th>详细地址:</th>
                                     <td>
@@ -224,39 +219,6 @@
                                     <td>
                                         <span type="text" rows="6" style="width: 80%" id="auditComment"
                                               th:text="*{auditComment}"></span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div>
-                        <span style="color:#6699d5" class="spModuleTitle">售后信息</span>
-                        <div class="division">
-
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                <tbody>
-                                <tr>
-                                    <th>客服电话:</th>
-                                    <td>
-                                        <input type="text" class="input-normal" id="serveiceTel"
-                                               th:field="*{serveiceTel}" th:value="*{serveiceTel}"/>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>售后电话:</th>
-                                    <td>
-                                        <input type="text" class="input-normal" id="afterSalTel"
-                                               th:field="*{afterSalTel}" th:value="*{afterSalTel}"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>售后QQ:</th>
-                                    <td>
-                                        <input type="text" class="input-normal" id="afterSalQQ" th:field="*{afterSalQQ}"
-                                               th:value="*{afterSalQQ}"/>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -305,7 +267,6 @@
         } catch (e) {
         }
     }
-
 </script>
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -324,12 +285,10 @@
         var lan = $.trim($("#lan").val());
         var lat = $.trim($("#lat").val());
         var comment = $.trim($("#comment").val());
-        var serveiceTel = $.trim($("#serveiceTel").val());
-        var afterSalTel = $.trim($("#afterSalTel").val());
-        var afterSalQQ = $.trim($("#afterSalQQ").val());
         var auditComment = $("#auditComment").text();
         var id = $.trim($("#shopID").val());
         var hotUserName = $.trim($("#hotUserName").val());
+        var email = $.trim($("#email").val());
 
         if (username.length == 0 || password.length == 0) {
             $.jBox.tip("用户名或密码不能为空");
@@ -347,8 +306,20 @@
             $.jBox.tip("联系人或手机号码不能为空");
             return;
         }
+        if (telephone.length == 0) {
+            $.jBox.tip("电话号码不能为空");
+            return;
+        }
         if (!J.IsMobile(mobile)) {
             $.jBox.tip("手机号码格式不正确");
+            return;
+        }
+        if (email.length == 0) {
+            $.jBox.tip("E-mail不能为空");
+            return;
+        }
+        if (!J.IsEmail(email)){
+            $.jBox.tip("E-mail格式不正确");
             return;
         }
         if (address.length == 0) {
@@ -357,26 +328,6 @@
         }
         if (lan.length == 0 || lat.length == 0) {
             $.jBox.tip("经纬度不能为空");
-            return;
-        }
-        if (serveiceTel.length == 0) {
-            $.jBox.tip("客服电话不能为空");
-            return;
-        }
-        if (!J.IsMobile(serveiceTel)) {
-            $.jBox.tip("客服电话格式不正确");
-            return;
-        }
-        if (afterSalTel.length == 0) {
-            $.jBox.tip("售后电话不能为空");
-            return;
-        }
-        if (!J.IsMobile(afterSalTel)) {
-            $.jBox.tip("售后电话格式不正确");
-            return;
-        }
-        if (afterSalQQ.length == 0) {
-            $.jBox.tip("售后QQ不能为空");
             return;
         }
 
@@ -399,11 +350,9 @@
                 lan: lan,
                 lat: lat,
                 comment: comment,
-                serveiceTel: serveiceTel,
-                afterSalTel: afterSalTel,
-                afterSalQQ: afterSalQQ,
                 auditComment: auditComment,
-                hotUserName:hotUserName
+                hotUserName: hotUserName,
+                email: email
             },
             success: function (result) {
                 if (result.code == 200) {

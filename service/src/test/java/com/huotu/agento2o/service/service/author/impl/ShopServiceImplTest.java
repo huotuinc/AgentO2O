@@ -11,32 +11,25 @@
 package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.config.ServiceConfig;
+import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.repository.author.ShopRepository;
-import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.common.CommonTestBase;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
  * Created by helloztt on 2016/5/9.
  */
 
-@ActiveProfiles("test")
-@ContextConfiguration(classes = ServiceConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
-public class ShopServiceImplTest {
+public class ShopServiceImplTest extends CommonTestBase {
 
     @Autowired
     private ShopService shopService;
@@ -44,83 +37,79 @@ public class ShopServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    public void testAddShop() throws Exception {
+    public void testFindByUserName() {
+        //平台方
+        MallCustomer mockCustomer = mockMallCustomer();
+        //代理商
+        Agent parentMockAgent = mockAgent(mockCustomer, null);
+        //门店
+        Shop getShop = mockShop(parentMockAgent);
 
-    }
-
-    @Test
-    public void findByUserName() throws Exception {
-        Shop shop = shopService.findByUserName("xl");
+        Shop shop = shopService.findByUserName(getShop.getUsername());
         Assert.assertTrue(shop != null);
     }
 
     @Test
-    public void findById() throws Exception {
-        Shop shop = shopService.findById(64);
+    public void testFindById() {
+        //平台方
+        MallCustomer mockCustomer = mockMallCustomer();
+        //代理商
+        Agent parentMockAgent = mockAgent(mockCustomer, null);
+        //门店
+        Shop getShop = mockShop(parentMockAgent);
+        Shop shop = shopService.findById(getShop.getId());
         Assert.assertTrue(shop != null);
     }
 
     @Test
-    public void addShop() {
+    public void testAddshop() {
+        //平台方
+        MallCustomer mockCustomer = mockMallCustomer();
+        //代理商
+        Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop shop = new Shop();
-        shop.setStatus(AgentStatusEnum.CHECKED);
+        shop.setUsername("testShop01");
         shop.setPassword("1");
-        shop.setUsername("QWE");
-        shop.setDeleted(false);
-        shop.setDisabled(false);
-        shopService.addShop(shop, "7VGVEU1X9T3");
-        Shop findShop = shopService.findByUserName("QWE");
-        Assert.assertTrue(findShop != null);
+        shop.setName("testShop");
+        shop.setContact("test");
+        shop.setMobile("18666666666");
+        shop.setTelephone("18666666666");
+        shop.setEmail("10010@126.com");
+        shop.setProvince("浙江");
+        shop.setCity("杭州");
+        shop.setDistrict("滨江");
+        shop.setAddress("杭州滨江千陌路智慧e谷");
+        shop.setLan(111.22222);
+        shop.setLat(3.44);
+        shop.setComment("备注");
+        shop.setAuditComment("审核备注。。");
+        shop.setAfterSalQQ("10010");
+        shop.setAfterSalTel("18666666666");
+        shop.setServeiceTel("18666666666");
+        shop.setStatus(AgentStatusEnum.NOT_CHECK);
+        shop.setBankName("杭州银行");
+        shop.setAccountName("thz");
+        shop.setAccountNo("1234567899");
+        shop.setCreateTime(new Date());
+        shop.setParentAuthor(parentMockAgent);
+        shopService.addShop(shop, "1234");
+        Shop curShop = shopService.findByUserName(shop.getUsername());
+        Assert.assertTrue(curShop != null && curShop.getUserBaseInfo() != null);
     }
 
     @Test
-    public void updateStatus() {
-        int id = 110;
-        shopService.updateStatus(AgentStatusEnum.RETURNED, id);
-        Shop shop = shopService.findById(id);
-        Assert.assertTrue(shop.getStatus() == AgentStatusEnum.RETURNED);
-    }
-
-    @Test
-    public void updateStatusAndAuditComment() {
-        int id = 110;
-        shopService.updateStatusAndAuditComment(AgentStatusEnum.RETURNED, "不通过2321", id);
-        Shop shop = shopService.findById(id);
-        Assert.assertTrue(shop.getStatus() == AgentStatusEnum.RETURNED &&
-                shop.getAuditComment().equals("不通过2321"));
-
-    }
-
-    @Test
-    public void deleteById() {
-        int id = 110;
-        shopService.deleteById(id);
-        Shop shop = shopService.findById(id);
-        Assert.assertTrue(shop.isDeleted() == true);
-    }
-
-    @Test
-    public void updateIsDisabledById() {
-        int id = 110;
-        shopService.updateIsDisabledById(true, id);
-        Shop shop = shopService.findById(id);
-        Assert.assertTrue(shop.isDisabled() == true);
-    }
-
-    @Test
-    public void updatePasswordById() {
-        int id = 110;
-        shopService.updatePasswordById("2", id);
-        Shop shop = shopService.findById(id);
-        Assert.assertTrue(shop.getPassword().equals(passwordEncoder.encode("2")));
-    }
-
-    @Test
-    public void findAll() {
-        ShopSearchCondition searchCondition = new ShopSearchCondition();
-        searchCondition.setParent_agentLevel(41);
-        Page<Shop> shops = shopService.findAll(1, 20, searchCondition);
-        Assert.assertTrue(shops.getContent().size() > 0);
+//    @Rollback(value = false)
+    public void updateStatus(){
+        //平台方
+        MallCustomer mockCustomer = mockMallCustomer();
+        //代理商
+        Agent parentMockAgent = mockAgent(mockCustomer, null);
+        //门店
+        Shop getShop = mockShop(parentMockAgent);
+        shopService.updateStatus(AgentStatusEnum.RETURNED,getShop.getId());
+        shopService.flush();
+        Shop curShop = shopService.findByUserName(getShop.getUsername());
+        Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.RETURNED);
     }
 
 }

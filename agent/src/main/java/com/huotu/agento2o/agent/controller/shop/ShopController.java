@@ -1,5 +1,6 @@
 package com.huotu.agento2o.agent.controller.shop;
 
+import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -7,6 +8,7 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -39,16 +41,16 @@ public class ShopController {
     private ShopService shopService;
 
     /**
-     * 门店新增页面
+     * 代理商新增门店页面
      *
-     * @param customer
+     * @param curAgent
      * @param shop
      * @param model
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AuthenticationPrincipal Agent customer, Shop shop, Model model) {
-        model.addAttribute("agent", customer);
+    public String toAddShopPage(@AuthenticationPrincipal Agent curAgent, Shop shop, Model model) {
+        model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
             shop = shopService.findById(shop.getId());
             model.addAttribute("shop", shop);
@@ -57,13 +59,37 @@ public class ShopController {
     }
 
     /**
-     * 门店基本资料设置
+     * 代理商保存更新门店
+     *
+     * @param curAgent
+     * @param shop
+     * @return
+     */
+    @RequestMapping(value = "/addShop")
+    @ResponseBody
+    public ApiResult saveShop(@AuthenticationPrincipal Agent curAgent, Shop shop, String hotUserName) {
+        if (shop == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (curAgent == null) {
+            return new ApiResult("没有权限");
+        }
+        //新增后上级代理商和平台就不可修改
+        shop.setParentAuthor(curAgent);
+        shop.setCustomer(curAgent.getCustomer());
+
+        ApiResult apiResult = shopService.addShop(shop, hotUserName);
+        return apiResult;
+    }
+
+    /**
+     * 门店基本资料设置頁面
      *
      * @return
      */
     @RequestMapping("/baseConfig")
-    public String baseConfig(@AuthenticationPrincipal Shop customer, Model model) {
-        Shop shop = shopService.findById(customer.getId());
+    public String baseConfig(@AuthenticationPrincipal Shop curShop, Model model) {
+        Shop shop = shopService.findById(curShop.getId());
         model.addAttribute("shop", shop);
         model.addAttribute("agent", shop.getParentAuthor());
         return "shop/BaseConfigShop";
@@ -77,26 +103,17 @@ public class ShopController {
      */
     @RequestMapping(value = "/updateShop")
     @ResponseBody
-    public ApiResult updateShop(Shop shop, String hotUserName) {
+    public ApiResult updateShop(@AuthenticationPrincipal Shop curShop, Shop shop, String hotUserName) {
+        if (shop == null || shop.getId() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (curShop == null || !curShop.getId().equals(shop.getId())) {
+            return new ApiResult("没有权限");
+        }
         ApiResult apiResult = shopService.addShop(shop, hotUserName);
         return apiResult;
     }
 
-
-    /**
-     * 保存门店
-     *
-     * @param customer
-     * @param shop
-     * @return
-     */
-    @RequestMapping(value = "/addShop")
-    @ResponseBody
-    public ApiResult addShop(@AuthenticationPrincipal Agent customer, Shop shop, String hotUserName) {
-        shop.setParentAuthor(customer);
-        ApiResult apiResult = shopService.addShop(shop, hotUserName);
-        return apiResult;
-    }
 
     /**
      * 门店列表
@@ -131,7 +148,20 @@ public class ShopController {
      */
     @RequestMapping("/changeStatus")
     @ResponseBody
-    public ApiResult changeStatus(int id, String type) {
+    public ApiResult changeStatus(@AuthenticationPrincipal Agent curAgent, int id, String type) {
+        Shop shop = shopService.findById(id);
+        if (shop == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (shop.isDeleted()) {
+            return new ApiResult("该门店已被删除");
+        }
+        if (shop.isDisabled()) {
+            return new ApiResult("该门店已被冻结");
+        }
+        if (curAgent == null || !curAgent.getId().equals(shop.getParentAuthor().getId())) {
+            return new ApiResult("没有权限");
+        }
         AgentStatusEnum statusEnum = AgentStatusEnum.NOT_CHECK;
         if ("ToFactory".equals(type)) {
             statusEnum = AgentStatusEnum.CHECKING;
@@ -149,37 +179,15 @@ public class ShopController {
      */
     @RequestMapping("/delete")
     @ResponseBody
-    public ApiResult deleteById(int id) {
-        shopService.deleteById(id);
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
-    }
-
-    /**
-     * 冻结解冻
-     *
-     * @param id
-     * @return
-     */
-    @RequestMapping("/changeIsDisabled")
-    @ResponseBody
-    public ApiResult changeIsDisabled(int id) {
+    public ApiResult deleteById(@AuthenticationPrincipal Agent curAgent, int id) {
         Shop shop = shopService.findById(id);
-        shopService.updateIsDisabledById(!shop.isDisabled(), id);
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
-    }
-
-    /**
-     * 重置密码
-     *
-     * @param shop
-     * @return
-     */
-    @RequestMapping("/resetpassword")
-    @ResponseBody
-    public ApiResult resetPassword(Shop shop) {
-        shopService.updatePasswordById(shop.getPassword(), shop.getId());
+        if (shop == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (curAgent == null || !curAgent.getId().equals(shop.getParentAuthor().getId())) {
+            return new ApiResult("没有权限");
+        }
+        shopService.deleteById(id);
         ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         return res;
     }

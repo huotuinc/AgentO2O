@@ -87,9 +87,66 @@ public class HBShopController {
      */
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
-    public ApiResult changeIsDisabled(int id) {
+    public ApiResult changeIsDisabled(@RequestAttribute(value = "customerId") String customerIdStr, int id) {
         Shop shop = shopService.findById(id);
+        if (shop == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (StringUtil.isEmpty(customerIdStr) || !shop.getParentAuthor().getCustomer().getCustomerId().toString().equals(customerIdStr)) {
+            return new ApiResult("没有权限");
+        }
         shopService.updateIsDisabledById(!shop.isDisabled(), id);
+        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return res;
+    }
+
+    /**
+     * 审核
+     *
+     * @param shop
+     * @return
+     */
+    @RequestMapping("/audit")
+    @ResponseBody
+    public ApiResult toAudit(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop) {
+        if (shop == null || shop.getId() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        Shop oldShop = shopService.findById(shop.getId());
+        if (StringUtil.isEmpty(customerIdStr) || !customerIdStr.equals(oldShop.getParentAuthor().getCustomer().getCustomerId().toString())) {
+            return new ApiResult("没有权限");
+        }
+        if (oldShop.isDisabled()) {
+            return new ApiResult("该门店已被冻结");
+        }
+        shopService.updateStatusAndAuditComment(shop.getStatus(), shop.getAuditComment(), shop.getId());
+        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return res;
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param shop
+     * @return
+     */
+    @RequestMapping("/resetpassword")
+    @ResponseBody
+    public ApiResult resetPassword(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop) {
+        if (StringUtil.isEmpty(customerIdStr)) {
+            return new ApiResult("没有权限");
+        }
+        if (shop == null || shop.getId() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        Shop oldShop = shopService.findById(shop.getId());
+        if (StringUtil.isEmpty(customerIdStr) || !customerIdStr.equals(oldShop.getParentAuthor().getCustomer().getCustomerId().toString())) {
+            return new ApiResult("没有权限");
+        }
+        if (oldShop.isDisabled()) {
+            return new ApiResult("该门店已被冻结");
+        }
+        shopService.updatePasswordById(shop.getPassword(), shop.getId());
         ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         return res;
     }
@@ -126,33 +183,5 @@ public class HBShopController {
             }
             session.setAttribute("state", "open");
         }
-    }
-
-    /**
-     * 审核
-     *
-     * @param shop
-     * @return
-     */
-    @RequestMapping("/audit")
-    @ResponseBody
-    public ApiResult toAudit(Shop shop) {
-        shopService.updateStatusAndAuditComment(shop.getStatus(), shop.getAuditComment(), shop.getId());
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
-    }
-
-    /**
-     * 重置密码
-     *
-     * @param shop
-     * @return
-     */
-    @RequestMapping("/resetpassword")
-    @ResponseBody
-    public ApiResult resetPassword(Shop shop) {
-        shopService.updatePasswordById(shop.getPassword(), shop.getId());
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
     }
 }
