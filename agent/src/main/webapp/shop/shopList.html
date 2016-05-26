@@ -332,9 +332,9 @@
                                         <td class="txt80"
                                             th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
                                         </td>
-                                        <td class="txt40" th:text="${shop.status.value}">
+                                        <td class="txt40" style="color: #9c0901" th:text="${shop.status.value}">
                                         </td>
-                                        <td class="txt40" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                        <td class="txt40" style="color: #9c0901" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
                                         </td>
                                         <td class="txt40 c tail">
                                             <div>
@@ -346,7 +346,7 @@
                                                    th:if="${shop.status.code}!=2">编辑&nbsp;</a>
                                                 <a href="javascript:void(0)" onclick="toDel(this)"
                                                    th:attr="shopid=${shop.id}"
-                                                   th:if="${shop.status.code}==0 or ${shop.status.code}==1">删除&nbsp;</a>
+                                                   th:if="${shop.status.code}!=2">删除&nbsp;</a>
                                             </div>
                                         </td>
                                     </tr>
