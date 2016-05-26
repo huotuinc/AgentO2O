@@ -61,6 +61,8 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     private List<AgentProduct> mockFirstLevelAgentProductList = new ArrayList<>();
     private List<MallGoods> mockFirstLevelAgentGoodsWith1ProductList = new ArrayList<>();
     private List<MallGoods> mockFirstLevelAgentGoodsWithNProductList = new ArrayList<>();
+    //一级代理商采购单
+    private List<AgentPurchaseOrder> mockFirstLevelAgentPurchaseOrderList = new ArrayList<>();
 
     //一级代理商购物车
     private List<ShoppingCart> mockFirstLevelAgentShoppingCartList = new ArrayList<>();
@@ -83,7 +85,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent);
 
         //平台商品相关
-        for (int i = 0; i <= random.nextInt(10); i++) {
+        for (int i = 0; i < random.nextInt(10)+10; i++) {
             MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), null);
             List<MallProduct> mockGoodsWith1ProductsList = new ArrayList<>();
             mockGoodsWith1ProductsList.add(mockMallProduct(mockGoodsWith1Products));
@@ -93,7 +95,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
             mockGoodsWith1ProductList.add(mockGoodsWith1Products);
         }
 
-        for (int i = 0; i <= random.nextInt(10); i++) {
+        for (int i = 0; i < random.nextInt(10)+10; i++) {
             MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), null);
             List<MallProduct> productList = new ArrayList<>();
             for (int j = 0; j < random.nextInt(10) + 2; j++) {
@@ -515,8 +517,6 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         //一级代理商登录
         MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(),passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
 
-        // 1.不带搜索条件
-        // 2.
     }
 
 

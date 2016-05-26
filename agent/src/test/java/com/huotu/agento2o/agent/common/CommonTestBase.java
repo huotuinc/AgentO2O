@@ -12,8 +12,11 @@ package com.huotu.agento2o.agent.common;
 
 import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
+import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.InvoiceEnum;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -21,11 +24,14 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
+import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
@@ -35,6 +41,7 @@ import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
@@ -83,6 +90,16 @@ public abstract class CommonTestBase extends SpringWebTest{
     protected AgentPurchaseOrderRepository agentPurchaseOrderRepository;
     @Autowired
     protected InvoiceConfigRepository invoiceConfigRepository;
+    @Autowired
+    protected MallGoodsTypeRepository goodsTypeRepository;
+
+    //标准类目 羽绒服
+    protected MallGoodsType standardGoodsType;
+
+    @Before
+    public void initBase(){
+        standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167",-1);
+    }
 
     protected MockHttpSession loginAs(String userName, String password,String roleType) throws Exception {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -145,6 +162,18 @@ public abstract class CommonTestBase extends SpringWebTest{
         shop = shopService.addShop(shop);
         shopService.flush();
         return shop;
+    }
+
+    /**
+     * 商品自定义分类
+     * @return
+     */
+    protected MallGoodsType mockMallGoodsType(Integer customerId){
+        MallGoodsType goodsType = new MallGoodsType();
+        goodsType.setName(UUID.randomUUID().toString());
+        goodsType.setDisabled(false);
+        goodsType.setCustomerId(customerId);
+        return goodsTypeRepository.saveAndFlush( goodsType);
     }
 
     /**
@@ -264,6 +293,20 @@ public abstract class CommonTestBase extends SpringWebTest{
             invoiceConfigRepository.save(otherInvoiceConfig);
         }
         return invoiceConfigRepository.saveAndFlush(invoiceConfig);
+    }
+
+    protected AgentPurchaseOrder mockAgentPurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class,randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class,randomTaxType));
+        return purchaseOrder;
     }
 
 }
