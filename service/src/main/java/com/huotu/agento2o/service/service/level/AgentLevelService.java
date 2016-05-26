@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.level;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 
 import java.util.List;
@@ -53,8 +54,8 @@ public interface AgentLevelService {
      * 根据levelId增加或修改代理商等级
      * @param levelId 当levelId大于0时修改，否则增加
      * @param customerId
-     * @param agentLevel
+     * @param requestAgentLevel
      * @return
      */
-    boolean addOrUpdate(Integer levelId,Integer customerId,AgentLevel agentLevel);
+    ApiResult addOrUpdate(Integer levelId,Integer customerId,AgentLevel requestAgentLevel);
 }

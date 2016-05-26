@@ -33,15 +33,29 @@ public class AgentController {
     @Autowired
     private AgentService agentService;
 
+    /**
+     * 展示代理商基本信息
+     *
+     * @param agent
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/agentConfig", method = RequestMethod.GET)
     public String showAgent(@AgtAuthenticationPrincipal Agent agent, Model model) {
         model.addAttribute("agent", agentService.findById(agent.getId()));
         return "config/agentConfig";
     }
 
+    /**
+     * 保存代理商基本信息
+     *
+     * @param agent
+     * @param requestAgent
+     * @return
+     */
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult addOrSaveAgent(@AgtAuthenticationPrincipal Agent agent, Agent requestAgent) {
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal Agent agent, Agent requestAgent) {
         return agentService.saveAgentConfig(agent.getId(), requestAgent);
     }
 

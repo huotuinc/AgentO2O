@@ -1,0 +1,359 @@
+<!DOCTYPE html >
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10"/>
+    <title>
+        收货地址管理
+    </title>
+    <link href="resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="resource/3rdParty/jBox/Skins/Green/jbox.css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script src="resource/3rdParty/js/jquery-1.7.2.min.js"
+            th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script src="resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
+    <script src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script src="resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.cityselect.js"
+            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        var ajaxUrl = /*[[@{/config/}]]*/ "/config/";
+    </script>
+
+    <style type="text/css">
+        .disable {
+            filter: Alpha(Opacity=60);
+            opacity: 0.6;
+        }
+
+        .setRed {
+            color: red;
+        }
+
+        .setGreen {
+            color: green;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .data-form th {
+            background: #eee;
+            padding-right: 10px;
+            line-height: 35px;
+            text-align: right;
+            font-weight: bold;
+            width: 80px;
+        }
+
+        .data-form td {
+            background: #fff;
+            padding-left: 10px;
+            width: 180px;
+            color: #000;
+        }
+    </style>
+</head>
+<body marginwidth="0" marginheight="0" style="cursor: auto;">
+<form method="post" action="accountManage" id="form1">
+
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3>收货地址</h3>
+
+                <div class="bar">
+                    <a class="btn-lit" href="javascript:addressHandler.showEdit(0)">
+                        <span>新增</span></a>
+                </div>
+            </div>
+            <div class="cnt-wp" style="min-height: 450px;">
+                <div id="bg" style="width: 100%; height: 100%; position: absolute; z-index: 555; display: none;">
+                    <img th:src="@{/resource/3rdParty/images/loading.gif}" src="resource/3rdParty/images/loading.gif"
+                         border="0" style="margin-left: 46%; margin-top: 13%;"/>
+                </div>
+                <div class="cnt" id="content" width="1392" style="display: block;">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                        <tr class="even">
+                            <th scope="col" style="width: 5%">序号
+                            </th>
+                            <th scope="col" style="width: 10%">收货人
+                            </th>
+                            <th scope="col" style="width: 10%">联系电话
+                            </th>
+                            <th scope="col" style="">收货地址
+                            </th>
+                            <th scope="col" style="width: 10%">默认地址
+                            </th>
+                            <th scope="col" style="width: 15%">备注
+                            </th>
+                            <th scope="col" style="width: 10%">操作
+                            </th>
+                        </tr>
+                        </tbody>
+                        <tbody>
+                        <tr th:each="address:${addressList}">
+                            <td class="txt40 c" th:text="${addressStat.count}">1</td>
+                            <td class="txt40 c" th:text="${address.receiver}">张三</td>
+                            <td class="txt40 c" th:text="${address.telephone}">18888888888</td>
+                            <td class="txt40 c" th:text="${address.province+' '+address.city+' '+address.district+' '+address.address}">浙江
+                                杭州 滨江区
+                            </td>
+                            <td class="txt40 c">
+                                <input th:type="radio" name = "isDefault" th:checked="${address.isDefault()}" th:onclick="|javascript:addressHandler.configDefault(${address.id})|"/>设为默认
+                            </td>
+                            <td class="txt40 c" th:text="${address.comment}"></td>
+                            <td class="txt40 c">
+                                <a href="javascript:addressHandler.showEdit(1)"
+                                   th:href="|javascript:addressHandler.showEdit(${address.id})|">编辑</a> |
+                                <a href="javascript:addressHandler.deleteAddress(1)"
+                                   th:href="|javascript:addressHandler.deleteAddress(${address.id})|">删除</a>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="edit_dialog" style="display: none;">
+
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function selectAddress(pro,city,dist) {
+        if (pro != null && pro.length != 0) {
+            $("#citys").citySelect({
+                url: "/resource/3rdParty/js/jquery.cityselect.js",
+                prov: pro,
+                city: city,
+                dist: dist,
+                nodata: null,
+                required: true
+            });
+        } else {
+            $("#citys").citySelect();
+        }
+        ;
+    }
+    /*]]>*/
+</script>
+
+
+
+<script type="text/javascript">
+    var addressHandler = {
+        deleteAddress: function (addressId) {
+            J.jboxConfirm("确定要删除该收货地址?", function () {
+                $.jBox.tip("正在删除...", "loading");
+
+                J.GetJsonRespons(ajaxUrl + "deleteAddress", {
+                    addressId: addressId
+                }, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("删除成功", "success");
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 400);
+                    }  else {
+                        $.jBox.tip("删除失败", "error");
+                    }
+                }, function () {
+                }, J.PostMethod);
+            });
+        },
+        showEdit: function (addressId) {
+            var pro = "";
+            var city = "";
+            var district = "";
+            $("#edit_dialog").html($("#address_edit_template").html());
+            if (addressId > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: ajaxUrl + "showAddress",
+                    async:false,
+                    data: {
+                        addressId: addressId
+                    },
+                    success: function (json) {
+                        var address = json.data;
+                        $("#receiver").val(address.receiver);
+                        $("#telephone").val(address.telephone);
+                        $("#address").val(address.address);
+                        pro = address.province;
+                        city = address.city;
+                        district = address.district;
+                        $("#comment").val(address.comment);
+                        $("#isDefault").attr("checked",address.default);
+                    }
+                });
+            }
+            selectAddress(pro,city,district);
+            var title = addressId == 0 ? "新增收货地址" : "收货地址编辑";
+            J.ShowDialog("edit_dialog", title, function () {
+                var self = this;
+                var requestData = addressHandler.checkForm(addressId);
+                if (requestData != null) {
+                    $.jBox.tip("正在保存...", "loading");
+
+                    J.GetJsonRespons(ajaxUrl + "saveAddress", requestData, function (json) {
+                        if (json.code == 200) {
+                            $.jBox.tip("保存成功", "success");
+                            $(self).dialog('close');
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 400);
+                        } else if (result.code == 805) {
+                            $.jBox.tip("该账号已失效", "error");
+                        } else {
+                            $.jBox.tip("保存失败", "error");
+                        }
+                    }, function () {
+                    }, J.PostMethod);
+                }
+            }, function () {
+                $(this).dialog('close');
+            });
+        },
+        configDefault: function(addressId){
+            J.GetJsonRespons(ajaxUrl + "configDefault", {
+                addressId: addressId
+            }, function (json) {
+                if (json.code == 200) {
+                    $.jBox.tip("设置成功", "success");
+                }  else {
+                    $.jBox.tip("设置失败", "error");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 400);
+                }
+            }, function () {
+            }, J.PostMethod);
+        },
+        checkForm: function (addressId) {
+            var receiver = $.trim($("#receiver").val());
+            var telephone = $.trim($("#telephone").val());
+            var province = $.trim($("#province").val());
+            var city = $.trim($("#city").val());
+            var district = $.trim($("#district").val());
+            var address = $.trim($("#address").val());
+            var isDefault = $("#isDefault").is(':checked');
+            var comment = $.trim($("#comment").val());
+            if (receiver.length == 0) {
+                $.jBox.tip("请输入收货人");
+                return null;
+            }
+            if (telephone.length == 0) {
+                $.jBox.tip("请输入联系电话");
+                return null;
+            }
+            if (!/^[0-9]*$/.test(telephone)) {
+                $.jBox.tip("联系电话必须是数字");
+                return null;
+            }
+            if (province.length == 0 || city.length == 0 || district.length == 0) {
+                $.jBox.tip("请选择地区");
+                return null;
+            }
+            if (address.length == 0) {
+                $.jBox.tip("请输入详细地址");
+                return null;
+            }
+            var requestData = {
+                id: addressId,
+                receiver: receiver,
+                telephone: telephone,
+                province: province,
+                city: city,
+                district: district,
+                address: address,
+                default:isDefault,
+                comment: comment
+            };
+            return requestData;
+        }
+    }
+</script>
+
+<script type="text/html" id="address_edit_template">
+    <div class="cnt form" style="padding: 10px; width: 500px; height: 260px;">
+        <table id="contenttable" class="data-form" border="0" cellspacing="1" cellpadding="0"
+               style="background: #e1e1e1;">
+            <tbody>
+            <tr style="color: #e8e8e8">
+                <th scope="row">收货人：</th>
+                <td>
+                    <input type="text" id="receiver"/>
+                </td>
+            </tr>
+            <tr style="color: #e8e8e8">
+                <th scope="row">联系电话：</th>
+                <td>
+                    <input type="text" id="telephone"/>
+                </td>
+            </tr>
+            <tr style="color: #e8e8e8">
+                <th scope="row">地区：</th>
+                <td>
+                    <span id="citys">
+                            <select class="prov" id="province"
+                                    name="province"></select>
+                            <select class="city" id="city" disabled="disabled"
+                                    name="city"></select>
+                            <select class="dist" id="district" disabled="disabled"
+                                    name="district"></select>
+                        </span>
+                </td>
+            </tr>
+             <tr style="color: #e8e8e8">
+                <th scope="row">详细地址：</th>
+                    <td>
+                        <textarea id="address" style="margin-top: 10px;margin-bottom: 10px;"></textarea>
+                    </td>
+             </tr>
+            <tr style="color: #e8e8e8">
+                <th scope="row">设为默认：</th>
+                <td>
+                    <input type="checkbox" id="isDefault" value=""/>
+                </td>
+            </tr>
+            <tr style="color: #e8e8e8">
+                <th scope="row">备注：</th>
+                <td>
+                    <textarea id="comment" style="margin-top: 10px;margin-bottom: 10px;"></textarea>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</script>
+</body>
+</html>

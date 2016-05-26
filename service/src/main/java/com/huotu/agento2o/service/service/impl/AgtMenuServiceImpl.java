@@ -279,11 +279,6 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             shdzlb = menuRepository.save(shdzlb);
             subMenu2.add(shdzlb);
 
-            //二级菜单 新增收货地址
-            AgtMenu xzshdz = new AgtMenu(2, "/config/addAddress", "新增收货地址", 1, shdzgl, "BASE_DATA", 0, "040402");
-            xzshdz = menuRepository.save(xzshdz);
-            subMenu2.add(xzshdz);
-
             shdzgl.setChildren(subMenu2);
             shdzgl = menuRepository.save(shdzgl);
             subMenu1.add(shdzgl);
