@@ -46,7 +46,7 @@
     <div class="search block" style="display: block;">
         <div class="h">
             <span class="icon-sprite icon-magnifier"></span>
-            <h3>商品采购</h3>
+            <h3>退货单列表</h3>
         </div>
         <div class="tl corner">
         </div>
@@ -120,6 +120,8 @@
 
                         <th scope="col">退单号
                         </th>
+                        <th scope="col">货品名称
+                        </th>
                         <th scope="col">审核状态
                         </th>
                         <th scope="col">发货状态
@@ -147,14 +149,18 @@
                             <a th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" onclick="showReturnedOrderDetail()">
                                 <span th:text="${agentReturnOrder.rOrderId}">rOrderId</span>
                             </a>
+                            <span th:if="${agentReturnOrder.Disabled}" style="color:red;">已关闭</span>
                         </td>
                         <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}">
+                            货品名称
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}" style="color:red;">
                             审核状态
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}">
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}" style="color:red;">
                             发货状态
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.payStatus.getValue()}">
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.payStatus.getValue()}" style="color:red;">
                             付款状态
                         </td>
                         <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">

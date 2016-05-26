@@ -118,6 +118,13 @@ public class AgentReturnedOrder {
      */
     @Column(name = "Agent_Comment")
     private String authorComment;
+
+    /**
+     *  上级代理商/平台  审核备注
+     */
+    @Column(name = "Status_Comment")
+    private String statusComment;
+
     /**
      * 退货单状态
      */
@@ -132,16 +139,19 @@ public class AgentReturnedOrder {
     private Date receivedTime;
 
 
+
     //采购状态为 待审核 或 审核不通过
     //可删除
     public boolean deletable() {
-        return status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED;
+        return (status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED)
+                && disabled==false;
     }
 
     //采购状态为 待审核
     //可审核
     public boolean checkable() {
-        return status == PurchaseEnum.OrderStatus.CHECKING;
+        return status == PurchaseEnum.OrderStatus.CHECKING
+                &&disabled==false;
     }
 
     //采购状态为已审核,发货状态为已发货，且 支付状态 为空或 未支付
@@ -150,14 +160,16 @@ public class AgentReturnedOrder {
         return status == PurchaseEnum.OrderStatus.CHECKED
                 && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED)
-                && receivedTime != null;
+                && receivedTime != null
+                && disabled==false;
     }
 
     //采购状态为已审核 且发货状态 为空 或未发货
     //可发货
     public boolean deliverable() {
         return status == PurchaseEnum.OrderStatus.CHECKED
-                && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
+                && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER)
+                && disabled==false;
     }
 
     //采购状态为已审核 且发货状态为已发货
@@ -166,7 +178,8 @@ public class AgentReturnedOrder {
         return status == PurchaseEnum.OrderStatus.CHECKED
                 && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED)
-                && receivedTime == null;
+                && receivedTime == null
+                && disabled==false;
     }
 
 }

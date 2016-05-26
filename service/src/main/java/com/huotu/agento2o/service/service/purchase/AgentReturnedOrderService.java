@@ -69,7 +69,21 @@ public interface AgentReturnedOrderService {
      */
     ApiResult receiveReturnOrder(Integer customerId, Integer authorId,Integer subAuthorId,String rOrderId);
 
+    /**
+     * 退单退款
+     * @param customerId
+     * @param authorId
+     * @param rOrderId
+     * @return
+     */
     ApiResult payReturnOrder(Integer customerId, Integer authorId, String rOrderId);
 
+    /**
+     * 编辑退货数量
+     * @param author
+     * @param productId
+     * @param num
+     * @return
+     */
     ApiResult editReturnNum(Author author, Integer productId, Integer num);
 }
