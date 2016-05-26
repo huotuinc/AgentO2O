@@ -10,7 +10,6 @@
 
 package com.huotu.agento2o.service.entity.goods;
 
-import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -84,5 +83,10 @@ public class MallGoods {
      */
     @Column(name = "SalesCount")
     private Integer salesCount;
+    /**
+     * 商品类型
+     */
+    @Column(name = "Type_Id")
+    private Integer typeId;
     // TODO: 3/17/16
 }

@@ -1,5 +1,7 @@
 package com.huotu.agento2o.service.service.level.impl;
 
+import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
@@ -55,24 +57,27 @@ public class AgentLevelServiceImpl implements AgentLevelService {
 
     @Override
     @Transactional
-    public boolean addOrUpdate(Integer levelId, Integer customerId, AgentLevel agentLevel) {
-        AgentLevel newAgentLevel;
+    public ApiResult addOrUpdate(Integer levelId, Integer customerId, AgentLevel requestAgentLevel) {
+        AgentLevel agentLevel;
         if (levelId > 0) {
-            newAgentLevel = findById(levelId);
+            agentLevel = findById(levelId);
+            if(agentLevel == null){
+                return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+            }
         } else {
             Integer level = findLastLevel(customerId);
-            newAgentLevel = new AgentLevel();
+            agentLevel = new AgentLevel();
             MallCustomer customer = customerRepository.findOne(customerId);
             if (customer == null) {
-                return false;
+                return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
             }
-            newAgentLevel.setCustomer(customer);
+            agentLevel.setCustomer(customer);
             //等级依次递增，初始值为0
-            newAgentLevel.setLevel(level == null ? 0 : level + 1);
+            agentLevel.setLevel(level == null ? 0 : level + 1);
         }
-        newAgentLevel.setLevelName(agentLevel.getLevelName());
-        newAgentLevel.setComment(agentLevel.getComment());
-        addAgentLevel(newAgentLevel);
-        return true;
+        agentLevel.setLevelName(requestAgentLevel.getLevelName());
+        agentLevel.setComment(requestAgentLevel.getComment());
+        addAgentLevel(agentLevel);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }

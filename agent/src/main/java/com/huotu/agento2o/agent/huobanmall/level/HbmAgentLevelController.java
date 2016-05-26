@@ -42,8 +42,7 @@ public class HbmAgentLevelController {
     @ResponseBody
     public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") String customerIdStr, AgentLevel requestAgentLevel, Integer levelId) {
         int customerId = Integer.parseInt(customerIdStr);
-        boolean result = agentLevelService.addOrUpdate(levelId, customerId, requestAgentLevel);
-        return result ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        return agentLevelService.addOrUpdate(levelId, customerId, requestAgentLevel);
     }
 
     /**

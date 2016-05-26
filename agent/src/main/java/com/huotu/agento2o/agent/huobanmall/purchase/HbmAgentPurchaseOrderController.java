@@ -91,7 +91,7 @@ public class HbmAgentPurchaseOrderController {
      * @param customerId
      * @param pOrderId
      * @param checkStatus
-     * @param parentComment
+     * @param statusComment
      * @return
      * @throws Exception
      */
@@ -101,17 +101,17 @@ public class HbmAgentPurchaseOrderController {
             @RequestAttribute(value = "customerId") Integer customerId,
             @RequestParam(required = true) String pOrderId,
             @RequestParam(required = true) String checkStatus,
-            String parentComment) throws Exception {
+            String statusComment) throws Exception {
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         if (StringUtil.isEmptyStr(pOrderId) || StringUtil.isEmptyStr(checkStatus)) {
             return result;
         }
         //审核不通过时需输入备注
         if (!(String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode()).equals(checkStatus) ||
-                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(parentComment)))) {
+                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(statusComment)))) {
             return result;
         }
-        result = purchaseOrderService.checkPurchaseOrder(customerId,null,pOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), parentComment);
+        result = purchaseOrderService.checkPurchaseOrder(customerId,null,pOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
         return result;
     }
 }

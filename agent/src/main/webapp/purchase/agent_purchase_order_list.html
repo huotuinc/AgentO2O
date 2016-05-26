@@ -73,7 +73,7 @@
                         &nbsp;
                         <label class="first ">下级代理商/门店：</label>
                         <select name="agentId" id="agentId">
-                            <option selected="selected"  value="-1"  th:selected="*{agentId == 0}">==所有==</option>
+                            <option selected="selected"  value="0"  th:selected="*{agentId == 0}">==所有==</option>
                             <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == purchaseOrderSearcher.agentId}">代理商/门店</option>
                         </select>
                         <br/>
@@ -175,10 +175,11 @@
                             <td class="txt20 c" th:text="${pOrderStat.count}">
                                 1
                             </td>
-                            <td class="txt80 c">
+                            <td class="txt80">
                                 <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.pOrderId}"></a>
+                                <span style="color: red" th:if="${pOrder.disabled}">（已取消）</span>
                             </td>
-                            <td class="txt160 c">
+                            <td class="txt160">
                                 <span th:text="${pOrder.orderItemList.size()}>0?${pOrder.orderItemList[0].name}"></span>
                                 <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
@@ -194,7 +195,7 @@
                                                       th:if="${pOrder.payTime!=null and pOrder.payTime!=''}"
                                                       th:text="${#dates.format(pOrder.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
                             </td>
-                            <td class="txt40 c">￥
+                            <td class="txt40">￥
                                 <span th:text="${pOrder.finalAmount}">100</span>
                             </td>
                             <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus} != null ? ${pOrder.payStatus.value}">
@@ -224,7 +225,7 @@
                 <script type="text/javascript" th:inline="javascript">
                     /*<![CDATA[*/
                     var pageSize = /*[[${pageSize}]]*/ '-1';
-                    var pageIndex = /*[[${pageIndex}]]*/ '-1';
+                    var pageIndex = /*[[${pageNo}]]*/ '-1';
                     var pageCount = /*[[${totalPages}]]*/ '-1';
                     var recordCount = /*[[${totalRecords}]]*/ '-1';
                     var formName = 'form1';
@@ -256,7 +257,7 @@
                     </li>
                     <li style="display: none" id="comment">
                         <label>
-                            审核说明<textarea  name="parentComment" id="parentComment"  style="width: 80%"></textarea>
+                            审核说明<textarea  name="statusComment" id="statusComment"  style="width: 80%"></textarea>
                         </label>
                     </li>
                 </ul>
@@ -295,12 +296,12 @@
                 'pOrderId':pOrderId
             };
             if(status == '2'){
-                var comment = $.trim($("#parentComment").val());
+                var comment = $.trim($("#statusComment").val());
                 if(comment.length == 0){
                     $.jBox.tip("请输入审核说明！");
                     return;
                 }
-                data['parentComment'] = comment;
+                data['statusComment'] = comment;
             }
             $.jBox.tip("正在保存...", "loading");
             $.ajax({
@@ -342,7 +343,7 @@
     }
 
     function searchOrder() {
-        $("#pageIndex").val(1);
+        $("input[name=pageIndex]").val(1);
         $('#form1').submit();
     }
     function searchOrderAll() {

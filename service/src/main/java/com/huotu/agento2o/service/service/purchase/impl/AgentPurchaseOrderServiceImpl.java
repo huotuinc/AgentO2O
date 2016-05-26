@@ -110,7 +110,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class), "%" + purchaseOrderSearcher.getOrderItemName() + "%"));
             }
-            predicates.add(cb.isFalse(root.get("disabled")));
+//            predicates.add(cb.isFalse(root.get("disabled")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         return purchaseOrderRepository.findAll(specification, new PageRequest(purchaseOrderSearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
@@ -206,36 +206,39 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      * @param pOrderId
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ApiResult disableAgentPurchaseOrder(String pOrderId, Author author) throws Exception {
         AgentPurchaseOrder agentPurchaseOrder = findByPOrderIdAndAuthor(pOrderId, author);
         if (agentPurchaseOrder == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (!agentPurchaseOrder.deletable()) {
-            return new ApiResult("采购单已审核，无法删除！");
+            return new ApiResult("采购单已审核或已支付，无法删除！");
         }
-        List<AgentPurchaseOrderItem> purchaseOrderItemList = agentPurchaseOrder.getOrderItemList();
-        for (AgentPurchaseOrderItem item : purchaseOrderItemList) {
-            //减少 预占库存
-            if (author.getParentAuthor() == null) {
-                //修改平台方货品预占库存
-                MallProduct customerProduct = item.getProduct();
-                if (customerProduct.getFreez() - item.getNum() < 0) {
-                    // TODO: 2016/5/19 单元测试，库存不足 
-                    throw new Exception("库存不足，无法删除！");
+        //审核不通过，已经减少预占库存
+        if(!PurchaseEnum.OrderStatus.RETURNED.equals(agentPurchaseOrder.getStatus())){
+            List<AgentPurchaseOrderItem> purchaseOrderItemList = agentPurchaseOrder.getOrderItemList();
+            for (AgentPurchaseOrderItem item : purchaseOrderItemList) {
+                //如果采购单未审核 减少 预占库存
+                if (author.getParentAuthor() == null) {
+                    //修改平台方货品预占库存
+                    MallProduct customerProduct = item.getProduct();
+                    if (customerProduct.getFreez() - item.getNum() < 0) {
+                        // TODO: 2016/5/19 单元测试，库存不足
+                        throw new Exception("库存不足，无法删除！");
+                    }
+                    customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
+                    productRepository.save(customerProduct);
+                } else {
+                    //如果采购单未审核 修改代理商库存
+                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse( author.getParentAuthor(), item.getProduct());
+                    if (agentProduct.getFreez() - item.getNum() < 0) {
+                        // TODO: 2016/5/19 单元测试 库存不足
+                        throw new Exception("库存不足，无法删除！");
+                    }
+                    agentProduct.setFreez(agentProduct.getFreez() - item.getNum());
+                    agentProductRepository.save(agentProduct);
                 }
-                customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
-                productRepository.save(customerProduct);
-            } else {
-                //修改代理商库存
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse((Agent) author.getParentAuthor(), item.getProduct());
-                if (agentProduct.getFreez() - item.getNum() < 0) {
-                    // TODO: 2016/5/19 单元测试 库存不足 
-                    throw new Exception("库存不足，无法删除！");
-                }
-                agentProduct.setFreez(agentProduct.getFreez() - item.getNum());
-                agentProductRepository.save(agentProduct);
             }
         }
         agentPurchaseOrder.setDisabled(true);
@@ -273,7 +276,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      * @throws Exception
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ApiResult receiveAgentPurchaseOrder(String pOrderId, Author author) throws Exception {
         AgentPurchaseOrder agentPurchaseOrder = findByPOrderIdAndAuthor(pOrderId, author);
         if (agentPurchaseOrder == null) {
@@ -350,7 +353,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) throws Exception {
         AgentPurchaseOrder agentPurchaseOrder = findByPOrderId(pOrderId);
         if (agentPurchaseOrder == null) {
@@ -371,13 +374,24 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         if (status == PurchaseEnum.OrderStatus.RETURNED) {
             List<AgentPurchaseOrderItem> itemList = agentPurchaseOrder.getOrderItemList();
             for (AgentPurchaseOrderItem item : itemList) {
-                AgentProduct product = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor(), item.getProduct());
-                if (product != null) {
-                    if (item.getNum() > product.getFreez()) {
+                if(agentPurchaseOrder.getAuthor().getParentAuthor() == null){
+                    //减少平台方预占库存
+                    MallProduct customerProduct = item.getProduct();
+                    if(item.getNum() > customerProduct.getFreez()){
                         throw new Exception("库存不足！");
                     }
-                    product.setFreez(product.getFreez() - item.getNum());
-                    agentProductRepository.save(product);
+                    customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
+                    productRepository.save(customerProduct);
+                }else {
+                    //修改代理商货品预占库存
+                    AgentProduct product = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor().getParentAuthor(), item.getProduct());
+                    if (product != null) {
+                        if (item.getNum() > product.getFreez()) {
+                            throw new Exception("库存不足！");
+                        }
+                        product.setFreez(product.getFreez() - item.getNum());
+                        agentProductRepository.save(product);
+                    }
                 }
             }
         }
