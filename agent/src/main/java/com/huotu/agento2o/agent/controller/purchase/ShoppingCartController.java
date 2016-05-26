@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
+import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
@@ -135,20 +136,18 @@ public class ShoppingCartController {
      * 填写采购单
      *
      * @param author
-     * @param agentPurchaseOrder
      * @param shoppingCartId
      * @return
      * @throws Exception
      */
     @RequestMapping("/addPurchase")
     public ModelAndView addPurchase(
-            @AgtAuthenticationPrincipal Author author, AgentPurchaseOrder agentPurchaseOrder,
+            @AgtAuthenticationPrincipal Author author,
             String... shoppingCartId) throws Exception {
         ModelAndView model = new ModelAndView();
-        if (shoppingCartId.length == 0) {
+        if (shoppingCartId == null || shoppingCartId.length == 0) {
             //如果没有选中的购物车货品ID，则跳转到购物车
-            model.setViewName("redirect:/shoppingCart/showShoppingCart");
-            return model;
+            return new ModelAndView("redirect:/shoppingCart/showShoppingCart");
         }
         model.setViewName("/purchase/add_purchase");
         List<Integer> shoppingCartIds = new ArrayList<>();
@@ -156,22 +155,32 @@ public class ShoppingCartController {
             shoppingCartIds.add(Integer.valueOf(shoppingCart));
         }
         List<ShoppingCart> shoppingCartList = shoppingCartService.findById(shoppingCartIds, author);
-        if(shoppingCartList != null && shoppingCartList.size() > 0){
+        if (shoppingCartList != null && shoppingCartList.size() > 0) {
             getPicUri(shoppingCartList);
+        } else {
+            //如果没有可采购的购物车货品ID，则跳转到购物车
+            return new ModelAndView("redirect:/shoppingCart/showShoppingCart");
         }
         // TODO: 2016/5/17 获取 author 默认收货信息
+        AgentPurchaseOrder agentPurchaseOrder = new AgentPurchaseOrder();
         //获取默认发票类型及基本信息
         int invoiceType = 0;
         InvoiceConfig defaultConfig = invoiceService.findDefaultByAuthor(author);
-        if (defaultConfig != null && defaultConfig.getType() == InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE) {
+        if (defaultConfig != null && defaultConfig.getType() != null && InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE.equals(defaultConfig.getType())) {
             invoiceType = 1;
-        } else if (defaultConfig != null && defaultConfig.getType() == InvoiceEnum.InvoiceTypeStatus.TAXINVOICE) {
+            agentPurchaseOrder.setTaxTitle(defaultConfig.getTaxTitle());
+            agentPurchaseOrder.setTaxContent(defaultConfig.getTaxContent());
+        } else if (defaultConfig != null && defaultConfig.getType() != null && InvoiceEnum.InvoiceTypeStatus.TAXINVOICE.equals(defaultConfig.getType())) {
             invoiceType = 2;
+            agentPurchaseOrder.setTaxTitle(defaultConfig.getTaxTitle());
+            agentPurchaseOrder.setTaxContent(defaultConfig.getTaxContent());
+            agentPurchaseOrder.setTaxpayerCode(defaultConfig.getTaxpayerCode());
+            agentPurchaseOrder.setBankName(defaultConfig.getBankName());
+            agentPurchaseOrder.setAccountNo(defaultConfig.getAccountNo());
         }
+        agentPurchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, invoiceType));
         model.addObject("agentPurchaseOrder", agentPurchaseOrder);
         model.addObject("shoppingCartList", shoppingCartList);
-        model.addObject("invoiceType", invoiceType);
-        model.addObject("invoiceConfig", defaultConfig);
         model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         model.addObject("taxTypeEnum", PurchaseEnum.TaxType.values());
         return model;

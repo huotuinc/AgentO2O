@@ -1,25 +1,18 @@
 package com.huotu.agento2o.service.service.purchase;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
+import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 /**
  * Created by wuxiongliu on 2016/5/18.
  */
 public interface AgentReturnedOrderService {
 
-    /**
-     *
-     * @param agentId
-     * @return
-     */
-    List<AgentProduct> findAgentProductsByAgentId(Integer agentId);
 
     /**
      *  查找退货单
@@ -36,14 +29,11 @@ public interface AgentReturnedOrderService {
     AgentReturnedOrder addReturnOrder(AgentReturnedOrder agentReturnedOrder);
 
     /**
-     *  分页查询所有的退货单列表
-     * @param pageIndex
-     * @param pageSize
-     * @param author
+     * 分页查询所有的退货单列表
      * @param returnedOrderSearch
      * @return
      */
-    Page<AgentReturnedOrder> findAll(int pageIndex, int pageSize, Author author, ReturnedOrderSearch returnedOrderSearch);
+    Page<AgentReturnedOrder> findAll(ReturnedOrderSearch returnedOrderSearch);
 
     /**
      *  取消退货单
@@ -51,4 +41,35 @@ public interface AgentReturnedOrderService {
      * @return
      */
     ApiResult cancelReturnOrder(String rOrderId);
+
+    /**
+     * 审核退货单
+     * @param customerId
+     * @param authorId
+     * @param rOrderId
+     * @param status
+     * @param comment
+     * @return
+     */
+    ApiResult checkReturnOrder(Integer customerId, Integer authorId, String rOrderId, PurchaseEnum.OrderStatus status, String comment);
+
+    /**
+     *  发货
+     * @param deliveryInfo
+     * @return
+     */
+    ApiResult pushReturnOrderDelivery(ReturnOrderDeliveryInfo deliveryInfo, Integer agentId);
+
+    /**
+     *  确认收货
+     * @param customerId
+     * @param authorId
+     * @param rOrderId
+     * @return
+     */
+    ApiResult receiveReturnOrder(Integer customerId, Integer authorId,Integer subAuthorId,String rOrderId);
+
+    ApiResult payReturnOrder(Integer customerId, Integer authorId, String rOrderId);
+
+    ApiResult editReturnNum(Author author, Integer productId, Integer num);
 }

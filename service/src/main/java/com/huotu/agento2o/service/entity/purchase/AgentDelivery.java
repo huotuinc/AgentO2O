@@ -11,9 +11,6 @@
 package com.huotu.agento2o.service.entity.purchase;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +34,12 @@ public class AgentDelivery {
     @JoinColumn(name = "P_Order_Id")
     @JSONField(deserialize = false)
     private AgentPurchaseOrder purchaseOrder;
+
+    @ManyToOne
+    @JoinColumn(name = "R_Order_Id")
+    @JSONField(deserialize = false)
+    private AgentReturnedOrder agentReturnedOrder;
+
 //    @ManyToOne
 //    @JoinColumn(name = "Agent_Id")
 //    private Author author;

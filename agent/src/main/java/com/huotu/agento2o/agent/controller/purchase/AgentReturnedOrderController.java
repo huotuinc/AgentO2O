@@ -1,25 +1,29 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
+import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,6 +46,8 @@ public class AgentReturnedOrderController {
     private AgentReturnedOrderService agentReturnedOrderService;
     @Autowired
     private AgentReturnOrderItemService agentReturnOrderItemService;
+    @Autowired
+    private AgentProductService agentProductService;
 
     @Autowired
     private MallProductService mallProductService;
@@ -58,7 +64,7 @@ public class AgentReturnedOrderController {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/purchased_product_list");
         List<AgentProduct> agentProductList = null;
-        agentProductList = agentReturnedOrderService.findAgentProductsByAgentId(author.getId());
+        agentProductList = agentProductService.findByAgentId(author.getId());
         model.addObject("agentProductList", agentProductList);
         return model;
     }
@@ -92,10 +98,16 @@ public class AgentReturnedOrderController {
             MallProduct mallProduct = mallProductService.findByProductId(productIds[i]);
             finalPrice += mallProduct.getPrice()*productNums[i];
         }
-        agentReturnedOrder.setFinalAmount(finalPrice);// FIXME: 2016/5/20 fixed
+        agentReturnedOrder.setFinalAmount(finalPrice);
 
-        AgentReturnedOrder agentReturnedOrder1 = agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
-        agentReturnOrderItemService.addReturnOrderItemList(author,agentReturnedOrder1,productIds,productNums);
+        AgentReturnedOrder savedAgentReturnedOrder= agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
+        if(savedAgentReturnedOrder == null){
+            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        }
+        List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemService.addReturnOrderItemList(author,agentReturnedOrder,productIds,productNums);
+        if(agentReturnedOrderItems.size() == 0){
+            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
@@ -106,40 +118,39 @@ public class AgentReturnedOrderController {
      * @throws Exception
      */
     @RequestMapping(value = "/showReturnedOrderList")
-    public String showReturnedOrderList(
+    public ModelAndView showReturnedOrderList(
             @AgtAuthenticationPrincipal Author author,
-            Model model,
-            ReturnedOrderSearch searchCondition,
-            @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
+            ReturnedOrderSearch searchCondition) throws Exception {
 
         searchCondition.setAgentId(author.getId());
-        Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(pageIndex,3, author, searchCondition);
-
+        Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
+        ModelAndView model = new ModelAndView();
+        model.setViewName("purchase/returned_product_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
 
-        model.addAttribute("payStatusEnums", PurchaseEnum.PayStatus.values());
-        model.addAttribute("shipStatusEnums",PurchaseEnum.ShipStatus.values());
-        model.addAttribute("orderStatusEnums",PurchaseEnum.OrderStatus.values());
-        model.addAttribute("agentReturnedOrderList", agentReturnedOrderPage.getContent());
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("agentId", author.getId());
-        model.addAttribute("totalRecords", agentReturnedOrderPage.getTotalElements());
-        model.addAttribute("pageSize", agentReturnedOrderPage.getSize());
-        model.addAttribute("searchCondition", searchCondition);
-        model.addAttribute("pageIndex", pageIndex);
-        model.addAttribute("authorType", author.getClass().getSimpleName());
-        return "purchase/returned_product_list";
+        model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
+        model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
+        model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
+        model.addObject("totalPages", totalPages);
+        model.addObject("agentId", author.getId());
+        model.addObject("totalRecords", agentReturnedOrderPage.getTotalElements());
+        model.addObject("pageSize", agentReturnedOrderPage.getSize());
+        model.addObject("searchCondition", searchCondition);
+        model.addObject("pageIndex", searchCondition.getPageIndex());
+        model.addObject("authorType", author.getClass().getSimpleName());
+        return model;
     }
 
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
-    public ApiResult cancelReturnOrer(String rOrderId){
+    public ApiResult cancelReturnOrer(String rOrderId) throws Exception {
         ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(rOrderId);
         return apiResult;
     }
 
     @RequestMapping(value = "/showReturnedOrderDetail")
-    public ModelAndView showReturnOrderDetail(String rOrderId){
+    public ModelAndView showReturnOrderDetail(String rOrderId) throws Exception{
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("purchase/returned_product_detail");
         AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
@@ -150,6 +161,135 @@ public class AgentReturnedOrderController {
         modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
         return modelAndView;
     }
+
+    @RequestMapping(value = "/showDelivery")
+    public ModelAndView showDelivery(@AgtAuthenticationPrincipal Agent agent,
+                               @RequestParam(required = true) String rOrderId) throws Exception{
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("purchase/return_order_delivery");
+        AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
+        List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
+//        if(agentReturnedOrder.getAuthor().getParentAuthor() != null && agentReturnedOrder.getAuthor().getParentAuthor().getId().equals(agent.getId())){
+            modelAndView.addObject("agentReturnedOrder",agentReturnedOrder);
+            modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
+//        }else{
+//            throw new Exception("没有权限！");
+//        }
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value = "/delivery")
+    @ResponseBody
+    public ApiResult deliveryReturnOrder(
+            @AgtAuthenticationPrincipal Agent agent,
+            ReturnOrderDeliveryInfo deliveryInfo) throws Exception {
+        return agentReturnedOrderService.pushReturnOrderDelivery(deliveryInfo,agent.getId());
+    }
+
+    @RequestMapping(value = "/editReturnNum")
+    @ResponseBody
+    public ApiResult editReturnNum(
+            @AgtAuthenticationPrincipal Agent agent,
+            @RequestParam(required = true) Integer productId,
+            @RequestParam(required = true) Integer num) throws Exception {
+
+        if(productId == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (num == null || num == 0) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+
+        return agentReturnedOrderService.editReturnNum(agent,productId,num);
+
+    }
+
+    /**
+     *  显示退货单列表
+     * @param author 代理商
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/showAgentReturnedOrderList")
+    public ModelAndView showAgentReturnedOrderList(
+            @AgtAuthenticationPrincipal Author author,
+            ReturnedOrderSearch searchCondition) throws Exception {
+
+        searchCondition.setParentAgentId(author.getId());
+        Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
+        ModelAndView model = new ModelAndView();
+        model.setViewName("purchase/agent_return_order_list");
+        int totalPages = agentReturnedOrderPage.getTotalPages();
+
+        model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
+        model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
+        model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
+        model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
+        model.addObject("totalPages", totalPages);
+        model.addObject("agentId", author.getId());
+        model.addObject("totalRecords", agentReturnedOrderPage.getTotalElements());
+        model.addObject("pageSize", agentReturnedOrderPage.getSize());
+        model.addObject("searchCondition", searchCondition);
+        model.addObject("pageIndex", searchCondition.getPageIndex());
+        model.addObject("authorType", author.getClass().getSimpleName());
+        return model;
+    }
+
+    /**
+     * 审核下级退货单
+     * @param rOrderId
+     * @param checkStatus
+     * @param parentComment
+     * @return
+     */
+    @RequestMapping(value = "/checkAgentReturnOrder")
+    @ResponseBody
+    public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal Author author,
+                                           @RequestParam(required = true) String rOrderId,
+                                           @RequestParam(required = true) String checkStatus,
+                                           String parentComment){
+
+        ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        if (StringUtil.isEmptyStr(rOrderId) || StringUtil.isEmptyStr(checkStatus)) {
+            return result;
+        }
+
+        //审核不通过时需输入备注
+        if (!(String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode()).equals(checkStatus) ||
+                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(parentComment)))) {
+            return result;
+        }
+        return agentReturnedOrderService.checkReturnOrder(null,author.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), parentComment);
+    }
+
+    /**
+     *   确认收货
+     * @param author
+     * @param rOrderId
+     * @return
+     */
+    @RequestMapping(value = "/receiveAgentReturnOrder")
+    @ResponseBody
+    public ApiResult receiveReturnOrder(@AgtAuthenticationPrincipal Author author,
+                                        @RequestParam(required = true) String rOrderId){
+        ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        if (StringUtil.isEmptyStr(rOrderId)) {
+            return result;
+        }
+        return agentReturnedOrderService.receiveReturnOrder(null,author.getId(),null,rOrderId);
+
+    }
+
+    @RequestMapping(value = "/payAgentReturnOrder")
+    @ResponseBody
+    public ApiResult payReturnOrder(@AgtAuthenticationPrincipal Author author,
+                                    @RequestParam(required = true) String rOrderId){
+        return agentReturnedOrderService.payReturnOrder(null,author.getId(),rOrderId);
+
+    }
+
 
 
 }

@@ -160,6 +160,18 @@ public class HbmAgentController {
         return agentService.addOrUpdate(customerId, agentLevelId, parentAgentId, hotUserName, requestAgent);
     }
 
+    /**
+     * 导出代理商
+     *
+     * @param searchCondition
+     * @param province
+     * @param txtBeginPage
+     * @param txtEndPage
+     * @param customerIdStr
+     * @param session
+     * @param response
+     * @throws UnsupportedEncodingException
+     */
     @RequestMapping("/exportExcel")
     public void exportExcel(AgentSearcher searchCondition, String province,
                             int txtBeginPage,
@@ -197,6 +209,13 @@ public class HbmAgentController {
         }
     }
 
+    /**
+     * 重置密码
+     *
+     * @param agentId
+     * @param password
+     * @return
+     */
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(Integer agentId, String password) {

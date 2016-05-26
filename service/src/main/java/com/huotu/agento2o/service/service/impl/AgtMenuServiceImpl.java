@@ -231,12 +231,12 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             baseMenu = menuRepository.save(baseMenu);
             subMenu1.clear();
 
-            //一级菜单 门店基本设置
+            //资料设置
             AgtMenu jbse = new AgtMenu(1, "", "资料设置", 0, baseMenu, "BASE_SHOP", 0, "0401");
             jbse = menuRepository.save(jbse);
             subMenu2.clear();
 
-            //二级菜单 门店基本设置
+            //基本信息配置
             AgtMenu mdjbsz = new AgtMenu(2, "/shop/baseConfig", "基本信息配置", 0, jbse, "BASE_SHOP", 0, "040101");
             mdjbsz = menuRepository.save(mdjbsz);
             subMenu2.add(mdjbsz);
@@ -278,11 +278,6 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             AgtMenu shdzlb = new AgtMenu(2, "/config/addressList", "收货地址列表", 0, shdzgl, "BASE_DATA", 0, "040401");
             shdzlb = menuRepository.save(shdzlb);
             subMenu2.add(shdzlb);
-
-            //二级菜单 新增收货地址
-            AgtMenu xzshdz = new AgtMenu(2, "/config/addAddress", "新增收货地址", 1, shdzgl, "BASE_DATA", 0, "040402");
-            xzshdz = menuRepository.save(xzshdz);
-            subMenu2.add(xzshdz);
 
             shdzgl.setChildren(subMenu2);
             shdzgl = menuRepository.save(shdzgl);

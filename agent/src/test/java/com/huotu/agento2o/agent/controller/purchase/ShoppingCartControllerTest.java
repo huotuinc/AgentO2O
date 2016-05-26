@@ -12,13 +12,17 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.InvoiceEnum;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,10 +35,13 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
 /**
+ * 购物车列表，删除，清空，编辑，显示采购单
  * Created by helloztt on 2016/5/24.
  */
 public class ShoppingCartControllerTest extends CommonTestBase {
@@ -119,14 +126,14 @@ public class ShoppingCartControllerTest extends CommonTestBase {
             }
         }
 
-        //一级代理商购物车
+        //一级代理商购物车(保证购物车中至少有2条记录)
         for (int i = 0; i <= random.nextInt(mockGoodsWith1ProductList.size()); i++) {
             ShoppingCart mockShoppingCart = mockShoppingCart(mockGoodsWith1ProductList.get(i).getProducts().get(0), mockFirstLevelAgent);
             mockFirstLevelAgentShoppingCartList.add(mockShoppingCart);
         }
         for (int i = 0; i <= random.nextInt(mockGoodsWithNProductList.size()); i++) {
             List<MallProduct> mockProductList = mockGoodsWithNProductList.get(i).getProducts();
-            for (int j = 0; j < random.nextInt(mockProductList.size()); j++) {
+            for (int j = 0; j <= random.nextInt(mockProductList.size()); j++) {
                 ShoppingCart mockShoppingCart = mockShoppingCart(mockProductList.get(j), mockFirstLevelAgent);
                 mockFirstLevelAgentShoppingCartList.add(mockShoppingCart);
             }
@@ -134,17 +141,22 @@ public class ShoppingCartControllerTest extends CommonTestBase {
 
         //一级代理商下级门店购物车
         for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()); i++) {
-            ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i).getProduct(), mockFirstLevelShop);
+            ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i), mockFirstLevelShop);
             mockFirstLevelShopShoppingCartList.add(mockShoppingCart);
         }
         //一级代理商下级代理商购物车
         for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()); i++) {
-            ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i).getProduct(), mockSecondLevelAgent);
+            ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i), mockSecondLevelAgent);
             mockSecondLevelAgentShoppingCartList.add(mockShoppingCart);
         }
 
     }
 
+    /**
+     * 一级代理商登录 显示购物车列表
+     *
+     * @throws Exception
+     */
     @Test
     public void testShowShoppingCartByFirstLevelAgent() throws Exception {
         //一级代理商登录
@@ -160,6 +172,11 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         Assert.assertEquals(mockFirstLevelAgentShoppingCartList.size(), realShoppingCartList.size());
     }
 
+    /**
+     * 一级代理商下级门店登录 显示购物车列表
+     *
+     * @throws Exception
+     */
     @Test
     public void testShowShoppingCartByFirstLevelShop() throws Exception {
         //一级代理商下级门店登录
@@ -174,6 +191,11 @@ public class ShoppingCartControllerTest extends CommonTestBase {
 
     }
 
+    /**
+     * 一级代理商下级门店登录 显示购物车列表
+     *
+     * @throws Exception
+     */
     @Test
     public void testShowShoppingCartBySecondLevelAgent() throws Exception {
         //一级代理商下级门店登录
@@ -187,6 +209,11 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         Assert.assertEquals(mockSecondLevelAgentShoppingCartList.size(), realShoppingCartList.size());
     }
 
+    /**
+     * 一级代理商登录 删除购物车记录
+     *
+     * @throws Exception
+     */
     @Test
     public void testDeleteByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/delete";
@@ -257,6 +284,11 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         // TODO: 2016/5/24
     }
 
+    /**
+     * 一级代理商登录 修改购物车数量
+     *
+     * @throws Exception
+     */
     @Test
     public void testEditNumByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/editNum";
@@ -277,12 +309,14 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         MvcResult resultWithId0 = mockMvc.perform(
                 post(controllerUrl)
                         .session(session)
-                        .param("shoppingCartId", "0"))
+                        .param("shoppingCartId", "0")
+                        .param("num", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
         String contentWithId0 = new String(resultWithId0.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject objWithId0 = JSONObject.parseObject(contentWithId0);
         Assert.assertEquals("500", objWithId0.getString("code"));
+        Assert.assertEquals("没有传输数据", objWithId0.getString("msg"));
 
         // 3.num为0
 
@@ -330,16 +364,21 @@ public class ShoppingCartControllerTest extends CommonTestBase {
                         .param("num", String.valueOf(mockShoppingCart.getProduct().getStore() - mockShoppingCart.getProduct().getFreez())))
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = new String(result.getResponse().getContentAsByteArray(),"UTF-8");
+        String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
-        Assert.assertEquals("200",obj.getString("code"));
+        Assert.assertEquals("200", obj.getString("code"));
     }
 
+    /**
+     * 一级代理商下级门店登录 修改购物车数量
+     *
+     * @throws Exception
+     */
     @Test
-    public void testEditNumByFirstLevelShop() throws Exception{
+    public void testEditNumByFirstLevelShop() throws Exception {
         String controllerUrl = BASE_URL + "/editNum";
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(),passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
 
         // 1.不传参数
         MvcResult resultWithNoData = mockMvc.perform(
@@ -365,7 +404,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         // 3.num为0
 
         ShoppingCart mockShoppingCart = mockFirstLevelShopShoppingCartList.get(0);
-        AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(mockFirstLevelAgent,mockShoppingCart.getProduct());
+        AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(mockFirstLevelAgent, mockShoppingCart.getProduct());
         MvcResult resultWithNum0 = mockMvc.perform(
                 post(controllerUrl)
                         .session(session)
@@ -409,32 +448,201 @@ public class ShoppingCartControllerTest extends CommonTestBase {
                         .param("num", String.valueOf(parentAgentProduct.getStore() - parentAgentProduct.getFreez())))
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = new String(result.getResponse().getContentAsByteArray(),"UTF-8");
+        String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
-        Assert.assertEquals("200",obj.getString("code"));
+        Assert.assertEquals("200", obj.getString("code"));
     }
 
+    /**
+     * 一级代理商下级代理商登录 修改购物车数量
+     *
+     * @throws Exception
+     */
     @Test
-    public void testDeleteAllByFirstLevelAgent() throws Exception{
+    public void testDeleteAllByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/deleteAll";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(),passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
 
         MvcResult result = mockMvc.perform(
                 post(controllerUrl)
                         .session(session))
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = new String(result.getResponse().getContentAsByteArray(),"UTF-8");
+        String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
-        Assert.assertEquals("200",obj.getString("code"));
+        Assert.assertEquals("200", obj.getString("code"));
 
         List<ShoppingCart> shoppingCartList = shoppingCartRepository.findByAuthor_IdOrderByCreateTimeDesc(mockFirstLevelAgent.getId());
-        Assert.assertEquals(0,shoppingCartList.size());
+        Assert.assertEquals(0, shoppingCartList.size());
     }
 
     @Test
-    public void testDeleteAllByFirstLevelShop() throws Exception{
+    public void testDeleteAllByFirstLevelShop() throws Exception {
         // TODO: 2016/5/24
+    }
+
+    /**
+     * 一级代理商登录 填写采购单页面
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddPurchaseByFirstLevelAgent() throws Exception {
+        String controllerUrl = BASE_URL + "/addPurchase";
+        // 一级代理商登录
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        // 1.不传参数
+        MvcResult resultWithNoData = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session))
+                //302 跳转
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/shoppingCart/showShoppingCart"))
+                .andReturn();
+
+        // 2.shoppingCartId=0
+        MvcResult resultWithId0 = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", "0"))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/shoppingCart/showShoppingCart"))
+                .andReturn();
+
+        ShoppingCart mockShoppingCart = mockFirstLevelAgentShoppingCartList.get(0);
+        ShoppingCart mockShoppingCart1 = mockFirstLevelAgentShoppingCartList.get(1);
+        // 3.传2个id,其中一个为0
+        MvcResult resultWithIdAnd0 = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId()))
+                        .param("shoppingCartId", "0"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentPurchaseOrder"))
+                .andExpect(model().attributeExists("shoppingCartList"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        List<ShoppingCart> shoppingCartListWithIdAnd0 = (List<ShoppingCart>) resultWithIdAnd0.getModelAndView().getModel().get("shoppingCartList");
+        Assert.assertEquals(1, shoppingCartListWithIdAnd0.size());
+        Assert.assertEquals(mockShoppingCart.getId(), shoppingCartListWithIdAnd0.get(0).getId());
+
+        // 4-1.传1个正确的id 无发票
+        MvcResult resultWithIdNoInvoice = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentPurchaseOrder"))
+                .andExpect(model().attributeExists("shoppingCartList"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        List<ShoppingCart> shoppingCartListWithIdNoInvoice = (List<ShoppingCart>) resultWithIdNoInvoice.getModelAndView().getModel().get("shoppingCartList");
+        AgentPurchaseOrder purchaseOrderWithIdNoInvoice = (AgentPurchaseOrder) resultWithIdNoInvoice.getModelAndView().getModel().get("agentPurchaseOrder");
+        Assert.assertEquals(1, shoppingCartListWithIdNoInvoice.size());
+        Assert.assertEquals(mockShoppingCart.getId(), shoppingCartListWithIdNoInvoice.get(0).getId());
+        Assert.assertEquals(PurchaseEnum.TaxType.NONE, purchaseOrderWithIdNoInvoice.getTaxType());
+
+        //4-2.传1个正确的id 普通发票
+        InvoiceConfig normalInvoiceConfig = mockInvoiceConfig(mockFirstLevelAgent, InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE.getCode());
+        MvcResult resultWithIdNormalInvoice = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentPurchaseOrder"))
+                .andExpect(model().attributeExists("shoppingCartList"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        List<ShoppingCart> shoppingCartListWithIdNormalInvoice = (List<ShoppingCart>) resultWithIdNormalInvoice.getModelAndView().getModel().get("shoppingCartList");
+        AgentPurchaseOrder purchaseOrderWithIdNormalInvoice = (AgentPurchaseOrder) resultWithIdNormalInvoice.getModelAndView().getModel().get("agentPurchaseOrder");
+        Assert.assertEquals(1, shoppingCartListWithIdNormalInvoice.size());
+        Assert.assertEquals(mockShoppingCart.getId(), shoppingCartListWithIdNormalInvoice.get(0).getId());
+        Assert.assertEquals(PurchaseEnum.TaxType.NORMAL, purchaseOrderWithIdNormalInvoice.getTaxType());
+        Assert.assertEquals(normalInvoiceConfig.getTaxTitle(), purchaseOrderWithIdNormalInvoice.getTaxTitle());
+        Assert.assertEquals(normalInvoiceConfig.getTaxContent(), purchaseOrderWithIdNormalInvoice.getTaxContent());
+
+        //4-3.传1个正确的id 增值税发票
+        InvoiceConfig taxInvoiceConfig = mockInvoiceConfig(mockFirstLevelAgent, InvoiceEnum.InvoiceTypeStatus.TAXINVOICE.getCode());
+        MvcResult resultWithIdTaxInvoice = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentPurchaseOrder"))
+                .andExpect(model().attributeExists("shoppingCartList"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        List<ShoppingCart> shoppingCartListWithIdTaxInvoice = (List<ShoppingCart>) resultWithIdTaxInvoice.getModelAndView().getModel().get("shoppingCartList");
+        AgentPurchaseOrder purchaseOrderWithIdTaxInvoice = (AgentPurchaseOrder) resultWithIdTaxInvoice.getModelAndView().getModel().get("agentPurchaseOrder");
+        Assert.assertEquals(1, shoppingCartListWithIdTaxInvoice.size());
+        Assert.assertEquals(mockShoppingCart.getId(), shoppingCartListWithIdTaxInvoice.get(0).getId());
+        Assert.assertEquals(PurchaseEnum.TaxType.TAX, purchaseOrderWithIdTaxInvoice.getTaxType());
+        Assert.assertEquals(taxInvoiceConfig.getTaxTitle(), purchaseOrderWithIdTaxInvoice.getTaxTitle());
+        Assert.assertEquals(taxInvoiceConfig.getTaxContent(), purchaseOrderWithIdTaxInvoice.getTaxContent());
+        Assert.assertEquals(taxInvoiceConfig.getAccountNo(), purchaseOrderWithIdTaxInvoice.getAccountNo());
+        Assert.assertEquals(taxInvoiceConfig.getTaxpayerCode(), purchaseOrderWithIdTaxInvoice.getTaxpayerCode());
+        Assert.assertEquals(taxInvoiceConfig.getBankName(), purchaseOrderWithIdTaxInvoice.getBankName());
+
+
+        // 5.传2个正确的id
+        MvcResult resultWithTwoId = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId()))
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart1.getId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentPurchaseOrder"))
+                .andExpect(model().attributeExists("shoppingCartList"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        List<ShoppingCart> shoppingCartListWithTwoId = (List<ShoppingCart>) resultWithTwoId.getModelAndView().getModel().get("shoppingCartList");
+        Assert.assertEquals(2, shoppingCartListWithTwoId.size());
+        Assert.assertEquals(mockShoppingCart.getId(), shoppingCartListWithTwoId.get(0).getId());
+        Assert.assertEquals(mockShoppingCart1.getId(), shoppingCartListWithTwoId.get(1).getId());
+
+        // 6.可用库存不足
+        mockShoppingCart.setNum(mockShoppingCart.getProduct().getStore() - mockShoppingCart.getProduct().getFreez() + 1);
+        mockShoppingCart = shoppingCartRepository.save(mockShoppingCart);
+
+        MvcResult resultWithNumTooMuchId = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId())))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/shoppingCart/showShoppingCart"))
+                .andReturn();
+        // 7.传2个id，其中一个库存不足
+        MvcResult resultWithNumTooMuchIdAndId = mockMvc.perform(
+                post(controllerUrl)
+                        .session(session)
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart.getId()))
+                        .param("shoppingCartId", String.valueOf(mockShoppingCart1.getId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentPurchaseOrder"))
+                .andExpect(model().attributeExists("shoppingCartList"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        List<ShoppingCart> shoppingCartListWithNumTooMuchIdAndId = (List<ShoppingCart>) resultWithNumTooMuchIdAndId.getModelAndView().getModel().get("shoppingCartList");
+        Assert.assertEquals(1, shoppingCartListWithNumTooMuchIdAndId.size());
+        Assert.assertEquals(mockShoppingCart1.getId(), shoppingCartListWithNumTooMuchIdAndId.get(0).getId());
+
+
+    }
+
+    @Test
+    public void testAddPurchaseByFirstLevelShop() throws Exception {
+        // TODO: 2016/5/25
+    }
+
+    @Test
+    public void testAddPurchaseBySecondLevelAgent() throws Exception {
+        // TODO: 2016/5/25
     }
 
 

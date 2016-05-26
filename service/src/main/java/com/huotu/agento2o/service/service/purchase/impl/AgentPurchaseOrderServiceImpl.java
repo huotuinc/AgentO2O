@@ -36,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -123,15 +124,15 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      * @return
      */
     @Override
-    @Transactional
-    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception {
+    @Transactional(rollbackFor = RuntimeException.class)
+    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         purchaseOrder.setAuthor(author);
         purchaseOrder.setDisabled(false);
         purchaseOrder.setCreateTime(new Date());
         purchaseOrder.setLastUpdateTime(new Date());
-        purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
+//        purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         List<AgentPurchaseOrderItem> itemList = new ArrayList<>();
         List<ShoppingCart> shoppingCartList = new ArrayList<>();
         for (String shoppingCartId : shoppingCartIds) {
@@ -140,6 +141,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 continue;
             }
             shoppingCartList.add(shoppingCart);
+        }
+        if (shoppingCartList == null || shoppingCartList.size() == 0) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         for (ShoppingCart shoppingCart : shoppingCartList) {
             //增加 采购货品
@@ -161,17 +165,15 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 //修改平台方货品预占库存
                 MallProduct customerProduct = shoppingCart.getProduct();
                 if (customerProduct.getFreez() + shoppingCart.getNum() > customerProduct.getStore()) {
-                    // TODO: 2016/5/19 单元测试，库存不足 
-                    throw new Exception("库存不足，下单失败！");
+                    throw new RuntimeException("库存不足，下单失败！");
                 }
                 customerProduct.setFreez(customerProduct.getFreez() + shoppingCart.getNum());
                 productRepository.save(customerProduct);
             } else {
                 //修改代理商库存
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse((Agent) author.getParentAuthor(), shoppingCart.getProduct());
+                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), shoppingCart.getProduct());
                 if (agentProduct.getFreez() + shoppingCart.getNum() > agentProduct.getStore()) {
-                    // TODO: 2016/5/19 单元测试，库存不足 
-                    throw new Exception("库存不足，下单失败！");
+                    throw new RuntimeException("库存不足，下单失败！");
                 }
                 agentProduct.setFreez(agentProduct.getFreez() + shoppingCart.getNum());
                 agentProductRepository.save(agentProduct);

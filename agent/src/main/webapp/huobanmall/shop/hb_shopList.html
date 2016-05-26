@@ -72,13 +72,12 @@
 
     function changeIsDisabled(obj) {
         var shopId = $(obj).attr("shopid");
-        $.ajax({
-            type: 'POST',
-            url: "/huobanmall/shop/changeIsDisabled",
-            data: {
+        var text = $(obj).text();
+        jboxConfirm("确定" + text + "?", function () {
+            $.jBox.tip("正在执行...", "loading");
+            J.GetJsonRespons("/huobanmall/shop/changeIsDisabled", {
                 id: shopId
-            },
-            success: function (result) {
+            }, function (result) {
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
                     setTimeout(function () {
@@ -87,7 +86,8 @@
                 } else {
                     $.jBox.tip(result.msg, 'error');
                 }
-            }
+            }, function () {
+            }, J.PostMethod);
         });
     }
 
@@ -103,6 +103,14 @@
 
     function searchShopAll() {
         window.location.href = '/huobanmall/shop/shopList?type=' + /*[[${searchCondition.type}]]*/;
+    }
+    function jboxConfirm(msg, callback) {
+        jBox.confirm(msg, '提示', function (v, h, f) {
+            if (v == "ok") {
+                callback();
+            }
+            return true;
+        });
     }
 </script>
 <script type="text/javascript" th:inline="javascript">
@@ -215,11 +223,11 @@
                 $.jBox.tip("正在审批...", "loading");
                 J.GetJsonRespons("/huobanmall/shop/audit", requestData, function (json) {
                     if (json.code == 200) {
-                        $.jBox.tip("审批成功", "success");
+                        $.jBox.tip(json.msg, "success");
                         $(self).dialog('close');
                         window.location.reload();
                     } else {
-                        $.jBox.tip("审批失败", error);
+                        $.jBox.tip(json.msg, "error");
                     }
                 }, function () {
                 }, J.PostMethod);
@@ -262,10 +270,10 @@
                 J.GetJsonRespons("/huobanmall/shop/resetpassword", passwordData, function (json) {
                     if (json.code == 200) {
                         $(self).dialog('close');
-                        $.jBox.tip("重置成功", "success");
+                        $.jBox.tip(json.msg, "success");
                         window.location.reload();
                     } else {
-                        $.jBox.tip("重置失败", error);
+                        $.jBox.tip(json.msg, "error");
                     }
                 }, function () {
                 }, J.PostMethod);
@@ -440,9 +448,10 @@
                                         <td class="txt80"
                                             th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
                                         </td>
-                                        <td class="txt40" th:text="${shop.status.value}">
+                                        <td class="txt40" style="color: #9c0901" th:text="${shop.status.value}">
                                         </td>
-                                        <td class="txt40" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                        <td class="txt40" style="color: #9c0901"
+                                            th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
                                         </td>
                                         <td class="txt40 c tail">
                                             <input style="display: none" th:value="${shop.auditComment}"/>

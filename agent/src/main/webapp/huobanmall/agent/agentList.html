@@ -314,7 +314,7 @@
                             <td class="txt40 c" th:text="${agent.agentLevel}==null?'':${agent.agentLevel.levelName}">
                                 省级代理商
                             </td>
-                            <td class="txt40 c" th:text="${agent.isAccountNonLocked()}?'激活':'冻结'">
+                            <td class="txt40 c" style="color:red;" th:text="${agent.isAccountNonLocked()}?'激活':'冻结'">
                                 激活
                             </td>
 
