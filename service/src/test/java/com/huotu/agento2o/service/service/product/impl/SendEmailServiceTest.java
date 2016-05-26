@@ -25,19 +25,16 @@ public class SendEmailServiceTest {
 
     @Test
     public void testSendEmail(){
-        sendEmailService.sendEmail();
+        sendEmailService.sendEmail(null);
+
     }
 
     @Test
     public void testAsync() throws InterruptedException {
-//        for(int i=1;i<2000;i++){
-//            System.out.println("put in executor"+i);
-//            sendEmailService.sayNumber(i);
-//        }
-
+        for(int i=1;i<2000;i++){
+            System.out.println("put in executor"+i);
+            sendEmailService.sayNumber(i);
+        }
     }
-
-
-
 
 }

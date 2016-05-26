@@ -26,18 +26,41 @@ import java.util.List;
  * Created by helloztt on 2016/5/12.
  */
 @Repository
-public interface AgentProductRepository extends JpaRepository<AgentProduct, Integer>, JpaSpecificationExecutor<AgentProduct> {
+public interface AgentProductRepository extends JpaRepository<AgentProduct,Integer>, JpaSpecificationExecutor<AgentProduct> {
+
+//    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.author.id = ?1 AND product.disabled = false ")
+//    List<Integer> findGoodsListByAgentId(Integer agentId);
 
     List<AgentProduct> findByAuthor_IdAndDisabledFalse(Integer agentId);
 
-    @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2 and disabled = false ")
+    @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2")
     @Modifying
     int updateWaring(Integer agentId,Integer productId,Integer warning);
 
     AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
 
+    List<AgentProduct> findAgentProductByAuthor_Id(Integer authorId);
+
     // TODO: 2016/5/20 delete
     AgentProduct findByProduct_productId(Integer productId);
+
+    /**
+     * 查询出需要提醒的用户
+     * @return 用户ID
+     */
+    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>product.store")
+    @Modifying
+    List<Object> findNeedWaringAgent();
+
+    /**
+     * 查出需要提醒用户对应的所有需要提醒的商品信息
+     * @param authorId
+     * @return
+     */
+    @Query("select a from AgentProduct a where  a.warning>a.store and a.author.id =?1")
+    List<AgentProduct> findWaringAgentInfo(Integer authorId);
+
+   /* List<AgentProduct> findAgentProductByAuthor_IdAndStoreLessThanWarning(Integer authorId);*/
 
 
 }
