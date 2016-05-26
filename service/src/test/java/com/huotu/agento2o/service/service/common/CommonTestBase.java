@@ -14,6 +14,7 @@ import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
@@ -23,6 +24,7 @@ import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.runner.RunWith;
@@ -56,9 +58,11 @@ public abstract class CommonTestBase {
     protected AgentProductRepository agentProductRepository;
     @Autowired
     private AgentLevelService agentLevelService;
+    @Autowired
+    private ShopService shopService;
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockMallCustomer(){
+    protected MallCustomer mockMallCustomer() {
         MallCustomer customer = new MallCustomer();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
@@ -67,7 +71,7 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent){
+    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
@@ -79,7 +83,7 @@ public abstract class CommonTestBase {
         agent.setAddress(UUID.randomUUID().toString());
         agent.setDisabled(false);
         agent.setDeleted(false);
-        if(parentAgent != null){
+        if (parentAgent != null) {
             agent.setParentAuthor(parentAgent);
         }
         agent = agentService.addAgent(agent);
@@ -88,17 +92,37 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected MallGoods mockMallGoods(Integer customerId,Integer agentId){
+    protected Shop mockShop(Agent parentAgent) {
+        Shop shop = new Shop();
+        shop.setUsername(UUID.randomUUID().toString());
+        shop.setPassword(UUID.randomUUID().toString());
+        shop.setName(UUID.randomUUID().toString());
+        shop.setContact(UUID.randomUUID().toString());
+        shop.setMobile(UUID.randomUUID().toString());
+        shop.setTelephone(UUID.randomUUID().toString());
+        shop.setAddress(UUID.randomUUID().toString());
+        shop.setDisabled(false);
+        shop.setDeleted(false);
+        if (parentAgent != null) {
+            shop.setParentAuthor(parentAgent);
+        }
+        shop = shopService.addShop(shop);
+        agentService.flush();
+        return shop;
+    }
+
+    @SuppressWarnings("Duplicates")
+    protected MallGoods mockMallGoods(Integer customerId, Integer agentId) {
         MallGoods mockMallGoods = new MallGoods();
         mockMallGoods.setCost(random.nextDouble());
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
         //平台方商品
-        if(agentId == null){
-            mockMallGoods.setAgentId(0);
-        }else {
-            mockMallGoods.setAgentId(agentId);
-        }
+//        if(agentId == null){
+//            mockMallGoods.setAgentId(0);
+//        }else {
+//            mockMallGoods.setAgentId(agentId);
+//        }
         mockMallGoods.setDisabled(false);
         mockMallGoods.setStore(random.nextInt());
         mockMallGoods.setName(UUID.randomUUID().toString());
@@ -106,7 +130,7 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected MallProduct mockMallProduct(MallGoods mockGoods){
+    protected MallProduct mockMallProduct(MallGoods mockGoods) {
         MallProduct mockMallProduct = new MallProduct();
         mockMallProduct.setGoods(mockGoods);
         mockMallProduct.setStandard(UUID.randomUUID().toString());
@@ -120,12 +144,13 @@ public abstract class CommonTestBase {
 
     /**
      * 代理商货品
+     *
      * @param mockMallProduct
      * @param mockAgent
      * @return
      */
     @SuppressWarnings("Duplicates")
-    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct,Agent mockAgent){
+    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Agent mockAgent) {
         AgentProduct agentProduct = new AgentProduct();
         agentProduct.setAuthor(mockAgent);
         agentProduct.setProduct(mockMallProduct);
@@ -137,7 +162,7 @@ public abstract class CommonTestBase {
         return agentProductRepository.saveAndFlush(agentProduct);
     }
 
-    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer){
+    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
         AgentLevel agentLevel = new AgentLevel();
         agentLevel.setLevelName(UUID.randomUUID().toString());
         agentLevel.setComment(UUID.randomUUID().toString());

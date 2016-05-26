@@ -31,6 +31,12 @@ public interface ShopService extends UserDetailsService {
 
     Shop findById(Integer id);
 
+    /**
+     * 单元测试使用
+     *
+     * @param shop
+     * @return
+     */
     Shop addShop(Shop shop);
 
     ApiResult addShop(Shop shop, String hotUserName);
