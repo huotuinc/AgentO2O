@@ -222,4 +222,19 @@ public class HbmAgentController {
         agentService.resetPassword(agentId, password);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
+
+    /**
+     * 获取可绑定的小伙伴用户名集合
+     *
+     * @param customerIdStr
+     * @param hotUserName
+     * @return
+     */
+    @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult getUserNames(@RequestAttribute(value = "customerId") String customerIdStr, String hotUserName) {
+        int customerId = Integer.parseInt(customerIdStr);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(customerId, hotUserName));
+    }
+
 }

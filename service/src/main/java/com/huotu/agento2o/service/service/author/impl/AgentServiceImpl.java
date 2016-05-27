@@ -75,7 +75,7 @@ public class AgentServiceImpl implements AgentService {
     @Transactional
     public Agent addAgent(Agent agent) {
         //判断代理商登录名是否唯一
-        if (ifEnable(agent.getUsername())) {
+        if (isEnableAgent(agent.getUsername())) {
             agent.setPassword(passwordEncoder.encode(agent.getPassword()));
             agent.setCreateTime(new Date());
             return agentRepository.save(agent);
@@ -94,7 +94,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public boolean ifEnable(String userName) {
+    public boolean isEnableAgent(String userName) {
         return agentRepository.findByUsernameAndIsDeletedFalse(userName) == null;
     }
 
@@ -194,7 +194,7 @@ public class AgentServiceImpl implements AgentService {
             }
         } else {
             //判断用户名是否可用
-            if (!ifEnable(requestAgent.getUsername())) {
+            if (!isEnableAgent(requestAgent.getUsername())) {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
             agent = new Agent();
@@ -277,6 +277,13 @@ public class AgentServiceImpl implements AgentService {
         agent.setEmail(requestAgent.getEmail());
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
 
+    }
+
+    @Override
+    public List<String> getHotUserNames(Integer customerId, String name) {
+        List<String> names = new ArrayList<>();
+        names = userBaseInfoRepository.findByLoginNameLikeAndMallCustomer_customerId("%" + name + "%", customerId);
+        return names;
     }
 
     @Override

@@ -40,21 +40,21 @@ public class AgentServiceImplTest extends CommonTestBase {
     @Test
     @Rollback(value = false)
     public void testFindById() throws Exception {
-        Agent agent = agentService.findById(9);
+        Agent agent = agentService.findById(null);
         Assert.assertNotNull(agent);
     }
 
     @Test
     public void testFindByAgentLevel() {
-        List<Agent> agetnList = agentService.findByAgentLevelId(38);
+        List<Agent> agetnList = agentService.findByAgentLevelId(null);
         Assert.assertTrue(agetnList.size() > 0);
     }
 
     @Test
     public void testIfEnable() {
-        boolean bn = agentService.ifEnable("wwww");
+        boolean bn = agentService.isEnableAgent("wwww");
         Assert.assertTrue(bn);
-        bn = agentService.ifEnable("wj");
+        bn = agentService.isEnableAgent("wj");
         Assert.assertTrue(!bn);
     }
 
@@ -63,7 +63,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     public void testAddAgent() throws Exception {
 //        String userName = UUID.randomUUID().toString();
 //        String passWord = UUID.randomUUID().toString();
-        String userName = "ceshi2";
+        String userName = "ceshi10";
         String passWord = "123456";
 //        AgentLevel agentLevel = new AgentLevel();
 //        agentLevel.setLevelId(1);
@@ -101,7 +101,7 @@ public class AgentServiceImplTest extends CommonTestBase {
         mockAgent = agentService.findById(mockAgent.getId());
         agentService.flush();
         Assert.assertTrue(mockAgent.isDeleted());
-        Assert.assertTrue(agentService.ifEnable(mockAgent.getUsername()));
+        Assert.assertTrue(agentService.isEnableAgent(mockAgent.getUsername()));
     }
 
     @Test

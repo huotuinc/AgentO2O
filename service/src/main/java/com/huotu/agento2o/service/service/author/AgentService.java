@@ -67,7 +67,7 @@ public interface AgentService extends UserDetailsService {
      * @param userName
      * @return true--可用
      */
-    boolean ifEnable(String userName);
+    boolean isEnableAgent(String userName);
 
     /**
      * 根据平台方id和搜索条件获取代理商页面
@@ -151,5 +151,14 @@ public interface AgentService extends UserDetailsService {
      * @return
      */
     ApiResult saveAgentConfig(Integer agentId, Agent requestAgent);
+
+    /**
+     * 根据平台id和用户名模糊查询小伙伴的用户名集合
+     *
+     * @param customerId
+     * @param name
+     * @return
+     */
+    List<String> getHotUserNames(Integer customerId, String name);
 
 }

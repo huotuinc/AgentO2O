@@ -39,6 +39,13 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
+    /**
+     * 展示收货地址列表
+     *
+     * @param author
+     * @param model
+     * @return
+     */
     @RequestMapping("/addressList")
     public String showAddressList(@AgtAuthenticationPrincipal Author author, Model model) {
         List<Address> addressList = addressService.findAddressByAuthorId(author.getId());
@@ -46,18 +53,42 @@ public class AddressController {
         return "config/addressList";
     }
 
+    /**
+     * 保存或修改收货地址
+     *
+     * @param author
+     * @param model
+     * @param requestAddress
+     * @return
+     */
     @RequestMapping(value = "/saveAddress", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addOrSaveAddress(@AgtAuthenticationPrincipal Author author, Model model, Address requestAddress) {
         return addressService.addOrUpdate(requestAddress.getId(), author.getId(), requestAddress);
     }
 
+    /**
+     * 删除收货地址
+     *
+     * @param author
+     * @param model
+     * @param addressId
+     * @return
+     */
     @RequestMapping(value = "/deleteAddress", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteAddress(@AgtAuthenticationPrincipal Author author, Model model, Integer addressId) {
         return addressService.deleteAddress(addressId, author.getId());
     }
 
+    /**
+     * 设置默认地址
+     *
+     * @param author
+     * @param model
+     * @param addressId
+     * @return
+     */
     @RequestMapping(value = "/configDefault", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult configDefault(@AgtAuthenticationPrincipal Author author, Model model, Integer addressId) {
