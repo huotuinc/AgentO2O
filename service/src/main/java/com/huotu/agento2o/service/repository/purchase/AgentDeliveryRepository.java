@@ -12,11 +12,12 @@ package com.huotu.agento2o.service.repository.purchase;
 
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
  * Created by helloztt on 2016/5/19.
  */
 @Repository
-public interface AgentDeliveryRepository extends JpaRepository<AgentDelivery, String> {
+public interface AgentDeliveryRepository extends JpaRepository<AgentDelivery, String> ,JpaSpecificationExecutor<AgentDelivery> {
 }

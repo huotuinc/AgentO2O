@@ -19,9 +19,12 @@ import lombok.Data;
 public class DeliverySearcher {
     private String username;
     private String deliveryNo;
+    private String deliveryId;
     private String orderId;
     private String beginTime;
     private String endTime;
     private Integer agentId;
     private Integer shipMode = -1;
+    private int pageIndex = 1;
+    private String logiNo;
 }

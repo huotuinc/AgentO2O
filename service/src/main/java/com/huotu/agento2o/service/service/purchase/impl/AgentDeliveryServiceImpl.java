@@ -10,10 +10,7 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
-import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.common.util.SerialNo;
-import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.purchase.*;
@@ -22,12 +19,21 @@ import com.huotu.agento2o.service.repository.purchase.AgentDeliveryRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
+import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/19.
@@ -111,5 +117,81 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         }
         return ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST, "该订单无法发货", null);
+    }
+
+    @Override
+    public Page<AgentDelivery> showPurchaseDeliveryList(DeliverySearcher deliverySearcher) {
+        Specification<AgentDelivery> specification = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
+                predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
+            }
+            if (!StringUtils.isEmpty(deliverySearcher.getDeliveryId())) {
+                predicates.add(cb.like(root.get("deliveryId").as(String.class), "%"+deliverySearcher.getDeliveryId()+"%"));
+            }
+
+            if (!StringUtils.isEmpty(deliverySearcher.getLogiNo())) {
+                predicates.add(cb.like(root.get("logisticsNo").as(String.class), "%"+deliverySearcher.getLogiNo()+"%"));
+            }
+
+            if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
+                predicates.add(cb.like(root.get("purchaseOrder").get("pOrderId").as(String.class), "%" + deliverySearcher.getOrderId() + "%"));
+            }
+
+            if (!StringUtils.isEmpty(deliverySearcher.getBeginTime())) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(deliverySearcher.getBeginTime(), StringUtil.TIME_PATTERN)));
+            }
+
+            if (!StringUtil.isEmpty(deliverySearcher.getEndTime())) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(deliverySearcher.getEndTime(), StringUtil.TIME_PATTERN)));
+            }
+
+            predicates.add(cb.equal(root.get("type").as(String.class), "发货单"));
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        //排序
+
+        return agentDeliveryRepository.findAll(specification, new PageRequest(deliverySearcher.getPageIndex() - 1, Constant.PAGESIZE,new Sort(Sort.Direction.DESC, "createTime")));
+    }
+
+    @Override
+    public Page<AgentDelivery> showReturnDeliveryList(DeliverySearcher deliverySearcher) {
+        Specification<AgentDelivery> specification = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
+                predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
+            }
+            if (!StringUtils.isEmpty(deliverySearcher.getDeliveryId())) {
+                predicates.add(cb.like(root.get("deliveryId").as(String.class), "%"+deliverySearcher.getDeliveryId()+"%"));
+            }
+
+            if (!StringUtils.isEmpty(deliverySearcher.getLogiNo())) {
+                predicates.add(cb.like(root.get("logisticsNo").as(String.class), "%"+deliverySearcher.getLogiNo()+"%"));
+            }
+
+            if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
+                predicates.add(cb.like(root.get("agentReturnedOrder").get("rOrderId").as(String.class), "%" + deliverySearcher.getOrderId() + "%"));
+            }
+
+            if (!StringUtils.isEmpty(deliverySearcher.getBeginTime())) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(deliverySearcher.getBeginTime(), StringUtil.TIME_PATTERN)));
+            }
+
+            if (!StringUtil.isEmpty(deliverySearcher.getEndTime())) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(deliverySearcher.getEndTime(), StringUtil.TIME_PATTERN)));
+            }
+
+            predicates.add(cb.equal(root.get("type").as(String.class), "退货单"));
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        //排序
+
+        return agentDeliveryRepository.findAll(specification, new PageRequest(deliverySearcher.getPageIndex() - 1, Constant.PAGESIZE,new Sort(Sort.Direction.DESC, "createTime")));
     }
 }
