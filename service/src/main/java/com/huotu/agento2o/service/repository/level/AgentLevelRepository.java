@@ -29,4 +29,6 @@ public interface AgentLevelRepository extends JpaRepository<AgentLevel, Integer>
     @Query("select max(a.level) from AgentLevel a where a.customer.customerId = ?1")
     Integer findLastLevel(Integer customerId);
 
+    AgentLevel findByLevelIdAndCustomer_customerId(Integer levelId,Integer customerId);
+
 }

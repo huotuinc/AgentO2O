@@ -22,18 +22,19 @@ public interface AddressService {
     /**
      * 根据代理商或门店id获取收货地址
      *
-     * @param id
+     * @param authorId
      * @return
      */
-    List<Address> findAddressByAuthorId(Integer id);
+    List<Address> findAddressByAuthorId(Integer authorId);
 
     /**
-     * 根据唯一id获取某地址
+     * 根据唯一id和AuthorId获取某地址
      *
-     * @param id
+     * @param addressId
+     * @param authorId
      * @return
      */
-    Address findById(Integer id);
+    Address findById(Integer addressId, Integer authorId);
 
     /**
      * 根据addressId增加或修改收货地址

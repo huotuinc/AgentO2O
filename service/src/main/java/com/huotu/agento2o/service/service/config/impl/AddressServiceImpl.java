@@ -16,6 +16,7 @@ import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.AuthorRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
+import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.config.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,31 +34,31 @@ public class AddressServiceImpl implements AddressService {
     private AddressRepository addressRepository;
 
     @Autowired
-    private AuthorRepository authorRepository;
+    private AuthorService authorService;
 
     @Override
-    public List<Address> findAddressByAuthorId(Integer id) {
-        return addressRepository.findByAuthor_id(id);
+    public List<Address> findAddressByAuthorId(Integer authorId) {
+        return addressRepository.findByAuthor_id(authorId);
     }
 
     @Override
-    public Address findById(Integer id) {
-        return addressRepository.findOne(id);
+    public Address findById(Integer addressId,Integer authorId) {
+        return addressId == null || authorId == null ? null : addressRepository.findByIdAndAuthor_id(addressId,authorId);
     }
 
     @Override
     @Transactional
-    public ApiResult addOrUpdate(Integer id, Integer authorId, Address requestAddress) {
+    public ApiResult addOrUpdate(Integer addressId, Integer authorId, Address requestAddress) {
         Address address;
-        Author author = authorRepository.findOne(authorId);
+        Author author = authorService.findById(authorId);
         if (author == null || author.isDeleted() || author.isDisabled()) {
-            return new ApiResult("该账号已失效", 805);
+            return new ApiResult("该账号已失效");
         }
-        //id>0代表是修改地址，否则是增加
-        if (id > 0) {
-            address = findById(id);
+        //addressId>0代表是修改地址，否则是增加
+        if (addressId > 0) {
+            address = findById(addressId,authorId);
             if (address == null) {
-                return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+                return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
             }
         } else {
             address = new Address();
@@ -103,7 +104,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public ApiResult deleteAddress(Integer addressId, Integer authorId) {
-        Address address = addressRepository.findOne(addressId);
+        Address address = findById(addressId,authorId);
         if (address == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -122,7 +123,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public ApiResult configDefault(Integer addressId, Integer authorId) {
-        Address address = addressRepository.findOne(addressId);
+        Address address = findById(addressId,authorId);
         if (address == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }

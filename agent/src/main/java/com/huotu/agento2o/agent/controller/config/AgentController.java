@@ -42,7 +42,7 @@ public class AgentController {
      */
     @RequestMapping(value = "/agentConfig", method = RequestMethod.GET)
     public String showAgent(@AgtAuthenticationPrincipal Agent agent, Model model) {
-        model.addAttribute("agent", agentService.findById(agent.getId()));
+        model.addAttribute("agent", agentService.findByAgentId(agent.getId()));
         return "config/agentConfig";
     }
 

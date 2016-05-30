@@ -38,9 +38,8 @@ public class AgentServiceImplTest extends CommonTestBase {
 //    private UserBaseInfoService userBaseInfoService;
 
     @Test
-    @Rollback(value = false)
     public void testFindById() throws Exception {
-        Agent agent = agentService.findById(null);
+        Agent agent = agentService.findById(null,null);
         Assert.assertNotNull(agent);
     }
 
@@ -98,7 +97,7 @@ public class AgentServiceImplTest extends CommonTestBase {
         Agent mockAgent = mockAgent(mockCustomer, null);
         Assert.assertTrue(!mockAgent.isDeleted());
         agentService.deleteAgent(mockAgent.getId());
-        mockAgent = agentService.findById(mockAgent.getId());
+        mockAgent = agentService.findById(mockAgent.getId(),mockCustomer.getCustomerId());
         agentService.flush();
         Assert.assertTrue(mockAgent.isDeleted());
         Assert.assertTrue(agentService.isEnableAgent(mockAgent.getUsername()));
@@ -110,10 +109,10 @@ public class AgentServiceImplTest extends CommonTestBase {
         Agent mockAgent = mockAgent(mockCustomer, null);
         Assert.assertTrue(!mockAgent.isDisabled());
         agentService.freezeAgent(mockAgent.getId());
-        mockAgent = agentService.findById(mockAgent.getId());
+        mockAgent = agentService.findById(mockAgent.getId(),mockCustomer.getCustomerId());
         Assert.assertTrue(mockAgent.isDisabled());
         agentService.unfreezeAgent(mockAgent.getId());
-        mockAgent = agentService.findById(mockAgent.getId());
+        mockAgent = agentService.findById(mockAgent.getId(),mockCustomer.getCustomerId());
         Assert.assertTrue(!mockAgent.isDisabled());
     }
 
@@ -180,9 +179,8 @@ public class AgentServiceImplTest extends CommonTestBase {
         String password = UUID.randomUUID().toString();
         MallCustomer mockCustomer = mockMallCustomer();
         Agent agent = mockAgent(mockCustomer, null);
-        agentService.resetPassword(agent.getId(), password);
-        agent = agentService.findById(agent.getId());
-        agentService.flush();
+        int num = agentService.resetPassword(null, password);
+        agent = agentService.findById(agent.getId(),mockCustomer.getCustomerId());
         Assert.assertEquals(passwordEncoder.encode(password), agent.getPassword());
     }
 

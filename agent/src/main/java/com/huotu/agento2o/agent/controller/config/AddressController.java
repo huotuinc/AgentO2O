@@ -103,8 +103,8 @@ public class AddressController {
      */
     @RequestMapping(value = "/showAddress", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult showAddress(Integer addressId) {
-        Address address = addressService.findById(addressId);
+    public ApiResult showAddress(@AgtAuthenticationPrincipal Author author,Integer addressId) {
+        Address address = addressService.findById(addressId,author.getId());
         if (address == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }

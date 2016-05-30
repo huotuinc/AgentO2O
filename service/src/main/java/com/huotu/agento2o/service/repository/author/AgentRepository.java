@@ -16,26 +16,28 @@ import java.util.List;
 @Repository(value = "agentRepository")
 public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpecificationExecutor {
 
+    Agent findByIdAndCustomer_customerId(Integer agentId, Integer customerId);
+
     Agent findByUsernameAndStatus(String userName, AgentStatusEnum status);
 
     List<Agent> findByAgentLevel_levelIdAndIsDeletedFalse(Integer levelId);
 
     Agent findByUsernameAndIsDeletedFalse(String userName);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("update Agent a set a.isDeleted = true where a.id = ?1")
-    void deleteAgent(Integer id);
+    int deleteAgent(Integer agentId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("update Agent a set a.isDisabled = ?2 where a.id = ?1")
-    void updateDisabledStatus(Integer id,boolean status);
+    int updateDisabledStatus(Integer agentId, boolean status);
 
-    List<Agent> findByParentAuthor_id(Integer id);
+    List<Agent> findByParentAuthor_id(Integer authorId);
 
     Agent findByUserBaseInfo_userId(Integer userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("update Agent a set a.password = ?2 where a.id = ?1")
-    void resetPassword(Integer id,String password);
+    int resetPassword(Integer agentId, String password);
 
 }

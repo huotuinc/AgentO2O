@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,11 +78,14 @@ public class HbmAgentController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteAgent(Integer agentId) {
-        if (agentService.findByParentAgentId(agentId).size() > 0) {
-            return new ApiResult("代理商已被绑定", 801);
+        if(agentId == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        agentService.deleteAgent(agentId);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        if (agentService.findByParentAgentId(agentId).size() > 0) {
+            return new ApiResult("代理商已被绑定");
+        }
+        int result = agentService.deleteAgent(agentId);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**
@@ -93,13 +97,14 @@ public class HbmAgentController {
      */
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult updateDisabledStatus(Integer status, Integer agentId) {
+    public ApiResult updateDisabledStatus(Integer status,Integer agentId) {
+        int result = 0;
         if (status == 0) {
-            agentService.freezeAgent(agentId);
+            result = agentService.freezeAgent(agentId);
         } else {
-            agentService.unfreezeAgent(agentId);
+            result = agentService.unfreezeAgent(agentId);
         }
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**
@@ -117,12 +122,12 @@ public class HbmAgentController {
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
         if (agentId > 0) {
-            Agent oldAgent = agentService.findById(agentId);
+            Agent oldAgent = agentService.findById(agentId, customerId);
             //获取上级代理商的代理商等级
             if (oldAgent.getParentAuthor() != null && ((Agent) oldAgent.getParentAuthor()).getAgentLevel() != null) {
-                parentAgentLevelId = ((Agent) oldAgent.getParentAuthor()).getAgentLevel().getLevelId();
+                parentAgentLevelId = oldAgent.getParentAuthor().getAgentLevel().getLevelId();
             }
-            model.addAttribute("agent", agentService.findById(agentId));
+            model.addAttribute("agent", oldAgent);
         }
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("parentAgentLevelId", parentAgentLevelId);
@@ -219,8 +224,8 @@ public class HbmAgentController {
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(Integer agentId, String password) {
-        agentService.resetPassword(agentId, password);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        int result = agentService.resetPassword(agentId, password);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**

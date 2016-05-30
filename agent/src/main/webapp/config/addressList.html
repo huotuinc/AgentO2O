@@ -100,19 +100,15 @@
                     <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tbody>
                         <tr class="even">
-                            <th scope="col" style="width: 5%">序号
+                            <th scope="col" style="width: 10%">序号
                             </th>
-                            <th scope="col" style="width: 10%">收货人
+                            <th scope="col" style="width: 15%">收货人
                             </th>
-                            <th scope="col" style="width: 10%">联系电话
+                            <th scope="col" style="width: 15%">联系电话
                             </th>
                             <th scope="col" style="">收货地址
                             </th>
-                            <th scope="col" style="width: 10%">默认地址
-                            </th>
-                            <th scope="col" style="width: 15%">备注
-                            </th>
-                            <th scope="col" style="width: 10%">操作
+                            <th scope="col" style="width: 20%">操作
                             </th>
                         </tr>
                         </tbody>
@@ -121,14 +117,15 @@
                             <td class="txt40 c" th:text="${addressStat.count}">1</td>
                             <td class="txt40 c" th:text="${address.receiver}">张三</td>
                             <td class="txt40 c" th:text="${address.telephone}">18888888888</td>
-                            <td class="txt40 c" th:text="${address.province+' '+address.city+' '+address.district+' '+address.address}">浙江
+                            <td class="txt40 c"
+                                th:text="${address.province+' '+address.city+' '+address.district+' '+address.address}">
+                                浙江
                                 杭州 滨江区
                             </td>
                             <td class="txt40 c">
-                                <input th:type="radio" name = "isDefault" th:checked="${address.isDefault()}" th:onclick="|javascript:addressHandler.configDefault(${address.id})|"/>设为默认
-                            </td>
-                            <td class="txt40 c" th:text="${address.comment}"></td>
-                            <td class="txt40 c">
+                                <a href="javascript:addressHandler.configDefault(1)" th:if="${!address.isDefault()}"
+                                   th:href="|javascript:addressHandler.configDefault(${address.id})|">设为默认</a> <span
+                                    th:if="${!address.isDefault()}">|</span>
                                 <a href="javascript:addressHandler.showEdit(1)"
                                    th:href="|javascript:addressHandler.showEdit(${address.id})|">编辑</a> |
                                 <a href="javascript:addressHandler.deleteAddress(1)"
@@ -149,7 +146,7 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    function selectAddress(pro,city,dist) {
+    function selectAddress(pro, city, dist) {
         if (pro != null && pro.length != 0) {
             $("#citys").citySelect({
                 url: "/resource/3rdParty/js/jquery.cityselect.js",
@@ -168,7 +165,6 @@
 </script>
 
 
-
 <script type="text/javascript">
     var addressHandler = {
         deleteAddress: function (addressId) {
@@ -183,8 +179,8 @@
                         setTimeout(function () {
                             window.location.reload();
                         }, 400);
-                    }  else {
-                        $.jBox.tip("删除失败", "error");
+                    } else {
+                        $.jBox.tip(json.msg, "error");
                     }
                 }, function () {
                 }, J.PostMethod);
@@ -199,7 +195,7 @@
                 $.ajax({
                     type: 'POST',
                     url: ajaxUrl + "showAddress",
-                    async:false,
+                    async: false,
                     data: {
                         addressId: addressId
                     },
@@ -212,11 +208,11 @@
                         city = address.city;
                         district = address.district;
                         $("#comment").val(address.comment);
-                        $("#isDefault").attr("checked",address.default);
+                        $("#isDefault").attr("checked", address.default);
                     }
                 });
             }
-            selectAddress(pro,city,district);
+            selectAddress(pro, city, district);
             var title = addressId == 0 ? "新增收货地址" : "收货地址编辑";
             J.ShowDialog("edit_dialog", title, function () {
                 var self = this;
@@ -231,10 +227,8 @@
                             setTimeout(function () {
                                 window.location.reload();
                             }, 400);
-                        } else if (result.code == 805) {
-                            $.jBox.tip("该账号已失效", "error");
                         } else {
-                            $.jBox.tip("保存失败", "error");
+                            $.jBox.tip(json.msg, "error");
                         }
                     }, function () {
                     }, J.PostMethod);
@@ -243,20 +237,22 @@
                 $(this).dialog('close');
             });
         },
-        configDefault: function(addressId){
-            J.GetJsonRespons(ajaxUrl + "configDefault", {
-                addressId: addressId
-            }, function (json) {
-                if (json.code == 200) {
-                    $.jBox.tip("设置成功", "success");
-                }  else {
-                    $.jBox.tip("设置失败", "error");
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 400);
-                }
-            }, function () {
-            }, J.PostMethod);
+        configDefault: function (addressId) {
+            J.jboxConfirm("是否设为默认地址?", function () {
+                J.GetJsonRespons(ajaxUrl + "configDefault", {
+                    addressId: addressId
+                }, function (json) {
+                    if (json.code == 200) {
+                        $.jBox.tip("设置成功", "success");
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 400);
+                    } else {
+                        $.jBox.tip(json.msg, "error");
+                    }
+                }, function () {
+                }, J.PostMethod);
+            });
         },
         checkForm: function (addressId) {
             var receiver = $.trim($("#receiver").val());
@@ -295,7 +291,7 @@
                 city: city,
                 district: district,
                 address: address,
-                default:isDefault,
+                default: isDefault,
                 comment: comment
             };
             return requestData;
@@ -333,12 +329,12 @@
                         </span>
                 </td>
             </tr>
-             <tr style="color: #e8e8e8">
+            <tr style="color: #e8e8e8">
                 <th scope="row">详细地址：</th>
-                    <td>
-                        <textarea id="address" style="margin-top: 10px;margin-bottom: 10px;"></textarea>
-                    </td>
-             </tr>
+                <td>
+                    <textarea id="address" style="margin-top: 10px;margin-bottom: 10px;"></textarea>
+                </td>
+            </tr>
             <tr style="color: #e8e8e8">
                 <th scope="row">设为默认：</th>
                 <td>

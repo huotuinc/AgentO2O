@@ -44,6 +44,6 @@ public class MallCustomerServiceImpl implements MallCustomerService {
 
     @Override
     public MallCustomer findByCustomerId(Integer customerId) {
-        return customerRepository.findOne(customerId);
+        return customerId == null ? null : customerRepository.findOne(customerId);
     }
 }

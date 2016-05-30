@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by helloztt on 2016/5/9.
  */
-@Service
+@Service("authorService")
 public class AuthorServiceImpl implements AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
@@ -21,7 +21,7 @@ public class AuthorServiceImpl implements AuthorService {
     private PasswordEncoder passwordEncoder;
 
     public Author findById(Integer id) {
-        return authorRepository.findOne(id);
+        return id == null ? null : authorRepository.findOne(id);
     }
 
     public List<Author> findByCustomerId(Integer customerId) {

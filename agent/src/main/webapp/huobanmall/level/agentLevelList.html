@@ -153,10 +153,8 @@
                         setTimeout(function () {
                             window.location.reload();
                         }, 400);
-                    } else if (json.code == 800) {
-                        $.jBox.tip("无法删除,该等级已被代理商绑定", "error");
                     } else {
-                        $.jBox.tip("删除失败", "error");
+                        $.jBox.tip(json.msg, "error");
                     }
                 }, function () {
                 }, J.PostMethod);
@@ -187,7 +185,7 @@
                                 window.location.reload();
                             }, 400);
                         } else {
-                            $.jBox.tip("保存失败", "error");
+                            $.jBox.tip(json.msg, "error");
                         }
                     }, function () {
                     }, J.PostMethod);
