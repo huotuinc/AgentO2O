@@ -101,7 +101,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
      * 初始化采购管理模块，采购管理模块以 02 开头
      */
     private void initPurchaseMenu() {
-        if (menuRepository.findOne("02") != null) {
+        if (menuRepository.findOne("02") == null) {
             //一级子菜单列表
             List<AgtMenu> subMenu1 = new ArrayList<>();
             //二级子菜单列表
