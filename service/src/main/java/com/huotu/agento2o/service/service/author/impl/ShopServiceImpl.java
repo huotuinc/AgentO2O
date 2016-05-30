@@ -64,14 +64,14 @@ public class ShopServiceImpl implements ShopService {
         return shopRepository.findByUsername(userName);
     }
 
-//    @Override
-//    public Shop findById(Integer id) {
-//        return shopRepository.findOne(id);
-//    }
+    @Override
+    public Shop findById(Integer id) {
+        return shopRepository.findOne(id);
+    }
 
     @Override
-    public Shop findByIdAndAuthor(Integer id, Agent agent) {
-        return id == null || agent == null ? null : shopRepository.findByIdAndAuthor(id, agent);
+    public Shop findByIdAndParentAuthor(Integer id, Agent agent) {
+        return id == null || agent == null ? null : shopRepository.findByIdAndParentAuthor(id, agent);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ShopServiceImpl implements ShopService {
         UserBaseInfo userBaseInfo = null;
         if (StringUtil.isNotEmpty(hotUserName)) {
             userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName,
-                    shop.getParentAuthor().getCustomer().getCustomerId());
+                    shop.getCustomer().getCustomerId());
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在", 400);
             }

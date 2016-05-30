@@ -54,7 +54,7 @@ public class ShopController {
         }
         model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
-            shop = shopService.findByIdAndAuthor(shop.getId(), curAgent);
+            shop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
             model.addAttribute("shop", shop);
         }
         return "shop/addShop";
@@ -89,7 +89,7 @@ public class ShopController {
      */
     @RequestMapping("/baseConfig")
     public String baseConfig(@AuthenticationPrincipal Shop curShop, Model model) throws Exception {
-        Shop shop = shopService.findByIdAndAuthor(curShop.getId(), curShop.getParentAuthor());
+        Shop shop = shopService.findByIdAndParentAuthor(curShop.getId(), curShop.getParentAuthor());
         if (shop == null || !shop.getId().equals(curShop.getId())) {
             throw new Exception("没有权限");
         }
@@ -113,6 +113,8 @@ public class ShopController {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
+        shop.setCustomer(curShop.getCustomer());
+        shop.setParentAuthor(curShop.getParentAuthor());
         return shopService.saveOrUpdateShop(shop, hotUserName);
     }
 
@@ -154,7 +156,7 @@ public class ShopController {
     @RequestMapping("/changeStatus")
     @ResponseBody
     public ApiResult changeStatus(@AuthenticationPrincipal Agent curAgent, int id) {
-        Shop shop = shopService.findByIdAndAuthor(id, curAgent);
+        Shop shop = shopService.findByIdAndParentAuthor(id, curAgent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
@@ -170,7 +172,7 @@ public class ShopController {
     @RequestMapping("/delete")
     @ResponseBody
     public ApiResult deleteById(@AuthenticationPrincipal Agent curAgent, int id) {
-        Shop shop = shopService.findByIdAndAuthor(id, curAgent);
+        Shop shop = shopService.findByIdAndParentAuthor(id, curAgent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
@@ -189,7 +191,7 @@ public class ShopController {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        Shop oldShop = shopService.findByIdAndAuthor(shop.getId(), curAgent);
+        Shop oldShop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }

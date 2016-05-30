@@ -51,8 +51,29 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
 
-        Shop shop = shopService.findByIdAndAuthor(getShop.getId(), parentMockAgent);
+        Shop shop = shopService.findById(getShop.getId());
         Assert.assertTrue(shop != null);
+    }
+
+    @Test
+    public void testFindByIdAndParentAuthor() {
+        MallCustomer mockCustomer = mockMallCustomer();
+        Agent parentMockAgent = mockAgent(mockCustomer, null);
+        Shop getShop = mockShop(parentMockAgent);
+
+        Shop shop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
+        Assert.assertTrue(shop != null);
+    }
+
+    @Test
+    public void testFindByIdAndCustomer_Id(){
+        MallCustomer mockCustomer = mockMallCustomer();
+        Agent parentMockAgent = mockAgent(mockCustomer, null);
+        Shop getShop = mockShop(parentMockAgent);
+        getShop.setCustomer(mockCustomer);
+        shopService.saveOrUpdateShop(getShop,null);
+        Shop curShop = shopService.findByIdAndCustomer_Id(getShop.getId(),mockCustomer.getCustomerId());
+        Assert.assertTrue(curShop.getCustomer().equals(mockCustomer));
     }
 
     @Test
@@ -61,9 +82,9 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
 
-        shopService.updateStatus(AgentStatusEnum.RETURNED, getShop.getId());
-        Shop curShop = shopService.findByIdAndAuthor(getShop.getId(), parentMockAgent);
-        Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.RETURNED);
+        shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
+        Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
+        Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.CHECKED);
     }
 
     @Test
@@ -72,9 +93,9 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
 
-        shopService.updateStatusAndAuditComment(AgentStatusEnum.CHECKED, "111", getShop.getId());
-        Shop curShop = shopService.findByIdAndAuthor(getShop.getId(), parentMockAgent);
-        Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.CHECKED && curShop.getAuditComment().equals("111"));
+        shopService.updateStatusAndAuditComment(AgentStatusEnum.CHECKED, "1113", getShop.getId());
+        Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
+        Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.CHECKED && curShop.getAuditComment().equals("1113"));
     }
 
     @Test
@@ -84,7 +105,7 @@ public class ShopServiceImplTest extends CommonTestBase {
         Shop getShop = mockShop(parentMockAgent);
 
         shopService.deleteById(getShop.getId());
-        Shop curShop = shopService.findByIdAndAuthor(getShop.getId(), parentMockAgent);
+        Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
         Assert.assertTrue(curShop != null && curShop.isDeleted() == true);
     }
 
@@ -95,7 +116,7 @@ public class ShopServiceImplTest extends CommonTestBase {
         Shop getShop = mockShop(parentMockAgent);
 
         shopService.updateIsDisabledById(getShop.getId());
-        Shop curShop = shopService.findByIdAndAuthor(getShop.getId(), parentMockAgent);
+        Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
         Assert.assertTrue(curShop != null && curShop.isDisabled() == true);
     }
 
@@ -105,9 +126,9 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
 
-        shopService.updatePasswordById("2", getShop.getId());
-        Shop curShop = shopService.findByIdAndAuthor(getShop.getId(), parentMockAgent);
-        Assert.assertTrue(curShop != null && curShop.getPassword().equals(passwordEncoder.encode("2")));
+        shopService.updatePasswordById("3", getShop.getId());
+        Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
+        Assert.assertTrue(curShop != null && curShop.getPassword().equals(passwordEncoder.encode("3")));
     }
 
     @Test

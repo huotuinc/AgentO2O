@@ -30,7 +30,9 @@ public interface ShopService extends UserDetailsService {
 
     Shop findByUserName(String userName);
 
-    Shop findByIdAndAuthor(Integer id, Agent agent);
+    Shop findById(Integer id);
+
+    Shop findByIdAndParentAuthor(Integer id, Agent agent);
 
     Shop findByIdAndCustomer_Id(Integer id, Integer customer_Id);
 

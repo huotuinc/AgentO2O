@@ -23,7 +23,7 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecifi
 
     Shop findByUserBaseInfo_userId(Integer userId);
 
-    Shop findByIdAndAuthor(Integer id, Agent agent);
+    Shop findByIdAndParentAuthor(Integer id, Agent agent);
 
     Shop findByIdAndCustomer(Integer id, MallCustomer customer);
 }
