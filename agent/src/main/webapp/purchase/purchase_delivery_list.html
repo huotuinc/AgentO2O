@@ -60,15 +60,15 @@
                     <div>
 
 
-                        <label class="first">发货单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
+                        <label class="first">发货单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
                         <input name="deliveryNo" type="text" th:value="*{deliveryNo}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
-
-                        <label class="first">采购单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
+                        &nbsp;
+                        <label class="first">采购单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
                         <input name="OrderId" type="text" th:value="*{orderId}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
-
-                        <label class="first">物流单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
+                        &nbsp;
+                        <label class="first">物流单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
                         <input name="deliveryNo" type="text" th:value="*{deliveryNo}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
                         <br />
@@ -76,7 +76,7 @@
 
 
 
-                        <label class="first ">申请时间：</label>
+                        <label class="first ">创建时间:</label>
                         <input name="beginTime" type="text" id="beginTime" placeholder=" [开始日期]"
                                class="input-normal Wdate" th:value="*{beginTime}"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>---
@@ -138,23 +138,23 @@
                         <td class="txt80 c" data-th-text="${purchaseDelivery.purchaseOrder.pOrderId}">
                             采购单号
                         </td>
-                        <td class="txt80 c" data-th-text="${#calendars.format(purchaseDelivery.createTime,'yyyy-MM-dd HH:mm:ss')}" style="color:red;">
+                        <td class="txt80 c" data-th-text="${#calendars.format(purchaseDelivery.createTime,'yyyy-MM-dd HH:mm:ss')}">
                             创建时间
                         </td>
-                        <td class="txt80 c" data-th-text="${purchaseDelivery.freight}" style="color:red;">
+                        <td class="txt80 c" data-th-text="${purchaseDelivery.freight}">
                             创建时间
                         </td>
-                        <td class="txt80 c" data-th-text="${purchaseDelivery.shipName}" style="color:red;">
+                        <td class="txt80 c" data-th-text="${purchaseDelivery.shipName}">
                             收货人
                         </td>
-                        <td class="txt80 c" data-th-text="${purchaseDelivery.logisticsName}" style="color:red;">
+                        <td class="txt80 c" data-th-text="${purchaseDelivery.logisticsName}">
                             收货人
                         </td>
                         <td class="txt80 c" data-th-text="${purchaseDelivery.logisticsNo}">
                             物流单号
                         </td>
                         <td class="txt80 c">
-                            操作
+                            <a href="#">查看详情</a>
                         </td>
 
                     </tr>

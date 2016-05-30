@@ -14,10 +14,7 @@ import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.SerialNo;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.common.InvoiceEnum;
-import com.huotu.agento2o.service.common.PurchaseEnum;
-import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.common.*;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -27,16 +24,19 @@ import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
-import com.huotu.agento2o.service.entity.level.AgentLevel;
+import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallOrder;
+import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
+import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
@@ -45,13 +45,13 @@ import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
-import com.huotu.agento2o.service.service.level.AgentLevelService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -101,9 +101,13 @@ public abstract class CommonTestBase extends SpringWebTest{
     protected InvoiceConfigRepository invoiceConfigRepository;
     @Autowired
     protected MallGoodsTypeRepository goodsTypeRepository;
-    @Autowired
-    private AgentLevelService agentLevelService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ShopRepository shopRepository;
+    @Autowired
+    private MallAfterSalesRepository mallAfterSalesRepository;
     //标准类目 羽绒服
     protected MallGoodsType standardGoodsType;
 
@@ -150,8 +154,6 @@ public abstract class CommonTestBase extends SpringWebTest{
         if(parentAgent != null){
             agent.setParentAuthor(parentAgent);
         }
-        //插入等级
-        agent.setAgentLevel(mockAgentLevel(mockCustomer));
         agent.setStatus(AgentStatusEnum.CHECKED);
         agent = agentService.addAgent(agent);
         agentService.flush();
@@ -174,8 +176,10 @@ public abstract class CommonTestBase extends SpringWebTest{
         if(parentAgent != null){
             shop.setParentAuthor(parentAgent);
         }
-        shop = shopService.addShop(shop);
-        shopService.flush();
+        //密码进行加密保存
+        shop.setPassword(passwordEncoder.encode(shop.getPassword()));
+        shopRepository.save(shop);
+        shopRepository.flush();
         return shop;
     }
 
@@ -409,19 +413,21 @@ public abstract class CommonTestBase extends SpringWebTest{
 
     }
 
-    /**
-     * 模拟等级
-     */
-    @SuppressWarnings("Duplicates")
-    public AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
-        AgentLevel agentLevel = new AgentLevel();
-        agentLevel.setLevelName(UUID.randomUUID().toString());
-        agentLevel.setComment(UUID.randomUUID().toString());
-        agentLevel.setLevel(random.nextInt());
-        agentLevel.setCustomer(mockCustomer);
-        agentLevel = agentLevelService.addAgentLevel(agentLevel);
-        agentLevelService.flush();
-        return agentLevel;
+    protected MallAfterSales mockMallAfterSales(Shop shop){
+        MallAfterSales mallAfterSales = new MallAfterSales();
+        mallAfterSales.setAfterId(random.nextInt()+"1");
+        mallAfterSales.setOrderItem(new MallOrderItem());
+        mallAfterSales.setAfterSaleStatus(AfterSaleEnum.AfterSaleStatus.APPLYING);
+        mallAfterSales.setOrderId(random.nextInt()+"1");
+        mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
+        if (random.nextInt()%2 == 0)
+            mallAfterSales.setShop(shop);
+        else
+            mallAfterSales.setBeneficiaryShop(shop);
+        mallAfterSales.setAfterSaleType(AfterSaleEnum.AfterSaleType.REFUND);
+        mallAfterSales.setAfterSalesReason(AfterSaleEnum.AfterSalesReason.GOOD_PROBLEM);
+        mallAfterSales.setCreateTime(new Date());
+        return mallAfterSalesRepository.saveAndFlush(mallAfterSales);
     }
 
 }
