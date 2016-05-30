@@ -1,6 +1,8 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.ienum.EnumHelper;
+import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -289,7 +291,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
     }
 
     @Test
-    public void testPushReturrnOrderDelivery(){
+    public void testPushReturnOrderDelivery(){
         // TODO: 2016/5/25
     }
 
@@ -319,18 +321,47 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         agentReturnOrderRepository.save(parentAgentReturnedOrder);
 
         agentReturnedOrderService.payReturnOrder(mallCustomer.getCustomerId(),null,parentROrderId);
+        AgentReturnedOrder parentTestAgentReturnedOrder = agentReturnOrderRepository.findOne(parentROrderId);
+        Assert.assertEquals(PurchaseEnum.PayStatus.PAYED,parentTestAgentReturnedOrder.getPayStatus());
 
-        // 上级代理商支付给关联的下级代理商
+        // 上级代理商支付退款给关联的下级代理商
+        AgentReturnedOrder subAgentReturnedOrder = new AgentReturnedOrder();
+        subAgentReturnedOrder.setROrderId(subROrderId);
+        subAgentReturnedOrder.setDisabled(false);
+        subAgentReturnedOrder.setAuthor(subAgent);
+        subAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        subAgentReturnedOrder.setReceivedTime(new Date());
+        subAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        subAgentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
+        agentReturnOrderRepository.save(subAgentReturnedOrder);
 
-
+        agentReturnedOrderService.payReturnOrder(null,parentAgent.getId(),subROrderId);
+        AgentReturnedOrder subTestAgentReturnedOrder = agentReturnOrderRepository.findOne(subROrderId);
+        Assert.assertEquals(PurchaseEnum.PayStatus.PAYED,subTestAgentReturnedOrder.getPayStatus());
     }
 
     @Test
     public void testEditReturnNum(){
-        // TODO: 2016/5/25
+
+        Integer agentProductStore = 1000;
+        Integer agentProductFreez = 900;
+
+        MallCustomer mallCustomer = mockMallCustomer();
+        Agent agent = mockAgent(mallCustomer,null);
+        MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),agent.getId());
+        MallProduct mallProduct = mockMallProduct(mallGoods);
+        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent);
+        agentProduct.setStore(agentProductStore);
+        agentProduct.setFreez(agentProductFreez);
+        agentProductRepository.save(agentProduct);
+        int editNum = 10;
+        // editNum <= agentProductStore - agentProductFreez
+        ApiResult apiResult = agentReturnedOrderService.editReturnNum(agent,mallProduct.getProductId(),editNum);
+        Assert.assertTrue(apiResult.getCode() == ResultCodeEnum.SUCCESS.getResultCode());
+
+        editNum = 110;
+        // editNum > agentProductStore - agentProductFreez
+        apiResult = agentReturnedOrderService.editReturnNum(agent,mallProduct.getProductId(),editNum);
+        Assert.assertFalse(apiResult.getCode() == ResultCodeEnum.SUCCESS.getResultCode());
     }
-
-
-
-
 }
