@@ -31,5 +31,5 @@ public interface UserBaseInfoService {
      * @return
      */
     UserBaseInfo findByNameAndCustomerId(String name,Integer id);
-    
+
 }

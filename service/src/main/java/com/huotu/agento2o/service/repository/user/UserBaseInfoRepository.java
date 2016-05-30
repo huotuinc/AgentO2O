@@ -27,5 +27,4 @@ public interface UserBaseInfoRepository extends JpaRepository<UserBaseInfo, Inte
     @Query(value = "select top 10 c.UB_UserLoginName from (select  a.UB_UserLoginName,b.ID from Hot_UserBaseInfo a left join Agt_Agent b on a.UB_UserID = b.UB_UserID where a.UB_UserLoginName like ?1 and a.UB_CustomerID = ?2)c where c.id is null", nativeQuery = true)
     List<String> findByLoginNameLikeAndMallCustomer_customerId(String logingName,Integer customerId);
 
-    UserBaseInfo findByLoginName(String logingName);
 }

@@ -27,6 +27,7 @@ import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
@@ -44,6 +45,7 @@ import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.level.AgentLevelService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -99,6 +101,8 @@ public abstract class CommonTestBase extends SpringWebTest{
     protected InvoiceConfigRepository invoiceConfigRepository;
     @Autowired
     protected MallGoodsTypeRepository goodsTypeRepository;
+    @Autowired
+    private AgentLevelService agentLevelService;
 
     //标准类目 羽绒服
     protected MallGoodsType standardGoodsType;
@@ -146,6 +150,8 @@ public abstract class CommonTestBase extends SpringWebTest{
         if(parentAgent != null){
             agent.setParentAuthor(parentAgent);
         }
+        //插入等级
+        agent.setAgentLevel(mockAgentLevel(mockCustomer));
         agent.setStatus(AgentStatusEnum.CHECKED);
         agent = agentService.addAgent(agent);
         agentService.flush();
@@ -401,6 +407,21 @@ public abstract class CommonTestBase extends SpringWebTest{
             mallOrder.setBeneficiaryShop(shop);
         return orderRepository.saveAndFlush(mallOrder);
 
+    }
+
+    /**
+     * 模拟等级
+     */
+    @SuppressWarnings("Duplicates")
+    public AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
+        AgentLevel agentLevel = new AgentLevel();
+        agentLevel.setLevelName(UUID.randomUUID().toString());
+        agentLevel.setComment(UUID.randomUUID().toString());
+        agentLevel.setLevel(random.nextInt());
+        agentLevel.setCustomer(mockCustomer);
+        agentLevel = agentLevelService.addAgentLevel(agentLevel);
+        agentLevelService.flush();
+        return agentLevel;
     }
 
 }

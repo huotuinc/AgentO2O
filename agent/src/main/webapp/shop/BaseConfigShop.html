@@ -508,7 +508,7 @@
                 map.centerAndZoom(point, 16);
             } else {
                 lngandlat('', '');
-                alert("您选择地址没有解析到结果!");
+                $.jBox.tip("地址没有解析到结果,请点击地图进行选择");
             }
         });
     });

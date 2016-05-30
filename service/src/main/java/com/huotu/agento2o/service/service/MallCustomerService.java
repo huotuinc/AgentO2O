@@ -17,4 +17,6 @@ import com.huotu.agento2o.service.entity.MallCustomer;
  */
 public interface MallCustomerService {
     MallCustomer newCustomer(MallCustomer customer);
+
+    MallCustomer findByCustomerId(Integer customerId);
 }

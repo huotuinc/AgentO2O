@@ -118,8 +118,8 @@ public abstract class CommonTestBase {
         if (parentAgent != null) {
             shop.setParentAuthor(parentAgent);
         }
-        shop = shopService.addShop(shop);
         agentService.flush();
+        shop = shopService.findByUserName(shop.getUsername());
         return shop;
     }
 
