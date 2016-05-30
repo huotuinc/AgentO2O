@@ -11,9 +11,10 @@
 package com.huotu.agento2o.service.service.purchase;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
-
-import java.io.UnsupportedEncodingException;
+import com.huotu.agento2o.service.searchable.DeliverySearcher;
+import org.springframework.data.domain.Page;
 
 /**
  * Created by helloztt on 2016/5/19.
@@ -21,4 +22,8 @@ import java.io.UnsupportedEncodingException;
 public interface AgentDeliveryService {
 
     ApiResult pushDelivery(DeliveryInfo deliveryInfo, Integer customerId, Integer agentId) throws Exception;
+
+    Page<AgentDelivery> showPurchaseDeliveryList(DeliverySearcher deliverySearcher);
+
+    Page<AgentDelivery> showReturnDeliveryList(DeliverySearcher deliverySearcher);
 }
