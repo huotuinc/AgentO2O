@@ -46,6 +46,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public Address findDefaultByAuthorId(Integer authorId) {
+        return addressRepository.findByAuthor_IdAndIsDefaultTrue(authorId);
+    }
+
+    @Override
     @Transactional
     public ApiResult addOrUpdate(Integer id, Integer authorId, Address requestAddress) {
         Address address;

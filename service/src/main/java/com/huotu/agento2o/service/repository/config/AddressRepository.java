@@ -13,14 +13,18 @@ import com.huotu.agento2o.service.entity.config.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Created by WangJie on 2016/5/24.
  */
+@Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
 
     List<Address> findByAuthor_id(Integer id);
+
+    Address findByAuthor_IdAndIsDefaultTrue(Integer authorId);
 
 }

@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -30,8 +31,10 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -63,10 +66,11 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     private List<MallGoods> mockFirstLevelAgentGoodsWithNProductList = new ArrayList<>();
     //一级代理商采购单
     private List<AgentPurchaseOrder> mockFirstLevelAgentPurchaseOrderList = new ArrayList<>();
-
     //一级代理商购物车
     private List<ShoppingCart> mockFirstLevelAgentShoppingCartList = new ArrayList<>();
 
+    //一级代理商下级门店 货品
+    private List<AgentProduct> mockFirstLevelShopProductList = new ArrayList<>();
     //一级代理商下级门店 购物车
     private List<ShoppingCart> mockFirstLevelShopShoppingCartList = new ArrayList<>();
 
@@ -528,9 +532,167 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
      */
     @Test
     public void testShowPurchaseOrderListByFirstLevelAgent() throws Exception {
+        String controllerUrl = BASE_URL + "/showPurchaseOrderList";
         //一级代理商登录
         MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
 
+        // 1.没有搜索条件
+        MvcResult resultWithNoSearch = mockMvc.perform(post(controllerUrl)
+                .session(session))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+
+        List<AgentPurchaseOrder> purchaseOrderListWithNoSearch = (List<AgentPurchaseOrder>) resultWithNoSearch.getModelAndView().getModel().get("purchaseOrderList");
+        Integer pageSizeWithNoSearch = (Integer) resultWithNoSearch.getModelAndView().getModel().get("pageSize");
+        Assert.assertNotNull(purchaseOrderListWithNoSearch);
+        Assert.assertEquals(Math.min(pageSizeWithNoSearch, mockFirstLevelAgentPurchaseOrderList.size()), purchaseOrderListWithNoSearch.size());
+        for (int i = 0; i < purchaseOrderListWithNoSearch.size(); i++) {
+            mockSecondLevelAgentShoppingCartList.contains(purchaseOrderListWithNoSearch.get(i));
+        }
+
+        // 2.按采购单号搜索
+        MvcResult resultWithPOrderId = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", mockFirstLevelAgentPurchaseOrderList.get(0).getPOrderId()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+
+        List<AgentPurchaseOrder> purchaseOrderListWithPOrderId = (List<AgentPurchaseOrder>) resultWithPOrderId.getModelAndView().getModel().get("purchaseOrderList");
+        Assert.assertNotNull(purchaseOrderListWithPOrderId);
+        Assert.assertEquals(1, purchaseOrderListWithPOrderId.size());
+        Assert.assertEquals(mockFirstLevelAgentPurchaseOrderList.get(0).getPOrderId(), purchaseOrderListWithPOrderId.get(0).getPOrderId());
+
+        // 3.按商品名称搜索
+        String searchGoodsName = mockFirstLevelAgentProductList.get(0).getProduct().getName();
+        long goodsNameCount = mockFirstLevelAgentPurchaseOrderList.stream().filter(order ->
+                order.getOrderItemList().stream().filter(
+                        item -> item.getProduct().getName().equals(searchGoodsName)).count() > 0
+        ).count();
+        MvcResult resultWithGoodsName = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("orderItemName", searchGoodsName))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+        List<AgentPurchaseOrder> purchaseOrderListWithGoodsName = (List<AgentPurchaseOrder>) resultWithGoodsName.getModelAndView().getModel().get("purchaseOrderList");
+        Integer pageSizeWithGoodsName = (Integer) resultWithNoSearch.getModelAndView().getModel().get("pageSize");
+        Assert.assertNotNull(purchaseOrderListWithGoodsName);
+        Assert.assertEquals(Math.min(pageSizeWithGoodsName, goodsNameCount), purchaseOrderListWithGoodsName.size());
+        if(purchaseOrderListWithGoodsName.size() > 0){
+            purchaseOrderListWithGoodsName.forEach(order -> {
+                long filterCount = order.getOrderItemList().stream().filter(item -> item.getProduct().getName().equals(searchGoodsName)).count();
+                Assert.assertTrue(filterCount > 0);
+            });
+        }
+
+        // 4.按付款状态搜索(已支付)
+        long payedCount = mockFirstLevelAgentPurchaseOrderList.stream().filter(p ->
+                p.getPayStatus().equals(PurchaseEnum.PayStatus.PAYED)
+        ).count();
+        MvcResult resultWithPayStatus = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("payStatusCode", String.valueOf(PurchaseEnum.PayStatus.PAYED.getCode())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+        List<AgentPurchaseOrder> purchaseOrderListWithPayStatus = (List<AgentPurchaseOrder>) resultWithPayStatus.getModelAndView().getModel().get("purchaseOrderList");
+        Integer pageSizeWithPayStatus = (Integer) resultWithPayStatus.getModelAndView().getModel().get("pageSize");
+        Assert.assertNotNull(purchaseOrderListWithPayStatus);
+        Assert.assertEquals(Math.min(pageSizeWithPayStatus, payedCount), purchaseOrderListWithPayStatus.size());
+        if(purchaseOrderListWithPayStatus.size() > 0){
+            purchaseOrderListWithPayStatus.forEach(p -> {
+                Assert.assertEquals(PurchaseEnum.PayStatus.PAYED.getCode(), p.getPayStatus().getCode());
+            });
+        }
+
+        // 5.按发货状态搜索(已发货)
+        long deliveryCount = mockFirstLevelAgentPurchaseOrderList.stream().filter(p ->
+                p.getShipStatus().equals(PurchaseEnum.ShipStatus.DELIVERED)
+        ).count();
+        MvcResult resultWithDeliveryStatus = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("shipStatusCode", String.valueOf(PurchaseEnum.ShipStatus.DELIVERED.getCode())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+        List<AgentPurchaseOrder> purchaseOrderListWithDeliveryStatus = (List<AgentPurchaseOrder>) resultWithDeliveryStatus.getModelAndView().getModel().get("purchaseOrderList");
+        Integer pageSizeWithDeliveryCount = (Integer) resultWithDeliveryStatus.getModelAndView().getModel().get("pageSize");
+        Assert.assertNotNull(purchaseOrderListWithDeliveryStatus);
+        Assert.assertEquals(Math.min(pageSizeWithDeliveryCount, deliveryCount), purchaseOrderListWithDeliveryStatus.size());
+        if(purchaseOrderListWithDeliveryStatus.size() > 0){
+            purchaseOrderListWithDeliveryStatus.forEach(p -> {
+                Assert.assertEquals(PurchaseEnum.ShipStatus.DELIVERED.getCode(), p.getShipStatus().getCode());
+            });
+        }
+
+        // 6.按审核状态搜索(已审核)
+        long statusCount = mockFirstLevelAgentPurchaseOrderList.stream().filter(p ->
+                p.getStatus().equals(PurchaseEnum.OrderStatus.CHECKED)
+        ).count();
+        MvcResult resultWithStatus = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("statusCode", String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+        List<AgentPurchaseOrder> purchaseOrderListWithStatus = (List<AgentPurchaseOrder>) resultWithStatus.getModelAndView().getModel().get("purchaseOrderList");
+        Integer pageSizeWithStatus = (Integer) resultWithStatus.getModelAndView().getModel().get("pageSize");
+        Assert.assertNotNull(purchaseOrderListWithStatus);
+        Assert.assertEquals(Math.min(pageSizeWithStatus,statusCount),purchaseOrderListWithStatus.size());
+        if(purchaseOrderListWithStatus.size() > 0){
+            purchaseOrderListWithStatus.forEach(p->{
+                Assert.assertEquals(PurchaseEnum.OrderStatus.CHECKED.getCode(), p.getStatus().getCode());
+            });
+        }
+
+        // 7.按下单时间搜索
+        // TODO: 2016/5/30
+        // 8.按支付时间搜索
+        // TODO: 2016/5/30
     }
 
 

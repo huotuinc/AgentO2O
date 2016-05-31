@@ -46,8 +46,8 @@ public class AgentServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindByAgentLevel() {
-        List<Agent> agetnList = agentService.findByAgentLevelId(null);
-        Assert.assertTrue(agetnList.size() > 0);
+        List<Agent> agentList = agentService.findByAgentLevelId(null);
+        Assert.assertTrue(agentList.size() > 0);
     }
 
     @Test
