@@ -5,9 +5,11 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -39,6 +41,9 @@ public class HBShopController {
     @Autowired
     private AgentLevelService agentLevelService;
 
+    @Autowired
+    private MallCustomerService mallCustomerService;
+
     /**
      * 查看门店
      *
@@ -46,9 +51,12 @@ public class HBShopController {
      * @param model
      * @return
      */
-    @RequestMapping("/addShopPage")
-    public String toAddShopPage(Shop shop, Model model) {
-        shop = shopService.findById(shop.getId());
+    @RequestMapping("/showShopPage")
+    public String toAddShopPage(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop, Model model) throws Exception {
+        shop = shopService.findByIdAndCustomer_Id(shop.getId(), Integer.valueOf(customerIdStr));
+        if (shop == null) {
+            throw new Exception("没有权限");
+        }
         model.addAttribute("shop", shop);
         return "huobanmall/shop/hb_showShop";
     }
@@ -63,9 +71,14 @@ public class HBShopController {
     public String showShopList(@RequestAttribute(value = "customerId") String customerIdStr,
                                Model model,
                                ShopSearchCondition searchCondition,
-                               @RequestParam(required = false, defaultValue = "1") int pageIndex) {
+                               @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
+        if (StringUtil.isEmpty(customerIdStr)) {
+            throw new Exception("没有权限");
+        }
         int customerId = Integer.parseInt(customerIdStr);
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
+        MallCustomer mallCustomer = mallCustomerService.findByCustomerId(customerId);
+        searchCondition.setMallCustomer(mallCustomer);
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("type", searchCondition.getType());
@@ -88,16 +101,11 @@ public class HBShopController {
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
     public ApiResult changeIsDisabled(@RequestAttribute(value = "customerId") String customerIdStr, int id) {
-        Shop shop = shopService.findById(id);
+        Shop shop = shopService.findByIdAndCustomer_Id(id, Integer.valueOf(customerIdStr));
         if (shop == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        if (StringUtil.isEmpty(customerIdStr) || !shop.getParentAuthor().getCustomer().getCustomerId().toString().equals(customerIdStr)) {
-            return new ApiResult("没有权限");
-        }
-        shopService.updateIsDisabledById(!shop.isDisabled(), id);
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
+        return shopService.updateIsDisabledById(id);
     }
 
     /**
@@ -112,16 +120,11 @@ public class HBShopController {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        Shop oldShop = shopService.findById(shop.getId());
-        if (StringUtil.isEmpty(customerIdStr) || !customerIdStr.equals(oldShop.getParentAuthor().getCustomer().getCustomerId().toString())) {
-            return new ApiResult("没有权限");
+        Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), Integer.valueOf(customerIdStr));
+        if (oldShop == null) {
+            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        if (oldShop.isDisabled()) {
-            return new ApiResult("该门店已被冻结");
-        }
-        shopService.updateStatusAndAuditComment(shop.getStatus(), shop.getAuditComment(), shop.getId());
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
+        return shopService.updateStatusAndAuditComment(shop.getStatus(), shop.getAuditComment(), shop.getId());
     }
 
     /**
@@ -133,22 +136,14 @@ public class HBShopController {
     @RequestMapping("/resetpassword")
     @ResponseBody
     public ApiResult resetPassword(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop) {
-        if (StringUtil.isEmpty(customerIdStr)) {
-            return new ApiResult("没有权限");
+        Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), Integer.valueOf(customerIdStr));
+        if (oldShop == null) {
+            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        Shop oldShop = shopService.findById(shop.getId());
-        if (StringUtil.isEmpty(customerIdStr) || !customerIdStr.equals(oldShop.getParentAuthor().getCustomer().getCustomerId().toString())) {
-            return new ApiResult("没有权限");
-        }
-        if (oldShop.isDisabled()) {
-            return new ApiResult("该门店已被冻结");
-        }
-        shopService.updatePasswordById(shop.getPassword(), shop.getId());
-        ApiResult res = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        return res;
+        return shopService.updatePasswordById(shop.getPassword(), shop.getId());
     }
 
     /**

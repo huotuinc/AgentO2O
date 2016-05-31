@@ -41,4 +41,9 @@ public class MallCustomerServiceImpl implements MallCustomerService {
         customerRepository.flush();
         return customer;
     }
+
+    @Override
+    public MallCustomer findByCustomerId(Integer customerId) {
+        return customerId == null ? null : customerRepository.findOne(customerId);
+    }
 }

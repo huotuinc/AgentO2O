@@ -30,9 +30,9 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindById() throws Exception {
-        AgentLevel agentLevel = agentLevelService.findById(4);
+        AgentLevel agentLevel = agentLevelService.findById(1,6340);
         Assert.assertNotNull(agentLevel);
-        agentLevel = agentLevelService.findById(-1);
+        agentLevel = agentLevelService.findById(6340,1);
         Assert.assertNull(agentLevel);
     }
 
@@ -72,10 +72,10 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         agentLevel.setComment("5折进货");
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId());
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
         Assert.assertNotNull(agentLevel);
-        agentLevelService.deleteAgentLevel(agentLevel.getLevelId());
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId());
+        agentLevelService.deleteAgentLevel(agentLevel.getLevelId(),null);
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
         Assert.assertNull(agentLevel);
     }
 
@@ -92,7 +92,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         agentLevel.setComment("5折进货");
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId());
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
         Assert.assertNotNull(agentLevel);
     }
 }

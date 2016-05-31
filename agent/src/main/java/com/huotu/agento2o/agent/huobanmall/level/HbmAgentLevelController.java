@@ -53,12 +53,9 @@ public class HbmAgentLevelController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult deleteLevel(Integer levelId) {
-        if (agentService.findByAgentLevelId(levelId).size() > 0) {
-            return new ApiResult("等级已被绑定", 800);
-        }
-        agentLevelService.deleteAgentLevel(levelId);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    public ApiResult deleteLevel(@RequestAttribute(value = "customerId") String customerIdStr,Integer levelId) {
+        int customerId = Integer.parseInt(customerIdStr);
+        return agentLevelService.deleteAgentLevel(levelId,customerId);
     }
 
     /**
@@ -69,8 +66,9 @@ public class HbmAgentLevelController {
      */
     @RequestMapping(value = "/{levelId}", method = RequestMethod.GET)
     @ResponseBody
-    public ApiResult showLevel(@PathVariable Integer levelId) {
-        AgentLevel agentLevel = agentLevelService.findById(levelId);
+    public ApiResult showLevel(@RequestAttribute(value = "customerId") String customerIdStr,@PathVariable Integer levelId) {
+        int customerId = Integer.parseInt(customerIdStr);
+        AgentLevel agentLevel = agentLevelService.findById(levelId,customerId);
         if (agentLevel == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }

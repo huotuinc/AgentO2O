@@ -209,7 +209,10 @@
         var num = $(this).val();
         if(num == 0){
             $.jBox.tip("请设置退货数量");
-        }else{
+        } else if(num < 0){
+            $.jBox.tip("请设置退货数量大于0");
+            $(this).val(0);
+        } else{
             $.ajax({
                 type: "GET",
                 url: basicUrl + "/editReturnNum",

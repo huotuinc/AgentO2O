@@ -23,7 +23,9 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
 
-    List<Address> findByAuthor_id(Integer id);
+    List<Address> findByAuthor_id(Integer authorId);
+
+    Address findByIdAndAuthor_id(Integer addressId,Integer authorId);
 
     Address findByAuthor_IdAndIsDefaultTrue(Integer authorId);
 

@@ -262,6 +262,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
+
     //根据父代理商等级id获取父代理商选项
     function getPrentAgent(parentAgentLevelId) {
         var selectAgent = document.getElementById("parentAgentId");
@@ -384,16 +385,8 @@
                     setTimeout(function () {
                         window.location.href = ajaxUrl + "agentList";
                     }, 400);
-                } else if (result.code == 100) {
-                    $.jBox.tip("用户名已存在", "success");
-                } else if (result.code == 803) {
-                    $.jBox.tip("小伙伴账号不存在", "error");
-                } else if (result.code == 804) {
-                    $.jBox.tip("小伙伴账号已被绑定", "error");
-                } else if (result.code == 805) {
-                    $.jBox.tip("该代理商已失效", "error");
-                } else {
-                    $.jBox.tip("保存失败", "error");
+                }  else {
+                    $.jBox.tip(json.msg, "error");
                 }
             }
         });

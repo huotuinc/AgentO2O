@@ -93,7 +93,7 @@
 
     function showDetail(obj) {
         var shopId = $(obj).attr("shopid");
-        window.location.href = '/huobanmall/shop/addShopPage?id=' + shopId;
+        window.location.href = '/huobanmall/shop/showShopPage?id=' + shopId;
     }
 
     function searchShop() {
@@ -264,14 +264,14 @@
     function resetPassword(obj) {
         $("#audit_dialog").html($("#resetpassword_template").html());
         J.ShowDialog("audit_dialog", "重置密码", function () {
+            var _this = $(this);
             var passwordData = checkPassword(obj);
             if (passwordData != null) {
                 $.jBox.tip("正在重置...", "loading");
                 J.GetJsonRespons("/huobanmall/shop/resetpassword", passwordData, function (json) {
                     if (json.code == 200) {
-                        $(self).dialog('close');
                         $.jBox.tip(json.msg, "success");
-                        window.location.reload();
+                        _this.dialog('close');
                     } else {
                         $.jBox.tip(json.msg, "error");
                     }
@@ -434,23 +434,23 @@
                                         <td class="txt20 c" th:text="${shopStat.count}">
                                             1
                                         </td>
-                                        <td class="txt80">
+                                        <td class="txt80 c">
                                             <a href="javascript:void(0)" onclick="showDetail(this)"
                                                style="color: #6699d5" th:attr="shopid=${shop.id}"
                                                th:text="${shop.name}"></a>
                                         </td>
-                                        <td class="txt80" th:text="${shop.username}">
+                                        <td class="txt80 c" th:text="${shop.username}">
                                         </td>
-                                        <td class="txt80" th:text="${shop.Contact}">
+                                        <td class="txt80 c" th:text="${shop.Contact}">
                                         </td>
-                                        <td class="txt80" th:text="${shop.mobile}">
+                                        <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
-                                        <td class="txt80"
+                                        <td class="txt80 c"
                                             th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
                                         </td>
-                                        <td class="txt40" style="color: #9c0901" th:text="${shop.status.value}">
+                                        <td class="txt40 c" style="color: #9c0901" th:text="${shop.status.value}">
                                         </td>
-                                        <td class="txt40" style="color: #9c0901"
+                                        <td class="txt40 c" style="color: #9c0901"
                                             th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
                                         </td>
                                         <td class="txt40 c tail">

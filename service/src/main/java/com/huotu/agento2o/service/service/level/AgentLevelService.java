@@ -26,16 +26,19 @@ public interface AgentLevelService {
 
     /**
      * 删除代理商等级
-     * @param id
-     */
-    void deleteAgentLevel(Integer id);
-
-    /**
-     * 获取某个代理商等级
-     * @param id
+     * @param levelId
+     * @param customerId
      * @return
      */
-    AgentLevel findById(Integer id);
+    ApiResult deleteAgentLevel(Integer levelId,Integer customerId);
+
+    /**
+     * 根据唯一id和平台方id获取某个代理商等级
+     * @param agentId
+     * @param customerId
+     * @return
+     */
+    AgentLevel findById(Integer agentId,Integer customerId);
 
     /**
      * 刷新，缓存与数据库同步

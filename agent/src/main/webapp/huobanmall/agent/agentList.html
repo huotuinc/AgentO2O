@@ -117,7 +117,6 @@
             var agentStatus = $("#agentStatus").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
-            debugger;
             if (province == null) {
                 province = "";
             }
@@ -261,7 +260,7 @@
 
                 <div class="bar">
                     <a class="btn-lit aucontrol" href="#" th:href="@{/huobanmall/agent/showAgent(id=0)}">
-                        <span>新增代理商</span></a>
+                        <span>新增</span></a>
                 </div>
             </div>
             <div class="cnt-wp">
@@ -321,17 +320,17 @@
                             <td class="txt80 c tail">
                                 <div style='cursor: pointer'>
                                     <a href="javascript:passwordlHandler.reset(1)"
-                                       th:href="|javascript:passwordlHandler.reset(${agent.id})|"> 重置密码 </a>
+                                       th:href="|javascript:passwordlHandler.reset(${agent.id})|">重置密码</a> |
                                     <a href="#"
-                                       th:href="@{/huobanmall/agent/showAgent(id=${agent.id})}"> 编辑 </a>
+                                       th:href="@{/huobanmall/agent/showAgent(id=${agent.id})}">编辑</a> |
                                     <a th:if="${!agent.isAccountNonLocked()}"
                                        href="javascript:agentHandler.updateStatus(1,1)"
-                                       th:href="|javascript:agentHandler.updateStatus(1,${agent.id})|"> 解冻 </a>
+                                       th:href="|javascript:agentHandler.updateStatus(1,${agent.id})|">解冻</a>
                                     <a th:if="${agent.isAccountNonLocked()}"
                                        href="javascript:agentHandler.updateStatus(0,1)"
-                                       th:href="|javascript:agentHandler.updateStatus(0,${agent.id})|"> 冻结 </a>
+                                       th:href="|javascript:agentHandler.updateStatus(0,${agent.id})|">冻结</a> |
                                     <a href="javascript:agentHandler.deleteAgent(1)"
-                                       th:href="|javascript:agentHandler.deleteAgent(${agent.id})|"> 删除 </a>
+                                       th:href="|javascript:agentHandler.deleteAgent(${agent.id})|">删除</a>
                                 </div>
                             </td>
                         </tr>
@@ -382,10 +381,8 @@
                         setTimeout(function () {
                             window.location.reload();
                         }, 400);
-                    } else if (json.code == 801) {
-                        $.jBox.tip("无法删除,该代理商已被绑定", "error");
                     } else {
-                        $.jBox.tip("删除失败", "error");
+                        $.jBox.tip(json.msg, "error");
                     }
                 }, function () {
                 }, J.PostMethod);
@@ -406,7 +403,7 @@
                         window.location.reload();
                     }, 400);
                 } else {
-                    $.jBox.tip(tittle + "失败", "error");
+                    $.jBox.tip(json.msg, "error");
                 }
             }, function () {
             }, J.PostMethod);
@@ -455,7 +452,7 @@
                                 window.location.reload();
                             }, 400);
                         } else {
-                            $.jBox.tip("保存失败", "error");
+                            $.jBox.tip(json.msg, "error");
                         }
                     }, function () {
                     }, J.PostMethod);

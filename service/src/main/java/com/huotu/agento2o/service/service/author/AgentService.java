@@ -25,12 +25,21 @@ import java.util.List;
 public interface AgentService extends UserDetailsService {
 
     /**
-     * 根据唯一id获取某个代理商
+     * 根据唯一id和平台方id获取某个代理商
      *
-     * @param id
+     * @param agentId
+     * @param customerId
      * @return
      */
-    Agent findById(Integer id);
+    Agent findById(Integer agentId, Integer customerId);
+
+    /**
+     * 根据唯一id获取某个代理商
+     *
+     * @param agentId
+     * @return
+     */
+    Agent findByAgentId(Integer agentId);
 
     /**
      * 根据登录名获取审核通过的代理商
@@ -56,10 +65,10 @@ public interface AgentService extends UserDetailsService {
     /**
      * 根据代理商等级id获取未删除的代理商集合
      *
-     * @param id
+     * @param levelId
      * @return
      */
-    List<Agent> findByAgentLevelId(Integer id);
+    List<Agent> findByAgentLevelId(Integer levelId);
 
     /**
      * 判断用户名是否可用
@@ -81,31 +90,34 @@ public interface AgentService extends UserDetailsService {
     /**
      * 根据唯一id删除代理商，实际上是修改isDeleted的状态
      *
-     * @param id
+     * @param agentId
+     * @return
      */
-    void deleteAgent(Integer id);
+    int deleteAgent(Integer agentId);
 
     /**
      * 根据唯一id冻结代理商账号
      *
-     * @param id
+     * @param agentId
+     * @return
      */
-    void freezeAgent(Integer id);
+    int freezeAgent(Integer agentId);
 
     /**
      * 根据唯一id解冻代理商账号
      *
-     * @param id
+     * @param agentId
+     * @return
      */
-    void unfreezeAgent(Integer id);
+    int unfreezeAgent(Integer agentId);
 
     /**
      * 根据父代理商id获取代理商集合
      *
-     * @param id
+     * @param agentId
      * @return
      */
-    List<Agent> findByParentAgentId(Integer id);
+    List<Agent> findByParentAgentId(Integer agentId);
 
     /**
      * 增加或修改代理商
@@ -128,20 +140,21 @@ public interface AgentService extends UserDetailsService {
     HSSFWorkbook createWorkBook(List<Agent> agents);
 
     /**
-     * g根据小伙伴id查找绑定的代理商
+     * 根据小伙伴id查找绑定的代理商
      *
-     * @param id
+     * @param userId
      * @return
      */
-    Agent findByUserBaseInfoId(Integer id);
+    Agent findByUserBaseInfoId(Integer userId);
 
     /**
      * 根据代理商id重置代理商密码
      *
-     * @param id
+     * @param agentId
      * @param password
+     * @return
      */
-    void resetPassword(Integer id, String password);
+    int resetPassword(Integer agentId, String password);
 
     /**
      * 保存代理商基本信息

@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.author;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
@@ -31,48 +32,53 @@ public interface ShopService extends UserDetailsService {
 
     Shop findById(Integer id);
 
-    /**
-     * 单元测试使用
-     *
-     * @param shop
-     * @return
-     */
+    Shop findByIdAndParentAuthor(Integer id, Agent agent);
+
+    Shop findByIdAndCustomer_Id(Integer id, Integer customer_Id);
+
     Shop addShop(Shop shop);
 
-    ApiResult addShop(Shop shop, String hotUserName);
+    ApiResult saveOrUpdateShop(Shop shop, String hotUserName);
 
     void flush();
 
     /**
      * 更新审核状态
      *
-     * @param Status
+     * @param status
      * @param id
      */
-    void updateStatus(AgentStatusEnum Status, int id);
+    ApiResult updateStatus(AgentStatusEnum status, int id);
 
     /**
      * 更新审核状态和备注
      *
-     * @param Status
+     * @param status
      * @param id
      */
-    void updateStatusAndAuditComment(AgentStatusEnum Status, String auditComment, int id);
+    ApiResult updateStatusAndAuditComment(AgentStatusEnum status, String auditComment, int id);
 
-    void deleteById(int id);
+    ApiResult deleteById(int id);
 
     /**
      * 冻结解冻
      *
-     * @param isDisabled
      * @param id
      */
-    void updateIsDisabledById(boolean isDisabled, int id);
+    ApiResult updateIsDisabledById(int id);
 
-    void updatePasswordById(String password, int id);
+    ApiResult updatePasswordById(String password, int id);
 
     Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
 
     HSSFWorkbook createWorkBook(List<Shop> shops);
 
+    /**
+     * 根据平台id和用户名模糊查询小伙伴的用户名集合
+     *
+     * @param customerId
+     * @param name
+     * @return
+     */
+    List<String> getHotUserNames(Integer customerId, String name);
 }
