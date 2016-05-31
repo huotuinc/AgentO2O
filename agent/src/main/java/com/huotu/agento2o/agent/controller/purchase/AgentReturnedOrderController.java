@@ -286,7 +286,7 @@ public class AgentReturnedOrderController {
         if (StringUtil.isEmptyStr(rOrderId)) {
             return result;
         }
-        return agentReturnedOrderService.receiveReturnOrder(null,author.getId(),null,rOrderId);
+        return agentReturnedOrderService.receiveReturnOrder(null,author.getId(),rOrderId);
 
     }
 

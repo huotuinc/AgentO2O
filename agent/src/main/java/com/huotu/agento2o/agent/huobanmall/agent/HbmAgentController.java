@@ -55,13 +55,12 @@ public class HbmAgentController {
     /**
      * 代理商列表
      *
-     * @param customerIdStr
+     * @param customerId
      * @param model
      * @return
      */
     @RequestMapping("/agentList")
-    public String showAgentList(@RequestAttribute(value = "customerId") String customerIdStr, Model model, AgentSearcher agentSearcher) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public String showAgentList(@RequestAttribute(value = "customerId") Integer customerId, Model model, AgentSearcher agentSearcher) {
         Page<Agent> page = agentService.getAgentList(customerId, agentSearcher);
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("page", page);
