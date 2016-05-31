@@ -140,21 +140,21 @@ public class AgentReturnedOrder {
 
 
 
-    //采购状态为 待审核 或 审核不通过
+    //退货状态为 待审核 或 审核不通过
     //可删除
     public boolean deletable() {
         return (status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED)
                 && disabled==false;
     }
 
-    //采购状态为 待审核
+    //退货状态为 待审核
     //可审核
     public boolean checkable() {
         return status == PurchaseEnum.OrderStatus.CHECKING
                 &&disabled==false;
     }
 
-    //采购状态为已审核,发货状态为已发货，且 支付状态 为空或 未支付
+    //退货状态为已审核,发货状态为已发货，且 支付状态 为空或 未支付
     //可支付
     public boolean payabled() {
         return status == PurchaseEnum.OrderStatus.CHECKED
@@ -164,7 +164,7 @@ public class AgentReturnedOrder {
                 && disabled==false;
     }
 
-    //采购状态为已审核 且发货状态 为空 或未发货
+    //退货状态为已审核 且发货状态 为空 或未发货
     //可发货
     public boolean deliverable() {
         return status == PurchaseEnum.OrderStatus.CHECKED
@@ -172,7 +172,7 @@ public class AgentReturnedOrder {
                 && disabled==false;
     }
 
-    //采购状态为已审核 且发货状态为已发货
+    //退货状态为已审核 且发货状态为已发货
     //可确认收货
     public boolean receivable(){
         return status == PurchaseEnum.OrderStatus.CHECKED
@@ -180,6 +180,15 @@ public class AgentReturnedOrder {
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED)
                 && receivedTime == null
                 && disabled==false;
+    }
+
+    // 完成整个退货流程
+    public boolean isCompleted(){
+        return status == PurchaseEnum.OrderStatus.CHECKED
+                && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
+                && payStatus == PurchaseEnum.PayStatus.PAYED
+                && receivedTime != null
+                && disabled == false;
     }
 
 }

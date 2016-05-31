@@ -148,7 +148,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
                         StringUtil.DateFormat(deliverySearcher.getEndTime(), StringUtil.TIME_PATTERN)));
             }
 
-            predicates.add(cb.equal(root.get("type").as(String.class), "发货单"));
+            predicates.add(cb.equal(root.get("type").as(String.class), OrderEnum.DeliveryType.DEVERY.getCode()));
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -186,7 +186,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
                         StringUtil.DateFormat(deliverySearcher.getEndTime(), StringUtil.TIME_PATTERN)));
             }
 
-            predicates.add(cb.equal(root.get("type").as(String.class), "退货单"));
+            predicates.add(cb.equal(root.get("type").as(String.class), OrderEnum.DeliveryType.RETURN.getCode()));
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

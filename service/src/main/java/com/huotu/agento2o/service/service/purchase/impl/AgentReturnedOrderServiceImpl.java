@@ -227,7 +227,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDelivery.setAgentReturnedOrder(agentReturnedOrder);
         agentDelivery.setAgentId(agentReturnedOrder.getAuthor().getId());
 //        agentDelivery.setCustomerId(customerId);
-        agentDelivery.setType(OrderEnum.DeliveryType.RETURN.getValue());
+        agentDelivery.setType(OrderEnum.DeliveryType.RETURN.getCode());
         agentDelivery.setLogisticsName(deliveryInfo.getLogiName());
         agentDelivery.setLogisticsNo(deliveryInfo.getLogiNo());
         agentDelivery.setFreight(deliveryInfo.getFreight());
@@ -262,7 +262,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     }
 
     @Override
-    public ApiResult receiveReturnOrder(Integer customerId, Integer authorId,Integer subAuthorId, String rOrderId) {
+    public ApiResult receiveReturnOrder(Integer customerId, Integer authorId, String rOrderId) {
         AgentReturnedOrder subAgentReturnedOrder = findOne(rOrderId);
         if (subAgentReturnedOrder == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
