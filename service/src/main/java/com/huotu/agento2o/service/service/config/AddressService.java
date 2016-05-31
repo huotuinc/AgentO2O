@@ -36,6 +36,8 @@ public interface AddressService {
      */
     Address findById(Integer addressId, Integer authorId);
 
+    Address findDefaultByAuthorId(Integer authorId);
+
     /**
      * 根据addressId增加或修改收货地址
      *

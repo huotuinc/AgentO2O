@@ -20,9 +20,12 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
+import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.author.AuthorService;
+import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,6 +53,8 @@ public class AgentPurchaseOrderController {
     private StaticResourceService resourceService;
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private AgentDeliveryService agentDeliveryService;
 
     /**
      * 新增采购单
@@ -144,6 +149,12 @@ public class AgentPurchaseOrderController {
         if (purchaseOrder != null) {
             resourceService.setListUri(purchaseOrder.getOrderItemList(), "thumbnailPic", "picUri");
         }
+        //获取发货信息
+        DeliverySearcher deliverySearcher = new DeliverySearcher();
+        deliverySearcher.setOrderId(pOrderId);
+        deliverySearcher.setAgentId(author.getId());
+        List<AgentDelivery> agentDeliveryList = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher).getContent();
+        model.addObject("deliveryList",agentDeliveryList);
         model.addObject("purchaseOrder", purchaseOrder);
         model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         model.addObject("taxTypeEnum", PurchaseEnum.TaxType.values());

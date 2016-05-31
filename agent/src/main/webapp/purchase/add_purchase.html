@@ -118,6 +118,8 @@
                 <div class="cnt form">
                     <div>
                         <span class="spModuleTitle">收货人信息</span>
+                        <a class="btn-lit" href="javascript:changeAddress();">
+                            <span>选择收货信息</span></a>
                         <div class="division">
 
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -125,21 +127,21 @@
                                 <tr >
                                     <th >收货人:</th>
                                     <td  style="border-top: 1px solid #ddd;">
-                                        <input type="text" th:value="*{shipName}" name="shipName"
+                                        <input type="text" th:value="*{shipName}" name="shipName" disabled="disabled"
                                                class="input-normal"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>联系方式:</th>
                                     <td>
-                                        <input type="text" th:value="*{shipMobile}" name="shipMobile"
+                                        <input type="text" th:value="*{shipMobile}" name="shipMobile" disabled="disabled"
                                                class="input-normal"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>收货人详细地址:</th>
                                     <td>
-                                        <input type="text" th:field="*{shipAddr}" th:value="*{shipAddr}" id="supContact"
+                                        <input type="text" th:field="*{shipAddr}" th:value="*{shipAddr}" id="supContact" disabled = "disabled"
                                                style="width: 50%;"
                                                class="input-normal"/>
                                     </td>
@@ -305,15 +307,6 @@
     /*<![CDATA[*/
     var basicUrl = /*[[@{/purchaseOrder}]]*/ "/purchaseOrder";
     var listSize = /*[[${shoppingCartList == null?0:shoppingCartList.size()}]]*/ 1;
-    $(function(){
-        if(listSize == 0){
-            //todo
-        }
-    })
-    /*$("#citys").citySelect({
-        nodata:null,
-        required:true
-    });*/
     $("span[class~=option]").on("click", function () {
         $(this).siblings("span[class~=option_selected]").removeClass("option_selected");
         $(this).addClass("option_selected");
@@ -332,6 +325,12 @@
             $("div[class~=js-normal]").hide();
             $("div[class~=js-tax]").show();
         }
+    }
+
+    function changeAddress(){
+        var url = /*[[@{/config/addressList}]]*/ "/config/addressList";
+        url += "?target=choice";
+        J.PopupIFrame(url, "选择收货地址", 800, 600, "ifrm", "", "auto", "");
     }
 
     function saveBasicConfig(){

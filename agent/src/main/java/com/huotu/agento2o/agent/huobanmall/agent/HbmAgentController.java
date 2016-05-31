@@ -55,13 +55,12 @@ public class HbmAgentController {
     /**
      * 代理商列表
      *
-     * @param customerIdStr
+     * @param customerId
      * @param model
      * @return
      */
     @RequestMapping("/agentList")
-    public String showAgentList(@RequestAttribute(value = "customerId") String customerIdStr, Model model, AgentSearcher agentSearcher) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public String showAgentList(@RequestAttribute(value = "customerId") Integer customerId, Model model, AgentSearcher agentSearcher) {
         Page<Agent> page = agentService.getAgentList(customerId, agentSearcher);
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("page", page);
@@ -110,15 +109,14 @@ public class HbmAgentController {
     /**
      * 显示增加或修改代理商页面
      *
-     * @param customerIdStr
+     * @param customerId
      * @param model
      * @param agent         当agentId>0时，是修改页面
      * @param ifShow        true-查看页面
      * @return
      */
     @RequestMapping(value = "/showAgent", method = RequestMethod.GET)
-    public String showAgent(@RequestAttribute(value = "customerId") String customerIdStr, Model model, Agent agent, boolean ifShow) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public String showAgent(@RequestAttribute(value = "customerId") Integer customerId, Model model, Agent agent, boolean ifShow) {
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
         if (agentId > 0) {
@@ -151,7 +149,7 @@ public class HbmAgentController {
     /**
      * 增加或修改代理商
      *
-     * @param customerIdStr 平台id
+     * @param customerId 平台id
      * @param agentLevelId  等级id
      * @param parentAgentId 上级代理商id
      * @param hotUserName   小伙伴用户名
@@ -160,8 +158,7 @@ public class HbmAgentController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") String customerIdStr, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
         return agentService.addOrUpdate(customerId, agentLevelId, parentAgentId, hotUserName, requestAgent);
     }
 
@@ -231,14 +228,13 @@ public class HbmAgentController {
     /**
      * 获取可绑定的小伙伴用户名集合
      *
-     * @param customerIdStr
+     * @param customerId
      * @param hotUserName
      * @return
      */
     @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult getUserNames(@RequestAttribute(value = "customerId") String customerIdStr, String hotUserName) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult getUserNames(@RequestAttribute(value = "customerId") Integer customerId, String hotUserName) {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(customerId, hotUserName));
     }
 

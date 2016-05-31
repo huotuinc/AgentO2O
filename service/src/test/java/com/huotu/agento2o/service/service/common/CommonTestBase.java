@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
@@ -24,6 +25,7 @@ import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
@@ -72,6 +74,8 @@ public abstract class CommonTestBase {
     private MallOrderRepository orderRepository;
     @Autowired
     private MallAfterSalesRepository afterSalesRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockMallCustomer() {
@@ -174,27 +178,33 @@ public abstract class CommonTestBase {
         return agentProductRepository.saveAndFlush(agentProduct);
     }
 
+    /**
+     * 代理商等级
+     *
+     * @param mockCustomer
+     * @return
+     */
     protected AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
         AgentLevel agentLevel = new AgentLevel();
         agentLevel.setLevelName(UUID.randomUUID().toString());
         agentLevel.setComment(UUID.randomUUID().toString());
-        agentLevel.setLevel(random.nextInt());
+        agentLevel.setLevel(Math.abs(random.nextInt()));
         agentLevel.setCustomer(mockCustomer);
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
         return agentLevel;
     }
+
     /**
      * 模拟一个订单
-     *
      */
     @SuppressWarnings("Duplicates")
-    protected MallOrder mockMallOrder(Shop shop ){
+    protected MallOrder mockMallOrder(Shop shop) {
 
         MallOrder mallOrder = new MallOrder();
-        mallOrder.setOrderId(random.nextInt()+"1");
+        mallOrder.setOrderId(random.nextInt() + "1");
         mallOrder.setAgentMarkType("p2");
-        mallOrder.setAgentMarkText("XXXX"+random.nextInt());
+        mallOrder.setAgentMarkText("XXXX" + random.nextInt());
         mallOrder.setOrderStatus(OrderEnum.OrderStatus.ACTIVE);
         mallOrder.setPaymentType(OrderEnum.PaymentOptions.ALIPAY_PC);
         mallOrder.setOrderSourceType(OrderEnum.OrderSourceType.NORMAL);
@@ -203,7 +213,7 @@ public abstract class CommonTestBase {
         mallOrder.setIsTax(0);
         mallOrder.setIsProtect(0);
         mallOrder.setCreateTime(new Date());
-        if (random.nextInt()%2 == 0)
+        if (random.nextInt() % 2 == 0)
             mallOrder.setShop(shop);
         else
             mallOrder.setBeneficiaryShop(shop);
@@ -214,11 +224,11 @@ public abstract class CommonTestBase {
     /**
      * 模拟一个售后单
      */
-    protected MallAfterSales mockMallAfterSales(Shop shop){
+    protected MallAfterSales mockMallAfterSales(Shop shop) {
         MallAfterSales mallAfterSales = new MallAfterSales();
-        mallAfterSales.setAfterId(random.nextInt()+"1");
+        mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setCreateTime(new Date());
-        if (random.nextInt()%2 == 0)
+        if (random.nextInt() % 2 == 0)
             mallAfterSales.setShop(shop);
         else
             mallAfterSales.setBeneficiaryShop(shop);
@@ -228,5 +238,23 @@ public abstract class CommonTestBase {
         mallAfterSales.setAfterSalesReason(AfterSaleEnum.AfterSalesReason.ONTER_REASON);
         mallAfterSales.setOrderItem(new MallOrderItem());
         return afterSalesRepository.saveAndFlush(mallAfterSales);
+    }
+
+    /**
+     * 收货地址
+     * @param author
+     * @return
+     */
+    protected Address mockAddress(Author author) {
+        Address address = new Address();
+        address.setAddress(UUID.randomUUID().toString());
+        address.setDefault(false);
+        address.setDistrict(UUID.randomUUID().toString());
+        address.setAuthor(author);
+        address.setCity(UUID.randomUUID().toString());
+        address.setTelephone(UUID.randomUUID().toString());
+        address.setProvince(UUID.randomUUID().toString());
+        address.setReceiver(UUID.randomUUID().toString());
+        return addressRepository.saveAndFlush(address);
     }
 }

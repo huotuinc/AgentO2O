@@ -116,7 +116,7 @@ public class HbmAgentReturnOrderController {
         if (StringUtil.isEmptyStr(rOrderId)) {
             return result;
         }
-        return agentReturnedOrderService.receiveReturnOrder(customerId,null,null,rOrderId);
+        return agentReturnedOrderService.receiveReturnOrder(customerId,null,rOrderId);
 
     }
 

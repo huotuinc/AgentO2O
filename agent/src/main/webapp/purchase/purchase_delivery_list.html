@@ -36,7 +36,7 @@
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
-<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
+<!--/*@thymesVar id="deliverySearcher" type="com.huotu.agento2o.service.searchable.DeliverySearcher"*/-->
 <form method="get" action="/purchase/showPurchaseDeliveryList" data-th-action="@{/purchase/showPurchaseDeliveryList}" id="form1"
       th:object="${deliverySearcher}">
 
@@ -61,15 +61,15 @@
 
 
                         <label class="first">发货单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="deliveryNo" type="text" th:value="*{deliveryNo}"  id="goodsName"
+                        <input name="deliveryId" type="text" th:value="*{deliveryId}"  id="deliveryId"
                                class="input-small" style="width: 120px;"/>
                         &nbsp;
                         <label class="first">采购单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="OrderId" type="text" th:value="*{orderId}"  id="goodsName"
+                        <input name="OrderId" type="text" th:value="*{orderId}"  id="orderId"
                                class="input-small" style="width: 120px;"/>
                         &nbsp;
                         <label class="first">物流单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="deliveryNo" type="text" th:value="*{deliveryNo}"  id="goodsName"
+                        <input name="logiNo" type="text" th:value="*{logiNo}"  id="logiNo"
                                class="input-small" style="width: 120px;"/>
                         <br />
                         <br />
@@ -120,19 +120,19 @@
                         </th>
                         <th scope="col">物流单号
                         </th>
-                        <th scope="col">操作
-                        </th>
+                        <!--<th scope="col">操作
+                        </th>-->
 
                     </tr>
                     </thead>
                     <tbody data-th-remove="all-but-first">
-                    <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
-                    <tr data-th-each="purchaseDelivery,purchaseDeliveryStat:${purchaseDeliveryList}">
+                    <!--@thymesVar id="purchaseDeliveryList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentDelivery>"-->
+                    <tr data-th-each="purchaseDelivery:${purchaseDeliveryList}">
 
                         <td class="txt20 c">
-                            <a  onclick="showReturnedOrderDetail()">
+                            <!--<a  onclick="showReturnedOrderDetail()">-->
                                 <span th:text="${purchaseDelivery.deliveryId}">rOrderId</span>
-                            </a>
+                            <!--</a>-->
                             <!--<span th:if="${agentReturnOrder.Disabled}" style="color:red;">已关闭</span>-->
                         </td>
                         <td class="txt80 c" data-th-text="${purchaseDelivery.purchaseOrder.pOrderId}">
@@ -153,9 +153,9 @@
                         <td class="txt80 c" data-th-text="${purchaseDelivery.logisticsNo}">
                             物流单号
                         </td>
-                        <td class="txt80 c">
+                        <!--<td class="txt80 c">
                             <a href="#">查看详情</a>
-                        </td>
+                        </td>-->
 
                     </tr>
                     </tbody>

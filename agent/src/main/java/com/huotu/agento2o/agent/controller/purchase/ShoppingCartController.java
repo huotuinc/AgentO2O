@@ -19,9 +19,11 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.service.config.AddressService;
 import com.huotu.agento2o.service.service.config.InvoiceService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,8 @@ public class ShoppingCartController {
     private StaticResourceService resourceService;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private AddressService addressService;
 
     /**
      * 显示购物车列表
@@ -161,8 +165,14 @@ public class ShoppingCartController {
             //如果没有可采购的购物车货品ID，则跳转到购物车
             return new ModelAndView("redirect:/shoppingCart/showShoppingCart");
         }
-        // TODO: 2016/5/17 获取 author 默认收货信息
         AgentPurchaseOrder agentPurchaseOrder = new AgentPurchaseOrder();
+        //获取默认收货地址
+        Address defaultAddress = addressService.findDefaultByAuthorId(author.getId());
+        if(defaultAddress != null){
+            agentPurchaseOrder.setShipAddr(defaultAddress.getProvince() + defaultAddress.getCity() + defaultAddress.getDistrict() + defaultAddress.getAddress());
+            agentPurchaseOrder.setShipMobile(defaultAddress.getTelephone());
+            agentPurchaseOrder.setShipName(defaultAddress.getReceiver());
+        }
         //获取默认发票类型及基本信息
         int invoiceType = 0;
         InvoiceConfig defaultConfig = invoiceService.findDefaultByAuthor(author);

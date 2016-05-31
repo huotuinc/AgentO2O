@@ -47,8 +47,16 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public Address findDefaultByAuthorId(Integer authorId) {
+        return addressRepository.findByAuthor_IdAndIsDefaultTrue(authorId);
+    }
+
+    @Override
     @Transactional
     public ApiResult addOrUpdate(Integer addressId, Integer authorId, Address requestAddress) {
+        if(addressId == null || authorId == null || requestAddress == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         Address address;
         Author author = authorService.findById(authorId);
         if (author == null || author.isDeleted() || author.isDisabled()) {

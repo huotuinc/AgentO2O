@@ -44,13 +44,18 @@ public class AddressController {
      *
      * @param author
      * @param model
+     * @param target 返回页面 如果为“choice”则返回addressChoice；否则返回addressList
      * @return
      */
     @RequestMapping("/addressList")
-    public String showAddressList(@AgtAuthenticationPrincipal Author author, Model model) {
+    public String showAddressList(@AgtAuthenticationPrincipal Author author, Model model,String target) {
         List<Address> addressList = addressService.findAddressByAuthorId(author.getId());
         model.addAttribute("addressList", addressList);
-        return "config/addressList";
+        if(target != null && "choice".equals(target)){
+            return "config/addressChoice";
+        }else{
+            return "config/addressList";
+        }
     }
 
     /**
