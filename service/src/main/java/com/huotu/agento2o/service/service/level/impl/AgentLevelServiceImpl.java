@@ -72,7 +72,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
     @Override
     @Transactional
     public ApiResult addOrUpdate(Integer levelId, Integer customerId, AgentLevel requestAgentLevel) {
-        MallCustomer customer = mallCustomerService.findById(customerId);
+        MallCustomer customer = mallCustomerService.findByCustomerId(customerId);
         AgentLevel agentLevel;
         if (customer == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
