@@ -102,8 +102,8 @@
                             </th>
                             <th scope="col" style="width: 25%">等级名称
                             </th>
-                            <th scope="col" style="width: 20%">等级
-                            </th>
+                            <!--<th scope="col" style="width: 20%">等级-->
+                            <!--</th>-->
                             <th scope="col" style="">备注
                             </th>
                             <th scope="col" style="width: 15%">操作
@@ -114,7 +114,7 @@
                         <tr th:each="agentLevel:${agentLevels}">
                             <td class="txt40 c" th:text="${agentLevelStat.count}">1</td>
                             <td class="txt40 c" th:text="${agentLevel.levelName}">一级代理商</td>
-                            <td class="txt40 c" th:text="${agentLevel.level}">一级</td>
+                            <!--<td class="txt40 c" th:text="${agentLevel.level}">一级</td>-->
                             <td class="txt40 c" th:text="${agentLevel.comment}">6折进货</td>
                             <td class="txt40 c">
                                 <a href="javascript:levelHandler.showEdit(1)"

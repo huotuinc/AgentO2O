@@ -66,7 +66,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
 
     @Override
     public Integer findLastLevel(Integer customerId) {
-        return agentLevelRepository.findLastLevel(customerId);
+        return customerId == null ? null : agentLevelRepository.findLastLevel(customerId);
     }
 
     @Override

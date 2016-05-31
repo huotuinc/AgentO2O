@@ -28,7 +28,6 @@ public class AgentSearcher {
      * 每页数量
      */
     private int pageSize = Constant.PAGESIZE;
-//    private int pageSize = 2;
 
     /**
      * 省

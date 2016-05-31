@@ -33,41 +33,40 @@ public class HbmAgentLevelController {
     /**
      * 增加或修改代理商等级
      *
-     * @param customerIdStr
+     * @param customerId
      * @param requestAgentLevel
      * @param levelId
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") String customerIdStr, AgentLevel requestAgentLevel, Integer levelId) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") Integer customerId, AgentLevel requestAgentLevel, Integer levelId) {
         return agentLevelService.addOrUpdate(levelId, customerId, requestAgentLevel);
     }
 
     /**
      * 删除代理商等级
      *
+     * @param customerId
      * @param levelId
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult deleteLevel(@RequestAttribute(value = "customerId") String customerIdStr,Integer levelId) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult deleteLevel(@RequestAttribute(value = "customerId") Integer customerId,Integer levelId) {
         return agentLevelService.deleteAgentLevel(levelId,customerId);
     }
 
     /**
      * 根据id获取代理商等级
      *
+     * @param customerId
      * @param levelId
      * @return
      */
     @RequestMapping(value = "/{levelId}", method = RequestMethod.GET)
     @ResponseBody
-    public ApiResult showLevel(@RequestAttribute(value = "customerId") String customerIdStr,@PathVariable Integer levelId) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult showLevel(@RequestAttribute(value = "customerId") Integer customerId,@PathVariable Integer levelId) {
         AgentLevel agentLevel = agentLevelService.findById(levelId,customerId);
         if (agentLevel == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
@@ -78,13 +77,12 @@ public class HbmAgentLevelController {
     /**
      * 展示代理商等级列表
      *
-     * @param customerIdStr
+     * @param customerId
      * @param model
      * @return
      */
     @RequestMapping("/levelList")
-    public String showLevelList(@RequestAttribute(value = "customerId") String customerIdStr, Model model) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public String showLevelList(@RequestAttribute(value = "customerId") Integer customerId, Model model) {
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         model.addAttribute("agentLevels", agentLevels);
         return "huobanmall/level/agentLevelList";
