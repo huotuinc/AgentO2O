@@ -148,8 +148,8 @@ public class AgentReturnedOrderController {
 
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
-    public ApiResult cancelReturnOrer(String rOrderId) throws Exception {
-        ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(rOrderId);
+    public ApiResult cancelReturnOrer(@AgtAuthenticationPrincipal Author author,String rOrderId) throws Exception {
+        ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(author,rOrderId);
         return apiResult;
     }
 

@@ -18,12 +18,15 @@ public class AgentDeliveryServiceTest extends CommonTestBase {
     @Test
     public void testShowPurchaseDeliveryList(){
         DeliverySearcher deliverySearcher = new DeliverySearcher();
+        deliverySearcher.setParentAgentId(1);
         Page page = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher);
+        System.out.println(page.getContent().size());
     }
 
     @Test
     public void testShowReturnDeliveryList(){
         DeliverySearcher deliverySearcher = new DeliverySearcher();
+        deliverySearcher.setParentAgentId(1);
         Page page = agentDeliveryService.showReturnDeliveryList(deliverySearcher);
     }
 }

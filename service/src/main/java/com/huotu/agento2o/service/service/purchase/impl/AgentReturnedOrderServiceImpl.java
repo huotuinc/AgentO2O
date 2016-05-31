@@ -132,8 +132,8 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     }
 
     @Override
-    public ApiResult cancelReturnOrder(String rOrderId) {
-        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByROrderIdAndDisabledFalse(rOrderId);
+    public ApiResult cancelReturnOrder(Author author,String rOrderId) {
+        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(author,rOrderId);
 
         if (agentReturnedOrder != null) {
             if (agentReturnedOrder.getStatus().equals(PurchaseEnum.OrderStatus.CHECKING)) {// 待审核状态才可以退货
@@ -237,6 +237,10 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDelivery.setShipMobile(deliveryInfo.getShipMobile());
         agentDelivery.setShipTel(deliveryInfo.getShipTel());
         agentDelivery.setMemo(deliveryInfo.getRemark());
+        agentDelivery.setCustomerId(agentReturnedOrder.getAuthor().getCustomer().getCustomerId());
+        if(agentReturnedOrder.getAuthor().getParentAuthor()!=null){
+            agentDelivery.setParentAgentId(agentReturnedOrder.getAuthor().getParentAuthor().getId());
+        }
         List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(deliveryInfo.getOrderId());
         List<AgentDeliveryItem> agentDeliveryItems = new ArrayList<>();
         for (AgentReturnedOrderItem agentReturnedOrderItem : agentReturnedOrderItems) {
