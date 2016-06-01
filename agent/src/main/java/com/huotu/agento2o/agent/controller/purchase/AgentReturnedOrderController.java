@@ -115,7 +115,7 @@ public class AgentReturnedOrderController {
     }
 
     /**
-     *  显示退货单列表（代理商）
+     *  显示退货单列表
      * @param author 代理商
      * @return
      * @throws Exception
@@ -154,8 +154,8 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
-    public ApiResult cancelReturnOrder(String rOrderId) throws Exception {
-        ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(rOrderId);
+    public ApiResult cancelReturnOrer(@AgtAuthenticationPrincipal Author author,String rOrderId) throws Exception {
+        ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(author,rOrderId);
         return apiResult;
     }
 

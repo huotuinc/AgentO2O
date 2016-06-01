@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.repository.purchase;
 
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -15,5 +16,5 @@ public interface AgentReturnOrderRepository extends JpaRepository<AgentReturnedO
 
     List<AgentReturnedOrder> findByAuthor_IdAndDisabledFalse(Integer agentId);
 
-    AgentReturnedOrder findByROrderIdAndDisabledFalse(String rOrderId);
+    AgentReturnedOrder findByAuthorAndROrderIdAndDisabledFalse(Author author,String rOrderId);
 }
