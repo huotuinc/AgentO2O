@@ -45,29 +45,26 @@
 </head>
 <script th:inline="javascript">
     function init() {
-        var pro = /*[[${searchCondition.province}]]*/;
-        var city = /*[[${searchCondition.city}]]*/;
-        var dist = /*[[${searchCondition.district}]]*/;
+        var pro = /*[[${searchCondition.province}]]*/"";
+        var city = /*[[${searchCondition.city}]]*/"";
+        var dist = /*[[${searchCondition.district}]]*/"";
         $("#citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
             prov: pro != null ? pro : '',
             city: city != null ? city : '',
             dist: dist != null ? dist : '',
             nodata: null,
-            required: true
+            required: false
         });
     }
 
     function changeStatus(obj) {
         var shopId = $(obj).attr("shopid");
-        $.ajax({
-            type: 'POST',
-            url: "/shop/changeStatus",
-            data: {
-                id: shopId,
-                type: 'ToFactory'
-            },
-            success: function (result) {
+        jboxConfirm("确定提交?", function () {
+            $.jBox.tip("正在提交...", "loading");
+            J.GetJsonRespons("/shop/changeStatus", {
+                id: shopId
+            }, function (result) {
                 if (result.code == 200) {
                     $.jBox.tip(result.msg, "success");
                     setTimeout(function () {
@@ -76,7 +73,8 @@
                 } else {
                     $.jBox.tip(result.msg, 'error');
                 }
-            }
+            }, function () {
+            }, J.PostMethod);
         });
     }
 
@@ -240,6 +238,7 @@
     /*]]>*/
 </script>
 <body marginwidth="0" marginheight="0" onload="init()">
+<!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.ShopSearchCondition"*/-->
 <form method="get" action="/order/getOrdersPage" th:action="@{/shop/shopList}" id="form1"
       th:object="${searchCondition}">
     <div class="container">
@@ -256,6 +255,7 @@
                         <label class="first ">门店名称：</label>
                         <input name="name" type="text" id="name" class="input-small" style="width: 120px;"
                                th:value="*{name}"/>
+                        &nbsp;&nbsp;
                         <label class="first ">门店区域：</label>
                         <span id="citys">
                             <select class="prov" name="province" id="province" th:value="*{province}"></select>
@@ -263,6 +263,7 @@
                             <select class="dist" name="district" id="district" disabled="disabled"
                                     th:value="*{district}"></select>
                         </span>
+                        &nbsp;&nbsp;
                         <label class="first ">审核状态：</label>
                         <select name="status" id="status">
                             <option selected="selected" value="-1">==所有==</option>
@@ -346,18 +347,18 @@
                                         <th scope="col">账号状态
                                         </th>
 
-                                        <th scope="col" width="70px">操作
+                                        <th scope="col" width="85px">操作
                                         </th>
                                     </tr>
                                     <tbody>
+                                    <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
                                     <tr th:each="shop:${shopList}">
                                         <td class="txt20 c" th:text="${shopStat.count}">
                                             1
                                         </td>
                                         <td class="txt80 c">
                                             <a href="javascript:void(0)" onclick="showDetail(this)"
-                                               style="color: #6699d5" th:attr="shopid=${shop.id}"
-                                               th:text="${shop.name}"></a>
+                                               th:attr="shopid=${shop.id}" th:text="${shop.name}"></a>
                                         </td>
                                         <td class="txt80 c" th:text="${shop.username}">
                                         </td>
@@ -368,23 +369,24 @@
                                         <td class="txt80 c"
                                             th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
                                         </td>
-                                        <td class="txt40 c" style="color: #9c0901" th:text="${shop.status.value}">
+                                        <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>
-                                        <td class="txt40 c" style="color: #9c0901" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                        <td class="txt40 c" style="color: red" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
                                         </td>
-                                        <td class="txt40 c tail">
+                                        <td class="txt80 c tail">
                                             <div>
-                                                <a href="javascript:void(0)" onclick="changeStatus(this)"
-                                                   th:attr="shopid=${shop.id}"
-                                                   th:if="${shop.status.code} == 0 or ${shop.status.code}==3">提交&nbsp;</a>
-                                                <a href="javascript:void(0)" onclick="toEdit(this)"
-                                                   th:attr="shopid=${shop.id}"
-                                                   th:if="${shop.status.code}!=2">编辑&nbsp;</a>
-                                                <a href="javascript:void(0)" onclick="toDel(this)"
-                                                   th:attr="shopid=${shop.id}"
-                                                   th:if="${shop.status.code}!=2">删除&nbsp;</a>
+                                                <span th:if="${shop.status.code} == 0 or ${shop.status.code}==3" >
+                                                    <a href="javascript:void(0)" onclick="changeStatus(this)"
+                                                       th:attr="shopid=${shop.id}">提交</a>&nbsp;|
+                                                    <a href="javascript:void(0)" onclick="toEdit(this)"
+                                                       th:attr="shopid=${shop.id}">编辑</a>&nbsp;|
+                                                    <a href="javascript:void(0)" onclick="toDel(this)"
+                                                       th:attr="shopid=${shop.id}">删除</a>&nbsp;|
+                                                </span>
                                                 <a href="javascript:void(0)" onclick="resetPassword(this)"
-                                                   th:attr="shopid=${shop.id}">重置密码&nbsp;</a>
+                                                   th:attr="shopid=${shop.id}">重置密码</a> |
+                                                <a href="javascript:void(0)" onclick="showDetail(this)"
+                                                   th:attr="shopid=${shop.id}">详细信息</a>
                                             </div>
                                         </td>
                                     </tr>

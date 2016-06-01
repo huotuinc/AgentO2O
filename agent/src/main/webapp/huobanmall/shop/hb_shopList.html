@@ -45,28 +45,28 @@
 </head>
 <script th:inline="javascript">
     function init() {
-        var shopPro = /*[[${searchCondition.province}]]*/;
-        var shopCity = /*[[${searchCondition.city}]]*/;
-        var shopDist = /*[[${searchCondition.district}]]*/;
+        var shopPro = /*[[${searchCondition.province}]]*/"";
+        var shopCity = /*[[${searchCondition.city}]]*/"";
+        var shopDist = /*[[${searchCondition.district}]]*/"";
         $("#citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
             prov: shopPro != null ? shopPro : '',
             city: shopCity != null ? shopCity : '',
             dist: shopDist != null ? shopDist : '',
             nodata: null,
-            required: true
+            required: false
         });
 
-        var par_pro = /*[[${searchCondition.parent_province}]]*/;
-        var par_city = /*[[${searchCondition.parent_city}]]*/;
-        var par_dist = /*[[${searchCondition.parent_district}]]*/;
+        var par_pro = /*[[${searchCondition.parent_province}]]*/"";
+        var par_city = /*[[${searchCondition.parent_city}]]*/"";
+        var par_dist = /*[[${searchCondition.parent_district}]]*/"";
         $("#agent_citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
             prov: par_pro != null ? par_pro : '',
             city: par_city != null ? par_city : '',
             dist: par_dist != null ? par_dist : '',
             nodata: null,
-            required: true
+            required: false
         });
     }
 
@@ -102,7 +102,7 @@
     }
 
     function searchShopAll() {
-        window.location.href = '/huobanmall/shop/shopList?type=' + /*[[${searchCondition.type}]]*/;
+        window.location.href = '/huobanmall/shop/shopList?type=' + /*[[${searchCondition.type}]]*/"";
     }
     function jboxConfirm(msg, callback) {
         jBox.confirm(msg, '提示', function (v, h, f) {
@@ -163,7 +163,7 @@
         var parent_city = $("#parent_city").val();
         var parent_district = $("#parent_district").val();
 
-        var url = /*[[@{/huobanmall/shop/exportExcel}]]*/;
+        var url = /*[[@{/huobanmall/shop/exportExcel}]]*/"";
         if (province == null) {
             province = '';
         }
@@ -299,6 +299,7 @@
     /*]]>*/
 </script>
 <body marginwidth="0" marginheight="0" onload="init()">
+<!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.ShopSearchCondition"*/-->
 <form method="get" action="/order/getOrdersPage" th:action="@{/huobanmall/shop/shopList}" id="form1"
       th:object="${searchCondition}">
     <div class="container">
@@ -316,9 +317,11 @@
                         <label class="first ">上级代理商名称：</label>
                         <input name="parent_name" type="text" id="parent_name" class="input-small" style="width: 120px;"
                                th:value="*{parent_name}"/>
+                        &nbsp;&nbsp;
                         <label class="first ">上级代理商账号：</label>
                         <input name="parent_username" type="text" id="parent_username" class="input-small"
                                style="width: 120px;" th:value="*{parent_username}"/>
+                        &nbsp;&nbsp;
                         <label class="first ">上级代理商等级：</label>
                         <select name="parent_agentLevel" id="parent_agentLevel">
                             <option value="-1" th:selected="*{parent_agentLevel==-1}">请选择</option>
@@ -326,6 +329,8 @@
                                     th:selected="*{parent_agentLevel}==${agentLevel.levelId}?true"
                                     th:text="${agentLevel.levelName}"></option>
                         </select>
+                        <br/>
+                        <br/>
                         <label class="first ">上级代理商区域：</label>
                         <span id="agent_citys">
                             <select class="prov" name="parent_province" id="parent_province"
@@ -335,12 +340,11 @@
                             <select class="dist" name="parent_district" id="parent_district" disabled="disabled"
                                     th:value="*{parent_district}"></select>
                         </span>
-
-                        <br/>
-                        <br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <label class="first ">门店名称：</label>
                         <input name="name" type="text" id="name" class="input-small" style="width: 120px;"
                                th:value="*{name}"/>
+                        &nbsp;&nbsp;
                         <label class="first ">门店区域：</label>
                         <span id="citys">
                             <select class="prov" name="province" id="province" th:value="*{province}"></select>
@@ -348,14 +352,17 @@
                             <select class="dist" name="district" id="district" disabled="disabled"
                                     th:value="*{district}"></select>
                         </span>
+                        <br/>
+                        <br/>
                         <label class="first ">审核状态：</label>
                         <select name="status" id="status">
                             <option selected="selected" value="-1">==所有==</option>
-                            <option value="0" th:selected="*{status==0}">未提交</option>
+                            <!--<option value="0" th:selected="*{status==0}">未提交</option>-->
                             <option value="1" th:selected="*{status==1}">待审核</option>
                             <option value="2" th:selected="*{status==2}">审核通过</option>
                             <option value="3" th:selected="*{status==3}">审核不通过</option>
                         </select>
+                        &nbsp;&nbsp;
                         <label><a class="btn-lit btn-middle" id="search" href="javascript:searchShop();"
                                   style="margin-bottom: 3px;"><span>搜索</span></a></label>
                         <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchShopAll();"
@@ -430,14 +437,14 @@
                                         </th>
                                     </tr>
                                     <tbody>
+                                    <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
                                     <tr th:each="shop:${shopList}">
                                         <td class="txt20 c" th:text="${shopStat.count}">
                                             1
                                         </td>
                                         <td class="txt80 c">
                                             <a href="javascript:void(0)" onclick="showDetail(this)"
-                                               style="color: #6699d5" th:attr="shopid=${shop.id}"
-                                               th:text="${shop.name}"></a>
+                                               th:attr="shopid=${shop.id}" th:text="${shop.name}"></a>
                                         </td>
                                         <td class="txt80 c" th:text="${shop.username}">
                                         </td>
@@ -448,24 +455,25 @@
                                         <td class="txt80 c"
                                             th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
                                         </td>
-                                        <td class="txt40 c" style="color: #9c0901" th:text="${shop.status.value}">
+                                        <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>
-                                        <td class="txt40 c" style="color: #9c0901"
+                                        <td class="txt40 c" style="color: red"
                                             th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
                                         </td>
-                                        <td class="txt40 c tail">
+                                        <td class="txt80 c tail">
                                             <input style="display: none" th:value="${shop.auditComment}"/>
                                             <div>
-                                                <a href="javascript:void(0)" onclick="audit(this)"
-                                                   th:attr="shopid=${shop.id},audit=${shop.auditComment}"
-                                                   th:if="${shop.status.code}==1">审核&nbsp;</a>
-                                                <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
-                                                   th:attr="shopid=${shop.id}" th:if="${shop.isAccountNonLocked()}">冻结&nbsp;</a>
+                                                <span th:if="${shop.status.code}==1" >
+                                                    <a href="javascript:void(0)" onclick="audit(this)"
+                                                       th:attr="shopid=${shop.id},audit=${shop.auditComment}">审核</a>&nbsp;|
+                                                </span>
                                                 <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
                                                    th:attr="shopid=${shop.id}"
-                                                   th:if="${!shop.isAccountNonLocked()}">激活</a>
+                                                   th:text="${shop.isAccountNonLocked()}? '冻结' : '激活'">冻结</a>&nbsp;|
                                                 <a href="javascript:void(0)" onclick="resetPassword(this)"
-                                                   th:attr="shopid=${shop.id}">重置密码&nbsp;</a>
+                                                   th:attr="shopid=${shop.id}">重置密码</a>&nbsp;|
+                                                <a href="javascript:void(0)" onclick="showDetail(this)"
+                                                   th:attr="shopid=${shop.id}">详细信息</a>
                                             </div>
                                         </td>
                                     </tr>

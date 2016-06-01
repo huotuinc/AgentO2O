@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/huobanmall/shop")
-public class HBShopController {
+public class HbmShopController {
 
     @Autowired
     private ShopService shopService;
@@ -52,8 +52,8 @@ public class HBShopController {
      * @return
      */
     @RequestMapping("/showShopPage")
-    public String toAddShopPage(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop, Model model) throws Exception {
-        shop = shopService.findByIdAndCustomer_Id(shop.getId(), Integer.valueOf(customerIdStr));
+    public String toAddShopPage(@RequestAttribute(value = "customerId") Integer customerId, Shop shop, Model model) throws Exception {
+        shop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (shop == null) {
             throw new Exception("没有权限");
         }
@@ -68,14 +68,13 @@ public class HBShopController {
      * @return
      */
     @RequestMapping(value = "/shopList")
-    public String showShopList(@RequestAttribute(value = "customerId") String customerIdStr,
+    public String showShopList(@RequestAttribute(value = "customerId") Integer customerId,
                                Model model,
                                ShopSearchCondition searchCondition,
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
-        if (StringUtil.isEmpty(customerIdStr)) {
+        if (customerId == null) {
             throw new Exception("没有权限");
         }
-        int customerId = Integer.parseInt(customerIdStr);
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         MallCustomer mallCustomer = mallCustomerService.findByCustomerId(customerId);
         searchCondition.setMallCustomer(mallCustomer);
@@ -100,8 +99,8 @@ public class HBShopController {
      */
     @RequestMapping("/changeIsDisabled")
     @ResponseBody
-    public ApiResult changeIsDisabled(@RequestAttribute(value = "customerId") String customerIdStr, int id) {
-        Shop shop = shopService.findByIdAndCustomer_Id(id, Integer.valueOf(customerIdStr));
+    public ApiResult changeIsDisabled(@RequestAttribute(value = "customerId") Integer customerId, int id) {
+        Shop shop = shopService.findByIdAndCustomer_Id(id, customerId);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
@@ -116,11 +115,11 @@ public class HBShopController {
      */
     @RequestMapping("/audit")
     @ResponseBody
-    public ApiResult toAudit(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop) {
+    public ApiResult toAudit(@RequestAttribute(value = "customerId") Integer customerId, Shop shop) {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), Integer.valueOf(customerIdStr));
+        Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
@@ -135,8 +134,8 @@ public class HBShopController {
      */
     @RequestMapping("/resetpassword")
     @ResponseBody
-    public ApiResult resetPassword(@RequestAttribute(value = "customerId") String customerIdStr, Shop shop) {
-        Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), Integer.valueOf(customerIdStr));
+    public ApiResult resetPassword(@RequestAttribute(value = "customerId") Integer customerId, Shop shop) {
+        Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
