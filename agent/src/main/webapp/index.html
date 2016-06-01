@@ -30,6 +30,7 @@
     </title>
 </head>
 <body style="background: #fff;">
+<!--/*@thymesVar id="indexStatistics" type="com.huotu.agento2o.service.model.statistics.IndexStatistics"*/-->
 <form th:object="${indexStatistics}">
 
     <!--今日业务-->
@@ -43,13 +44,13 @@
                 </h4>
 
             </div>
-            <!--<div class="jinriyewu" id="today">
+            <div class="jinriyewu" id="today">
                 <ul>
-                    <li>今日订单量<span th:text="*{todayOrderCount}">0</span></li>
+                    <li th:if="*{todayPurchaseOrderCount!=null}">今日采购单数<span th:text="*{todayPurchaseOrderCount}">0</span></li>
 
-                    <li>今日已付款待发货<span th:text="*{todayUnDeliveryCount}">0个</span></li>
+                    <li th:if="*{todayUnDeliveryPurchaseOrderCount!=null}">今日待发货采购单数<span th:text="*{todayUnDeliveryPurchaseOrderCount}">0个</span></li>
                 </ul>
-            </div>-->
+            </div>
 
             <p style="clear: both"></p>
         </div>
@@ -67,13 +68,15 @@
                 </h4>
 
             </div>
-            <!--<div class="jinriyewu" id="jinriyewu">
+            <div class="jinriyewu" id="jinriyewu">
                 <ul>
-                    <li>昨日订单量<span th:text="*{yesterdayOrderCount}">0个</span></li>
-                    <li>昨日成交订单<span th:text="*{yesterdayUnDeliveryCount}">0个</span></li>
-                    &lt;!&ndash;<li>待处理售后申请<span>67个</span></li>&ndash;&gt;
+                    <li th:if="*{yesterdayPurchaseOrderCount!=null}">昨日采购单数<span th:text="*{yesterdayPurchaseOrderCount}">0个</span></li>
+                    <li th:if="*{yesterdayUnDeliveryPurchaseOrderCount!=null}">昨日待发货采购单数<span th:text="*{yesterdayUnDeliveryPurchaseOrderCount}">0个</span></li>
+                    <!--<li>昨日订单量<span th:text="*{yesterdayOrderCount}">0个</span></li>-->
+                    <!--<li>昨日成交订单<span th:text="*{yesterdayUnDeliveryCount}">0个</span></li>-->
+                    <!--<li>待处理售后申请<span>67个</span></li>-->
                 </ul>
-            </div>-->
+            </div>
 
             <p style="clear: both"></p>
         </div>
@@ -91,14 +94,14 @@
                 </h4>
 
             </div>
-            <!--<div class="jinriyewu" id="other">
+            <div class="jinriyewu" id="other">
                 <ul>
-                    <li style="cursor: pointer" onclick="top.mallMenuManager.active('01','010102')">待处理售后申请<span
-                            th:text="*{afterSaleCount}">2个</span></li>
-                    <li style="cursor: pointer" onclick="top.mallMenuManager.active('02','020101')">待审核结算单<span
-                            th:text="*{settlementCount}">0个</span></li>
+                    <li th:if="*{toCheckPurchaseOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020301')">待审核采购单<span
+                            th:text="*{toCheckPurchaseOrderCount}">2个</span></li>
+                    <!--<li style="cursor: pointer" onclick="top.mallMenuManager.active('02','020101')">待审核结算单<span-->
+                            <!--th:text="*{settlementCount}">0个</span></li>-->
                 </ul>
-            </div>-->
+            </div>
 
             <p style="clear: both"></p>
         </div>

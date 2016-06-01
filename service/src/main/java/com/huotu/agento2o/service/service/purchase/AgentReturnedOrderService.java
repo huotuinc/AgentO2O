@@ -40,7 +40,7 @@ public interface AgentReturnedOrderService {
      * @param rOrderId
      * @return
      */
-    ApiResult cancelReturnOrder(String rOrderId);
+    ApiResult cancelReturnOrder(Author author,String rOrderId);
 
     /**
      * 审核退货单
@@ -67,7 +67,7 @@ public interface AgentReturnedOrderService {
      * @param rOrderId
      * @return
      */
-    ApiResult receiveReturnOrder(Integer customerId, Integer authorId,Integer subAuthorId,String rOrderId);
+    ApiResult receiveReturnOrder(Integer customerId, Integer authorId,String rOrderId);
 
     /**
      * 退单退款

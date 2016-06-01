@@ -340,16 +340,14 @@
                 accountNo: accountNo,
                 email: email
             },
-            success: function (result) {
-                if (result.code == 200) {
+            success: function (json) {
+                if (json.code == 200) {
                     $.jBox.tip("保存成功", "success");
                     setTimeout(function () {
                         window.location.reload();
                     }, 400);
-                } else if (result.code == 805) {
-                    $.jBox.tip("该账号已失效", "error");
-                } else {
-                    $.jBox.tip("保存失败", "error");
+                }  else {
+                    $.jBox.tip(json.msg, "error");
                 }
             }
         });
@@ -357,11 +355,11 @@
     /*]]>*/
 </script>
 <script th:inline="javascript">
-    var pro = /*[[${agent.province==null?'':agent.province}]]*/;
-    var city = /*[[${agent.city}]]*/;
-    var dist = /*[[${agent.district}]]*/;
-    var id = /*[[${agent.id}]]*/;
-    var parentAgentLevelId = /*[[${parentAgentLevelId}]]*/;
+    var pro = /*[[${agent.province==null?'':agent.province}]]*/ "";
+    var city = /*[[${agent.city}]]*/ "";
+    var dist = /*[[${agent.district}]]*/ "";
+    var id = /*[[${agent.id}]]*/ 1;
+    var parentAgentLevelId = /*[[${parentAgentLevelId}]]*/ -1;
     $(function () {
         if (id > 0) {
             $("#citys").citySelect({

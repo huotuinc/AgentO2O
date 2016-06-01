@@ -12,6 +12,8 @@ import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
+import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
+import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
@@ -39,6 +41,9 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
 
     @Autowired
     private AgentReturnOrderItemRepository agentReturnOrderItemRepository;
+
+    @Autowired
+    protected MallProductRepository productRepository;
 
 
     @Test
@@ -187,10 +192,10 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         agentProduct.setFreez(agentProduct.getFreez()+returnNum);
         agentProductRepository.save(agentProduct);
 
-        agentReturnedOrderService.cancelReturnOrder(rOrderId);
+        agentReturnedOrderService.cancelReturnOrder(agent,rOrderId);
 
         // 设置disabled为true
-        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByROrderIdAndDisabledFalse(rOrderId);
+        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(agent,rOrderId);
         Assert.assertNull(testAgentRturnOrder);
 
         // 判断预占库存被释放
@@ -198,7 +203,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Assert.assertEquals(rawFreez,testAgentProduct.getFreez());
 
         rOrderId = "";
-        agentReturnedOrderService.cancelReturnOrder(rOrderId);// TODO: 2016/5/26
+        agentReturnedOrderService.cancelReturnOrder(agent,rOrderId);// TODO: 2016/5/26
 
     }
 
@@ -239,7 +244,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         // 平台审核一级代理商退货单 不通过
         agentReturnedOrderService.checkReturnOrder(customerId,null,parentROrderId,EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(2)), "test");
         // 设置disabled为true
-        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByROrderIdAndDisabledFalse(parentROrderId);
+        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(parentAgent,parentROrderId);
         Assert.assertNull(testAgentRturnOrder);
         // 判断预占库存被释放
         AgentProduct testAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(parentAgent,mallProduct);
@@ -292,12 +297,113 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
 
     @Test
     public void testPushReturnOrderDelivery(){
-        // TODO: 2016/5/25
+        MallCustomer mallCustomer = mockMallCustomer();
+
+        Agent agent = mockAgent(mallCustomer,null);
+        MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(), agent.getId());
+        MallProduct mallProduct = mockMallProduct(mallGoods);
+        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent);
+
+        AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
+        String rOrderId = SerialNo.create();
+        agentReturnedOrder.setROrderId(rOrderId);
+        agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        agentReturnOrderRepository.saveAndFlush(agentReturnedOrder);
+
+//        AgentReturnedOrderItem agentReturnedOrderItem = new AgentReturnedOrderItem();
+//        AgentReturnedOrderItem.setProduct(mallProduct);
+//        AgentReturnedOrderItem.setNum(10);
+//        AgentReturnedOrderItem.setReturnedOrder(agentReturnedOrder);
+//        agentReturnOrderItemRepository.save(agentReturnedOrderItem);
+
+
+        ReturnOrderDeliveryInfo returnOrderDeliveryInfo = new ReturnOrderDeliveryInfo();
+
+
+        agentReturnedOrderService.pushReturnOrderDelivery(returnOrderDeliveryInfo,agent.getId());
+
+
+
+
+
     }
 
     @Test
     public void testReceiveRetrnOrder(){
-        // TODO: 2016/5/25
+
+        Integer mallProductNum = 100;
+        Integer parentAgentProductNum = 50;
+        Integer parentAgentFreez = 15;
+        Integer subAgentFreez = 15;
+        Integer subAgentProductNum = 25;
+        Integer parentReturnNum = 10;
+        Integer subReturnNum = 10;
+
+        MallCustomer mallCustomer = mockMallCustomer();
+        Agent parentAgent = mockAgent(mallCustomer,null);
+        Agent subAgent = mockAgent(mallCustomer,parentAgent);
+        MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),null);
+        MallProduct mallProduct = mockMallProduct(mallGoods);
+        mallProduct.setStore(mallProductNum);
+        productRepository.saveAndFlush(mallProduct);
+
+
+        AgentProduct parentAgentProduct = mockAgentProduct(mallProduct,parentAgent);
+        parentAgentProduct.setStore(parentAgentProductNum);
+        parentAgentProduct.setFreez(parentAgentFreez);
+        parentAgentProduct = agentProductRepository.saveAndFlush(parentAgentProduct);
+
+        AgentProduct subAgentProduct = mockAgentProduct(mallProduct,subAgent);
+        subAgentProduct.setStore(subAgentProductNum);
+        subAgentProduct.setFreez(subAgentFreez);
+        subAgentProduct = agentProductRepository.saveAndFlush(subAgentProduct);
+
+        // 平台确认收货,平台方库存增加，一级代理商库存减少，一级代理商预占库存减少
+        AgentReturnedOrder parentAgentReturnedOrder = new AgentReturnedOrder();
+        String parentROrderId = SerialNo.create();
+        parentAgentReturnedOrder.setROrderId(parentROrderId);
+        parentAgentReturnedOrder.setAuthor(parentAgent);
+        parentAgentReturnedOrder.setDisabled(false);
+        parentAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        parentAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        agentReturnOrderRepository.saveAndFlush(parentAgentReturnedOrder);
+
+        AgentReturnedOrderItem parentAgentReturnedOrderItem = new AgentReturnedOrderItem();
+        parentAgentReturnedOrderItem.setNum(parentReturnNum);
+        parentAgentReturnedOrderItem.setProduct(mallProduct);
+        parentAgentReturnedOrderItem.setReturnedOrder(parentAgentReturnedOrder);
+        agentReturnOrderItemRepository.saveAndFlush(parentAgentReturnedOrderItem);
+
+        agentReturnedOrderService.receiveReturnOrder(mallCustomer.getCustomerId(),null,parentROrderId);
+        Assert.assertEquals(mallProductNum+parentReturnNum,mallProduct.getStore());
+        Assert.assertTrue(parentAgentProduct.getStore() == parentAgentProductNum-parentReturnNum);
+        Assert.assertTrue(parentAgentProduct.getFreez() == parentAgentFreez-parentReturnNum);
+
+        // 上级代理商确认收货
+        // 恢复上级代理商的库存
+        parentAgentProduct.setStore(parentAgentProductNum);
+        parentAgentProduct = agentProductRepository.saveAndFlush(parentAgentProduct);
+
+        AgentReturnedOrder subAgentReturnedOrder = new AgentReturnedOrder();
+        String subROrderId = SerialNo.create();
+        subAgentReturnedOrder.setROrderId(subROrderId);
+        subAgentReturnedOrder.setAuthor(subAgent);
+        subAgentReturnedOrder.setDisabled(false);
+        subAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        subAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        agentReturnOrderRepository.saveAndFlush(subAgentReturnedOrder);
+
+        AgentReturnedOrderItem subAgentReturnedOrderItem = new AgentReturnedOrderItem();
+        subAgentReturnedOrderItem.setNum(subReturnNum);
+        subAgentReturnedOrderItem.setProduct(mallProduct);
+        subAgentReturnedOrderItem.setReturnedOrder(subAgentReturnedOrder);
+        agentReturnOrderItemRepository.saveAndFlush(subAgentReturnedOrderItem);
+
+        agentReturnedOrderService.receiveReturnOrder(null,parentAgent.getId(),subROrderId);
+        Assert.assertTrue(parentAgentProductNum+subReturnNum == parentAgentProduct.getStore());
+        Assert.assertTrue(subAgentProduct.getStore()==subAgentProductNum-subReturnNum);
+        Assert.assertTrue(subAgentProduct.getFreez() == subAgentFreez-subReturnNum);
+
     }
 
     @Test

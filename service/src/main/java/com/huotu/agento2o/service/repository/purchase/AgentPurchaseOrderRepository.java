@@ -10,12 +10,14 @@
 
 package com.huotu.agento2o.service.repository.purchase;
 
+import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,4 +29,11 @@ public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchas
     AgentPurchaseOrder findByPOrderIdAndAuthor(String pOrderId, Author author);
 
     List<AgentPurchaseOrder> findByAuthor(Author author);
+
+    int countByAuthor_IdAndCreateTimeBetween(Integer authorId,Date start,Date end);
+
+    int countByAuthor_IdAndPayStatusAndShipStatusAndCreateTimeBetween(Integer authorId, PurchaseEnum.PayStatus payStatus,
+                                                                      PurchaseEnum.ShipStatus shipStatus,Date start,Date end);
+
+    int countByAuthor_IdAndStatus(Integer authorId,PurchaseEnum.OrderStatus status);
 }

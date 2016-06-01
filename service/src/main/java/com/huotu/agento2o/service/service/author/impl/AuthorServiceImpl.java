@@ -7,13 +7,14 @@ import com.huotu.agento2o.service.service.author.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/9.
  */
-@Service
+@Service("authorService")
 public class AuthorServiceImpl implements AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
@@ -21,7 +22,7 @@ public class AuthorServiceImpl implements AuthorService {
     private PasswordEncoder passwordEncoder;
 
     public Author findById(Integer id) {
-        return authorRepository.findOne(id);
+        return id == null ? null : authorRepository.findOne(id);
     }
 
     public List<Author> findByCustomerId(Integer customerId) {
@@ -38,6 +39,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public boolean updatePwd(Integer id, String password) {
         Author author = authorRepository.findOne(id);
         if(author == null){

@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/shop")
-@PreAuthorize("hasAnyRole('AGENT')")
+@PreAuthorize("hasAnyRole('SHOP','BASE_DATA','BASE_SHOP')")
 public class ShopController {
 
     @Autowired
@@ -82,22 +82,7 @@ public class ShopController {
         return shopService.saveOrUpdateShop(shop, hotUserName);
     }
 
-    /**
-     * 门店登陆 基本资料设置
-     *
-     * @return
-     */
-    @RequestMapping("/baseConfig")
-    @PreAuthorize("hasAnyRole('SHOP')")
-    public String baseConfig(@AuthenticationPrincipal Shop curShop, Model model) throws Exception {
-        Shop shop = shopService.findByIdAndParentAuthor(curShop.getId(), curShop.getParentAuthor());
-        if (shop == null || !shop.getId().equals(curShop.getId())) {
-            throw new Exception("没有权限");
-        }
-        model.addAttribute("shop", shop);
-        model.addAttribute("agent", shop.getParentAuthor());
-        return "shop/BaseConfigShop";
-    }
+
 
     /**
      * 门店登陆 基本资料更新
@@ -107,7 +92,6 @@ public class ShopController {
      */
     @RequestMapping(value = "/updateShop")
     @ResponseBody
-    @PreAuthorize("hasAnyRole('SHOP')")
     public ApiResult updateShop(@AuthenticationPrincipal Shop curShop, Shop shop, String hotUserName) {
         if (curShop == null || curShop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);

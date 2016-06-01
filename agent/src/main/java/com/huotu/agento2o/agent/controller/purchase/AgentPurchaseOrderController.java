@@ -20,9 +20,12 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
+import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.author.AuthorService;
+import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,7 +44,7 @@ import java.util.List;
  * Created by helloztt on 2016/5/18.
  */
 @Controller
-@PreAuthorize("hasAnyRole('PURCHASE')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('PURCHASE')")
 @RequestMapping("/purchaseOrder")
 public class AgentPurchaseOrderController {
     @Autowired
@@ -50,9 +53,11 @@ public class AgentPurchaseOrderController {
     private StaticResourceService resourceService;
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private AgentDeliveryService agentDeliveryService;
 
     /**
-     * 新增采购单
+     * 新增采购单(代理商/门店)
      *
      * @param author
      * @param agentPurchaseOrder
@@ -107,7 +112,7 @@ public class AgentPurchaseOrderController {
     }
 
     /**
-     * 显示我的采购单
+     * 显示我的采购单（代理商/门店）
      *
      * @param author
      * @param purchaseOrderSearcher
@@ -132,7 +137,7 @@ public class AgentPurchaseOrderController {
     }
 
     /**
-     * 显示采购单详细
+     * 显示采购单详细（代理商/门店）
      */
     @RequestMapping("/showPurchaseOrderDetail")
     public ModelAndView showPurchaseOrderDetail(
@@ -144,6 +149,12 @@ public class AgentPurchaseOrderController {
         if (purchaseOrder != null) {
             resourceService.setListUri(purchaseOrder.getOrderItemList(), "thumbnailPic", "picUri");
         }
+        //获取发货信息
+        DeliverySearcher deliverySearcher = new DeliverySearcher();
+        deliverySearcher.setOrderId(pOrderId);
+        deliverySearcher.setAgentId(author.getId());
+        List<AgentDelivery> agentDeliveryList = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher).getContent();
+        model.addObject("deliveryList",agentDeliveryList);
         model.addObject("purchaseOrder", purchaseOrder);
         model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         model.addObject("taxTypeEnum", PurchaseEnum.TaxType.values());
@@ -151,7 +162,7 @@ public class AgentPurchaseOrderController {
     }
 
     /**
-     * 取消采购单
+     * 取消采购单（代理商/门店）
      */
     @RequestMapping(value = "/deletePurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
@@ -166,6 +177,13 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
+    /**
+     * 支付采购单（代理商/门店）
+     * @param author
+     * @param pOrderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/payPurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult payPurchaseOrder(
@@ -179,6 +197,13 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
+    /**
+     * 采购单确认收货（代理商/门店）
+     * @param author
+     * @param pOrderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult receivePurchaseOrder(
@@ -193,16 +218,16 @@ public class AgentPurchaseOrderController {
     }
 
     /**
-     * 显示下级采购单
+     * 显示下级采购单（代理商）
      *
      * @param agent
      * @param purchaseOrderSearcher
      * @return
      * @throws Exception
      */
-    @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping("/showAgentPurchaseOrderList")
-    public ModelAndView showAgentPurchaseOrderList(@AgtAuthenticationPrincipal Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
+    public ModelAndView showAgentPurchaseOrderList(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/agent_purchase_order_list");
         purchaseOrderSearcher.setParentAgentId(agent.getId());
@@ -221,7 +246,7 @@ public class AgentPurchaseOrderController {
     }
 
     /**
-     * 审核采购单
+     * 审核采购单(代理商)
      *
      * @param agent
      * @param pOrderId
@@ -230,11 +255,11 @@ public class AgentPurchaseOrderController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping("/checkAgentPurchaseOrder")
     @ResponseBody
     public ApiResult checkAgentPurchaseOrder(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             @RequestParam(required = true) String pOrderId,
             @RequestParam(required = true) String checkStatus,
             String statusComment) throws Exception {
@@ -252,18 +277,18 @@ public class AgentPurchaseOrderController {
     }
 
     /**
-     * 采购单发货
+     * 采购单发货（代理商）
      *
      * @param agent
      * @param pOrderId
      * @return
      * @throws Exception
      */
-    @PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping("delivery")
     @ResponseBody
     public ApiResult deliveryAgentPurchaseOrder(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             @RequestParam(required = true) String pOrderId) throws Exception {
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         if (StringUtil.isEmptyStr(pOrderId)) {

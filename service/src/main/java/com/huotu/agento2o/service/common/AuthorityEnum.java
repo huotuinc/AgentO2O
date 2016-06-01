@@ -6,15 +6,20 @@ import com.huotu.agento2o.common.ienum.ICommonEnum;
  * Created by helloztt on 2016/5/9.
  */
 public enum AuthorityEnum implements ICommonEnum {
-    MANAGER_ROOT("ROLE_ROOT", "超级管理员"),
-    AGENT_ROOT("ROLE_AGENT", "代理商"),
+    /**
+     * 以下为角色
+     */
+    ROLE_MANAGER("ROLE_ROOT", "超级管理员"),
+    ROLE_AGENT("ROLE_AGENT", "代理商"),
     ROLE_SHOP("ROLE_SHOP", "门店"),
-    ROLE_ORDER("ROLE_ORDER", "订单"),
-    ROLE_PURCHASE("ROLE_PURCHASE", "我的采购"),
-    ROLE_AGENT_PURCHASE("ROLE_AGENT_PURCHASE", "下级采购"),
-    ROLE_BASE_DATA("ROLE_BASE_DATA", "基本设置"),
-    ROLE_BASE_SHOP("ROLE_BASE_SHOP", "门店基本设置"),
-    ROLE_BASE_AGENT("ROLE_BASE_AGENT", "代理商基本设置");
+    /**
+     * 以下为权限
+     */
+    ORDER("ORDER", "订单管理"),
+    PURCHASE("PURCHASE", "我的采购管理"),
+    AGENT_PURCHASE("AGENT_PURCHASE", "下级采购管理"),
+    SHOP_MANAGE("SHOP_MANAGER","门店管理"),
+    BASE_DATA("BASE_DATA", "基本设置");
     private String code;
     private String value;
 

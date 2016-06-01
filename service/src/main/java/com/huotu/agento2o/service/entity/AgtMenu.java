@@ -77,8 +77,12 @@ public class AgtMenu {
     public boolean isAuthor() {
         List<String> realAuthor = new ArrayList<>();
         SecurityContextHolder.getContext().getAuthentication().getAuthorities().forEach(author -> {
-            if (!realAuthor.contains(author.getAuthority().substring("ROLE_".length()))) {
-                realAuthor.add(author.getAuthority().substring("ROLE_".length()));
+            String authority = author.getAuthority();
+            if(authority.startsWith("ROLE_")){
+                authority = authority.substring("ROLE_".length());
+            }
+            if (!realAuthor.contains(authority)) {
+                realAuthor.add(authority);
             }
         });
         String[] authorArray = this.author.split(",");

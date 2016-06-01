@@ -34,7 +34,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    @Transactional(value = "transactionManager")
+    @Transactional
     public Boolean updateInvoice(Author author, InvoiceConfig invoiceConfig) {
 
         if (invoiceConfig == null || invoiceConfig.getType() == null) {

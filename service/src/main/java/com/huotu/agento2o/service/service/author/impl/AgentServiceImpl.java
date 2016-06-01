@@ -16,7 +16,9 @@ import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,18 +48,23 @@ public class AgentServiceImpl implements AgentService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AgentLevelRepository agentLevelRepository;
+    private AgentLevelService agentLevelService;
 
     @Autowired
-    private MallCustomerRepository customerRepository;
+    private MallCustomerService mallCustomerService;
 
     @Autowired
     private UserBaseInfoRepository userBaseInfoRepository;
 
 
     @Override
-    public Agent findById(Integer id) {
-        return agentRepository.findOne(id);
+    public Agent findById(Integer agentId, Integer customerId) {
+        return agentId == null || customerId == null ? null : agentRepository.findByIdAndCustomer_customerId(agentId, customerId);
+    }
+
+    @Override
+    public Agent findByAgentId(Integer agentId) {
+        return agentId == null ? null : agentRepository.findOne(agentId);
     }
 
     @Override
@@ -89,8 +96,8 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public List<Agent> findByAgentLevelId(Integer id) {
-        return agentRepository.findByAgentLevel_levelIdAndIsDeletedFalse(id);
+    public List<Agent> findByAgentLevelId(Integer levelId) {
+        return agentRepository.findByAgentLevel_levelIdAndIsDeletedFalse(levelId);
     }
 
     @Override
@@ -138,32 +145,32 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional
-    public void deleteAgent(Integer id) {
-        agentRepository.deleteAgent(id);
+    public int deleteAgent(Integer agentId) {
+        return agentRepository.deleteAgent(agentId);
     }
 
     @Override
     @Transactional
-    public void freezeAgent(Integer id) {
-        agentRepository.updateDisabledStatus(id, true);
+    public int freezeAgent(Integer agentId) {
+        return agentRepository.updateDisabledStatus(agentId, true);
     }
 
     @Override
     @Transactional
-    public void unfreezeAgent(Integer id) {
-        agentRepository.updateDisabledStatus(id, false);
+    public int unfreezeAgent(Integer agentId) {
+        return agentRepository.updateDisabledStatus(agentId, false);
     }
 
     @Override
-    public List<Agent> findByParentAgentId(Integer id) {
-        return agentRepository.findByParentAuthor_id(id);
+    public List<Agent> findByParentAgentId(Integer agentId) {
+        return agentRepository.findByParentAuthor_id(agentId);
     }
 
     @Override
     @Transactional
     public ApiResult addOrUpdate(Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
-        MallCustomer customer = customerRepository.findOne(customerId);
-        AgentLevel agentLevel = agentLevelRepository.findOne(agentLevelId);
+        MallCustomer customer = mallCustomerService.findByCustomerId(customerId);
+        AgentLevel agentLevel = agentLevelService.findById(agentLevelId, customerId);
         Agent parentAgent = null;
         Agent agent = null;
         UserBaseInfo userBaseInfo = null;
@@ -172,25 +179,25 @@ public class AgentServiceImpl implements AgentService {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (parentAgentId != -1) {
-            parentAgent = agentRepository.findOne(parentAgentId);
+            parentAgent = findById(parentAgentId, customerId);
         }
         //小伙伴账号绑定限制
         if (StringUtil.isNotEmpty(hotUserName)) {
             userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName, customerId);
             if (userBaseInfo == null) {
-                return new ApiResult("小伙伴账号不存在", 803);
+                return new ApiResult("小伙伴账号不存在");
             }
             Agent userAgent = agentRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
             if (userAgent != null && userAgent.getId() != requestAgent.getId()) {
-                return new ApiResult("小伙伴账号已被绑定", 804);
+                return new ApiResult("小伙伴账号已被绑定");
             }
         }
         //根据代理商的id判断是增加还是修改，当大于0时是修改
         if (requestAgent.getId() > 0) {
-            agent = agentRepository.findOne(requestAgent.getId());
+            agent = findById(requestAgent.getId(), customerId);
             //当代理商不存在、已删除情况下无法修改
             if (agent == null || agent.isDeleted()) {
-                return new ApiResult("该代理商已失效", 805);
+                return new ApiResult("该代理商已失效");
             }
         } else {
             //判断用户名是否可用
@@ -244,23 +251,23 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public Agent findByUserBaseInfoId(Integer id) {
-        return agentRepository.findByUserBaseInfo_userId(id);
+    public Agent findByUserBaseInfoId(Integer userId) {
+        return agentRepository.findByUserBaseInfo_userId(userId);
     }
 
     @Override
     @Transactional
-    public void resetPassword(Integer id, String password) {
-        agentRepository.resetPassword(id, passwordEncoder.encode((password)));
+    public int resetPassword(Integer agentId, String password) {
+        return agentRepository.resetPassword(agentId, passwordEncoder.encode((password)));
     }
 
     @Override
     @Transactional
     public ApiResult saveAgentConfig(Integer agentId, Agent requestAgent) {
-        Agent agent = agentRepository.findOne(agentId);
+        Agent agent = findByAgentId(agentId);
         //当代理商不存在、已删除、已冻结情况下无法修改
         if (agent == null || agent.isDeleted() || agent.isDisabled()) {
-            return new ApiResult("该账号已失效", 805);
+            return new ApiResult("该账号已失效");
         }
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());

@@ -24,7 +24,9 @@ public class DeliverySearcher {
     private String beginTime;
     private String endTime;
     private Integer agentId;
+    private Integer parentAgentId;
     private Integer shipMode = -1;
     private int pageIndex = 1;
     private String logiNo;
+    private Integer customerId;
 }

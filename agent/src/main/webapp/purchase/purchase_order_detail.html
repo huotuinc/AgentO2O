@@ -116,134 +116,159 @@
             </div>
             <div class="cnt-wp">
                 <div class="cnt form">
-                    <div>
-                        <span class="spModuleTitle">收货人信息</span>
-                        <div class="division">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                <tbody>
-                                <tr >
-                                    <th >收货人:</th>
-                                    <td  style="border-top: 1px solid #ddd;">
-                                        <input type="text" th:value="*{shipName}" name="shipName"
-                                               class="input-normal"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>联系方式:</th>
-                                    <td>
-                                        <input type="text" th:value="*{shipMobile}" name="shipMobile"
-                                               class="input-normal"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>收货人详细地址:</th>
-                                    <td>
-                                        <input type="text" th:field="*{shipAddr}" th:value="*{shipAddr}" id="supContact"
-                                               style="width: 50%;"
-                                               class="input-normal"/>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                    <div id="make-tab" class="cnt om-tabs om-widget om-widget-content om-corner-all"
+                         style="width: auto; height: auto;">
+                        <div class="om-tabs-headers om-helper-reset om-helper-clearfix om-widget-header om-corner-all header-no-border"
+                             style="height: 28px;">
+                            <ul style="height: 28px; line-height: 28px;">
+                                <span class="left-placeholder"></span>
+                                <li id="tab0" class="om-state-default om-corner-top om-tabs-activated om-state-active">
+                                    <span class="lileft"></span><span class="lileft"></span>
+                                    <a href="javascript:changeTab(0)" tabid="om-tabs-7c1f-0"
+                                       class="om-tabs-inner"
+                                       style="width: auto; height: 27px;">
+                                        基本信息
+                                    </a>
+                                    <span class="liright"></span></li>
+                                <li id="tab1" class="om-state-default om-corner-top">
+                                    <span class="lileft"></span><span class="lileft"></span>
+                                    <a href="javascript:changeTab(1)" tabid="om-tabs-7c1f-0"
+                                       class="om-tabs-inner"
+                                       style="width: auto; height: 27px;">
+                                        收发货信息
+                                    </a>
+                                    <span class="liright"></span></li>
+                            </ul>
                         </div>
-                    </div>
-                    <div>
-                        <span class="spModuleTitle">选择配送方式</span>
-                        <div class="division" style="height: 40px;" name="sendMode">
-                            <!--/*@thymesVar id="sendmentEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.SendmentStatus"*/-->
+                        <div id="basicInfo">
+                            <div>
+                                <span class="spModuleTitle">收货人信息</span>
+                                <div class="division">
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                        <tr >
+                                            <th >收货人:</th>
+                                            <td  style="border-top: 1px solid #ddd;">
+                                                <input type="text" th:value="*{shipName}" name="shipName"
+                                                       class="input-normal"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>联系方式:</th>
+                                            <td>
+                                                <input type="text" th:value="*{shipMobile}" name="shipMobile"
+                                                       class="input-normal"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>收货人详细地址:</th>
+                                            <td>
+                                                <input type="text" th:field="*{shipAddr}" th:value="*{shipAddr}" id="supContact"
+                                                       style="width: 50%;"
+                                                       class="input-normal"/>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="spModuleTitle">选择配送方式</span>
+                                <div class="division" style="height: 40px;" name="sendMode">
+                                    <!--/*@thymesVar id="sendmentEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.SendmentStatus"*/-->
                             <span th:each="sendment:${sendmentEnum}" class="option" th:classappend="${sendment.code}==*{sendMode.code}?'option_selected'">
                                 <span class="ononon" th:style="${sendment.code}==*{sendMode.code}?'display: inline;':'display: none;'">
                                     <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${sendment.value}"></th:block>
                             </span>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="spModuleTitle">开具发票</span>
-                        <br/>
-                        <div class="division" style="height: 40px;" name="invoiceInfo">
+                                </div>
+                            </div>
+                            <div>
+                                <span class="spModuleTitle">开具发票</span>
+                                <br/>
+                                <div class="division" style="height: 40px;" name="invoiceInfo">
                             <span th:each="taxType:${taxTypeEnum}" class="option" th:classappend="${taxType.code} == *{taxType.code}?'option_selected'">
                                 <span class="ononon" th:style="${taxType.code} == *{taxType.code}?'display: inline;':'display: none;'">
                                     <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${taxType.value}"></th:block>
                             </span>
-                        </div>
-                        <div class="division js-normal" th:style="*{taxType.code} == 1?'':'display: none;'">
-                            <table cellpadding="0" cellspacing="0" width="100%">
-                                <tbody>
-                                <tr>
-                                    <th>发票抬头:</th>
-                                    <td  style="border-top: 1px solid #ddd;">
-                                        <input name="taxTitle" type="text" id="taxTitle" class="input-normal" th:value="*{taxTitle}" style="width: 80%;"/></td>
-                                </tr>
-                                <tr>
-                                    <th>发票内容:</th>
-                                    <td colspan="3">
-                                        <input name="taxContent" type="text" id="taxContent" class="input-normal" th:value="*{taxContent}" style="width: 80%;"/></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="division js-tax"  th:style="*{taxType.code}==2?'' :'display: none;'">
-                            <table cellpadding="0" cellspacing="0" width="100%">
-                                <tbody>
-                                <tr>
-                                    <th>发票抬头:</th>
-                                    <td  style="border-top: 1px solid #ddd;">
-                                        <input name="taxTitle" type="text" id="tax_taxTitle" class="input-normal" th:value="*{taxTitle}" style="width: 80%;"/></td>
-                                </tr>
-                                <tr>
-                                    <th>发票内容:</th>
-                                    <td colspan="3">
-                                        <input name="taxContent" type="text" id="tax_taxContent" class="input-normal" th:value="*{taxContent}" style="width: 80%;"/></td>
-                                </tr>
-                                <tr>
-                                    <th>纳税人识别码:</th>
-                                    <td colspan="3">
-                                        <input name="taxpayerCode" type="text" id="tax_taxpayerCode" class="input-normal" th:value="*{taxpayerCode}" style="width: 80%;"/></td>
-                                </tr>
-                                <tr>
-                                    <th>开户银行名称:</th>
-                                    <td>
-                                        <input name="bankName" type="text" id="tax_bankName" class="input-normal" th:value="*{bankName}" style="width: 80%"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>开户银行账号:</th>
-                                    <td>
-                                        <input name="accountNo" type="text" id="tax_accountNo" class="input-normal" th:value="*{accountNo}"  style="width: 80%"/>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="spModuleTitle">订单结算信息</span>
-                        <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
-                            <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <thead>
-                                <tr class="even">
-                                    <th scope="col" style="text-align: center;">序号
-                                    </th>
-                                    <th scope="col" style="text-align: center;">商品名称
-                                    </th>
-                                    <th scope="col" style="text-align: center;">规格
-                                    </th>
-                                    <th scope="col" style="text-align: center;">订购价
-                                    </th>
-                                    <th scope="col" style="text-align: center;">订购数量/单位
-                                    </th>
-                                    <th scope="col" style="text-align: center;">发货数量
-                                    </th>
-                                    <th scope="col" style="text-align: center;">小计
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody data-th-remove="all-but-first">
-                                <tr data-th-each="orderItem,orderItemStat:*{orderItemList}">
-                                    <td class="txt20 c" data-th-text="${orderItemStat.count}">1</td>
-                                    <td style="padding: 10px" class="txt120 c">
+                                </div>
+                                <div class="division js-normal" th:style="*{taxType.code} == 1?'':'display: none;'">
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <th>发票抬头:</th>
+                                            <td  style="border-top: 1px solid #ddd;">
+                                                <input name="taxTitle" type="text" id="taxTitle" class="input-normal" th:value="*{taxTitle}" style="width: 80%;"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>发票内容:</th>
+                                            <td colspan="3">
+                                                <input name="taxContent" type="text" id="taxContent" class="input-normal" th:value="*{taxContent}" style="width: 80%;"/></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="division js-tax"  th:style="*{taxType.code}==2?'' :'display: none;'">
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <th>发票抬头:</th>
+                                            <td  style="border-top: 1px solid #ddd;">
+                                                <input name="taxTitle" type="text" id="tax_taxTitle" class="input-normal" th:value="*{taxTitle}" style="width: 80%;"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>发票内容:</th>
+                                            <td colspan="3">
+                                                <input name="taxContent" type="text" id="tax_taxContent" class="input-normal" th:value="*{taxContent}" style="width: 80%;"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>纳税人识别码:</th>
+                                            <td colspan="3">
+                                                <input name="taxpayerCode" type="text" id="tax_taxpayerCode" class="input-normal" th:value="*{taxpayerCode}" style="width: 80%;"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>开户银行名称:</th>
+                                            <td>
+                                                <input name="bankName" type="text" id="tax_bankName" class="input-normal" th:value="*{bankName}" style="width: 80%"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>开户银行账号:</th>
+                                            <td>
+                                                <input name="accountNo" type="text" id="tax_accountNo" class="input-normal" th:value="*{accountNo}"  style="width: 80%"/>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="spModuleTitle">订单结算信息</span>
+                                <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
+                                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <thead>
+                                        <tr class="even">
+                                            <th scope="col" style="text-align: center;">序号
+                                            </th>
+                                            <th scope="col" style="text-align: center;">商品名称
+                                            </th>
+                                            <th scope="col" style="text-align: center;">规格
+                                            </th>
+                                            <th scope="col" style="text-align: center;">订购价
+                                            </th>
+                                            <th scope="col" style="text-align: center;">订购数量/单位
+                                            </th>
+                                            <th scope="col" style="text-align: center;">发货数量
+                                            </th>
+                                            <th scope="col" style="text-align: center;">小计
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody data-th-remove="all-but-first">
+                                        <tr data-th-each="orderItem,orderItemStat:*{orderItemList}">
+                                            <td class="txt20 c" data-th-text="${orderItemStat.count}">1</td>
+                                            <td style="padding: 10px" class="txt120 c">
                            <span style="width: 20%;float: left;">
                                <img th:src="${orderItem.picUri}!=null?${orderItem.picUri}"
                                     style="vertical-align: top;width: 59px;height: 59px;border: 1px solid #eaeaea;"/>
@@ -251,57 +276,98 @@
                             <span style="width: 75%;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
                             -webkit-line-clamp: 2;-webkit-box-orient: vertical;float: left;margin-right: 20px; margin-top: 16px"
                                   data-th-text="${orderItem.name}">商品名称</span>
-                                    </td>
-                                    <td class="txt40 c" data-th-text="${orderItem.pdtDesc}">
-                                        规格描述
-                                    </td>
-                                    <td class="txt40 c" name="td-price">
-                                        ￥<span data-th-text="${orderItem.price}" name="price">100</span>
-                                    </td>
-                                    <td class="txt40 c" name="td-num">
-                                        <span data-th-text="${orderItem.num} +' ' + ${orderItem.unit}"></span>
-                                    </td>
-                                    <td class="txt40 c" name="td-num">
-                                        <span data-th-text="${orderItem.sendNum}"></span>
-                                    </td>
-                                    <td class="txt40 c" data-th-text="${orderItem.price * orderItem.num}">
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                                            </td>
+                                            <td class="txt40 c" data-th-text="${orderItem.pdtDesc}">
+                                                规格描述
+                                            </td>
+                                            <td class="txt40 c" name="td-price">
+                                                ￥<span data-th-text="${orderItem.price}" name="price">100</span>
+                                            </td>
+                                            <td class="txt40 c" name="td-num">
+                                                <span data-th-text="${orderItem.num} +' ' + ${orderItem.unit}"></span>
+                                            </td>
+                                            <td class="txt40 c" name="td-num">
+                                                <span data-th-text="${orderItem.sendNum}"></span>
+                                            </td>
+                                            <td class="txt40 c" data-th-text="${orderItem.price * orderItem.num}">
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="division">
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                        <tr >
+                                            <th >备注:</th>
+                                            <td  style="border-top: 1px solid #ddd;">
+                                                <textarea rows="3" style="width: 90%" th:text="*{authorComment}" name="authorComment"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>审核备注:</th>
+                                            <td>
+                                                <textarea rows="3" style="width: 90%" th:text="*{statusComment}" name="statusComment"/>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="margin: 10px">
+                                <div style="font-size: 14px; float: right">
+                                    <span>订单总计金额</span>
+                                    <span><b style=" color:#E33B3B; margin-right: 80px" th:text="*{#aggregates.sum(orderItemList.![price * num])}"></b></span>
+                                </div>
+                                <p style="clear: both"></p>
+                                <div style="float: right;margin-top: -21px;">
+                                    <a class="btn-lit" href="javascript:goBack();"><span>返回列表</span></a>
+                                </div>
+                                <p style="clear: both"></p>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <div class="division">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                <tbody>
-                                <tr >
-                                    <th >备注:</th>
-                                    <td  style="border-top: 1px solid #ddd;">
-                                        <textarea rows="3" style="width: 90%" th:text="*{authorComment}" name="authorComment"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>审核备注:</th>
-                                    <td>
-                                        <textarea rows="3" style="width: 90%" th:text="*{statusComment}" name="statusComment"/>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div id="deliveryInfo" style="display: none;">
+                            <span class="spModuleTitle">发货信息</span>
+                            <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
+                                <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <thead>
+                                    <tr class="even">
+                                        <th scope="col">发货单号
+                                        </th>
+                                        <th scope="col">创建时间
+                                        </th>
+                                        <th scope="col">收货人
+                                        </th>
+                                        <th scope="col">物流公司
+                                        </th>
+                                        <th scope="col">物流单号
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <!--/*@thymesVar id="deliveryList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentDelivery>"*/-->
+                                    <tr th:each="delivery:${deliveryList}">
+                                        <td class="txt40 c" th:text="${delivery.deliveryId}"></td>
+                                        <td class="txt80 c" th:text="${#dates.format(delivery.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                        <td class="txt80 c" th:text="${delivery.shipName}"></td>
+                                        <td class="txt80 c" th:text="${delivery.logisticsName}"></td>
+                                        <td class="txt80 c" th:text="${delivery.logisticsNo}"></td>
+                                    </tr>
+                                    </tbody>
+
+                                </table>
+                                <p style="clear: both"></p>
+                                <div style="float: right;">
+                                    <a class="btn-lit" href="javascript:goBack();"><span>返回列表</span></a>
+                                </div>
+                                <p style="clear: both"></p>
+                            </div>
                         </div>
-                    </div>
-                    <div style="margin: 10px">
-                        <div style="font-size: 14px; float: right">
-                            <span>订单总计金额</span>
-                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="*{#aggregates.sum(orderItemList.![price * num])}"></b></span>
                         </div>
-                        <p style="clear: both"></p>
-                        <div style="float: right;margin-top: -21px;">
-                            <a class="btn-lit" href="javascript:goBack();" id="saveConfig"><span>返回列表</span></a>
-                        </div>
-                        <p style="clear: both"></p>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -315,6 +381,19 @@
     })
     function goBack(){
         window.location.href=document.referrer;
+    }
+    function changeTab(tab){
+        if (tab == 0) {
+            $("#tab0").addClass("om-tabs-activated").addClass("om-state-active");
+            $("#tab1").removeClass("om-tabs-activated").removeClass("om-state-active");
+            $("#basicInfo").show();
+            $("#deliveryInfo").hide();
+        } else {
+            $("#tab1").addClass("om-tabs-activated").addClass("om-state-active");
+            $("#tab0").removeClass("om-tabs-activated").removeClass("om-state-active");
+            $("#basicInfo").hide();
+            $("#deliveryInfo").show();
+        }
     }
     /*]]>*/
 </script>

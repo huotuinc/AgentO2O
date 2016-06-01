@@ -332,6 +332,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class,randomSendMode));
         int randomTaxType = random.nextInt(3);
         purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class,randomTaxType));
+        purchaseOrder.setCreateTime(new Date());
         if(randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()){
             purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
             purchaseOrder.setTaxContent(UUID.randomUUID().toString());

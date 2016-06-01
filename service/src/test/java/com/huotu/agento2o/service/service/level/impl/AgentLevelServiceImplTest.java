@@ -9,6 +9,7 @@ import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,22 +29,14 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
     @Autowired
     private AgentLevelService agentLevelService;
 
-    @Test
-    public void testFindById() throws Exception {
-        AgentLevel agentLevel = agentLevelService.findById(4);
-        Assert.assertNotNull(agentLevel);
-        agentLevel = agentLevelService.findById(-1);
-        Assert.assertNull(agentLevel);
-    }
+    private MallCustomer mockCustomer;
 
-    @Test
-    public void testFindLastLevel() throws Exception {
-        Integer num = agentLevelService.findLastLevel(6340);
-        ;
-        Assert.assertTrue(num > 0);
-        num = agentLevelService.findLastLevel(-1);
-        ;
-        Assert.assertNull(num);
+    private AgentLevel mockAgentLevel;
+
+    @Before
+    public void newAgentLevel() {
+        mockCustomer = mockMallCustomer();
+        mockAgentLevel = mockAgentLevel(mockCustomer);
     }
 
     @Test
@@ -51,10 +44,37 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         //不存在的id查询
         List<AgentLevel> list = agentLevelService.findByCustomertId(-1);
         Assert.assertTrue(list.size() == 0);
+        list = agentLevelService.findByCustomertId(null);
+        Assert.assertTrue(list.size() == 0);
         //存在的id查询
-        list = agentLevelService.findByCustomertId(6340);
-        Assert.assertTrue(list.size() >= 0);
+        list = agentLevelService.findByCustomertId(mockCustomer.getCustomerId());
+        Assert.assertTrue(list.size() > 0);
     }
+
+    @Test
+    public void testFindById() throws Exception {
+        AgentLevel agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(),mockCustomer.getCustomerId());
+        Assert.assertNotNull(agentLevel);
+        agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(),-1);
+        Assert.assertNull(agentLevel);
+        agentLevel = agentLevelService.findById(-1,mockCustomer.getCustomerId());
+        Assert.assertNull(agentLevel);
+        agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(),null);
+        Assert.assertNull(agentLevel);
+        agentLevel = agentLevelService.findById(null,mockCustomer.getCustomerId());
+        Assert.assertNull(agentLevel);
+    }
+
+    @Test
+    public void testFindLastLevel() throws Exception {
+        Integer num = agentLevelService.findLastLevel(mockCustomer.getCustomerId());
+        Assert.assertTrue(num > 0);
+        num = agentLevelService.findLastLevel(-1);
+        Assert.assertNull(num);
+        num = agentLevelService.findLastLevel(null);
+        Assert.assertNull(num);
+    }
+
 
     @Test
     public void testAddOrUpdate() throws Exception {
@@ -72,10 +92,10 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         agentLevel.setComment("5折进货");
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId());
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
         Assert.assertNotNull(agentLevel);
-        agentLevelService.deleteAgentLevel(agentLevel.getLevelId());
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId());
+        agentLevelService.deleteAgentLevel(agentLevel.getLevelId(),null);
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
         Assert.assertNull(agentLevel);
     }
 
@@ -92,7 +112,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         agentLevel.setComment("5折进货");
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId());
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
         Assert.assertNotNull(agentLevel);
     }
 }

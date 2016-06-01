@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,13 +55,12 @@ public class HbmAgentController {
     /**
      * 代理商列表
      *
-     * @param customerIdStr
+     * @param customerId
      * @param model
      * @return
      */
     @RequestMapping("/agentList")
-    public String showAgentList(@RequestAttribute(value = "customerId") String customerIdStr, Model model, AgentSearcher agentSearcher) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public String showAgentList(@RequestAttribute(value = "customerId") Integer customerId, Model model, AgentSearcher agentSearcher) {
         Page<Agent> page = agentService.getAgentList(customerId, agentSearcher);
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("page", page);
@@ -77,11 +77,14 @@ public class HbmAgentController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteAgent(Integer agentId) {
-        if (agentService.findByParentAgentId(agentId).size() > 0) {
-            return new ApiResult("代理商已被绑定", 801);
+        if(agentId == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        agentService.deleteAgent(agentId);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        if (agentService.findByParentAgentId(agentId).size() > 0) {
+            return new ApiResult("代理商已被绑定");
+        }
+        int result = agentService.deleteAgent(agentId);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**
@@ -93,36 +96,36 @@ public class HbmAgentController {
      */
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult updateDisabledStatus(Integer status, Integer agentId) {
+    public ApiResult updateDisabledStatus(Integer status,Integer agentId) {
+        int result = 0;
         if (status == 0) {
-            agentService.freezeAgent(agentId);
+            result = agentService.freezeAgent(agentId);
         } else {
-            agentService.unfreezeAgent(agentId);
+            result = agentService.unfreezeAgent(agentId);
         }
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**
      * 显示增加或修改代理商页面
      *
-     * @param customerIdStr
+     * @param customerId
      * @param model
      * @param agent         当agentId>0时，是修改页面
      * @param ifShow        true-查看页面
      * @return
      */
     @RequestMapping(value = "/showAgent", method = RequestMethod.GET)
-    public String showAgent(@RequestAttribute(value = "customerId") String customerIdStr, Model model, Agent agent, boolean ifShow) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public String showAgent(@RequestAttribute(value = "customerId") Integer customerId, Model model, Agent agent, boolean ifShow) {
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
         if (agentId > 0) {
-            Agent oldAgent = agentService.findById(agentId);
+            Agent oldAgent = agentService.findById(agentId, customerId);
             //获取上级代理商的代理商等级
             if (oldAgent.getParentAuthor() != null && ((Agent) oldAgent.getParentAuthor()).getAgentLevel() != null) {
-                parentAgentLevelId = ((Agent) oldAgent.getParentAuthor()).getAgentLevel().getLevelId();
+                parentAgentLevelId = oldAgent.getParentAuthor().getAgentLevel().getLevelId();
             }
-            model.addAttribute("agent", agentService.findById(agentId));
+            model.addAttribute("agent", oldAgent);
         }
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("parentAgentLevelId", parentAgentLevelId);
@@ -146,7 +149,7 @@ public class HbmAgentController {
     /**
      * 增加或修改代理商
      *
-     * @param customerIdStr 平台id
+     * @param customerId 平台id
      * @param agentLevelId  等级id
      * @param parentAgentId 上级代理商id
      * @param hotUserName   小伙伴用户名
@@ -155,8 +158,7 @@ public class HbmAgentController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") String customerIdStr, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
         return agentService.addOrUpdate(customerId, agentLevelId, parentAgentId, hotUserName, requestAgent);
     }
 
@@ -219,21 +221,20 @@ public class HbmAgentController {
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(Integer agentId, String password) {
-        agentService.resetPassword(agentId, password);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        int result = agentService.resetPassword(agentId, password);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**
      * 获取可绑定的小伙伴用户名集合
      *
-     * @param customerIdStr
+     * @param customerId
      * @param hotUserName
      * @return
      */
     @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult getUserNames(@RequestAttribute(value = "customerId") String customerIdStr, String hotUserName) {
-        int customerId = Integer.parseInt(customerIdStr);
+    public ApiResult getUserNames(@RequestAttribute(value = "customerId") Integer customerId, String hotUserName) {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(customerId, hotUserName));
     }
 

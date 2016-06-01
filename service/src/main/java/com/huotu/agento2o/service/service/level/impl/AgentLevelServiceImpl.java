@@ -6,6 +6,8 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
+import com.huotu.agento2o.service.service.MallCustomerService;
+import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,10 @@ public class AgentLevelServiceImpl implements AgentLevelService {
     private AgentLevelRepository agentLevelRepository;
 
     @Autowired
-    private MallCustomerRepository customerRepository;
+    private MallCustomerService mallCustomerService;
+
+    @Autowired
+    private AgentService agentService;
 
     @Override
     public List<AgentLevel> findByCustomertId(Integer customerId) {
@@ -36,13 +41,22 @@ public class AgentLevelServiceImpl implements AgentLevelService {
     }
 
     @Override
-    public void deleteAgentLevel(Integer id) {
-        agentLevelRepository.delete(id);
+    @Transactional
+    public ApiResult deleteAgentLevel(Integer levelId,Integer customerId) {
+        AgentLevel agentLevel = findById(levelId,customerId);
+        if(agentLevel == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if (agentService.findByAgentLevelId(levelId).size() > 0) {
+            return new ApiResult("等级已被绑定");
+        }
+        agentLevelRepository.delete(agentLevel);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
     @Override
-    public AgentLevel findById(Integer id) {
-        return agentLevelRepository.findOne(id);
+    public AgentLevel findById(Integer agentId, Integer customerId) {
+        return agentId == null || customerId == null ? null : agentLevelRepository.findByLevelIdAndCustomer_customerId(agentId,customerId);
     }
 
     @Override
@@ -52,25 +66,25 @@ public class AgentLevelServiceImpl implements AgentLevelService {
 
     @Override
     public Integer findLastLevel(Integer customerId) {
-        return agentLevelRepository.findLastLevel(customerId);
+        return customerId == null ? null : agentLevelRepository.findLastLevel(customerId);
     }
 
     @Override
     @Transactional
     public ApiResult addOrUpdate(Integer levelId, Integer customerId, AgentLevel requestAgentLevel) {
+        MallCustomer customer = mallCustomerService.findByCustomerId(customerId);
         AgentLevel agentLevel;
+        if (customer == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         if (levelId > 0) {
-            agentLevel = findById(levelId);
-            if(agentLevel == null){
+            agentLevel = findById(levelId,customerId);
+            if (agentLevel == null) {
                 return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
             }
         } else {
             Integer level = findLastLevel(customerId);
             agentLevel = new AgentLevel();
-            MallCustomer customer = customerRepository.findOne(customerId);
-            if (customer == null) {
-                return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-            }
             agentLevel.setCustomer(customer);
             //等级依次递增，初始值为0
             agentLevel.setLevel(level == null ? 0 : level + 1);

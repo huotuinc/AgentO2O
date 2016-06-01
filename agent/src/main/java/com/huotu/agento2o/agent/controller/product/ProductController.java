@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/product")
-@PreAuthorize("hasAnyRole('AGENT','ORDER')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP')")
 public class ProductController {
 
     private static String PRODUCT_MANAGER_URL = "product/manager";
