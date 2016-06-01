@@ -7,6 +7,7 @@ import com.huotu.agento2o.service.service.author.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public boolean updatePwd(Integer id, String password) {
         Author author = authorRepository.findOne(id);
         if(author == null){

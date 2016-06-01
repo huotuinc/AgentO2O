@@ -200,9 +200,12 @@
                                         <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliverable()}">发货</a> |
                                     </span>-->
                                     <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
-                                    <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="payOrder(this)" title="支付"> | 支付</a>
-                                    <a th:if="${pOrder.receivable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="receiveOrder(this)" title="确认收货"> | 确认收货</a>
-                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="取消"> | 取消</a>
+                                    <span  th:if="${pOrder.payabled()}"> | </span>
+                                    <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="payOrder(this)" title="支付">支付</a>
+                                    <span  th:if="${pOrder.receivable()}"> | </span>
+                                    <a th:if="${pOrder.receivable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="receiveOrder(this)" title="确认收货">确认收货</a>
+                                    <span  th:if="${pOrder.deletable()}"> | </span>
+                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deleteOrder(this)" title="取消">取消</a>
                                 </div>
                             </td>
                         </tr>

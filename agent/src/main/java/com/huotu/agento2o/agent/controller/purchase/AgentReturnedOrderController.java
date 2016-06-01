@@ -56,7 +56,7 @@ public class AgentReturnedOrderController {
     private AuthorService authorService;
 
     /**
-     *  显示已采购商品列表
+     *  显示已采购商品列表(代理商/门店)
      * @param author 代理商
      * @return
      * @throws Exception
@@ -73,7 +73,7 @@ public class AgentReturnedOrderController {
     }
 
     /**
-     *  增加退货单
+     *  增加退货单（代理商/门店）
      * @param author 代理商
      * @param productIds 货品id数组
      * @param productNums 退货数量数组
@@ -146,6 +146,12 @@ public class AgentReturnedOrderController {
         return model;
     }
 
+    /**
+     * 取消退货单
+     * @param rOrderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
     public ApiResult cancelReturnOrer(@AgtAuthenticationPrincipal Author author,String rOrderId) throws Exception {
@@ -167,7 +173,7 @@ public class AgentReturnedOrderController {
     }
 
     @RequestMapping(value = "/showDelivery")
-    public ModelAndView showDelivery(@AgtAuthenticationPrincipal Agent agent,
+    public ModelAndView showDelivery(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
                                @RequestParam(required = true) String rOrderId) throws Exception{
 
         ModelAndView modelAndView = new ModelAndView();
@@ -187,7 +193,7 @@ public class AgentReturnedOrderController {
     @RequestMapping(value = "/delivery")
     @ResponseBody
     public ApiResult deliveryReturnOrder(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             ReturnOrderDeliveryInfo deliveryInfo) throws Exception {
         return agentReturnedOrderService.pushReturnOrderDelivery(deliveryInfo,agent.getId());
     }
@@ -195,7 +201,7 @@ public class AgentReturnedOrderController {
     @RequestMapping(value = "/editReturnNum")
     @ResponseBody
     public ApiResult editReturnNum(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             @RequestParam(required = true) Integer productId,
             @RequestParam(required = true) Integer num) throws Exception {
 
@@ -218,7 +224,7 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/showAgentReturnedOrderList")
     public ModelAndView showAgentReturnedOrderList(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             ReturnedOrderSearch searchCondition) throws Exception {
 
         searchCondition.setParentAgentId(agent.getId());

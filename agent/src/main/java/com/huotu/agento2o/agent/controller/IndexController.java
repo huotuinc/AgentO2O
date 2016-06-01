@@ -63,7 +63,7 @@ public class IndexController {
 
     @RequestMapping(value = "home")
     public String home(@AgtAuthenticationPrincipal Author author, Model model) {
-        IndexStatistics indexStatistics = indexStatisticsService.orderStatistics(author.getId());
+        IndexStatistics indexStatistics = indexStatisticsService.orderStatistics(author);
         model.addAttribute("indexStatistics", indexStatistics);
         return "index";
     }

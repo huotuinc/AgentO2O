@@ -18,4 +18,17 @@ import lombok.Data;
  */
 @Data
 public class IndexStatistics {
+    //今日
+    //采购单相关
+    private Integer todayPurchaseOrderCount;
+    private Integer todayUnDeliveryPurchaseOrderCount;
+
+    //昨日
+    //采购单相关
+    private Integer yesterdayPurchaseOrderCount;
+    private Integer yesterdayUnDeliveryPurchaseOrderCount;
+
+    //待处理
+    //待审核采购单
+    private Integer toCheckPurchaseOrderCount;
 }
