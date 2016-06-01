@@ -37,7 +37,7 @@
 </head>
 <body>
 <!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="get" action="/purchase/showReturnDeliveryList" data-th-action="@{/purchase/showReturnDeliveryList}" id="form1"
+<form method="get" action="/huobanmall/purchaseOrder/showReturnDeliveryList" data-th-action="@{/huobanmall/purchaseOrder/showReturnDeliveryList}" id="form1"
       th:object="${deliverySearcher}">
 
 
@@ -46,7 +46,7 @@
     <div class="search block" style="display: block;">
         <div class="h">
             <span class="icon-sprite icon-magnifier"></span>
-            <h3>退货单列表</h3>
+            <h3>退货单物流信息筛选</h3>
         </div>
         <div class="tl corner">
         </div>
@@ -189,7 +189,7 @@
 
 
     function searchReturnOrderAll(){
-        window.location.href = /*[[@{/purchase/showReturnDeliveryList}]]*/ "";
+        window.location.href = /*[[@{/huobanmall/purchaseOrder/showReturnDeliveryList}]]*/ "";
     }
 
 

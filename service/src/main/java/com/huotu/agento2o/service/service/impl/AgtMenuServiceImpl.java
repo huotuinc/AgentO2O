@@ -142,37 +142,39 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             wdcgd = menuRepository.save(wdcgd);
             subMenu1.add(wdcgd);
 
-            //一级菜单 采购单据管理
-            AgtMenu cgdjgl = new AgtMenu(1,"","我的采购单据管理",2,purchaseMenu,"PURCHASE",0,"0203");
-            cgdjgl = menuRepository.save(cgdjgl);
-            subMenu2.clear();
-            //二级菜单，采购单物流信息列表
-            AgtMenu cgdwl = new AgtMenu(2,"/purchase/showPurchaseDeliveryList","采购单物流表",0,cgdjgl,"PURCHASE",0,"020301");
-            cgdwl = menuRepository.save(cgdwl);
-            subMenu2.add(cgdwl);
-            //二级菜单 退货单物流信息列表
-            AgtMenu thdwl = new AgtMenu(2,"/purchase/showReturnDeliveryList","退货单物流表",0,cgdjgl,"PURCHASE",0,"020302");
-            thdwl = menuRepository.save(thdwl);
-            subMenu2.add(thdwl);
-            cgdjgl.setChildren(subMenu2);
-            cgdjgl = menuRepository.save(cgdjgl);
-            subMenu1.add(cgdjgl);
+
 
             //一级订单 下级采购管理
-            AgtMenu xjcggl = new AgtMenu(1, "", "下级采购管理", 3, purchaseMenu, "AGENT_PURCHASE", 0, "0204");
+            AgtMenu xjcggl = new AgtMenu(1, "", "下级采购管理", 2, purchaseMenu, "AGENT_PURCHASE", 0, "0203");
             xjcggl = menuRepository.save(xjcggl);
             subMenu2.clear();
             //二级菜单 下级采购单
-            AgtMenu xjcgd = new AgtMenu(2, "/purchaseOrder/showAgentPurchaseOrderList", "下级采购单", 0, xjcggl, "AGENT_PURCHASE", 0, "020401");
+            AgtMenu xjcgd = new AgtMenu(2, "/purchaseOrder/showAgentPurchaseOrderList", "下级采购单", 0, xjcggl, "AGENT_PURCHASE", 0, "020301");
             xjcgd = menuRepository.save(xjcgd);
             subMenu2.add(xjcgd);
             //二级菜单 下级退货单
-            AgtMenu xjthd = new AgtMenu(2, "/purchase/showAgentReturnedOrderList", "下级退货单", 1, xjcggl, "AGENT_PURCHASE", 0, "020402");
+            AgtMenu xjthd = new AgtMenu(2, "/purchase/showAgentReturnedOrderList", "下级退货单", 1, xjcggl, "AGENT_PURCHASE", 0, "020302");
             xjthd = menuRepository.save(xjthd);
             subMenu2.add(xjthd);
             xjcggl.setChildren(subMenu2);
             xjcggl = menuRepository.save(xjcggl);
             subMenu1.add(xjcggl);
+
+            //一级菜单 下级单据管理
+            AgtMenu cgdjgl = new AgtMenu(1,"","下级单据管理",3,purchaseMenu,"PURCHASE",0,"0204");
+            cgdjgl = menuRepository.save(cgdjgl);
+            subMenu2.clear();
+            //二级菜单，采购单物流信息列表
+            AgtMenu cgdwl = new AgtMenu(2,"/purchase/showPurchaseDeliveryList","下级采购单物流表",0,cgdjgl,"PURCHASE",0,"020401");
+            cgdwl = menuRepository.save(cgdwl);
+            subMenu2.add(cgdwl);
+            //二级菜单 退货单物流信息列表
+            AgtMenu thdwl = new AgtMenu(2,"/purchase/showReturnDeliveryList","下级退货单物流表",0,cgdjgl,"PURCHASE",0,"020402");
+            thdwl = menuRepository.save(thdwl);
+            subMenu2.add(thdwl);
+            cgdjgl.setChildren(subMenu2);
+            cgdjgl = menuRepository.save(cgdjgl);
+            subMenu1.add(cgdjgl);
 
 
             //一级菜单 库存管理

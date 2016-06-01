@@ -69,6 +69,9 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             agentDelivery.setDeliveryId(SerialNo.create());
             agentDelivery.setPurchaseOrder(purchaseOrder);
             agentDelivery.setAgentId(purchaseOrder.getAuthor().getId());
+            if(purchaseOrder.getAuthor().getParentAuthor()!=null){
+                agentDelivery.setParentAgentId(purchaseOrder.getAuthor().getParentAuthor().getId());
+            }
             agentDelivery.setCustomerId(customerId);
             agentDelivery.setType(OrderEnum.DeliveryType.DEVERY.getCode());
             agentDelivery.setLogisticsName(deliveryInfo.getLogiName());
@@ -126,6 +129,12 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
             }
+            if(deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() !=0){
+                predicates.add(cb.equal(root.get("parentAgentId").as(Integer.class),deliverySearcher.getParentAgentId()));
+            } else if(deliverySearcher.getCustomerId() != null && deliverySearcher.getCustomerId() !=0){
+                predicates.add(cb.equal(root.get("customerId").as(Integer.class),deliverySearcher.getCustomerId()));
+                predicates.add(cb.isNull(root.get("parentAgentId").as(Integer.class)));
+            }
             if (!StringUtils.isEmpty(deliverySearcher.getDeliveryId())) {
                 predicates.add(cb.like(root.get("deliveryId").as(String.class), "%"+deliverySearcher.getDeliveryId()+"%"));
             }
@@ -163,6 +172,12 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             List<Predicate> predicates = new ArrayList<>();
             if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
+            }
+            if(deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() !=0){
+                predicates.add(cb.equal(root.get("parentAgentId").as(Integer.class),deliverySearcher.getParentAgentId()));
+            } else if(deliverySearcher.getCustomerId() != null && deliverySearcher.getCustomerId() !=0){
+                predicates.add(cb.equal(root.get("customerId").as(Integer.class),deliverySearcher.getCustomerId()));
+                predicates.add(cb.isNull(root.get("parentAgentId").as(Integer.class)));
             }
             if (!StringUtils.isEmpty(deliverySearcher.getDeliveryId())) {
                 predicates.add(cb.like(root.get("deliveryId").as(String.class), "%"+deliverySearcher.getDeliveryId()+"%"));
