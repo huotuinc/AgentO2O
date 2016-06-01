@@ -55,7 +55,7 @@ public abstract class Author implements Serializable, UserDetails {
      * 联系人
      */
     @Column(name = "Contact")
-    private String Contact;
+    private String contact;
 
     /**
      * 手机号码

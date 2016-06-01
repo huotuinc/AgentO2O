@@ -42,11 +42,9 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 return userDetails;
             } else if (authenticationPrincipal.type() == null || authenticationPrincipal.type() == Author.class) {
                 return userDetails;
-            } else {
-                return null;
             }
         }
         // TODO: 2016/5/10 操作员
-        return null;
+        throw new Exception("没有权限");
     }
 }

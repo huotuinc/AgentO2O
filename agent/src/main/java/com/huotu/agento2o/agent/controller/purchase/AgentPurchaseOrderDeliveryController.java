@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Created by helloztt on 2016/5/19.
  */
 @Controller
-@PreAuthorize("hasAnyRole('AGENT_PURCHASE')")
+@PreAuthorize("hasAnyRole('AGENT_PURCHASE','AGENT')")
 @RequestMapping("/purchaseOrder/delivery")
 public class AgentPurchaseOrderDeliveryController {
 
@@ -41,6 +41,13 @@ public class AgentPurchaseOrderDeliveryController {
     @Autowired
     private AgentDeliveryService agentDeliveryService;
 
+    /**
+     * 显示发货单
+     * @param author
+     * @param pOrderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showDelivery",method = RequestMethod.GET)
     public ModelAndView showDelivery(
             @AgtAuthenticationPrincipal Author author,
@@ -57,10 +64,17 @@ public class AgentPurchaseOrderDeliveryController {
         return model;
     }
 
+    /**
+     * 发货
+     * @param agent
+     * @param deliveryInfo
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/delivery")
     @ResponseBody
     public ApiResult delivery(
-            @AgtAuthenticationPrincipal Agent agent,
+            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             DeliveryInfo deliveryInfo) throws Exception{
         return agentDeliveryService.pushDelivery(deliveryInfo,null,agent.getId());
     }

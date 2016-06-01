@@ -44,7 +44,7 @@ import java.util.List;
  * Created by helloztt on 2016/5/16.
  */
 @Controller
-@PreAuthorize("hasAnyRole('PURCHASE')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('PURCHASE')")
 @RequestMapping("/shoppingCart")
 public class ShoppingCartController {
     @Autowired

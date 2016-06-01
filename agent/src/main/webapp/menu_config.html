@@ -26,9 +26,6 @@
     <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
     <style type="text/css">
-        .over {
-            background-color: #00ff21;
-        }
 
         body, td, th {
             font-family: "微软雅黑", "宋体", Arial;
@@ -36,14 +33,6 @@
     </style>
     <script type="text/javascript" th:inline="javascript">
         var ajaxUrl = /*[[@{/agent/index/manager/agtMenu/config/}]]*/ "";
-        $(function(){
-            $('tr').mouseover(function () {
-                _oldCass = this.className;
-                this.className = 'over';
-            }).mouseout(function () {
-                this.className = _oldCass;
-            });
-        })
     </script>
     <script type="text/javascript">
         /*<![CDATA[*/
@@ -240,12 +229,22 @@
                 </td>
             </tr>
             <tr>
-                <th scope="row">权限*：</th>
+                <th scope="row">角色及权限*：</th>
                 <td>
-                    <label><input type="checkbox" name="author" value="ORDER"/>订单管理</label>
-                    <label><input type="checkbox" name="author" value="SETTLEMENT"/>结算管理</label>
-                    <label><input type="checkbox" name="author" value="GOOD"/>商品管理</label>
-                    <label><input type="checkbox" name="author" value="SHOP"/>店铺管理</label>
+                    <label data-th-each="role:${roleList}">
+                        <input type="checkbox" name="author" data-th-value="${#strings.substring(role.code,5)}" />
+                        <span data-th-text="${role.value}"></span>
+                    </label>
+                    <br/>
+                    <label data-th-each="authority,authorityStat:${authorityList}">
+                        <input type="checkbox" name="author" data-th-value="${authority.code}" />
+                        <span data-th-text="${authority.value}"></span>
+                        <br data-th-if="${ authorityStat.count % 3 == 0}"/>
+                    </label>
+                    <!--<label><input type="checkbox" name="author" value="ORDER"/>订单管理</label>-->
+                    <!--<label><input type="checkbox" name="author" value="SETTLEMENT"/>结算管理</label>-->
+                    <!--<label><input type="checkbox" name="author" value="GOOD"/>商品管理</label>-->
+                    <!--<label><input type="checkbox" name="author" value="SHOP"/>店铺管理</label>-->
                 </td>
             </tr>
             <tr>

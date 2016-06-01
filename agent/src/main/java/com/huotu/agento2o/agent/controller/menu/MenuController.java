@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.controller.menu;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.common.AuthorityEnum;
 import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +39,19 @@ public class MenuController {
     @RequestMapping("/manager/agtMenu/config/12321")
     public String menuConfig(Model model) {
         List<AgtMenu> agtMenus = menuService.findAll();
+        AuthorityEnum[] authorityEnumList = AuthorityEnum.values();
+        List<AuthorityEnum> roleList = new ArrayList<>();
+        List<AuthorityEnum> authorityList = new ArrayList<>();
+        for (AuthorityEnum authorityEnum : authorityEnumList){
+            if(authorityEnum.getCode().startsWith("ROLE_")){
+                roleList.add(authorityEnum);
+            }else {
+                authorityList.add(authorityEnum);
+            }
+        }
         model.addAttribute("menus", agtMenus);
+        model.addAttribute("roleList",roleList);
+        model.addAttribute("authorityList",authorityList);
         return "menu_config";
     }
 

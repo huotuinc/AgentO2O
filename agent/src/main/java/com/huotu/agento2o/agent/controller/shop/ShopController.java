@@ -82,21 +82,7 @@ public class ShopController {
         return shopService.saveOrUpdateShop(shop, hotUserName);
     }
 
-    /**
-     * 门店登陆 基本资料设置
-     *
-     * @return
-     */
-    @RequestMapping("/baseConfig")
-    public String baseConfig(@AuthenticationPrincipal Shop curShop, Model model) throws Exception {
-        Shop shop = shopService.findByIdAndParentAuthor(curShop.getId(), curShop.getParentAuthor());
-        if (shop == null || !shop.getId().equals(curShop.getId())) {
-            throw new Exception("没有权限");
-        }
-        model.addAttribute("shop", shop);
-        model.addAttribute("agent", shop.getParentAuthor());
-        return "shop/BaseConfigShop";
-    }
+
 
     /**
      * 门店登陆 基本资料更新
