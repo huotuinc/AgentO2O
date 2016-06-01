@@ -1,5 +1,6 @@
 package com.huotu.agento2o.agent.controller.shop;
 
+import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -33,7 +34,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/shop")
-@PreAuthorize("hasAnyRole('SHOP','BASE_DATA','BASE_SHOP')")
+@PreAuthorize("hasAnyRole('AGENT')")
 public class ShopController {
 
     @Autowired
@@ -48,7 +49,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AuthenticationPrincipal Agent curAgent, Shop shop, Model model) throws Exception {
+    public String toAddShopPage(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop, Model model) throws Exception {
         if (curAgent == null) {
             throw new Exception("没有权限");
         }
@@ -69,7 +70,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/addShop")
     @ResponseBody
-    public ApiResult saveShop(@AuthenticationPrincipal Agent curAgent, Shop shop, String hotUserName) {
+    public ApiResult saveShop(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop, String hotUserName) {
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -82,29 +83,6 @@ public class ShopController {
         return shopService.saveOrUpdateShop(shop, hotUserName);
     }
 
-
-
-    /**
-     * 门店登陆 基本资料更新
-     *
-     * @param shop
-     * @return
-     */
-    @RequestMapping(value = "/updateShop")
-    @ResponseBody
-    public ApiResult updateShop(@AuthenticationPrincipal Shop curShop, Shop shop, String hotUserName) {
-        if (curShop == null || curShop.getId() == null) {
-            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
-        }
-        if (shop == null || shop.getId() == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
-        shop.setCustomer(curShop.getCustomer());
-        shop.setParentAuthor(curShop.getParentAuthor());
-        return shopService.saveOrUpdateShop(shop, hotUserName);
-    }
-
-
     /**
      * 门店列表
      *
@@ -113,7 +91,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/shopList")
-    public String showShopList(@AuthenticationPrincipal Agent curAgent,
+    public String showShopList(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent,
                                Model model,
                                ShopSearchCondition searchCondition,
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
@@ -141,7 +119,7 @@ public class ShopController {
      */
     @RequestMapping("/changeStatus")
     @ResponseBody
-    public ApiResult changeStatus(@AuthenticationPrincipal Agent curAgent, int id) {
+    public ApiResult changeStatus(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, int id) {
         Shop shop = shopService.findByIdAndParentAuthor(id, curAgent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
@@ -157,7 +135,7 @@ public class ShopController {
      */
     @RequestMapping("/delete")
     @ResponseBody
-    public ApiResult deleteById(@AuthenticationPrincipal Agent curAgent, int id) {
+    public ApiResult deleteById(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, int id) {
         Shop shop = shopService.findByIdAndParentAuthor(id, curAgent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
@@ -173,7 +151,7 @@ public class ShopController {
      */
     @RequestMapping("/resetpassword")
     @ResponseBody
-    public ApiResult resetPassword(@AuthenticationPrincipal Agent curAgent, Shop shop) {
+    public ApiResult resetPassword(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop) {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -188,7 +166,7 @@ public class ShopController {
      * 导出Excel
      */
     @RequestMapping("/exportExcel")
-    public void exportExcel(@AuthenticationPrincipal Agent customer,
+    public void exportExcel(@AgtAuthenticationPrincipal(type=Agent.class) Agent customer,
                             ShopSearchCondition searchCondition,
                             int txtBeginPage, int txtEndPage,
                             HttpSession session,
@@ -231,7 +209,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult getUserNames(@AuthenticationPrincipal Agent agent, String hotUserName) {
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type=Agent.class) Agent agent, String hotUserName) {
         int customerId = agent.getCustomer().getCustomerId();
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(customerId, hotUserName));
     }

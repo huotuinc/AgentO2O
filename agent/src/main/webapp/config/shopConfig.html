@@ -425,7 +425,7 @@
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
             type: 'POST',
-            url: "/shop/updateShop",
+            url: "/config/updateShop",
             data: {
                 id: id,
                 username: /*[[${shop.username}]]*/,
@@ -477,7 +477,7 @@
             city: city,
             dist: dist,
             nodata: null,
-            required: false
+            required:false
         });
         $("#password").parent().parent().hide();
     } else {
