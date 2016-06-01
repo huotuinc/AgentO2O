@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/config")
-@PreAuthorize("hasAnyRole('AGENT','SHOP')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('BASE_DATA')")
 public class AgentController {
 
     @Autowired

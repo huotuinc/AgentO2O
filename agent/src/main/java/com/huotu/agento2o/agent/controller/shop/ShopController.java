@@ -34,7 +34,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/shop")
-@PreAuthorize("hasAnyRole('AGENT')")
+@PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('SHOP_MANAGER')")
 public class ShopController {
 
     @Autowired
