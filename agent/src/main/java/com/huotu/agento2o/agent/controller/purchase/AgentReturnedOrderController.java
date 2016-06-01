@@ -10,14 +10,17 @@ import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
+import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
@@ -54,6 +57,9 @@ public class AgentReturnedOrderController {
     private MallProductService mallProductService;
     @Autowired
     private AuthorService authorService;
+
+    @Autowired
+    private AgentDeliveryService agentDeliveryService;
 
     /**
      *  显示已采购商品列表(代理商/门店)
@@ -160,13 +166,29 @@ public class AgentReturnedOrderController {
     }
 
     @RequestMapping(value = "/showReturnedOrderDetail")
-    public ModelAndView showReturnOrderDetail(String rOrderId) throws Exception{
+    public ModelAndView showReturnOrderDetail(@AgtAuthenticationPrincipal Author author,String rOrderId,Integer subAuthorId) throws Exception{
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("purchase/returned_product_detail");
         AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
         List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
         agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
 
+        DeliverySearcher deliverySearcher = new DeliverySearcher();
+        List<AgentDelivery> agentDeliveryList = null;
+        //获取本级代理商/门店采购退货发货信息
+        if(subAuthorId == null){
+            deliverySearcher.setOrderId(rOrderId);
+            deliverySearcher.setAgentId(author.getId());
+            agentDeliveryList = agentDeliveryService.showReturnDeliveryList(deliverySearcher).getContent();
+
+        } else{//获取下级代理商/门店采购退货发货信息
+            deliverySearcher.setAgentId(subAuthorId);
+            deliverySearcher.setParentAgentId(author.getId());
+            deliverySearcher.setOrderId(rOrderId);
+            agentDeliveryList = agentDeliveryService.showReturnDeliveryList(deliverySearcher).getContent();
+        }
+
+        modelAndView.addObject("deliveryList",agentDeliveryList);
         modelAndView.addObject("agentReturnOrder",agentReturnedOrder);
         modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
         return modelAndView;

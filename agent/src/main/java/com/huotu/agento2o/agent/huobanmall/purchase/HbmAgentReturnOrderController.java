@@ -6,9 +6,12 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
+import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
+import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,8 @@ public class HbmAgentReturnOrderController {
     private AgentReturnedOrderService agentReturnedOrderService;
     @Autowired
     private AgentReturnOrderItemService agentReturnOrderItemService;
+    @Autowired
+    private AgentDeliveryService agentDeliveryService;
 
 
     /**
@@ -71,13 +76,24 @@ public class HbmAgentReturnOrderController {
     }
 
     @RequestMapping(value = "/showReturnedOrderDetail")
-    public ModelAndView showReturnOrderDetail(@RequestParam(required = true) String rOrderId) throws Exception {
+    public ModelAndView showReturnOrderDetail(@RequestAttribute(value = "customerId") Integer customerId,@RequestParam(required = true) String rOrderId,Integer agentId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("huobanmall/purchase/returned_product_detail");
         AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
         List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
         agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
 
+        DeliverySearcher deliverySearcher = new DeliverySearcher();
+        List<AgentDelivery> agentDeliveryList = null;
+        //获取本级代理商/门店采购退货发货信息
+
+        deliverySearcher.setCustomerId(customerId);
+        deliverySearcher.setOrderId(rOrderId);
+        deliverySearcher.setAgentId(agentId);
+        agentDeliveryList = agentDeliveryService.showReturnDeliveryList(deliverySearcher).getContent();
+
+
+        modelAndView.addObject("deliveryList",agentDeliveryList);
         modelAndView.addObject("agentReturnOrder",agentReturnedOrder);
         modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
         return modelAndView;
