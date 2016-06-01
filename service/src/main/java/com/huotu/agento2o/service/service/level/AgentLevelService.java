@@ -38,11 +38,11 @@ public interface AgentLevelService {
     /**
      * 根据唯一id和平台方id获取某个代理商等级
      *
-     * @param agentId
+     * @param levelId
      * @param customerId
      * @return
      */
-    AgentLevel findById(Integer agentId, Integer customerId);
+    AgentLevel findById(Integer levelId, Integer customerId);
 
     /**
      * 刷新，缓存与数据库同步

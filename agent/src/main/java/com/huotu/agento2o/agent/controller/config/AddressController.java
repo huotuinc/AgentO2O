@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/config")
-@PreAuthorize("hasAnyRole('BASE_DATA','SHOP','AGENT')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('BASE_DATA')")
 public class AddressController {
 
     @Autowired

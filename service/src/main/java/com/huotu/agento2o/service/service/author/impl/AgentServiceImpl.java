@@ -82,7 +82,7 @@ public class AgentServiceImpl implements AgentService {
     @Transactional
     public Agent addAgent(Agent agent) {
         //判断代理商登录名是否唯一
-        if (isEnableAgent(agent.getUsername())) {
+        if (agent != null && isEnableAgent(agent.getUsername())) {
             agent.setPassword(passwordEncoder.encode(agent.getPassword()));
             agent.setCreateTime(new Date());
             return agentRepository.save(agent);
@@ -175,7 +175,7 @@ public class AgentServiceImpl implements AgentService {
         Agent agent = null;
         UserBaseInfo userBaseInfo = null;
         //必须保证平台方和等级存在才能保存代理商
-        if (customer == null || agentLevel == null) {
+        if (customer == null || agentLevel == null || requestAgent == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (parentAgentId != -1) {
@@ -264,6 +264,9 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public ApiResult saveAgentConfig(Integer agentId, Agent requestAgent) {
+        if (agentId == null || requestAgent == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         Agent agent = findByAgentId(agentId);
         //当代理商不存在、已删除、已冻结情况下无法修改
         if (agent == null || agent.isDeleted() || agent.isDisabled()) {
