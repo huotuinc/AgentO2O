@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -40,9 +41,9 @@ public class ShopServiceImplTest extends CommonTestBase {
         MallCustomer mockCustomer = mockMallCustomer();
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
-
         Shop shop = shopService.findByUserName(getShop.getUsername());
         Assert.assertTrue(shop != null);
+
     }
 
     @Test
@@ -50,7 +51,6 @@ public class ShopServiceImplTest extends CommonTestBase {
         MallCustomer mockCustomer = mockMallCustomer();
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
-
         Shop shop = shopService.findById(getShop.getId());
         Assert.assertTrue(shop != null);
     }
@@ -60,19 +60,25 @@ public class ShopServiceImplTest extends CommonTestBase {
         MallCustomer mockCustomer = mockMallCustomer();
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
-
         Shop shop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
         Assert.assertTrue(shop != null);
+
+        shop = shopService.findByIdAndParentAuthor(getShop.getId(), null);
+        Assert.assertTrue(shop == null);
+
+        shop = shopService.findByIdAndParentAuthor(null, null);
+        Assert.assertTrue(shop == null);
     }
 
     @Test
-    public void testFindByIdAndCustomer_Id(){
+    public void testFindByIdAndCustomer_Id() {
         MallCustomer mockCustomer = mockMallCustomer();
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
         getShop.setCustomer(mockCustomer);
-        shopService.saveOrUpdateShop(getShop,null);
-        Shop curShop = shopService.findByIdAndCustomer_Id(getShop.getId(),mockCustomer.getCustomerId());
+        shopService.saveOrUpdateShop(getShop, null);
+
+        Shop curShop = shopService.findByIdAndCustomer_Id(getShop.getId(), mockCustomer.getCustomerId());
         Assert.assertTrue(curShop.getCustomer().equals(mockCustomer));
     }
 
@@ -85,6 +91,14 @@ public class ShopServiceImplTest extends CommonTestBase {
         shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
         Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.CHECKED);
+
+        getShop.setDisabled(true);
+        ApiResult apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
+        Assert.assertTrue(apiResult.getMsg().equals("该门店已被冻结"));
+
+        getShop.setDeleted(true);
+        apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
+        Assert.assertTrue(apiResult.getMsg().equals("该门店已被删除"));
     }
 
     @Test

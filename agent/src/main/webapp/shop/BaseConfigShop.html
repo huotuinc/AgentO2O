@@ -13,7 +13,7 @@
 
 <head lang="en">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>门店基本资料设置</title>
+    <title>门店基本资料</title>
     <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
           th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
     <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
@@ -61,6 +61,7 @@
     </style>
 </head>
 <body>
+<!--/*@thymesVar id="shop" type="com.huotu.agento2o.service.entity.author.Shop"*/-->
 <form action="#" th:action="@{/shop/addShop}" method="post" id="shopConfigForm" th:object="${shop}">
     <div class="container">
         <div class="blank10">
@@ -100,14 +101,14 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>代理商等级：</th>
+                                    <th>上级代理商等级：</th>
                                     <td>
                                         <span type="text" class="input-normal" readonly="readonly"
                                               th:text="${agent.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>代理商账户：</th>
+                                    <th>上级代理商账户：</th>
                                     <td>
                                         <span type="text" class="input-normal" id="author" readonly="readonly"
                                               th:field="${agent.username}" th:text="${agent.username}"></span>
@@ -370,6 +371,10 @@
             $.jBox.tip("经纬度不能为空");
             return;
         }
+        if (lan == 0 || lat == 0) {
+            $.jBox.tip("经纬度不能为0");
+            return;
+        }
         if (serveiceTel.length == 0) {
             $.jBox.tip("客服电话不能为空");
             return;
@@ -451,10 +456,10 @@
     /*]]>*/
 </script>
 <script th:inline="javascript">
-    var pro = /*[[${shop.province}]]*/;
-    var city = /*[[${shop.city}]]*/;
-    var dist = /*[[${shop.district}]]*/;
-    var id = /*[[${shop.id}]]*/;
+    var pro = /*[[${shop.province}]]*/"";
+    var city = /*[[${shop.city}]]*/"";
+    var dist = /*[[${shop.district}]]*/"";
+    var id = /*[[${shop.id}]]*/"";
     if (id != null) {
         $("#citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",

@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/shop")
-@PreAuthorize("hasAnyRole('SHOP','BASE_DATA','BASE_SHOP')")
+@PreAuthorize("hasAnyRole('AGENT')")
 public class ShopController {
 
     @Autowired
@@ -88,6 +88,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/baseConfig")
+    @PreAuthorize("hasAnyRole('SHOP')")
     public String baseConfig(@AuthenticationPrincipal Shop curShop, Model model) throws Exception {
         Shop shop = shopService.findByIdAndParentAuthor(curShop.getId(), curShop.getParentAuthor());
         if (shop == null || !shop.getId().equals(curShop.getId())) {
@@ -106,6 +107,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/updateShop")
     @ResponseBody
+    @PreAuthorize("hasAnyRole('SHOP')")
     public ApiResult updateShop(@AuthenticationPrincipal Shop curShop, Shop shop, String hotUserName) {
         if (curShop == null || curShop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);

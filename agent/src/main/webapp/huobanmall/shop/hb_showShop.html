@@ -61,6 +61,7 @@
     </style>
 </head>
 <body>
+<!--/*@thymesVar id="shop" type="com.huotu.agento2o.service.entity.author.Shop"*/-->
 <form action="#" method="post" id="shopConfigForm" th:object="${shop}">
     <div class="container">
         <div class="blank10">
@@ -106,14 +107,14 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>代理商等级：</th>
+                                    <th>上级代理商等级：</th>
                                     <td>
                                         <span type="text" class="input-normal" readonly="readonly"
                                               th:text="*{parentAuthor.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>代理商账户：</th>
+                                    <th>上级代理商账户：</th>
                                     <td>
                                         <span type="text" class="input-normal" id="author" readonly="readonly"
                                               th:text="*{parentAuthor.username}"></span>
@@ -249,7 +250,7 @@
     function audit() {
         $("#audit_dialog").html($("#audit_template").html());
 
-        $("#auditComment").html(/*[[${shop.auditComment}]]*/);
+        $("#auditComment").html(/*[[${shop.auditComment}]]*/"");
         J.ShowDialog("audit_dialog", "审核", function () {
             var requestData = checkAudit();
             if (requestData != null) {
@@ -299,8 +300,8 @@
     /*<![CDATA[*/
     /*百度地图API相关*/
     var map = new BMap.Map("addrMap");
-    var shoplan = /*[[${shop.lan}]]*/;
-    var shoplat = /*[[${shop.lat}]]*/;
+    var shoplan = /*[[${shop.lan}]]*/"";
+    var shoplat = /*[[${shop.lat}]]*/"";
     map.centerAndZoom(new BMap.Point(shoplan, shoplat), 10);
     map.enableScrollWheelZoom(true);    //启用滚轮放大缩小，默认禁用
     map.enableContinuousZoom(true);     //启用地图惯性拖拽，默认禁用
