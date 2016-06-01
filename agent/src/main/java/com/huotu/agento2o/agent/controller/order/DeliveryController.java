@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/order")
-@PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
+@PreAuthorize("hasAnyRole('ORDER')")
 public class DeliveryController {
     private static final Log log = LogFactory.getLog(DeliveryController.class);
 
@@ -55,6 +55,7 @@ public class DeliveryController {
      * @throws Exception
      */
     @RequestMapping(value = "/deliveries", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
     public ModelAndView showDeliveryList(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = false, defaultValue = "1") int pageIndex,
@@ -87,6 +88,7 @@ public class DeliveryController {
      * @return
      */
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
     public String showConsignFlow(String orderId, Model model) {
         MallOrder order = orderService.findByOrderId(orderId);
         model.addAttribute("order", order);
@@ -98,6 +100,7 @@ public class DeliveryController {
      * 未完成
      */
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyRole('SHOP','ORDER')")
     @ResponseBody
     public ApiResult addDelivery(
             @AgtAuthenticationPrincipal Shop shop,
