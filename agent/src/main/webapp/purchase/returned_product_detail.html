@@ -115,9 +115,34 @@
                 <h3>退货申请详情</h3>
             </div>
             <div class="cnt-wp">
-                    <div>
-                        <span class="spModuleTitle">退货信息</span>
-                        <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
+                <div id="make-tab" class="cnt om-tabs om-widget om-widget-content om-corner-all"
+                     style="width: auto; height: auto;">
+                    <div class="om-tabs-headers om-helper-reset om-helper-clearfix om-widget-header om-corner-all header-no-border"
+                         style="height: 28px;">
+                        <ul style="height: 28px; line-height: 28px;">
+                            <span class="left-placeholder"></span>
+                            <li id="tab0" class="om-state-default om-corner-top om-tabs-activated om-state-active">
+                                <span class="lileft"></span><span class="lileft"></span>
+                                <a href="javascript:changeTab(0)" tabid="om-tabs-7c1f-0"
+                                   class="om-tabs-inner"
+                                   style="width: auto; height: 27px;">
+                                    基本信息
+                                </a>
+                                <span class="liright"></span></li>
+                            <li id="tab1" class="om-state-default om-corner-top">
+                                <span class="lileft"></span><span class="lileft"></span>
+                                <a href="javascript:changeTab(1)" tabid="om-tabs-7c1f-0"
+                                   class="om-tabs-inner"
+                                   style="width: auto; height: 27px;">
+                                    收发货信息
+                                </a>
+                                <span class="liright"></span></li>
+                        </ul>
+                    </div>
+
+                    <div id="basicInfo">
+                            <span class="spModuleTitle">退货信息</span>
+                            <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
                             <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <thead>
                                 <tr class="even">
@@ -168,7 +193,8 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+
+
                     <div>
                         <div class="division">
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -202,6 +228,46 @@
                         </div>
                         <p style="clear: both"></p>
                     </div>
+                    </div>
+                    <div id="deliveryInfo" style="display: none;">
+                    <span class="spModuleTitle">发货信息</span>
+                    <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
+                        <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <thead>
+                            <tr class="even">
+                                <th scope="col">发货单号
+                                </th>
+                                <th scope="col">创建时间
+                                </th>
+                                <th scope="col">收货人
+                                </th>
+                                <th scope="col">物流公司
+                                </th>
+                                <th scope="col">物流单号
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <!--/*@thymesVar id="deliveryList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentDelivery>"*/-->
+                            <tr th:each="delivery:${deliveryList}">
+                                <td class="txt40 c" th:text="${delivery.deliveryId}"></td>
+                                <td class="txt80 c" th:text="${#dates.format(delivery.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td class="txt80 c" th:text="${delivery.shipName}"></td>
+                                <td class="txt80 c" th:text="${delivery.logisticsName}"></td>
+                                <td class="txt80 c" th:text="${delivery.logisticsNo}"></td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                        <p style="clear: both"></p>
+                        <div style="float: right;">
+                            <a class="btn-lit" href="javascript:goBack();"><span>返回列表</span></a>
+                        </div>
+                        <p style="clear: both"></p>
+                    </div>
+                </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -214,6 +280,20 @@
     })
     function goBack(){
         window.location.href=document.referrer;
+    }
+
+    function changeTab(tab){
+        if (tab == 0) {
+            $("#tab0").addClass("om-tabs-activated").addClass("om-state-active");
+            $("#tab1").removeClass("om-tabs-activated").removeClass("om-state-active");
+            $("#basicInfo").show();
+            $("#deliveryInfo").hide();
+        } else {
+            $("#tab1").addClass("om-tabs-activated").addClass("om-state-active");
+            $("#tab0").removeClass("om-tabs-activated").removeClass("om-state-active");
+            $("#basicInfo").hide();
+            $("#deliveryInfo").show();
+        }
     }
     /*]]>*/
 </script>
