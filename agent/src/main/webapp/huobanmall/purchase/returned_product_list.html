@@ -146,7 +146,7 @@
                     <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.rOrderId}">
 
                         <td class="txt20 c">
-                            <a th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" onclick="showReturnedOrderDetail()">
+                            <a th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showReturnedOrderDetail()">
                                 <span th:text="${agentReturnOrder.rOrderId}">rOrderId</span>
                             </a>
                             <span th:if="${agentReturnOrder.Disabled}" style="color:red;">已关闭</span>
@@ -176,7 +176,7 @@
                              ￥<span data-th-text="${agentReturnOrder.finalAmount}">100</span>
                         </td>
                         <td class="txt80 c">
-                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.rOrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="查看详细">查看详细</a>
+                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.rOrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" title="查看详细">查看详细</a>
                             <span th:if="${agentReturnOrder.checkable()}"> | </span>
                             <a th:if="${agentReturnOrder.checkable()}" href="javascript:void(0)" th:onclick="|checkReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="checkReturnOrder()" title="审核">审核</a>
                             <span th:if="${agentReturnOrder.receivable()}"> | </span>
@@ -366,8 +366,8 @@
         window.location.href = /*[[@{/huobanmall/returnOrder/showReturnedOrderList}]]*/ "";
     }
 
-    function showReturnedOrderDetail(rOrderId){
-        window.location.href = basicUrl + "/showReturnedOrderDetail?rOrderId=" + rOrderId;
+    function showReturnedOrderDetail(rOrderId,agentId){
+        window.location.href = basicUrl + "/showReturnedOrderDetail?rOrderId=" + rOrderId+"&agentId="+agentId;
     }
 
     /*]]>*/
