@@ -18,17 +18,43 @@ import lombok.Data;
  */
 @Data
 public class IndexStatistics {
-    //今日
-    //采购单相关
-    private Integer todayPurchaseOrderCount;
-    private Integer todayUnDeliveryPurchaseOrderCount;
+    //true:代理商;false:门店
+    private boolean isAgent;
+    //订单数
+    private Integer todayOrderCount;
+    private Integer yesterdayOrderCount;
 
-    //昨日
     //采购单相关
+    //我的采购单数
+    private Integer todayPurchaseOrderCount;
     private Integer yesterdayPurchaseOrderCount;
-    private Integer yesterdayUnDeliveryPurchaseOrderCount;
+    //下级采购单数
+    private Integer todaySubPurchaseOrderCount;
+    private Integer yesterdaySubPurchaseOrderCount;
+    //退货单相关
+    //我的退货单数
+    private Integer todayReturnedOrderCount;
+    private Integer yesterdayReturnedOrderCount;
+    //下级退货单数
+    private Integer todaySubReturnedOrderCount;
+    private Integer yesterdaySubReturnedOrderCount;
 
     //待处理
-    //待审核采购单
+    //待发货订单
+    private Integer toDeliveryOrderCount;
+    //待审核采购单(代理商)
     private Integer toCheckPurchaseOrderCount;
+    //待发货采购单（代理商）
+    private Integer toDeliveryPurchaseOrderCount;
+    //待确认收货采购单（代理商/门店）
+    private Integer toReceivePurchaseOrderCount;
+    //待审核退货单(代理商)
+    private Integer toCheckReturnedOrderCount;
+    //待发货退货单(代理商/门店)
+    private Integer toDeliveryReturnedOrderCount;
+    //待确认收货退货单(代理商)
+    private Integer toReceiveReturnedOrderCount;
+
+    //库存预警
+    private Integer productNotifyCount;
 }

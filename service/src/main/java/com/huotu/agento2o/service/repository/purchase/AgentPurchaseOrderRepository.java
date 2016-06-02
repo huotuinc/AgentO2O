@@ -30,10 +30,29 @@ public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchas
 
     List<AgentPurchaseOrder> findByAuthor(Author author);
 
-    int countByAuthor_IdAndCreateTimeBetween(Integer authorId,Date start,Date end);
+    /**
+     * 按日期统计代理商/门店有效的采购单
+     * @param authorId
+     * @param start
+     * @param end
+     * @return
+     */
+    int countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(Integer authorId,Date start,Date end);
 
-    int countByAuthor_IdAndPayStatusAndShipStatusAndCreateTimeBetween(Integer authorId, PurchaseEnum.PayStatus payStatus,
-                                                                      PurchaseEnum.ShipStatus shipStatus,Date start,Date end);
+    /**
+     * 按日期统计下级代理商/下级门店有效的采购单
+     * @param agentId
+     * @param start
+     * @param end
+     * @return
+     */
+    int countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(int agentId,Date start,Date end);
 
-    int countByAuthor_IdAndStatus(Integer authorId,PurchaseEnum.OrderStatus status);
+    int countByAuthor_ParentAuthor_IdAndPayStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
+                                                                      PurchaseEnum.ShipStatus shipStatus);
+
+    int countByAuthor_IdAndPayStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
+                                                                  PurchaseEnum.ShipStatus shipStatus);
+
+    int countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(Integer authorId,PurchaseEnum.OrderStatus status);
 }
