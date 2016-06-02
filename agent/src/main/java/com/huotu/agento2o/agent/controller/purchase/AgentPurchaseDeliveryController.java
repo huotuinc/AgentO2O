@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @Controller
-@PreAuthorize("hasAnyRole('PURCHASE')")
+@PreAuthorize("hasAnyRole('AGENT')")
 // TODO: 2016/5/31
 @RequestMapping("/purchase")
 public class AgentPurchaseDeliveryController {
