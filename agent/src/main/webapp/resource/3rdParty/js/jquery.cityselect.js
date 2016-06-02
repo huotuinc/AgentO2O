@@ -29,12 +29,12 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 
 		// 默认值
 		settings=$.extend({
-			url:"../js/jquery.cityselect.js",
-			prov:"",
+			url:"/js/city.min.js",
+			prov:null,
 			city:null,
 			dist:null,
 			nodata:null,
-			required:true
+			required:false
 		},settings);
 
 		var box_obj=this;
@@ -52,7 +52,6 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 		if(dist_val == null || dist_val == ""){
 			dist_obj.hide();
 		}
-
 		// 赋值市级函数
 		var cityStart=function(){
 			var prov_id=prov_obj.get(0).selectedIndex;
@@ -79,13 +78,12 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 				};
 				return;
 			};
-			
+
 			// 遍历赋值市级下拉列表
 			temp_html=select_prehtml;
 			$.each(city_json.citylist[prov_id].c,function(i,city){
 				temp_html+="<option value='"+city.n+"'>"+city.n+"</option>";
 			});
-			temp_html+="<option value='' selected='selected'>请选择市</option>"
 			city_obj.html(temp_html).attr("disabled",false);
 			distStart();
 		};
@@ -117,13 +115,12 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 				};
 				return;
 			};
-			
+
 			// 遍历赋值市级下拉列表
 			temp_html=select_prehtml;
 			$.each(city_json.citylist[prov_id].c[city_id].a,function(i,dist){
 				temp_html+="<option value='"+dist.s+"'>"+dist.s+"</option>";
 			});
-			temp_html+="<option value='' selected='selected'>请选择区</option>"
 			dist_obj.html(temp_html).attr("disabled",false);
 		};
 
@@ -133,7 +130,6 @@ var cityjson={"citylist":[{"p":"北京","c":[{"n":"北京","a":[{"s":"东城区"
 			$.each(city_json.citylist,function(i,prov){
 				temp_html+="<option value='"+prov.p+"'>"+prov.p+"</option>";
 			});
-			temp_html+="<option value=''>请选择省</option>"
 			prov_obj.html(temp_html);
 
 			// 若有传入省份与市级的值，则选中。（setTimeout为兼容IE6而设置）

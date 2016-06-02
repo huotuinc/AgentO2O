@@ -72,7 +72,6 @@ public class AfterSaleController {
     }
 
     @RequestMapping("/afterSalesDetail")
-    @PreAuthorize("hasAnyRole('ORDER','AGENT')")
     public String afterSaleDetail(
             @AgtAuthenticationPrincipal Author author,
             String afterId,

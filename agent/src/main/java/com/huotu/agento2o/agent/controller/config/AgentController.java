@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.controller.config;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -32,13 +33,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/config")
-@PreAuthorize("hasAnyRole('BASE_AGENT','AGENT')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('BASE_DATA')")
 public class AgentController {
 
     @Autowired
     private AgentService agentService;
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private ShopService shopService;
 
     /**
      * 展示代理商基本信息(废弃)
@@ -58,7 +61,7 @@ public class AgentController {
      * @return
      */
     @RequestMapping("/baseConfig")
-    public String baseConfig(@AuthenticationPrincipal Author author, Model model) throws Exception {
+    public String baseConfig(@AgtAuthenticationPrincipal Author author, Model model) throws Exception {
         //获取最新数据
         author = authorService.findById(author.getId());
         if(author == null){
@@ -85,8 +88,31 @@ public class AgentController {
      */
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal Agent agent, Agent requestAgent) {
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent) {
         return agentService.saveAgentConfig(agent.getId(), requestAgent);
+    }
+
+
+    /**
+     * 门店登陆 更新门店基本资料
+     *
+     * @param shop
+     * @return
+     */
+    @RequestMapping(value = "/updateShop")
+    @ResponseBody
+    @PreAuthorize("hasAnyRole('SHOP')")
+    public ApiResult updateShop(@AuthenticationPrincipal Shop curShop, Shop shop, String hotUserName) {
+        if (curShop == null || curShop.getId() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
+        }
+        if (shop == null || shop.getId() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        shop.setCustomer(curShop.getCustomer());
+        shop.setParentAuthor(curShop.getParentAuthor());
+        return shopService.saveOrUpdateShop(shop, hotUserName);
     }
 
 }

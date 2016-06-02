@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.service.common;
 
 import com.huotu.agento2o.service.common.AfterSaleEnum;
+import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -97,6 +98,7 @@ public abstract class CommonTestBase {
         agent.setMobile(UUID.randomUUID().toString());
         agent.setTelephone(UUID.randomUUID().toString());
         agent.setAddress(UUID.randomUUID().toString());
+        agent.setStatus(AgentStatusEnum.CHECKED);
         agent.setDisabled(false);
         agent.setDeleted(false);
         if (parentAgent != null) {
