@@ -42,7 +42,7 @@ import java.util.List;
  */
 
 @Controller
-@PreAuthorize("hasAnyRole('SHOP','AGENT') or hasAnyAuthority('PURCHASE')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('PURCHASE')")
 @RequestMapping("/purchase")
 public class AgentReturnedOrderController {
 
@@ -195,19 +195,15 @@ public class AgentReturnedOrderController {
     }
 
     @RequestMapping(value = "/showDelivery")
-    public ModelAndView showDelivery(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
+    public ModelAndView showDelivery(@AgtAuthenticationPrincipal(type = Author.class) Author author,
                                @RequestParam(required = true) String rOrderId) throws Exception{
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("purchase/return_order_delivery");
         AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
         List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
-//        if(agentReturnedOrder.getAuthor().getParentAuthor() != null && agentReturnedOrder.getAuthor().getParentAuthor().getId().equals(agent.getId())){
-            modelAndView.addObject("agentReturnedOrder",agentReturnedOrder);
-            modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
-//        }else{
-//            throw new Exception("没有权限！");
-//        }
+        modelAndView.addObject("agentReturnedOrder",agentReturnedOrder);
+        modelAndView.addObject("agentReturnedOrderItems",agentReturnedOrderItems);
         return modelAndView;
     }
 
@@ -215,15 +211,15 @@ public class AgentReturnedOrderController {
     @RequestMapping(value = "/delivery")
     @ResponseBody
     public ApiResult deliveryReturnOrder(
-            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
+            @AgtAuthenticationPrincipal Author author,
             ReturnOrderDeliveryInfo deliveryInfo) throws Exception {
-        return agentReturnedOrderService.pushReturnOrderDelivery(deliveryInfo,agent.getId());
+        return agentReturnedOrderService.pushReturnOrderDelivery(deliveryInfo, author.getId());
     }
 
     @RequestMapping(value = "/editReturnNum")
     @ResponseBody
     public ApiResult editReturnNum(
-            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
+            @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) Integer productId,
             @RequestParam(required = true) Integer num) throws Exception {
 
@@ -234,16 +230,17 @@ public class AgentReturnedOrderController {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
 
-        return agentReturnedOrderService.editReturnNum(agent,productId,num);
+        return agentReturnedOrderService.editReturnNum(author,productId,num);
 
     }
 
     /**
-     *  显示退货单列表
+     *  显示下级退货单列表
      * @param agent 代理商
      * @return
      * @throws Exception
      */
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping(value = "/showAgentReturnedOrderList")
     public ModelAndView showAgentReturnedOrderList(
             @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
@@ -280,10 +277,10 @@ public class AgentReturnedOrderController {
      * @param statusComment
      * @return
      */
-    @RequestMapping(value = "/checkAgentReturnOrder")
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
+    @RequestMapping(value = "/checkAgentReturnOrder")
     @ResponseBody
-    public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
+    public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal(type=Agent.class) Agent agent,
                                            @RequestParam(required = true) String rOrderId,
                                            @RequestParam(required = true) String checkStatus,
                                            String statusComment){

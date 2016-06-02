@@ -226,7 +226,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDelivery.setPurchaseOrder(null);
         agentDelivery.setAgentReturnedOrder(agentReturnedOrder);
         agentDelivery.setAgentId(agentReturnedOrder.getAuthor().getId());
-//        agentDelivery.setCustomerId(customerId);
+        agentDelivery.setCustomerId(agentReturnedOrder.getAuthor().getCustomer().getCustomerId());
         agentDelivery.setType(OrderEnum.DeliveryType.RETURN.getCode());
         agentDelivery.setLogisticsName(deliveryInfo.getLogiName());
         agentDelivery.setLogisticsNo(deliveryInfo.getLogiNo());
