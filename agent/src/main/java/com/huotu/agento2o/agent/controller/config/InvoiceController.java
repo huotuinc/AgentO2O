@@ -44,7 +44,7 @@ public class InvoiceController {
     @RequestMapping(value = "/invoiceConfig")
     public ModelAndView invoiceConfig(@AgtAuthenticationPrincipal Author author, Model model) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("config/invoiceConfig2");
+        modelAndView.setViewName("config/invoiceConfig");
 
         InvoiceConfig normalInvoiceConfig = null;
         InvoiceConfig taxInvoiceConfig = null;

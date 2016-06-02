@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!--/*@thymesVar id="deliveryList" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallDelivery>"*/-->
-<!--/*@thymesVar id="deliverySearcher" type="com.huotu.hotsupplier.hbm.service.searchable.DeliverySearcher"*/-->
+<!--/*@thymesVar id="deliveryList" type="java.util.List<com.huotu.agento2o.service.entity.order.MallDelivery>"*/-->
+<!--/*@thymesVar id="deliverySearcher" type="com.huotu.agento2o.service.searchable.DeliverySearcher"*/-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>
@@ -54,7 +54,7 @@
                             <label class="first ">发货方式：</label>
                             <select name="shipMode" id="shipMode">
                                 <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
-                                <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                                <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipStatus"*/-->
                                 <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == deliverySearcher.shipMode}">未发货</option>
                             </select>
                             <br/>

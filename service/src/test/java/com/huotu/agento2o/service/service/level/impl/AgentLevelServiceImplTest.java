@@ -1,5 +1,7 @@
 package com.huotu.agento2o.service.service.level.impl;
 
+import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -20,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by WangJie on 2016/5/11.
@@ -28,6 +31,9 @@ import java.util.List;
 public class AgentLevelServiceImplTest extends CommonTestBase {
     @Autowired
     private AgentLevelService agentLevelService;
+
+    @Autowired
+    private AgentService agentService;
 
     private MallCustomer mockCustomer;
 
@@ -53,15 +59,15 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindById() throws Exception {
-        AgentLevel agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(),mockCustomer.getCustomerId());
+        AgentLevel agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId());
         Assert.assertNotNull(agentLevel);
-        agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(),-1);
+        agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(), -1);
         Assert.assertNull(agentLevel);
-        agentLevel = agentLevelService.findById(-1,mockCustomer.getCustomerId());
+        agentLevel = agentLevelService.findById(-1, mockCustomer.getCustomerId());
         Assert.assertNull(agentLevel);
-        agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(),null);
+        agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(), null);
         Assert.assertNull(agentLevel);
-        agentLevel = agentLevelService.findById(null,mockCustomer.getCustomerId());
+        agentLevel = agentLevelService.findById(null, mockCustomer.getCustomerId());
         Assert.assertNull(agentLevel);
     }
 
@@ -78,41 +84,46 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
 
     @Test
     public void testAddOrUpdate() throws Exception {
-        AgentLevel agentLevel = new AgentLevel();
-        agentLevel.setComment("8折进货");
-        agentLevel.setLevelName("一级代理商");
-        agentLevelService.addOrUpdate(0, -1, agentLevel);
+        AgentLevel requestAgentLevel = new AgentLevel();
+        requestAgentLevel.setLevelName(UUID.randomUUID().toString());
+        ApiResult result = agentLevelService.addOrUpdate(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId(), requestAgentLevel);
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultMsg(), result.getMsg());
+        Assert.assertEquals(requestAgentLevel.getLevelName(), agentLevelService.findById(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId()).getLevelName());
+        result = agentLevelService.addOrUpdate(null, mockCustomer.getCustomerId(), requestAgentLevel);
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultMsg(), result.getMsg());
+        result = agentLevelService.addOrUpdate(mockAgentLevel.getLevelId() + 1, mockCustomer.getCustomerId(), requestAgentLevel);
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultMsg(), result.getMsg());
     }
 
     @Test
     public void testDeleteAgentLevel() throws Exception {
-        AgentLevel agentLevel = new AgentLevel();
-        agentLevel.setLevel(0);
-        agentLevel.setLevelName("一级代理商");
-        agentLevel.setComment("5折进货");
-        agentLevel = agentLevelService.addAgentLevel(agentLevel);
-        agentLevelService.flush();
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
-        Assert.assertNotNull(agentLevel);
-        agentLevelService.deleteAgentLevel(agentLevel.getLevelId(),null);
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
+        ApiResult result = agentLevelService.deleteAgentLevel(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId());
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultMsg(), result.getMsg());
+        AgentLevel agentLevel = agentLevelService.findById(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId());
         Assert.assertNull(agentLevel);
+        result = agentLevelService.deleteAgentLevel(-1, mockCustomer.getCustomerId());
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultMsg(), result.getMsg());
+        mockAgentLevel = mockAgentLevel(mockCustomer);
+        Agent agent = mockAgent(mockCustomer, null);
+        agent.setAgentLevel(mockAgentLevel);
+        agentService.addAgent(agent);
+        result = agentLevelService.deleteAgentLevel(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId());
+        Assert.assertEquals("等级已被绑定", result.getMsg());
     }
 
 
     @Test
-//    @Rollback(value = false)
     public void testAddAgentLevel() throws Exception {
         AgentLevel agentLevel = new AgentLevel();
-        MallCustomer customer = new MallCustomer();
-        customer.setCustomerId(6340);
-        agentLevel.setCustomer(customer);
-        agentLevel.setLevel(0);
-        agentLevel.setLevelName("一级代理商");
-        agentLevel.setComment("5折进货");
+        agentLevel.setCustomer(mockCustomer);
+        agentLevel.setLevelName(UUID.randomUUID().toString());
+        agentLevel.setComment(UUID.randomUUID().toString());
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
-        agentLevel = agentLevelService.findById(agentLevel.getLevelId(),4471);
+        agentLevel = agentLevelService.findById(agentLevel.getLevelId(), mockCustomer.getCustomerId());
         Assert.assertNotNull(agentLevel);
+        agentLevel = agentLevelService.addAgentLevel(null);
+        agentLevelService.flush();
+        Assert.assertNull(agentLevel);
     }
 }

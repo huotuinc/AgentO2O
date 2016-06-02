@@ -89,6 +89,8 @@ public class AddresslServiceImplTest extends CommonTestBase {
     public void testDeleteAddress() throws Exception {
         ApiResult result = addressService.deleteAddress(mockAddress.getId(),mockAgent.getId());
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.SUCCESS.getResultMsg()));
+        Address address = addressService.findById(mockAddress.getId(), mockAgent.getId());
+        Assert.assertNull(address);
         result = addressService.deleteAddress(null,mockAgent.getId());
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
         result = addressService.deleteAddress(-1,mockAgent.getId());

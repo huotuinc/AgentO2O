@@ -61,7 +61,7 @@ public class AgentController {
      * @return
      */
     @RequestMapping("/baseConfig")
-    public String baseConfig(@AuthenticationPrincipal Author author, Model model) throws Exception {
+    public String baseConfig(@AgtAuthenticationPrincipal Author author, Model model) throws Exception {
         //获取最新数据
         author = authorService.findById(author.getId());
         if(author == null){
@@ -88,7 +88,8 @@ public class AgentController {
      */
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal Agent agent, Agent requestAgent) {
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent) {
         return agentService.saveAgentConfig(agent.getId(), requestAgent);
     }
 

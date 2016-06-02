@@ -37,7 +37,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
 
     @Override
     public AgentLevel addAgentLevel(AgentLevel agentLevel) {
-        return agentLevelRepository.save(agentLevel);
+        return agentLevel == null ? null : agentLevelRepository.save(agentLevel);
     }
 
     @Override
@@ -55,8 +55,8 @@ public class AgentLevelServiceImpl implements AgentLevelService {
     }
 
     @Override
-    public AgentLevel findById(Integer agentId, Integer customerId) {
-        return agentId == null || customerId == null ? null : agentLevelRepository.findByLevelIdAndCustomer_customerId(agentId,customerId);
+    public AgentLevel findById(Integer levelId, Integer customerId) {
+        return levelId == null || customerId == null ? null : agentLevelRepository.findByLevelIdAndCustomer_customerId(levelId,customerId);
     }
 
     @Override
@@ -72,6 +72,9 @@ public class AgentLevelServiceImpl implements AgentLevelService {
     @Override
     @Transactional
     public ApiResult addOrUpdate(Integer levelId, Integer customerId, AgentLevel requestAgentLevel) {
+        if(levelId == null || customerId == null || requestAgentLevel == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         MallCustomer customer = mallCustomerService.findByCustomerId(customerId);
         AgentLevel agentLevel;
         if (customer == null) {

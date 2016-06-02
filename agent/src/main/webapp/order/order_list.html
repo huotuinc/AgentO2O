@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!--@thymesVar id="ordersList" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallOrder>"-->
+<!--@thymesVar id="ordersList" type="java.util.List<com.huotu.agento2o.service.entity.order.MallOrder>"-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
@@ -179,7 +179,7 @@
 </head>
 <body marginwidth="0" marginheight="0">
 
-<!--/*@thymesVar id="searchCondition" type="com.huotu.hotsupplier.hbm.service.searchable.OrderSearchCondition"*/-->
+<!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.OrderSearchCondition"*/-->
 <form method="get" action="/order/getOrdersPage" th:action="@{/order/getOrdersPage}" id="form1" th:object="${searchCondition}">
     <!--<input hidden="hidden" id="pageNoStr" name="pageNoStr" th:value="*{pageNoStr}"/>-->
 
@@ -220,21 +220,21 @@
                         <label class="first ">付款状态：</label>
                         <select name="payStatus" id="payStatus">
                             <option selected="selected"  value="-1"  th:selected="*{payStatus == -1}">==所有==</option>
-                            <!--/*@thymesVar id="payStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.PayStatus"*/-->
+                            <!--/*@thymesVar id="payStatusEnums" type="com.huotu.agento2o.service.common.OrderEnum.PayStatus"*/-->
                             <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == searchCondition.payStatus}">未支付</option>
                         </select>
 
                         <label class="first ">发货状态：</label>
                         <select name="shipStatus" id="shipStatus">
                             <option selected="selected" value="-1"  th:selected="*{shipStatus == -1}">==所有==</option>
-                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipStatus"*/-->
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
                         </select>
                         &nbsp;
                         <label class="first ">发货方式：</label>
                         <select name="shipMode" id="shipMode">
                             <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
-                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipStatus"*/-->
                             <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == searchCondition.shipMode}">未发货</option>
                         </select>
 

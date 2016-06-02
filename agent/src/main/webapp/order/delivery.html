@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
-<!--/*@thymesVar id="order" type="com.huotu.hotsupplier.hbm.service.entity.order.MallOrder"*/-->
+<!--/*@thymesVar id="order" type="com.huotu.agento2o.service.entity.order.MallOrder"*/-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>
@@ -231,7 +231,7 @@
             </tr>
             </thead>
             <tbody th:remove="all-but-first">
-            <!--/*@thymesVar id="orderItems" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallOrderItem>"*/-->
+            <!--/*@thymesVar id="orderItems" type="java.util.List<com.huotu.agento2o.service.entity.order.MallOrderItem>"*/-->
             <tr th:each="orderItem:${order.orderItems}">
                 <td><input th:if="${orderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.itemId}" checked="checked"/></td>
                 <td th:text="${orderItem.bn}">G49B884C0349DE7</td>
