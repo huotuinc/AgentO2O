@@ -42,7 +42,7 @@ import java.util.List;
  */
 
 @Controller
-@PreAuthorize("hasAnyRole('PURCHASE')")
+@PreAuthorize("hasAnyRole('SHOP','AGENT') or hasAnyAuthority('PURCHASE')")
 @RequestMapping("/purchase")
 public class AgentReturnedOrderController {
 
@@ -160,7 +160,7 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
-    public ApiResult cancelReturnOrer(@AgtAuthenticationPrincipal Author author,String rOrderId) throws Exception {
+    public ApiResult cancelReturnOrder(@AgtAuthenticationPrincipal Author author,String rOrderId) throws Exception {
         ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(author,rOrderId);
         return apiResult;
     }
@@ -281,8 +281,9 @@ public class AgentReturnedOrderController {
      * @return
      */
     @RequestMapping(value = "/checkAgentReturnOrder")
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @ResponseBody
-    public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal Author author,
+    public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
                                            @RequestParam(required = true) String rOrderId,
                                            @RequestParam(required = true) String checkStatus,
                                            String statusComment){
@@ -297,7 +298,7 @@ public class AgentReturnedOrderController {
                 (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(statusComment)))) {
             return result;
         }
-        return agentReturnedOrderService.checkReturnOrder(null,author.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
+        return agentReturnedOrderService.checkReturnOrder(null,agent.getId(),rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
     }
 
     /**

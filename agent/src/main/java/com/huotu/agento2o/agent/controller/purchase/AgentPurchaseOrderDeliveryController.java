@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Created by helloztt on 2016/5/19.
  */
 @Controller
-@PreAuthorize("hasAnyRole('AGENT_PURCHASE','AGENT')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('PURCHASE')")
 @RequestMapping("/purchaseOrder/delivery")
 public class AgentPurchaseOrderDeliveryController {
 

@@ -20,8 +20,7 @@ import java.util.List;
  */
 
 @Controller
-@PreAuthorize("hasAnyRole('PURCHASE')")
-// TODO: 2016/5/31
+@PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
 @RequestMapping("/purchase")
 public class AgentPurchaseDeliveryController {
 
@@ -32,7 +31,7 @@ public class AgentPurchaseDeliveryController {
     private AgentDeliveryService agentDeliveryService;
 
     @RequestMapping(value = "/showPurchaseDeliveryList")
-    public ModelAndView showPurchaseDeliveryList(@AgtAuthenticationPrincipal Agent agent, DeliverySearcher deliverySearcher){
+    public ModelAndView showPurchaseDeliveryList(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, DeliverySearcher deliverySearcher){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/purchase/agent_purchase_delivery_list");
 
@@ -55,7 +54,7 @@ public class AgentPurchaseDeliveryController {
     }
 
     @RequestMapping(value = "/showReturnDeliveryList")
-    public ModelAndView showReturnDeliveryList(@AgtAuthenticationPrincipal Agent agent, DeliverySearcher deliverySearcher){
+    public ModelAndView showReturnDeliveryList(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, DeliverySearcher deliverySearcher){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/purchase/agent_return_delivery_list");
 

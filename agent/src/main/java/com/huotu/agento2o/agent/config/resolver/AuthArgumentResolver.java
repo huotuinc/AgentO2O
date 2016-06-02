@@ -35,6 +35,9 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
+        if(userDetails == null){
+            throw new Exception("没有权限");
+        }
         if (userDetails instanceof Author) {
             if (authenticationPrincipal.type() == Shop.class && userDetails instanceof Shop) {
                 return userDetails;
@@ -44,7 +47,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 return userDetails;
             }
         }
-        // TODO: 2016/5/10 操作员
         throw new Exception("没有权限");
     }
 }

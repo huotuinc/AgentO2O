@@ -41,7 +41,7 @@ public class ShopController {
     private ShopService shopService;
 
     /**
-     * 代理商登陆 新增门店页面
+     * 代理商登陆 新增/编辑门店页面
      *
      * @param curAgent
      * @param shop
@@ -50,9 +50,6 @@ public class ShopController {
      */
     @RequestMapping("/addShopPage")
     public String toAddShopPage(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop, Model model) throws Exception {
-        if (curAgent == null) {
-            throw new Exception("没有权限");
-        }
         model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
             shop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
