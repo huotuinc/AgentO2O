@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -94,7 +95,7 @@ public class HbmShopController {
      * @param id
      * @return
      */
-    @RequestMapping("/changeIsDisabled")
+    @RequestMapping(value = "/changeIsDisabled", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult changeIsDisabled(@RequestAttribute(value = "customerId") Integer customerId, int id) {
         Shop shop = shopService.findByIdAndCustomer_Id(id, customerId);
@@ -110,7 +111,7 @@ public class HbmShopController {
      * @param shop
      * @return
      */
-    @RequestMapping("/audit")
+    @RequestMapping(value = "/audit", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult toAudit(@RequestAttribute(value = "customerId") Integer customerId, Shop shop) {
         if (shop == null || shop.getId() == null) {
@@ -129,7 +130,7 @@ public class HbmShopController {
      * @param shop
      * @return
      */
-    @RequestMapping("/resetpassword")
+    @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(@RequestAttribute(value = "customerId") Integer customerId, Shop shop) {
         Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);

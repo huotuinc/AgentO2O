@@ -13,6 +13,7 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -90,6 +91,39 @@ public class AgentController {
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
     public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent) {
+        if(requestAgent == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())){
+            return new ApiResult("请选择区域");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getName())){
+            return new ApiResult("请输入代理商名称");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getContact())){
+            return new ApiResult("请输入联系人");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getMobile())){
+            return new ApiResult("请输入手机号码");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getTelephone())){
+            return new ApiResult("请输入电话号码");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getEmail())){
+            return new ApiResult("请输入E-mail");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getAddress())){
+            return new ApiResult("请输入详细地址");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getAccountName())){
+            return new ApiResult("请输入开户名称");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getBankName())){
+            return new ApiResult("请输入开户银行");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getAccountNo())){
+            return new ApiResult("请输入银行卡号");
+        }
         return agentService.saveAgentConfig(agent.getId(), requestAgent);
     }
 
@@ -102,16 +136,53 @@ public class AgentController {
      */
     @RequestMapping(value = "/updateShop")
     @ResponseBody
-    @PreAuthorize("hasAnyRole('SHOP')")
-    public ApiResult updateShop(@AuthenticationPrincipal Shop curShop, Shop shop, String hotUserName) {
-        if (curShop == null || curShop.getId() == null) {
-            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
-        }
+    @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
+    public ApiResult updateShop(@AgtAuthenticationPrincipal(type = Shop.class) Shop curShop, Shop shop, String hotUserName) {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        shop.setCustomer(curShop.getCustomer());
-        shop.setParentAuthor(curShop.getParentAuthor());
+        if(StringUtil.isEmptyStr(shop.getProvince()) || StringUtil.isEmptyStr(shop.getCity()) || StringUtil.isEmptyStr(shop.getDistrict())){
+            return new ApiResult("请选择区域");
+        }
+        if(StringUtil.isEmptyStr(shop.getName())){
+            return new ApiResult("请输入门店名称");
+        }
+        if(StringUtil.isEmptyStr(shop.getContact())){
+            return new ApiResult("请输入联系人");
+        }
+        if(StringUtil.isEmptyStr(shop.getMobile())){
+            return new ApiResult("请输入手机号码");
+        }
+        if(StringUtil.isEmptyStr(shop.getTelephone())){
+            return new ApiResult("请输入电话号码");
+        }
+        if(StringUtil.isEmptyStr(shop.getEmail())){
+            return new ApiResult("请输入E-mail");
+        }
+        if(StringUtil.isEmptyStr(shop.getAddress())){
+            return new ApiResult("请输入详细地址");
+        }
+        if(shop.getLat() == 0 || shop.getLan() == 0){
+            return new ApiResult("请输入经纬度");
+        }
+        if(StringUtil.isEmptyStr(shop.getServeiceTel())){
+            return new ApiResult("请输入客服电话");
+        }
+        if(StringUtil.isEmptyStr(shop.getAfterSalTel())){
+            return new ApiResult("请输入售后电话");
+        }
+        if(StringUtil.isEmptyStr(shop.getAfterSalQQ())){
+            return new ApiResult("请输入售后QQ");
+        }
+        if(StringUtil.isEmptyStr(shop.getAccountName())){
+            return new ApiResult("请输入开户名称");
+        }
+        if(StringUtil.isEmptyStr(shop.getBankName())){
+            return new ApiResult("请输入开户银行");
+        }
+        if(StringUtil.isEmptyStr(shop.getAccountNo())){
+            return new ApiResult("请输入银行卡号");
+        }
         return shopService.saveOrUpdateShop(shop, hotUserName);
     }
 

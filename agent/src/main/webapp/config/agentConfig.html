@@ -66,6 +66,7 @@
     </style>
 </head>
 <body>
+<!--/*@thymesVar id="agent" type="com.huotu.agento2o.service.entity.author.Agent"*/-->
 <form action="#" th:action="@{/agent/addAgent}" method="post" id="agentForm" th:object="${agent}">
     <div class="container">
         <div class="blank10">
@@ -165,8 +166,8 @@
                                 <tr>
                                     <th>联系人:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="Contact" th:field="*{Contact}"
-                                               th:value="*{Contact}"/>
+                                        <input type="text" class="input-normal" id="contact" th:field="*{contact}"
+                                               th:value="*{contact}"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -193,7 +194,7 @@
                                 <tr>
                                     <th>详细地址:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="address" th:field="*{address}"
+                                        <input style="width: 300px;" type="text" class="input-normal" id="address" th:field="*{address}"
                                                th:value="*{address}"/>
                                     </td>
                                 </tr>
@@ -258,7 +259,7 @@
         var city = $.trim($("#city").val());
         var district = $.trim($("#district").val());
         var name = $.trim($("#name").val());
-        var Contact = $.trim($("#Contact").val());
+        var contact = $.trim($("#contact").val());
         var mobile = $.trim($("#mobile").val());
         var telephone = $.trim($("#telephone").val());
         var address = $.trim($("#address").val());
@@ -269,19 +270,19 @@
         var email = $.trim($("#email").val());
         var id = $.trim($("#agentId").val());
         if (province.length == 0 || city.length == 0 || district.length == 0) {
-            $.jBox.tip("代理商所在区域不能为空");
+            $.jBox.tip("请选择区域");
             return;
         }
         if (name.length == 0) {
-            $.jBox.tip("代理商名称不能为空");
+            $.jBox.tip("请输入代理商名称");
             return;
         }
-        if (Contact.length == 0) {
-            $.jBox.tip("联系人不能为空");
+        if (contact.length == 0) {
+            $.jBox.tip("请输入联系人");
             return;
         }
         if (mobile.length == 0) {
-            $.jBox.tip("手机号码不能为空");
+            $.jBox.tip("请输入手机号码");
             return;
         }
         if (!J.IsMobile(mobile)) {
@@ -289,11 +290,11 @@
             return;
         }
         if (telephone.length == 0) {
-            $.jBox.tip("电话号码不能为空");
+            $.jBox.tip("请输入电话号码");
             return;
         }
         if (email.length == 0) {
-            $.jBox.tip("E-mail不能为空");
+            $.jBox.tip("请输入E-mail");
             return;
         }
         if (!J.IsEmail(email)) {
@@ -301,22 +302,22 @@
             return;
         }
         if (address.length == 0) {
-            $.jBox.tip("详细地址不能为空");
+            $.jBox.tip("请输入详细地址");
             return;
         }
         if (accountName.length == 0) {
-            $.jBox.tip("开户名称不能为空");
+            $.jBox.tip("请输入开户名称");
             return;
         }
         if (bankName.length == 0) {
-            $.jBox.tip("开户银行不能为空");
+            $.jBox.tip("请输入开户银行");
             return;
         }
         if (accountNo.length == 0) {
-            $.jBox.tip("银行卡号不能为空");
+            $.jBox.tip("请输入银行卡号");
             return;
         }
-        if (!/^[0-9]*$/.test(accountNo)) {
+        if (!J.IsNumber(accountNo)) {
             $.jBox.tip("银行卡号必须是数字");
             return;
         }
@@ -330,7 +331,7 @@
                 city: city,
                 district: district,
                 name: name,
-                Contact: Contact,
+                contact: contact,
                 mobile: mobile,
                 telephone: telephone,
                 address: address,

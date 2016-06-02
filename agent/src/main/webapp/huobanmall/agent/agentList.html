@@ -157,6 +157,7 @@
 </head>
 <body>
 
+<!--/*@thymesVar id="agentSearcher" type="com.huotu.agento2o.service.searchable.AgentSearcher"*/-->
 <form method="post" action="agentList" id="form1" th:object="${agentSearcher}">
     <div class="container">
         <div class="blank10">
@@ -185,6 +186,7 @@
                         <label class="first ">代理商等级：</label>
                         <select name="levelId" id="levelId">
                             <option selected="selected" value="-1" th:selected="*{levelId == -1}">==所有==</option>
+                            <!--/*@thymesVar id="agentLevels" type="java.util.List<com.huotu.agento2o.service.entity.level.AgentLevel>"*/-->
                             <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
                                     th:text="${agentLevel.levelName}"
                                     th:selected="${agentLevel.levelId == agentSearcher.levelId}">省级代理商
@@ -194,6 +196,7 @@
                         <label class="first ">代理商状态：</label>
                         <select name="agentStatus" id="agentStatus">
                             <option selected="selected" value="-1" th:selected="*{agentStatus == -1}">==所有==</option>
+                            <!--/*@thymesVar id="agentActiveEnums" type="java.util.List<com.huotu.agento2o.service.common.AgentActiveEnum>"*/-->
                             <option th:each="agentStatusEnum:${agentActiveEnums}" th:value="${agentStatusEnum.code}"
                                     th:text="${agentStatusEnum.value}"
                                     th:selected="${agentStatusEnum.code == agentSearcher.agentStatus}">激活
@@ -288,7 +291,7 @@
                         </tr>
                         </thead>
                         <tbody th:remove="all-but-first">
-
+                        <!--/*@thymesVar id="agent" type="com.huotu.agento2o.service.entity.author.Agent"*/-->
                         <tr th:each="agent:${page.content}">
                             <td class=" txt40 c" th:text="${agentStat.count}">
                                 1
@@ -300,7 +303,7 @@
                             <td class="txt80 c" th:text="${agent.username}">
                                 DLmyjn01
                             </td>
-                            <td class="txt80 c" th:text="${agent.Contact}">
+                            <td class="txt80 c" th:text="${agent.contact}">
                                 孙斌
                             </td>
                             <td class="txt40 c" th:text="${agent.mobile}">

@@ -88,16 +88,16 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
 
-        shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
+        shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId(),parentMockAgent);
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
         Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.CHECKED);
 
         getShop.setDisabled(true);
-        ApiResult apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
+        ApiResult apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId(),parentMockAgent);
         Assert.assertTrue(apiResult.getMsg().equals("该门店已被冻结"));
 
         getShop.setDeleted(true);
-        apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId());
+        apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId(),parentMockAgent);
         Assert.assertTrue(apiResult.getMsg().equals("该门店已被删除"));
     }
 
@@ -118,7 +118,7 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
 
-        shopService.deleteById(getShop.getId());
+        shopService.deleteById(getShop.getId(),parentMockAgent);
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent);
         Assert.assertTrue(curShop != null && curShop.isDeleted() == true);
     }

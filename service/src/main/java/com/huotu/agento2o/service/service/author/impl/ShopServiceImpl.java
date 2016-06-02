@@ -70,14 +70,14 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Shop findByIdAndParentAuthor(Integer id, Agent agent) {
-        return id == null || agent == null ? null : shopRepository.findByIdAndParentAuthor(id, agent);
+    public Shop findByIdAndParentAuthor(Integer shopId, Agent agent) {
+        return shopId == null || agent == null ? null : shopRepository.findByIdAndParentAuthor(shopId, agent);
     }
 
     @Override
-    public Shop findByIdAndCustomer_Id(Integer id, Integer customer_Id) {
+    public Shop findByIdAndCustomer_Id(Integer shopId, Integer customer_Id) {
         MallCustomer customer = mallCustomerRepository.findOne(customer_Id);
-        return id == null || customer == null ? null : shopRepository.findByIdAndCustomer(id, customer);
+        return shopId == null || customer == null ? null : shopRepository.findByIdAndCustomer(shopId, customer);
     }
 
     @Override
@@ -160,8 +160,8 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public ApiResult updateStatus(AgentStatusEnum status, int id) {
-        Shop shop = shopRepository.findOne(id);
+    public ApiResult updateStatus(AgentStatusEnum status, int shopId, Agent agent) {
+        Shop shop = findByIdAndParentAuthor(shopId, agent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -192,8 +192,8 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public ApiResult deleteById(int id) {
-        Shop shop = shopRepository.findOne(id);
+    public ApiResult deleteById(int shopId, Agent agent) {
+        Shop shop = findByIdAndParentAuthor(shopId, agent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         } else {
@@ -216,8 +216,8 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public ApiResult updatePasswordById(String password, int id) {
-        Shop shop = shopRepository.findOne(id);
+    public ApiResult updatePasswordById(String password, int shopId) {
+        Shop shop = shopRepository.findOne(shopId);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -248,7 +248,7 @@ public class ShopServiceImpl implements ShopService {
             List<Predicate> predicates = new ArrayList<>();
 
             //平台过滤
-            if(searchCondition.getMallCustomer() != null){
+            if (searchCondition.getMallCustomer() != null) {
                 predicates.add(cb.equal(root.get("customer").as(MallCustomer.class), searchCondition.getMallCustomer()));
             }
 

@@ -23,6 +23,7 @@
             th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
             th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script src="resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
@@ -160,6 +161,9 @@
 
     function searchShopAll() {
         window.location.href = '/shop/shopList';
+    }
+    function addGood(){
+        top.document.getElementById("content_left").contentDocument.getElementById("id_030101").getElementsByTagName("a")[0].click();
     }
 
 </script>
@@ -305,6 +309,10 @@
             <div class="h">
                 <span class="icon-sprite icon-list"></span>
                 <h3 style="float: left; width: 144px;">门店管理 </h3>
+                <div class="bar">
+                    <a class="btn-lit aucontrol" href="javascript:addGood();">
+                        <span>新增</span></a>
+                </div>
             </div>
             <div class="tl corner">
             </div>
@@ -362,12 +370,12 @@
                                         </td>
                                         <td class="txt80 c" th:text="${shop.username}">
                                         </td>
-                                        <td class="txt80 c" th:text="${shop.Contact}">
+                                        <td class="txt80 c" th:text="${shop.contact}">
                                         </td>
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
+                                            th:text="${shop.province}!=null ? |${shop.province} ${shop.city} ${shop.district}| : ''">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>

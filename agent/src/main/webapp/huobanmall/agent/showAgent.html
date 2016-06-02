@@ -66,6 +66,7 @@
     </style>
 </head>
 <body>
+<!--/*@thymesVar id="agent" type="com.huotu.agento2o.service.entity.author.Agent"*/-->
 <div th:object="${agent}">
     <div class="container">
         <div class="blank10">
@@ -164,8 +165,8 @@
                                 <tr>
                                     <th>联系人:</th>
                                     <td>
-                                        <span class="input-normal" id="Contact" th:field="*{Contact}"
-                                              th:text="*{Contact}"></span>
+                                        <span class="input-normal" id="contact" th:field="*{contact}"
+                                              th:text="*{contact}"></span>
                                     </td>
                                 </tr>
                                 <tr>

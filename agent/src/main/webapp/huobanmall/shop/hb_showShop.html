@@ -144,7 +144,7 @@
                                     <th>门店所在区域:</th>
                                     <td>
                                         <div id="citys">
-                                            <span th:text="|*{province}—*{city}—*{district}|"></span>
+                                            <span th:text="|*{province} *{city} *{district}|"></span>
                                             <!--<select class="prov" id="province"></select>-->
                                             <!--<select class="city" id="city" disabled="disabled"></select>-->
                                             <!--<select class="dist" id="district" disabled="disabled"></select>-->
@@ -160,7 +160,7 @@
                                 <tr>
                                     <th>联系人:</th>
                                     <td>
-                                        <span type="text" class="input-normal" id="Contact" th:text="*{Contact}"></span>
+                                        <span type="text" class="input-normal" id="contact" th:text="*{contact}"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -264,7 +264,7 @@
                         $.jBox.tip(json.msg, 'error');
                     }
                 }, function () {
-                }, J.PostMethod);
+                }, "post");
             }
         }, function () {
             $(this).dialog('close');

@@ -32,9 +32,9 @@ public interface ShopService extends UserDetailsService {
 
     Shop findById(Integer id);
 
-    Shop findByIdAndParentAuthor(Integer id, Agent agent);
+    Shop findByIdAndParentAuthor(Integer shopId, Agent agent);
 
-    Shop findByIdAndCustomer_Id(Integer id, Integer customer_Id);
+    Shop findByIdAndCustomer_Id(Integer shopId, Integer customer_Id);
 
     Shop addShop(Shop shop);
 
@@ -46,9 +46,10 @@ public interface ShopService extends UserDetailsService {
      * 更新审核状态
      *
      * @param status
-     * @param id
+     * @param shopId
+     * @param agent
      */
-    ApiResult updateStatus(AgentStatusEnum status, int id);
+    ApiResult updateStatus(AgentStatusEnum status, int shopId, Agent agent);
 
     /**
      * 更新审核状态和备注
@@ -58,7 +59,7 @@ public interface ShopService extends UserDetailsService {
      */
     ApiResult updateStatusAndAuditComment(AgentStatusEnum status, String auditComment, int id);
 
-    ApiResult deleteById(int id);
+    ApiResult deleteById(int shopId, Agent agent);
 
     /**
      * 冻结解冻
@@ -67,7 +68,7 @@ public interface ShopService extends UserDetailsService {
      */
     ApiResult updateIsDisabledById(int id);
 
-    ApiResult updatePasswordById(String password, int id);
+    ApiResult updatePasswordById(String password, int shopId);
 
     Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
 

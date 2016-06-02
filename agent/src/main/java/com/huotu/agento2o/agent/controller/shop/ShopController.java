@@ -49,7 +49,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop, Model model) throws Exception {
+    public String toAddShopPage(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, Model model) throws Exception {
         model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
             shop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
@@ -65,14 +65,41 @@ public class ShopController {
      * @param shop
      * @return
      */
-    @RequestMapping(value = "/addShop")
+    @RequestMapping(value = "/addShop", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult saveShop(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop, String hotUserName) {
+    public ApiResult saveShop(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, String hotUserName) {
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if (curAgent == null) {
-            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
+        if (StringUtil.isEmptyStr(shop.getUsername())) {
+            return new ApiResult("请输入用户名");
+        }
+        if (shop.getId() == null && StringUtil.isEmptyStr(shop.getPassword())) {
+            return new ApiResult("请输入密码");
+        }
+        if (StringUtil.isEmptyStr(shop.getProvince()) || StringUtil.isEmptyStr(shop.getCity()) || StringUtil.isEmptyStr(shop.getDistrict())) {
+            return new ApiResult("请选择区域");
+        }
+        if (StringUtil.isEmptyStr(shop.getName())) {
+            return new ApiResult("请输入代理商名称");
+        }
+        if (StringUtil.isEmptyStr(shop.getContact())) {
+            return new ApiResult("请输入联系人");
+        }
+        if (StringUtil.isEmptyStr(shop.getMobile())) {
+            return new ApiResult("请输入手机号码");
+        }
+        if (StringUtil.isEmptyStr(shop.getTelephone())) {
+            return new ApiResult("请输入电话号码");
+        }
+        if (StringUtil.isEmptyStr(shop.getEmail())) {
+            return new ApiResult("请输入E-mail");
+        }
+        if (StringUtil.isEmptyStr(shop.getAddress())) {
+            return new ApiResult("请输入详细地址");
+        }
+        if (shop.getLan() == 0 || shop.getLat() == 0) {
+            return new ApiResult("请输入经纬度");
         }
         //新增后上级代理商和平台就不可修改
         shop.setParentAuthor(curAgent);
@@ -88,13 +115,10 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/shopList")
-    public String showShopList(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent,
+    public String showShopList(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent,
                                Model model,
                                ShopSearchCondition searchCondition,
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
-        if (curAgent == null) {
-            throw new Exception("没有权限");
-        }
         searchCondition.setMallCustomer(curAgent.getCustomer());
         searchCondition.setParentAuthor(curAgent);
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
@@ -114,14 +138,10 @@ public class ShopController {
      * @param id
      * @return
      */
-    @RequestMapping("/changeStatus")
+    @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult changeStatus(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, int id) {
-        Shop shop = shopService.findByIdAndParentAuthor(id, curAgent);
-        if (shop == null) {
-            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
-        }
-        return shopService.updateStatus(AgentStatusEnum.CHECKING, id);
+    public ApiResult changeStatus(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, int id) {
+        return shopService.updateStatus(AgentStatusEnum.CHECKING, id, curAgent);
     }
 
     /**
@@ -130,14 +150,10 @@ public class ShopController {
      * @param id
      * @return
      */
-    @RequestMapping("/delete")
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult deleteById(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, int id) {
-        Shop shop = shopService.findByIdAndParentAuthor(id, curAgent);
-        if (shop == null) {
-            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
-        }
-        return shopService.deleteById(id);
+    public ApiResult deleteById(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, int id) {
+        return shopService.deleteById(id, curAgent);
     }
 
     /**
@@ -146,9 +162,9 @@ public class ShopController {
      * @param shop
      * @return
      */
-    @RequestMapping("/resetpassword")
+    @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult resetPassword(@AgtAuthenticationPrincipal(type=Agent.class) Agent curAgent, Shop shop) {
+    public ApiResult resetPassword(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop) {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -163,7 +179,7 @@ public class ShopController {
      * 导出Excel
      */
     @RequestMapping("/exportExcel")
-    public void exportExcel(@AgtAuthenticationPrincipal(type=Agent.class) Agent customer,
+    public void exportExcel(@AgtAuthenticationPrincipal(type = Agent.class) Agent customer,
                             ShopSearchCondition searchCondition,
                             int txtBeginPage, int txtEndPage,
                             HttpSession session,
@@ -206,7 +222,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type=Agent.class) Agent agent, String hotUserName) {
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, String hotUserName) {
         int customerId = agent.getCustomer().getCustomerId();
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(customerId, hotUserName));
     }

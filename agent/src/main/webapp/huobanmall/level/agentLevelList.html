@@ -111,6 +111,7 @@
                         </tr>
                         </tbody>
                         <tbody>
+                        <!--/*@thymesVar id="agentLevels" type="java.util.List<com.huotu.agento2o.service.entity.level.AgentLevel>"*/-->
                         <tr th:each="agentLevel:${agentLevels}">
                             <td class="txt40 c" th:text="${agentLevelStat.count}">1</td>
                             <td class="txt40 c" th:text="${agentLevel.levelName}">一级代理商</td>
