@@ -72,9 +72,6 @@ public class HbmShopController {
                                Model model,
                                ShopSearchCondition searchCondition,
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
-        if (customerId == null) {
-            throw new Exception("没有权限");
-        }
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         MallCustomer mallCustomer = mallCustomerService.findByCustomerId(customerId);
         searchCondition.setMallCustomer(mallCustomer);
