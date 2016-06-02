@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,11 +46,14 @@ public class ProductController {
 
     @RequestMapping("save")
     public @ResponseBody
-    ApiResult saveInfo(@RequestBody JSONObject products) {
-        boolean success = false;
-        List<String> info = (List) products.get("info");
-        //更新
-        success = agentProductService.updateWaring(info);
-        return success ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
+    ApiResult saveInfo(@AgtAuthenticationPrincipal Author author,
+                       @RequestParam(required = true,defaultValue = "0") Integer agentProductId,
+                       @RequestParam(required = true,defaultValue = "0") Integer warning) {
+        ApiResult result;
+        if(agentProductId == 0 || warning == 0){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        result = agentProductService.updateWarning(author,agentProductId,warning);
+        return result;
     }
 }

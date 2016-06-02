@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.purchase;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 
@@ -36,9 +37,7 @@ public interface AgentProductService {
 
     List<AgentProduct> findByAgentId(Integer agentId);
 
-
-
-    boolean updateWaring(List<String> info);
+    ApiResult updateWarning(Author author, Integer agentProductId, Integer warning);
 
     /**
      * 查找出需要发送库存警告的信息代理商

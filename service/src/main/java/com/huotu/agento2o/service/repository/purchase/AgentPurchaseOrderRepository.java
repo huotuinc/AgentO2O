@@ -51,7 +51,7 @@ public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchas
     int countByAuthor_ParentAuthor_IdAndPayStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
                                                                       PurchaseEnum.ShipStatus shipStatus);
 
-    int countByAuthor_IdAndPayStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
+    int countByAuthor_IdAndPayStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
                                                                   PurchaseEnum.ShipStatus shipStatus);
 
     int countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(Integer authorId,PurchaseEnum.OrderStatus status);

@@ -39,16 +39,11 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
 
     AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
 
-    List<AgentProduct> findAgentProductByAuthor_Id(Integer authorId);
-
-    // TODO: 2016/5/20 delete
-    AgentProduct findByProduct_productId(Integer productId);
-
     /**
      * 查询出需要提醒的用户
      * @return 用户ID
      */
-    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>product.store")
+    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>product.store-product.freez")
     @Modifying
     List<Object> findNeedWaringAgent();
 
@@ -57,8 +52,11 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
      * @param authorId
      * @return
      */
-    @Query("select a from AgentProduct a where  a.warning>a.store and a.author.id =?1")
+    @Query("select a from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>a.store-a.freez  and a.author.id =?1")
     List<AgentProduct> findWaringAgentInfo(Integer authorId);
+
+    @Query("select count(a) from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>a.store-a.freez and a.author.id =?1")
+    int countByWaringAgentInfo(Integer authorId);
 
    /* List<AgentProduct> findAgentProductByAuthor_IdAndStoreLessThanWarning(Integer authorId);*/
 

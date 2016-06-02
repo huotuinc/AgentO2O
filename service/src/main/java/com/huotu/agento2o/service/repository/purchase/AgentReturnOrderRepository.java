@@ -28,5 +28,5 @@ public interface AgentReturnOrderRepository extends JpaRepository<AgentReturnedO
 
     int countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status);
 
-    int countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndDisabledFalse(Integer agentId,PurchaseEnum.OrderStatus status,PurchaseEnum.ShipStatus shipStatus);
+    int countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer agentId,PurchaseEnum.OrderStatus status,PurchaseEnum.ShipStatus shipStatus);
 }

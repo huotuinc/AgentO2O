@@ -10,6 +10,8 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
+import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
@@ -55,21 +57,18 @@ public class AgentProductServiceImpl implements AgentProductService {
 
     @Override
     @Transactional
-    public boolean updateWaring(List<String> info) {
-        for (String str : info) {
-            String _item = str.substring(1, str.length() - 1);
-            String[] item = _item.split(",");
-            if (item.length == 3) {
-                //更新
-                Integer agentId = Integer.parseInt(item[0].trim());
-                Integer productId = Integer.parseInt(item[1].trim());
-                Integer warning = Integer.parseInt(item[2].trim());
-                if (agentProductRepository.updateWaring(agentId, productId, warning) <= 0) {
-                    return false;
-                }
-            }
+    public ApiResult updateWarning(Author author, Integer agentProductId, Integer warning) {
+        AgentProduct agentProduct = agentProductRepository.findOne(agentProductId);
+        if(agentProduct == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        return true;
+        if(author.getId().equals(agentProduct.getAuthor().getId())){
+            agentProduct.setWarning(warning);
+            agentProductRepository.save(agentProduct);
+            return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        }else{
+            return new ApiResult("没有权限！");
+        }
     }
 
     @Override

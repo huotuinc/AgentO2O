@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.model.statistics.IndexStatistics;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
+import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
 import com.huotu.agento2o.service.service.statistics.IndexStatisticsService;
@@ -39,6 +40,8 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
     private AgentPurchaseOrderRepository purchaseOrderRepository;
     @Autowired
     private AgentReturnOrderRepository returnOrderRepository;
+    @Autowired
+    private AgentProductRepository agentProductRepository;
 
     @Override
     public int orderCountByDate(Author author, Date start, Date end) {
@@ -96,12 +99,12 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int toReceivePurchaseOrderCount(int authorId) {
-        return purchaseOrderRepository.countByAuthor_IdAndPayStatusAndShipStatusAndDisabledFalse(authorId, PurchaseEnum.PayStatus.PAYED, PurchaseEnum.ShipStatus.DELIVERED);
+        return purchaseOrderRepository.countByAuthor_IdAndPayStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.PayStatus.PAYED, PurchaseEnum.ShipStatus.DELIVERED);
     }
 
     @Override
     public int toReceiveReturnedOrderCount(int authorId) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.DELIVERED);
+        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.DELIVERED);
     }
 
     public IndexStatistics orderStatistics(Author author) {
@@ -116,15 +119,6 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         //代理商显示采购单信息
         if (author instanceof Agent) {
             indexStatistics.setAgent(true);
-            //订单相关
-            //今日订单数，昨日订单数
-            indexStatistics.setTodayOrderCount(orderCountByDate(author, todayStart, todayEnd));
-            indexStatistics.setYesterdayOrderCount(orderCountByDate(author, yesterdayStart, yesterdayEnd));
-
-            //今日采购单数，昨日采购单数
-            indexStatistics.setTodayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
-            indexStatistics.setYesterdayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
-
             //今日下级采购单数，昨日下级采购单数
             indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(),todayStart,todayEnd));
             indexStatistics.setYesterdaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
@@ -132,43 +126,37 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
             //今日退货单数，昨日退货单数
             indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(),todayStart,todayEnd));
             indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
-            //今日下级退货单数，昨日下级退货单数
-            indexStatistics.setTodaySubReturnedOrderCount(subReturnedOrderCountByDate(author.getId(),todayStart,todayEnd));
-            indexStatistics.setYesterdaySubReturnedOrderCount(subReturnedOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
 
             //待审核采购单数
             indexStatistics.setToCheckPurchaseOrderCount(checkingPurchaseOrderCount(author.getId()));
             //待发货采购单数
             indexStatistics.setToDeliveryPurchaseOrderCount(unDeliveryPurchaseOrderCount(author.getId()));
-            //待确认收货采购单数
-            indexStatistics.setToReceivePurchaseOrderCount(toReceivePurchaseOrderCount(author.getId()));
 
             //待审核退货单
             indexStatistics.setToCheckReturnedOrderCount(checkingReturnedOrderCount(author.getId()));
             indexStatistics.setToReceiveReturnedOrderCount(toReceiveReturnedOrderCount(author.getId()));
-            indexStatistics.setToDeliveryReturnedOrderCount(unDeliveryReturnedOrderCount(author.getId()));
         } else if (author instanceof Shop) {
             indexStatistics.setAgent(false);
-            //订单相关
-            //今日订单数，昨日订单数
-            indexStatistics.setTodayOrderCount(orderCountByDate(author, todayStart, todayEnd));
-            indexStatistics.setYesterdayOrderCount(orderCountByDate(author, yesterdayStart, yesterdayEnd));
-
-            //今日我的采购单数，昨日我的采购单数
-            indexStatistics.setTodayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
-            indexStatistics.setYesterdayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
-
-            //今日我的退货单数，昨日我的退货单数
-            indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(),todayStart,todayEnd));
-            indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
-
-            //待发货订单数
-            indexStatistics.setToDeliveryOrderCount(unDeliveryOrderCount(author.getId()));
-            //待确认收货采购单数
-            indexStatistics.setToReceivePurchaseOrderCount(toReceivePurchaseOrderCount(author.getId()));
-            indexStatistics.setToDeliveryReturnedOrderCount(unDeliveryReturnedOrderCount(author.getId()));
         }
+        //订单相关
+        //今日订单数，昨日订单数
+        indexStatistics.setTodayOrderCount(orderCountByDate(author, todayStart, todayEnd));
+        indexStatistics.setYesterdayOrderCount(orderCountByDate(author, yesterdayStart, yesterdayEnd));
 
+        //今日我的采购单数，昨日我的采购单数
+        indexStatistics.setTodayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
+        indexStatistics.setYesterdayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
+
+        //今日我的退货单数，昨日我的退货单数
+        indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(),todayStart,todayEnd));
+        indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
+
+        //待发货订单数
+        indexStatistics.setToDeliveryOrderCount(unDeliveryOrderCount(author.getId()));
+        //待确认收货采购单数
+        indexStatistics.setToReceivePurchaseOrderCount(toReceivePurchaseOrderCount(author.getId()));
+        indexStatistics.setToDeliveryReturnedOrderCount(unDeliveryReturnedOrderCount(author.getId()));
+        indexStatistics.setProductNotifyCount(agentProductRepository.countByWaringAgentInfo(author.getId()));
         return indexStatistics;
     }
 }
