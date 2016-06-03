@@ -20,6 +20,7 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
@@ -33,6 +34,7 @@ import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
+import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
@@ -46,6 +48,7 @@ import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.config.AddressService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
@@ -76,7 +79,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ContextConfiguration(classes = {MVCConfig.class, ServiceConfig.class})
 @WebAppConfiguration
 @Transactional
-public abstract class CommonTestBase extends SpringWebTest{
+public abstract class CommonTestBase extends SpringWebTest {
 
     protected String passWord = UUID.randomUUID().toString();
 
@@ -115,18 +118,22 @@ public abstract class CommonTestBase extends SpringWebTest{
     //标准类目 羽绒服
     protected MallGoodsType standardGoodsType;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
     @Before
-    public void initBase(){
-        standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167",-1);
+    public void initBase() {
+        standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167", -1);
     }
+
     @Autowired
     protected MallOrderRepository orderRepository;
 
-    protected MockHttpSession loginAs(String userName, String password,String roleType) throws Exception {
+    protected MockHttpSession loginAs(String userName, String password, String roleType) throws Exception {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",roleType))
+                .param("username", userName).param("password", password).param("roleType", roleType))
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         saveAuthedSession(session);
@@ -134,7 +141,7 @@ public abstract class CommonTestBase extends SpringWebTest{
     }
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockMallCustomer(){
+    protected MallCustomer mockMallCustomer() {
         MallCustomer customer = new MallCustomer();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
@@ -143,7 +150,7 @@ public abstract class CommonTestBase extends SpringWebTest{
     }
 
     @SuppressWarnings("Duplicates")
-    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent){
+    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
@@ -155,7 +162,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         agent.setAddress(UUID.randomUUID().toString());
         agent.setDisabled(false);
         agent.setDeleted(false);
-        if(parentAgent != null){
+        if (parentAgent != null) {
             agent.setParentAuthor(parentAgent);
         }
         agent.setAgentLevel(mockAgentLevel(mockCustomer));
@@ -165,7 +172,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         return agent;
     }
 
-    protected Shop mockShop(MallCustomer mockCustomer,Agent parentAgent){
+    protected Shop mockShop(MallCustomer mockCustomer, Agent parentAgent) {
         Shop shop = new Shop();
         shop.setCustomer(mockCustomer);
         shop.setUsername(UUID.randomUUID().toString());
@@ -178,7 +185,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        if(parentAgent != null){
+        if (parentAgent != null) {
             shop.setParentAuthor(parentAgent);
         }
         //密码进行加密保存
@@ -190,31 +197,33 @@ public abstract class CommonTestBase extends SpringWebTest{
 
     /**
      * 商品自定义分类
+     *
      * @return
      */
-    protected MallGoodsType mockMallGoodsType(Integer customerId){
+    protected MallGoodsType mockMallGoodsType(Integer customerId) {
         MallGoodsType goodsType = new MallGoodsType();
         goodsType.setName(UUID.randomUUID().toString());
         goodsType.setDisabled(false);
         goodsType.setCustomerId(customerId);
-        return goodsTypeRepository.saveAndFlush( goodsType);
+        return goodsTypeRepository.saveAndFlush(goodsType);
     }
 
     /**
      * 平台方商品
+     *
      * @param customerId
      * @param agentId
      * @return
      */
-    protected MallGoods mockMallGoods(Integer customerId, Integer agentId){
+    protected MallGoods mockMallGoods(Integer customerId, Integer agentId) {
         MallGoods mockMallGoods = new MallGoods();
         mockMallGoods.setCost(random.nextDouble());
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
         //平台方商品
-        if(agentId == null){
+        if (agentId == null) {
             mockMallGoods.setAgentId(0);
-        }else {
+        } else {
             mockMallGoods.setAgentId(agentId);
         }
         mockMallGoods.setDisabled(false);
@@ -224,17 +233,18 @@ public abstract class CommonTestBase extends SpringWebTest{
         return mockMallGoods;
     }
 
-    protected MallGoods mockMallGoods(MallGoods mockMallGoods){
+    protected MallGoods mockMallGoods(MallGoods mockMallGoods) {
         return goodsRepository.saveAndFlush(mockMallGoods);
     }
 
     /**
      * 平台方货品
+     *
      * @param mockGoods
      * @return
      */
     @SuppressWarnings("Duplicates")
-    protected MallProduct mockMallProduct(MallGoods mockGoods){
+    protected MallProduct mockMallProduct(MallGoods mockGoods) {
         MallProduct mockMallProduct = new MallProduct();
         mockMallProduct.setGoods(mockGoods);
         mockMallProduct.setStandard(UUID.randomUUID().toString());
@@ -251,12 +261,13 @@ public abstract class CommonTestBase extends SpringWebTest{
 
     /**
      * 代理商货品
+     *
      * @param mockMallProduct
      * @param mockAuthor
      * @return
      */
     @SuppressWarnings("Duplicates")
-    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Author mockAuthor){
+    protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Author mockAuthor) {
         AgentProduct agentProduct = new AgentProduct();
         agentProduct.setAuthor(mockAuthor);
         agentProduct.setProduct(mockMallProduct);
@@ -268,7 +279,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         return agentProductRepository.saveAndFlush(agentProduct);
     }
 
-    protected ShoppingCart mockShoppingCart(MallProduct mockMallProduct, Author author){
+    protected ShoppingCart mockShoppingCart(MallProduct mockMallProduct, Author author) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setAuthor(author);
         shoppingCart.setProduct(mockMallProduct);
@@ -277,13 +288,13 @@ public abstract class CommonTestBase extends SpringWebTest{
         return shoppingCartRepository.saveAndFlush(shoppingCart);
     }
 
-    protected ShoppingCart mockShoppingCart(AgentProduct agentProduct,Author author){
+    protected ShoppingCart mockShoppingCart(AgentProduct agentProduct, Author author) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setAuthor(author);
         shoppingCart.setProduct(agentProduct.getProduct());
-        if(agentProduct.getStore()-agentProduct.getFreez() == 0){
+        if (agentProduct.getStore() - agentProduct.getFreez() == 0) {
             shoppingCart.setNum(0);
-        }else {
+        } else {
             shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
         }
         shoppingCart.setCreateTime(new Date());
@@ -291,19 +302,18 @@ public abstract class CommonTestBase extends SpringWebTest{
     }
 
     /**
-     *
      * @param author
-     * @param type 发票类型：0普通发票；1增值税发票
+     * @param type   发票类型：0普通发票；1增值税发票
      * @return
      */
-    protected InvoiceConfig mockInvoiceConfig(Author author , int type){
+    protected InvoiceConfig mockInvoiceConfig(Author author, int type) {
         InvoiceConfig invoiceConfig = new InvoiceConfig();
         invoiceConfig.setAuthor(author);
-        if(type == 0){
+        if (type == 0) {
             invoiceConfig.setType(InvoiceEnum.InvoiceTypeStatus.NORMALINVOICE);
             invoiceConfig.setTaxTitle(UUID.randomUUID().toString());
             invoiceConfig.setTaxContent(UUID.randomUUID().toString());
-        }else if (type == 1){
+        } else if (type == 1) {
             invoiceConfig.setType(InvoiceEnum.InvoiceTypeStatus.TAXINVOICE);
             invoiceConfig.setTaxTitle(UUID.randomUUID().toString());
             invoiceConfig.setTaxContent(UUID.randomUUID().toString());
@@ -312,15 +322,15 @@ public abstract class CommonTestBase extends SpringWebTest{
             invoiceConfig.setBankName(UUID.randomUUID().toString());
         }
         invoiceConfig.setDefaultType(1);
-        InvoiceConfig otherInvoiceConfig = invoiceConfigRepository.findByAuthorAndDefaultType(author,1);
-        if(otherInvoiceConfig != null){
+        InvoiceConfig otherInvoiceConfig = invoiceConfigRepository.findByAuthorAndDefaultType(author, 1);
+        if (otherInvoiceConfig != null) {
             otherInvoiceConfig.setDefaultType(0);
             invoiceConfigRepository.save(otherInvoiceConfig);
         }
         return invoiceConfigRepository.saveAndFlush(invoiceConfig);
     }
 
-    protected AgentPurchaseOrder mockAgentPurchaseOrder(Author author){
+    protected AgentPurchaseOrder mockAgentPurchaseOrder(Author author) {
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAuthor(author);
@@ -329,14 +339,14 @@ public abstract class CommonTestBase extends SpringWebTest{
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
         purchaseOrder.setShipAddr(UUID.randomUUID().toString());
         int randomSendMode = random.nextInt(2);
-        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class,randomSendMode));
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, randomSendMode));
         int randomTaxType = random.nextInt(3);
-        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class,randomTaxType));
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, randomTaxType));
         purchaseOrder.setCreateTime(new Date());
-        if(randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()){
+        if (randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()) {
             purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
             purchaseOrder.setTaxContent(UUID.randomUUID().toString());
-        }else if(randomTaxType == PurchaseEnum.TaxType.TAX.getCode()){
+        } else if (randomTaxType == PurchaseEnum.TaxType.TAX.getCode()) {
             purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
             purchaseOrder.setTaxContent(UUID.randomUUID().toString());
             purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
@@ -344,37 +354,37 @@ public abstract class CommonTestBase extends SpringWebTest{
             purchaseOrder.setAccountNo(UUID.randomUUID().toString());
         }
         int randomStatus = random.nextInt(3);
-        purchaseOrder.setStatus(EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class,randomStatus));
-        if(randomStatus == PurchaseEnum.OrderStatus.CHECKED.getCode()){
+        purchaseOrder.setStatus(EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, randomStatus));
+        if (randomStatus == PurchaseEnum.OrderStatus.CHECKED.getCode()) {
             //审核通过
             int randomPayStatus = random.nextInt(2);
-            purchaseOrder.setPayStatus(EnumHelper.getEnumType(PurchaseEnum.PayStatus.class,randomPayStatus));
-            if(randomPayStatus == PurchaseEnum.PayStatus.PAYED.getCode()){
+            purchaseOrder.setPayStatus(EnumHelper.getEnumType(PurchaseEnum.PayStatus.class, randomPayStatus));
+            if (randomPayStatus == PurchaseEnum.PayStatus.PAYED.getCode()) {
                 //已支付
                 purchaseOrder.setPayTime(new Date());
                 int randomShipStatus = random.nextInt(2);
-                purchaseOrder.setShipStatus(EnumHelper.getEnumType(PurchaseEnum.ShipStatus.class,randomShipStatus));
-                if(randomShipStatus == PurchaseEnum.ShipStatus.DELIVERED.getCode()){
+                purchaseOrder.setShipStatus(EnumHelper.getEnumType(PurchaseEnum.ShipStatus.class, randomShipStatus));
+                if (randomShipStatus == PurchaseEnum.ShipStatus.DELIVERED.getCode()) {
                 }
             }
             purchaseOrder.setDisabled(false);
-        }else if(randomStatus == PurchaseEnum.OrderStatus.RETURNED.getCode()){
+        } else if (randomStatus == PurchaseEnum.OrderStatus.RETURNED.getCode()) {
             //审核不通过
             int randomDisabled = random.nextInt(2);
-            if(randomDisabled == 0){
+            if (randomDisabled == 0) {
                 purchaseOrder.setDisabled(false);
-            }else {
+            } else {
                 purchaseOrder.setDisabled(true);
             }
         }
         return purchaseOrder;
     }
 
-    protected AgentPurchaseOrder mockAgentPurchaseOrder(AgentPurchaseOrder mockPurchaseOrder){
+    protected AgentPurchaseOrder mockAgentPurchaseOrder(AgentPurchaseOrder mockPurchaseOrder) {
         return agentPurchaseOrderRepository.saveAndFlush(mockPurchaseOrder);
     }
 
-    protected AgentPurchaseOrderItem mockAgentPurchaseOrderItem(AgentPurchaseOrder agentPurchaseOrder,MallProduct mallProduct){
+    protected AgentPurchaseOrderItem mockAgentPurchaseOrderItem(AgentPurchaseOrder agentPurchaseOrder, MallProduct mallProduct) {
         AgentPurchaseOrderItem orderItem = new AgentPurchaseOrderItem();
         orderItem.setPurchaseOrder(agentPurchaseOrder);
         orderItem.setNum(random.nextInt(100));
@@ -384,9 +394,9 @@ public abstract class CommonTestBase extends SpringWebTest{
         orderItem.setPdtDesc(mallProduct.getStandard());
         orderItem.setUnit(mallProduct.getUnit());
         orderItem.setPrice(mallProduct.getPrice());
-        if(PurchaseEnum.ShipStatus.DELIVERED.equals(agentPurchaseOrder.getShipStatus())){
+        if (PurchaseEnum.ShipStatus.DELIVERED.equals(agentPurchaseOrder.getShipStatus())) {
             orderItem.setSendNum(orderItem.getNum());
-        }else{
+        } else {
             orderItem.setSendNum(0);
         }
         return agentPurchaseOrderItemRepository.saveAndFlush(orderItem);
@@ -394,15 +404,14 @@ public abstract class CommonTestBase extends SpringWebTest{
 
     /**
      * 模拟一个订单
-     *
      */
     @SuppressWarnings("Duplicates")
-    protected MallOrder mockMallOrder(Shop shop ){
+    protected MallOrder mockMallOrder(Shop shop) {
 
         MallOrder mallOrder = new MallOrder();
-        mallOrder.setOrderId(random.nextInt()+"1");
+        mallOrder.setOrderId(random.nextInt() + "1");
         mallOrder.setAgentMarkType("p2");
-        mallOrder.setAgentMarkText("XXXX"+random.nextInt());
+        mallOrder.setAgentMarkText("XXXX" + random.nextInt());
         mallOrder.setOrderStatus(OrderEnum.OrderStatus.ACTIVE);
         mallOrder.setPaymentType(OrderEnum.PaymentOptions.ALIPAY_PC);
         mallOrder.setOrderSourceType(OrderEnum.OrderSourceType.NORMAL);
@@ -411,7 +420,7 @@ public abstract class CommonTestBase extends SpringWebTest{
         mallOrder.setIsTax(0);
         mallOrder.setIsProtect(0);
         mallOrder.setCreateTime(new Date());
-        if (random.nextInt()%2 == 0)
+        if (random.nextInt() % 2 == 0)
             mallOrder.setShop(shop);
         else
             mallOrder.setBeneficiaryShop(shop);
@@ -419,14 +428,14 @@ public abstract class CommonTestBase extends SpringWebTest{
 
     }
 
-    protected MallAfterSales mockMallAfterSales(Shop shop){
+    protected MallAfterSales mockMallAfterSales(Shop shop) {
         MallAfterSales mallAfterSales = new MallAfterSales();
-        mallAfterSales.setAfterId(random.nextInt()+"1");
+        mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setOrderItem(new MallOrderItem());
         mallAfterSales.setAfterSaleStatus(AfterSaleEnum.AfterSaleStatus.APPLYING);
-        mallAfterSales.setOrderId(random.nextInt()+"1");
+        mallAfterSales.setOrderId(random.nextInt() + "1");
         mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
-        if (random.nextInt()%2 == 0)
+        if (random.nextInt() % 2 == 0)
             mallAfterSales.setShop(shop);
         else
             mallAfterSales.setBeneficiaryShop(shop);
@@ -445,5 +454,19 @@ public abstract class CommonTestBase extends SpringWebTest{
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();
         return agentLevel;
+    }
+
+    @SuppressWarnings("Duplicates")
+    protected Address mockAddress(Author author) {
+        Address address = new Address();
+        address.setAddress(UUID.randomUUID().toString());
+        address.setDefault(false);
+        address.setDistrict(UUID.randomUUID().toString());
+        address.setAuthor(author);
+        address.setCity(UUID.randomUUID().toString());
+        address.setTelephone(UUID.randomUUID().toString());
+        address.setProvince(UUID.randomUUID().toString());
+        address.setReceiver(UUID.randomUUID().toString());
+        return addressRepository.saveAndFlush(address);
     }
 }

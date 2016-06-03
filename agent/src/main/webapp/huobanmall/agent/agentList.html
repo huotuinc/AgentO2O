@@ -276,7 +276,7 @@
                             </th>
                             <th scope="col" style="width: 12%">用户名
                             </th>
-                            <th scope="col" style="width: 10%">联系人
+                            <th scope="col" style="width: 12%">联系人
                             </th>
                             <th scope="col" style="width: 12%">手机号码
                             </th>
@@ -284,9 +284,9 @@
                             </th>
                             <th scope="col" style="width: 12%">等级
                             </th>
-                            <th scope="col" style="width: 12%">账号状态
+                            <th scope="col" style="width: 8%">账号状态
                             </th>
-                            <th scope="col" style="width: 12%">操作
+                            <th scope="col">操作
                             </th>
                         </tr>
                         </thead>
@@ -322,6 +322,8 @@
 
                             <td class="txt80 c tail">
                                 <div style='cursor: pointer'>
+                                    <a href="javascript:void(0)"
+                                       th:href="@{/huobanmall/agent/showAgent(id=${agent.id},ifShow=true)}">详细信息</a> |
                                     <a href="javascript:passwordlHandler.reset(1)"
                                        th:href="|javascript:passwordlHandler.reset(${agent.id})|">重置密码</a> |
                                     <a href="javascript:void(0)"

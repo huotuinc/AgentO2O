@@ -300,7 +300,6 @@
 
     //保存或修改代理商
     function saveAgent() {
-        var agId = /*[[${agent.id}]]*/ 1;
         var username = $.trim($("#username").val());
         var password = $.trim($("#password").val());
         var province = $.trim($("#province").val());
@@ -322,7 +321,7 @@
             return;
         }
         //只有在增加代理商时需要校验密码
-        if (agId == 0 && password.length == 0) {
+        if (id == '0' && password.length == 0) {
             $.jBox.tip("请输入密码");
             return;
         }

@@ -40,7 +40,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
     private AgentLevel mockAgentLevel;
 
     @Before
-    public void newAgentLevel() {
+    public void init() {
         mockCustomer = mockMallCustomer();
         mockAgentLevel = mockAgentLevel(mockCustomer);
     }

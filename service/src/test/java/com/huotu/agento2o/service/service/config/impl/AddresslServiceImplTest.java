@@ -40,7 +40,7 @@ public class AddresslServiceImplTest extends CommonTestBase {
     private Agent mockAgent;
 
     @Before
-    public void newAddress() {
+    public void init() {
         MallCustomer mockCustomer = mockMallCustomer();
         mockAgent = mockAgent(mockCustomer, null);
         mockAddress = mockAddress(mockAgent);

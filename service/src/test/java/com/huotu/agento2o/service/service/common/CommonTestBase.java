@@ -247,6 +247,7 @@ public abstract class CommonTestBase {
      * @param author
      * @return
      */
+    @SuppressWarnings("Duplicates")
     protected Address mockAddress(Author author) {
         Address address = new Address();
         address.setAddress(UUID.randomUUID().toString());
