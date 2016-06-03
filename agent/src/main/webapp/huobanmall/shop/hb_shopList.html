@@ -23,6 +23,7 @@
             th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
             th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script src="resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
@@ -448,12 +449,12 @@
                                         </td>
                                         <td class="txt80 c" th:text="${shop.username}">
                                         </td>
-                                        <td class="txt80 c" th:text="${shop.Contact}">
+                                        <td class="txt80 c" th:text="${shop.contact}">
                                         </td>
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.province}!=null ? |${shop.province}—${shop.city}—${shop.district}| : ''">
+                                            th:text="${shop.province}!=null ? |${shop.province} ${shop.city} ${shop.district}| : ''">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>
@@ -469,7 +470,7 @@
                                                 </span>
                                                 <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
                                                    th:attr="shopid=${shop.id}"
-                                                   th:text="${shop.isAccountNonLocked()}? '冻结' : '激活'">冻结</a>&nbsp;|
+                                                   th:text="${shop.isAccountNonLocked()}? '冻结' : '解冻'">冻结</a>&nbsp;|
                                                 <a href="javascript:void(0)" onclick="resetPassword(this)"
                                                    th:attr="shopid=${shop.id}">重置密码</a>&nbsp;|
                                                 <a href="javascript:void(0)" onclick="showDetail(this)"

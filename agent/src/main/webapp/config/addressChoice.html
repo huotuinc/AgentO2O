@@ -92,6 +92,7 @@
                         </tr>
                         </tbody>
                         <tbody>
+                        <!--/*@thymesVar id="addressList" type="java.util.List<com.huotu.agento2o.service.entity.config.Address>"*/-->
                         <tr th:each="address:${addressList}">
                             <td class="c" th:text="${address.receiver}" name="receiver">张三</td>
                             <td class="c" th:text="${address.telephone}" name="telephone">18888888888</td>

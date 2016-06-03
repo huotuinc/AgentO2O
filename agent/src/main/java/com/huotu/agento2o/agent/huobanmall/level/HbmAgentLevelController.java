@@ -3,6 +3,7 @@ package com.huotu.agento2o.agent.huobanmall.level;
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.author.AgentService;
@@ -41,6 +42,12 @@ public class HbmAgentLevelController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") Integer customerId, AgentLevel requestAgentLevel, Integer levelId) {
+        if (requestAgentLevel == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if(StringUtil.isEmptyStr(requestAgentLevel.getLevelName())){
+            return new ApiResult("请输入等级名称");
+        }
         return agentLevelService.addOrUpdate(levelId, customerId, requestAgentLevel);
     }
 

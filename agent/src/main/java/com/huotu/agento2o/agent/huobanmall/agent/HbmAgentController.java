@@ -159,6 +159,39 @@ public class HbmAgentController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
+        if(requestAgent == null || agentLevelId == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getUsername())){
+            return new ApiResult("请输入用户名");
+        }
+        if(requestAgent.getId() == 0 && StringUtil.isEmptyStr(requestAgent.getPassword())){
+            return new ApiResult("请输入密码");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())){
+            return new ApiResult("请选择区域");
+        }
+        if(agentLevelId == -1){
+            return new ApiResult("请选择代理商等级");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getName())){
+            return new ApiResult("请输入代理商名称");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getContact())){
+            return new ApiResult("请输入联系人");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getMobile())){
+            return new ApiResult("请输入手机号码");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getTelephone())){
+            return new ApiResult("请输入电话号码");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getEmail())){
+            return new ApiResult("请输入E-mail");
+        }
+        if(StringUtil.isEmptyStr(requestAgent.getAddress())){
+            return new ApiResult("请输入详细地址");
+        }
         return agentService.addOrUpdate(customerId, agentLevelId, parentAgentId, hotUserName, requestAgent);
     }
 

@@ -113,6 +113,7 @@
                         </tr>
                         </tbody>
                         <tbody>
+                        <!--/*@thymesVar id="addressList" type="java.util.List<com.huotu.agento2o.service.entity.config.Address>"*/-->
                         <tr th:each="address:${addressList}">
                             <td class="txt40 c" th:text="${addressStat.count}">1</td>
                             <td class="txt40 c" th:text="${address.receiver}">张三</td>
@@ -271,7 +272,7 @@
                 $.jBox.tip("请输入联系电话");
                 return null;
             }
-            if (!/^[0-9]*$/.test(telephone)) {
+            if (!J.IsNumber(telephone)) {
                 $.jBox.tip("联系电话必须是数字");
                 return null;
             }
