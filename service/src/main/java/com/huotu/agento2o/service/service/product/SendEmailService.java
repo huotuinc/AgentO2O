@@ -13,8 +13,11 @@ public interface SendEmailService {
     /**
      * 发送邮件
      */
-    @Async
+//    @Async
     public void sendEmail(List<AgentProduct> agentProducts);
+
+    @Async
+    public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr);
 
 
     /**

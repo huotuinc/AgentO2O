@@ -21,9 +21,10 @@ public class ProductWarning {
     private SendEmailService sendEmailService;
 
     /**
+     * 废弃
      * 每个一小时进行一次查询提醒
      */
-    @Scheduled(cron = "0 */5 * * * ?")
+//    @Scheduled(cron = "0 */5 * * * ?")
     public void productWarningService() {
 
         //查询出需要提醒的库存信息

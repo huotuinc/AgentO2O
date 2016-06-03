@@ -16,7 +16,7 @@ import java.util.concurrent.*;
  */
 @Configuration
 @EnableAsync
-@EnableScheduling
+//@EnableScheduling
 public class SheduleConfig implements AsyncConfigurer {
 
     @Override
