@@ -124,9 +124,10 @@
                                 杭州 滨江区
                             </td>
                             <td class="txt40 c">
-                                <a href="javascript:addressHandler.configDefault(1)" th:if="${!address.isDefault()}"
-                                   th:href="|javascript:addressHandler.configDefault(${address.id})|">设为默认</a> <span
-                                    th:if="${!address.isDefault()}">|</span>
+                                <span th:if="${!address.isDefault()}">
+                                <a href="javascript:addressHandler.configDefault(1)"
+                                   th:href="|javascript:addressHandler.configDefault(${address.id})|">设为默认</a> |
+                                    </span>
                                 <a href="javascript:addressHandler.showEdit(1)"
                                    th:href="|javascript:addressHandler.showEdit(${address.id})|">编辑</a> |
                                 <a href="javascript:addressHandler.deleteAddress(1)"

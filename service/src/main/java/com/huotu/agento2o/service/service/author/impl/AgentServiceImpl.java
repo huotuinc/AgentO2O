@@ -239,10 +239,13 @@ public class AgentServiceImpl implements AgentService {
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getUsername())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getContact())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getMobile())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getTelephone())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getEmail())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getProvince()) + ' ' + StringUtil.getNullStr(agent.getCity()) + ' ' + StringUtil.getNullStr(agent.getDistrict())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress())));
             cellDescList.add(ExcelHelper.asCell(agent.getAgentLevel() == null ? "" : agent.getAgentLevel().getLevelName()));
             cellDescList.add(ExcelHelper.asCell(agent.isDisabled() ? "冻结" : "激活"));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getComment())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(StringUtil.DateFormat(agent.getCreateTime(), StringUtil.TIME_PATTERN))));
 
             rowAndCells.add(cellDescList);

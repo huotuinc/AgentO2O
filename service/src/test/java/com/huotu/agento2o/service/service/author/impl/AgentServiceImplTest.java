@@ -40,7 +40,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     private Agent mockAgent;
 
     @Before
-    public void newAgent() {
+    public void init() {
         mockCustomer = mockMallCustomer();
         mockAgent = mockAgent(mockCustomer, null);
     }
