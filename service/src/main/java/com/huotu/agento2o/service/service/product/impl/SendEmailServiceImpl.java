@@ -1,7 +1,14 @@
 package com.huotu.agento2o.service.service.product.impl;
 
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.model.purchase.EmailConfig;
 import com.huotu.agento2o.service.service.product.SendEmailService;
+import io.jstack.sendcloud4j.SendCloud;
+import io.jstack.sendcloud4j.mail.Email;
+import io.jstack.sendcloud4j.mail.Result;
+import io.jstack.sendcloud4j.mail.Substitution;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -22,10 +29,17 @@ import java.util.List;
  */
 @Service
 public class SendEmailServiceImpl implements SendEmailService {
+    private static final Log log = LogFactory.getLog(SendEmailServiceImpl.class);
 
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private EmailConfig emailConfig;
 
+    /**
+     * 废弃
+     * @param agentProducts
+     */
     @Override
     public void sendEmail(List<AgentProduct> agentProducts) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
@@ -73,7 +87,6 @@ public class SendEmailServiceImpl implements SendEmailService {
                 }
                 builder.append("</table></body></html>");
                 helper.setText(builder.toString(), true);
-                //helper.setText("今天吃饭了么");
             }
         };
         try {
@@ -89,6 +102,37 @@ public class SendEmailServiceImpl implements SendEmailService {
                     System.err.println(ex.getMessage());
                 }
             }
+        }
+    }
+
+    @Override
+    public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr) {
+        StringBuffer sb = new StringBuffer("");
+        if(agentProducts != null && agentProducts.size() > 0){
+            agentProducts.forEach(product->{
+                sb.append("货品名称：" + product.getProduct().getName());
+                sb.append("，规格：" + product.getProduct().getStandard());
+                sb.append("，可用库存：<span style='color:red;'>" + (product.getStore() - product.getFreez()) + "</span>");
+                sb.append("（预警数：" + product.getWarning()+ "）");
+                sb.append("<br/>");
+            });
+        }
+        Email email = Email.template(emailConfig.getTemplate())
+                .from(emailConfig.getFrom())
+                .fromName(emailConfig.getFromName())
+                .substitutionVars(Substitution.sub()
+                        .set("info",sb.toString()))
+                .subject("库存预警")
+                .to(emailStr);
+        SendCloud webapi = SendCloud.createWebApi(emailConfig.getApiUser(), emailConfig.getApiKey());
+        Result result = null;
+        int sendNum = 0;
+        while (result ==null || !result.isSuccess() || sendNum < 3){
+            result = webapi.mail().send(email);
+            sendNum ++;
+        }
+        if(!result.isSuccess()){
+            log.error(result.getStatusCode() + ":" + result.getMessage());
         }
     }
 

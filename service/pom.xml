@@ -59,6 +59,13 @@
             <artifactId>javax.mail</artifactId>
             <version>1.5.2</version>
         </dependency>
+        <!--SendCloud邮件发送START-->
+        <dependency>
+            <groupId>io.jstack</groupId>
+            <artifactId>sendcloud4j</artifactId>
+            <version>0.0.4</version>
+        </dependency>
+        <!--SendCloud邮件发送END-->
 
     </dependencies>
 

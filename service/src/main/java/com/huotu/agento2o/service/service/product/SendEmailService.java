@@ -16,6 +16,9 @@ public interface SendEmailService {
     @Async
     public void sendEmail(List<AgentProduct> agentProducts);
 
+    @Async
+    public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr);
+
 
     /**
      * 异步测试类
