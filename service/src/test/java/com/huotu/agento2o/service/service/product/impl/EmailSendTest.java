@@ -53,12 +53,13 @@ public class EmailSendTest {
         }
         httpost.releaseConnection();*/
 
-
-        Email email = Email.template("test_template_active")
+        String info = "货品名称：2014春季新款韩版修身时尚中长款女装外套，规格：红色,S，可用库存：<span style='color:red;'>41</span>（预警数：80）<br/>货品名称：2014春季新款韩版修身时尚中长款女装外套，规格：红色,M，可用库存：<span style='color:red;'>0</span>（预警数：70）<br/>货品名称：2014春季新款韩版修身时尚中长款女装连衣裙，规格：红色,S，可用库存：<span style='color:red;'>35</span>（预警数：90）<br/>货品名称：韩风休闲情侣毛衣外套，规格：白色,S，可用库存：<span style='color:red;'>0</span>（预警数：100）<br/>";
+        Email email = Email.template("agent_product_notify")
                 .from("service@sendcloud.im")
                 .fromName("火图科技")
                 .substitutionVars(Substitution.sub()
-                .set("name","helloztt"))
+                .set("info",info)
+                .set("name","张婷婷"))
 //                .html("hello ztt")          // or .plain()
                 .subject("库存预警")
                 .to("347871727@qq.com");

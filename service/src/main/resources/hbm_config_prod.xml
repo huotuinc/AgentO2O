@@ -8,11 +8,12 @@
   ~ 2013-2015. All rights reserved.
   -->
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" profile="container"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" profile="container"
        xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:annotation-config/>
+    <context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" file-encoding="UTF-8"/>
     <bean id="hbmEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="hbmJpaDataSource"></property>
         <property name="persistenceUnitName" value="hbmEntity" />

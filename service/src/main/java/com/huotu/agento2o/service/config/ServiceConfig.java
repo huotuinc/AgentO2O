@@ -25,7 +25,7 @@ import javax.sql.DataSource;
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "transactionManager"
 )
-@ImportResource({"classpath:config.properties", "classpath:hbm_config_prod.xml", "classpath:hbm_config_test.xml"})
+@ImportResource({"classpath:hbm_config_prod.xml", "classpath:hbm_config_test.xml"})
 public class ServiceConfig {
     @Resource(name = "dataSource")
     private DataSource dataSource;

@@ -13,7 +13,7 @@ public interface SendEmailService {
     /**
      * 发送邮件
      */
-    @Async
+//    @Async
     public void sendEmail(List<AgentProduct> agentProducts);
 
     @Async
