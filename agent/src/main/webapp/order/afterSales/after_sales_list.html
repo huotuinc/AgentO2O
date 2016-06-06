@@ -143,7 +143,7 @@
                             <td class="txt80 c" th:text="${afterSale.productNum}"></td>
                             <td class="txt80 c" th:text="${afterSale.applyMobile}"></td>
                             <td class="txt80 c" th:text="${#dates.format(afterSale.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                            <td class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
+                            <td style="color:red;" class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
                             <td class="txt80 c">
                                 <a th:if="${afterSale.shop!=null and afterSale.beneficiaryShop==null}" th:title="查看详情" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情(门店发货)</a>
                                 <a th:if="${afterSale.shop==null and afterSale.beneficiaryShop!=null}" th:title="查看详情" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看详情(平台代发)</a>
