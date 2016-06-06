@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.purchase;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public interface AgentProductService {
 
     List<AgentProduct> findWaringAgentInfo(Integer agentId);
 
-
+    AgentProduct findAgentPeoduct(Author author, MallProduct product);
 
 
 }

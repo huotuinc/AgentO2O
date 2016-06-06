@@ -13,6 +13,7 @@ package com.huotu.agento2o.service.service.purchase.impl;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
@@ -79,5 +80,10 @@ public class AgentProductServiceImpl implements AgentProductService {
     @Override
     public List<AgentProduct> findWaringAgentInfo(Integer autorId) {
         return agentProductRepository.findWaringAgentInfo(autorId);
+    }
+
+    @Override
+    public AgentProduct findAgentPeoduct(Author author, MallProduct product) {
+        return agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
     }
 }

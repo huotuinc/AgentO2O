@@ -43,9 +43,6 @@ public class MallOrderItem {
     private int nums;
     @Column(name = "Sendnum")
     private int sendNum;
-    @ManyToOne
-    @JoinColumn(name = "Agent_Id")
-    private Agent agent;
     @Column(name = "Customer_Id")
     private long customerId;
     @Column(name = "Goods_Id")

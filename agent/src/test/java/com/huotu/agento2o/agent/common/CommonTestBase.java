@@ -37,6 +37,7 @@ import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
+import com.huotu.agento2o.service.repository.order.MallOrderItemRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.service.MallCustomerService;
@@ -116,6 +117,11 @@ public abstract class CommonTestBase extends SpringWebTest {
     @Autowired
     private AgentReturnOrderRepository agentReturnedOrderRepository;
 
+    @Autowired
+    private MallOrderItemRepository mallOrderItemRepository;
+
+    @Autowired
+    private MallProductRepository mallProductRepository;
     @Before
     public void initBase() {
         standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167", -1);
@@ -267,8 +273,8 @@ public abstract class CommonTestBase extends SpringWebTest {
         agentProduct.setAuthor(mockAuthor);
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
-        agentProduct.setStore(random.nextInt(100));
-        agentProduct.setFreez(0);
+        agentProduct.setStore(random.nextInt(5));
+        agentProduct.setFreez(10);
         agentProduct.setWarning(0);
         agentProduct.setDisabled(false);
         return agentProductRepository.saveAndFlush(agentProduct);
@@ -421,6 +427,49 @@ public abstract class CommonTestBase extends SpringWebTest {
             mallOrder.setBeneficiaryShop(shop);
         return orderRepository.saveAndFlush(mallOrder);
 
+    }
+
+    /**
+     * 模拟一个订单中的货单
+     * @param order
+     * @param product
+     * @return
+     */
+    protected MallOrderItem mockMallOrderItem(MallOrder order, MallProduct product , MallAfterSales mallAfterSales){
+        MallOrderItem mallOrderItem = new MallOrderItem();
+        mallOrderItem.setItemId(random.nextLong()+1);
+        mallOrderItem.setOrder(order);
+        mallOrderItem.setProduct(product);
+        mallOrderItem.setNums(10);
+        mallOrderItem.setShipStatus(OrderEnum.ShipStatus.NOT_DELIVER);
+        mallOrderItem.setAfterSales(mallAfterSales);
+        mallOrderItemRepository.saveAndFlush(mallOrderItem);
+        return  mallOrderItem;
+    }
+
+    protected MallProduct mockMallProduct(){
+        MallProduct mallProduct = new MallProduct();
+        mallProduct.setProductId(random.nextInt()+1);
+        mallProduct.setGoods(new MallGoods());
+        mallProduct.setName("xxx");
+        return mallProductRepository.saveAndFlush(mallProduct);
+    }
+
+    protected MallAfterSales mockMallAfterSales(Shop shop ,String orderId) {
+        MallAfterSales mallAfterSales = new MallAfterSales();
+        mallAfterSales.setAfterId(random.nextInt() + "1");
+        mallAfterSales.setOrderItem(new MallOrderItem());
+        mallAfterSales.setAfterSaleStatus(AfterSaleEnum.AfterSaleStatus.APPLYING);
+        mallAfterSales.setOrderId(orderId);
+        mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
+        if (random.nextInt() % 2 == 0)
+            mallAfterSales.setShop(shop);
+        else
+            mallAfterSales.setBeneficiaryShop(shop);
+        mallAfterSales.setAfterSaleType(AfterSaleEnum.AfterSaleType.REFUND);
+        mallAfterSales.setAfterSalesReason(AfterSaleEnum.AfterSalesReason.GOOD_PROBLEM);
+        mallAfterSales.setCreateTime(new Date());
+        return mallAfterSalesRepository.saveAndFlush(mallAfterSales);
     }
 
     protected MallAfterSales mockMallAfterSales(Shop shop) {

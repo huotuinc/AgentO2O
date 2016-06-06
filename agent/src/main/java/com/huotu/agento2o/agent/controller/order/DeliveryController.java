@@ -3,15 +3,21 @@ package com.huotu.agento2o.agent.controller.order;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
+import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
+import com.huotu.agento2o.service.service.order.MallOrderItemService;
 import com.huotu.agento2o.service.service.order.MallOrderService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 
 /**
  * Created by AiWelv on 2016/5/11.
@@ -40,6 +48,12 @@ public class DeliveryController {
 
     @Autowired
     private MallOrderService orderService;
+
+    @Autowired
+    private MallOrderItemService orderItemService;
+
+    @Autowired
+    private AgentProductService agentProductService;
 
     /**
      * 根据供应商和筛选条件查找发货单列表
@@ -78,6 +92,30 @@ public class DeliveryController {
         modelAndView.addObject("pageIndex", pageIndex);
         modelAndView.addObject("deliverySearcher", deliverySearcher);
         return modelAndView;
+    }
+
+    /**
+     * 判断货品的库存是否满足订单所需的货品数量
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value = "/judgeStock" ,method = RequestMethod.GET)
+    @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
+    @ResponseBody
+    public ApiResult judgeStock( @AgtAuthenticationPrincipal Shop shop,
+                                 String orderId,Model model){
+        ApiResult apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS, "有货", null);
+        MallOrder order = orderService.findByOrderId(orderId);
+        List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
+        AgentProduct agentProduct ;
+        for (MallOrderItem mallOrderItem : mallOrderItems){
+            agentProduct = agentProductService.findAgentPeoduct(shop,mallOrderItem.getProduct());
+            if (agentProduct.getFreez()<mallOrderItem.getNums() || agentProduct.getFreez()>agentProduct.getStore()){
+                apiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE, "缺货", null);
+                break;
+            }
+        }
+        return apiResult;
     }
 
     /**

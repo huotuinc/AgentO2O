@@ -10,6 +10,8 @@
 
 package com.huotu.agento2o.common.util;
 
+import org.omg.PortableInterceptor.INACTIVE;
+
 /**
  * Created by liual on 2015-09-21.
  */
@@ -30,7 +32,8 @@ public enum ResultCodeEnum {
     SUPPLIER_NOT_FOUND(250, "还未开通供应商账户"),
     SETTLEMENTNO_NULL(251, "结算单编号为空"),
     DATA_NULL(500, "没有传输数据"),
-    CONFIG_SAVE_FAILURE(502, "设置失败");
+    CONFIG_SAVE_FAILURE(502, "设置失败"),
+    INVENTORY_SHORTAGE(505, "库存不足");
 
     //todo 其他状态
     private int resultCode;
