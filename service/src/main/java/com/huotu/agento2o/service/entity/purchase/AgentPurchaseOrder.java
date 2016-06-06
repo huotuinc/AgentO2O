@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 采购单
  * Created by helloztt on 2016/5/12.
  */
 @Entity

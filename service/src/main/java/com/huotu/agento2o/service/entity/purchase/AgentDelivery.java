@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 发货表,退货表
  * Created by helloztt on 2016/5/19.
  */
 @Entity

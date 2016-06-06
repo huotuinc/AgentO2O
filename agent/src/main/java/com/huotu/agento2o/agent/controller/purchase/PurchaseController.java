@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 商品采购/货品采购
  * Created by helloztt on 2016/5/12.
  */
 @Controller
@@ -81,7 +82,7 @@ public class PurchaseController {
             @AgtAuthenticationPrincipal Author author,
             GoodsSearcher goodsSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/goods_list");
+        model.setViewName("/purchase/purchase/goods_list");
         Page<MallGoods> goodsPage;
         //如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
         // TODO: 2016/5/17 代理商/门店进货价读取
@@ -185,7 +186,7 @@ public class PurchaseController {
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(value = "goodsId", required = true) Integer goodsId) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("purchase/product_list");
+        model.setViewName("purchase/purchase/product_list");
         List<MallProduct> productList = null;
         if (goodsId != null && !goodsId.equals(0)) {
             productList = productService.findByGoodsId(author, goodsId);

@@ -10,35 +10,29 @@
   -->
 
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
-<!--/*@thymesVar id="order" type="com.huotu.hotsupplier.hbm.service.entity.order.MallOrder"*/-->
-<!--/*@thymesVar id="delivery" type="com.huotu.hotsupplier.hbm.service.entity.order.MallDelivery"*/-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>
         发货单弹窗页面
     </title>
-    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
-    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
-    <link href="../resource/3rdParty/css/admin.mall.css" th:href="@{/resource/3rdParty/css/admin.mall.css}" rel="stylesheet" type="text/css"/>
-    <script src="../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script src="../resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <link href="../../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}" rel="stylesheet" type="text/css"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}" rel="stylesheet" type="text/css"/>
+    <link href="../../resource/3rdParty/css/admin.mall.css" th:href="@{/resource/3rdParty/css/admin.mall.css}" rel="stylesheet" type="text/css"/>
+    <script src="../../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script src="../../resource/lib/jquery.utils.js" th:src="@{/resource/lib/jquery.utils.js}"></script>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
 
     <script th:inline="javascript">
         var baseUrl = /*[[@{/}]]*/ "/";
         function submitForm() {
-            var orderId = $("#rOrderId").val();
+            var orderId = $("#pOrderId").val();
             var logisticsName = $("#logisticsName").val();
             var logisticsNo = $("#logisticsNo").val();
             var logisticsCode = $("#selLogiName").val();
             var freight = $.trim($("#freight").val());
             var remark = $("#remark").val();
             var sendItems = getCheckedSendBn("choice");
-            var shipName = $.trim($("#shipName").val());
-            var shipMobile = $.trim($("#shipMobile").val());
-            var shipTel = $.trim($("#shipTel").val());
-            var shipAddr = $.trim($("#shipAddr").val());
 
             if (freight.length == 0) {
                 freight = 0;
@@ -48,30 +42,14 @@
                 $.jBox.tip("请选择物流公司");
                 return;
             }
-            if (logisticsNo.length == 0) {
+            if (logisticsName.indexOf('songhuoshangmen')<=-1 && logisticsNo.length == 0) {
                 $.jBox.tip("请输入物流单号");
                 return;
             }
-            if(shipName.length == 0){
-                $.jBox.tip("请输入收货人姓名");
+            if (sendItems.length == 1) {
+                $.jBox.tip("请选择要发货的货品");
                 return;
             }
-            if(shipMobile.length == 0){
-                $.jBox.tip("请输入收货人手机号");
-                return;
-            }
-            if(shipAddr.length == 0){
-                $.jBox.tip("请输入物收货地址");
-                return;
-            }
-//            if (sendItems.length == 1) {
-//                $.jBox.tip("请选择要发货的货品");
-//                return;
-//            }
-            console.log(shipMobile);
-            console.log(shipAddr);
-            console.log(shipTel);
-
 
             var requestData = {
                 orderId: orderId,
@@ -80,15 +58,11 @@
                 logiCode: logisticsCode,
                 freight: freight,
                 remark: remark,
-                sendItems: sendItems,
-                shipName:shipName,
-                shipMobile:shipMobile,
-                shipTel:shipTel,
-                shipAddr:shipAddr
+                sendItems: sendItems
             };
             $.jBox.tip("正在保存...", "loading");
             setTimeout(function () {
-                J.GetJsonRespons(baseUrl + "purchase/delivery", requestData, function (result) {
+                J.GetJsonRespons(baseUrl + "purchaseOrder/delivery/delivery", requestData, function (result) {
                     if (result.code != 200) {
                         $.jBox.tip("发货失败--" + result.msg,'error');
                     } else {
@@ -105,7 +79,8 @@
         }
 
         function getCheckedSendBn(checkboxName) {
-            var checkedObj = $("input[name='" + checkboxName + "']:checked");
+            var checkedObj = $("input[name='" + checkboxName + "']");
+//            var checkedObj = $("input[name='" + checkboxName + "']:checked");
             var checkedMenu = "|";
 
             checkedObj.each(function () {
@@ -124,16 +99,16 @@
 <body marginwidth="0" marginheight="0">
 <form method="post" id="form2">
 
-    <input type="hidden" name="rOrderId" id="rOrderId" th:value="${agentReturnedOrder.rOrderId}"/>
+    <input type="hidden" name="pOrderId" id="pOrderId" th:value="${purchaseOrder.pOrderId}"/>
 
     <!--/*@thymesVar id="purchaseOrder" type="com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder"*/-->
-    <div class="division" th:object="${agentReturnedOrder}">
+    <div class="division" th:object="${purchaseOrder}">
         <table cellpadding="0" cellspacing="0" width="100%">
             <tbody>
             <tr>
                 <th>订单号:</th>
                 <td>
-                    <span id="lblOrderId" th:text="*{rOrderId}"></span>
+                    <span id="lblOrderId" th:text="*{pOrderId}"></span>
                 </td>
                 <th>下单日期:</th>
                 <td>
@@ -152,6 +127,7 @@
                     <select name="selLogiName" id="selLogiName" class="x-input-select  inputstyle"
                             onchange="quickSetLogiName();">
                         <option value="0">请输入或选择</option>
+                        <option value="songhuoshangmen">送货上门</option>
                         <option value="youzhengguonei">中国邮政</option>
                         <option value="shentong">申通快递</option>
                         <option value="yuantong">圆通速递</option>
@@ -183,23 +159,23 @@
             <tr>
                 <th>收货人姓名:</th>
                 <td>
-                    <input  name="shipName" th:value="*{shipName}" type="text" id="shipName" class="x-input "
+                    <input readonly="readonly" name="shipName" th:value="*{shipName}" type="text" id="shipName" class="x-input "
                            width="80"/></td>
                 <th>电话:</th>
                 <td>
-                    <input  name="shipTel" type="text" th:value="*{shipMobile}" id="shipTel" class="x-input "
+                    <input readonly="readonly" name="shipTel" type="text" th:value="*{shipMobile}" id="shipTel" class="x-input "
                            width="150"/></td>
             </tr>
             <tr>
                 <th>手机:</th>
                 <td>
-                    <input  name="shipMobile" type="text" th:value="*{shipMobile}" id="shipMobile"
+                    <input readonly="readonly" name="shipMobile" type="text" th:value="*{shipMobile}" id="shipMobile"
                            class="x-input " width="150"/></td>
             </tr>
             <tr>
                 <th>收货地址:</th>
                 <td>
-                    <input  name="shipAddr" type="text" id="shipAddr" class="x-input " style="width: 360px"
+                    <input readonly="readonly" name="shipAddr" type="text" id="shipAddr" class="x-input " style="width: 360px"
                            th:value="*{shipAddr}"/></td>
 
                 <th>物流费用:</th>
@@ -237,17 +213,19 @@
                 <th>货号</th>
                 <th>商品名称</th>
                 <th>购买数量</th>
-                <!--<th>已发货</th>-->
+                <th>已发货</th>
             </tr>
             </thead>
             <tbody th:remove="all-but-first">
-            <tr th:each="returnOrderItem:${agentReturnedOrderItems}">
-                <!--<td><input th:if="${returnOrderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.id}" checked="checked"/></td>-->
-                <td th:text="${returnOrderItem.bn}">G49B884C0349DE7</td>
+            <tr th:each="orderItem:${purchaseOrder.orderItemList}">
+                <input type="hidden" name="choice" th:value="${orderItem.id}"/>
+                <!--<td><input th:if="${orderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.id}" checked="checked"/></td>-->
+                <td th:text="${orderItem.bn}">G49B884C0349DE7</td>
                 <td>
-                    <span th:text="${returnOrderItem.name}">休闲男鞋(蓝色,37)(1)</span>
+                    <span th:text="${orderItem.name}">休闲男鞋(蓝色,37)(1)</span>
                 </td>
-                <td th:text="${returnOrderItem.num}">0</td>
+                <td th:text="${orderItem.num}">0</td>
+                <td th:text="${orderItem.sendNum}">0</td>
             </tr>
 
 

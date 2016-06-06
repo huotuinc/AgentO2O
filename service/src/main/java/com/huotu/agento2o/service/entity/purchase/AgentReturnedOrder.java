@@ -17,6 +17,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 退货单
@@ -137,6 +138,9 @@ public class AgentReturnedOrder {
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "Received_Time")
     private Date receivedTime;
+
+    @OneToMany(mappedBy = "returnedOrder", cascade = CascadeType.PERSIST)
+    private List<AgentReturnedOrderItem> orderItemList;
 
 
 

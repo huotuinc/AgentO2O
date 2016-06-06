@@ -27,6 +27,7 @@ import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +39,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -122,7 +128,7 @@ public class AgentPurchaseOrderController {
     @RequestMapping("/showPurchaseOrderList")
     public ModelAndView showPurchaseOrderList(@AgtAuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/purchase_order_list");
+        model.setViewName("/purchase/purchase/purchase_order_list");
         purchaseOrderSearcher.setAgentId(author.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
@@ -144,7 +150,7 @@ public class AgentPurchaseOrderController {
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/purchase_order_detail");
+        model.setViewName("/purchase/purchase/purchase_order_detail");
         AgentPurchaseOrder purchaseOrder = purchaseOrderService.findByPOrderId(pOrderId);
         if (purchaseOrder != null) {
             resourceService.setListUri(purchaseOrder.getOrderItemList(), "thumbnailPic", "picUri");
@@ -229,7 +235,7 @@ public class AgentPurchaseOrderController {
     @RequestMapping("/showAgentPurchaseOrderList")
     public ModelAndView showAgentPurchaseOrderList(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/agent_purchase_order_list");
+        model.setViewName("/purchase/purchase/agent_purchase_order_list");
         purchaseOrderSearcher.setParentAgentId(agent.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         List<Author> authorList = authorService.findByParentAgentId(agent);
@@ -298,5 +304,81 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
+    @RequestMapping("/exportExcel")
+    @SuppressWarnings("Duplicates")
+    public void exportExcel(@AgtAuthenticationPrincipal Author author,
+                            int beginPage,
+                            int endPage,
+                            PurchaseOrderSearcher purchaseOrderSearcher,
+                            HttpSession session,
+                            HttpServletResponse response) {
+        int pageSize = Constant.PAGESIZE * (endPage - beginPage + 1);
+        purchaseOrderSearcher.setAgentId(author.getId());
+        purchaseOrderSearcher.setPageIndex(beginPage);
+        purchaseOrderSearcher.setPageSize(pageSize);
+        Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
+        List<AgentPurchaseOrder> purchaseOrderList = purchaseOrderPage.getContent();
+        session.setAttribute("state", null);
+        // 生成提示信息，
+        response.setContentType("apsplication/vnd.ms-excel");
+        OutputStream fOut = null;
+        try {
+            // 进行转码，使其支持中文文件名
+            String excelName = author.getName() + "-采购单-"
+                    + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
+            excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
+            response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
+            HSSFWorkbook workbook = purchaseOrderService.createWorkBook(purchaseOrderList);
+            fOut = response.getOutputStream();
+            workbook.write(fOut);
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                assert fOut != null;
+                fOut.flush();
+                fOut.close();
+            } catch (IOException ignored) {
+            }
+            session.setAttribute("state", "open");
+        }
+    }
+
+    @RequestMapping("/agent/exportExcel")
+    public void exportAgentExcel(@AgtAuthenticationPrincipal Author author,
+                            int beginPage,
+                            int endPage,
+                            PurchaseOrderSearcher purchaseOrderSearcher,
+                            HttpSession session,
+                            HttpServletResponse response) {
+        int pageSize = Constant.PAGESIZE * (endPage - beginPage + 1);
+        purchaseOrderSearcher.setParentAgentId(author.getId());
+        purchaseOrderSearcher.setPageIndex(beginPage);
+        purchaseOrderSearcher.setPageSize(pageSize);
+        Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
+        List<AgentPurchaseOrder> purchaseOrderList = purchaseOrderPage.getContent();
+        session.setAttribute("state", null);
+        // 生成提示信息，
+        response.setContentType("apsplication/vnd.ms-excel");
+        OutputStream fOut = null;
+        try {
+            // 进行转码，使其支持中文文件名
+            String excelName = author.getName() + "-下级采购单-"
+                    + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
+            excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
+            response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
+            HSSFWorkbook workbook = purchaseOrderService.createWorkBook(purchaseOrderList);
+            fOut = response.getOutputStream();
+            workbook.write(fOut);
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                assert fOut != null;
+                fOut.flush();
+                fOut.close();
+            } catch (IOException ignored) {
+            }
+            session.setAttribute("state", "open");
+        }
+    }
 
 }

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -11,33 +12,33 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>商品采购</title>
-    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+    <title>退货单列表</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
-    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
           type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
             data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
             data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
             data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
-<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="get" action="/purchase/showReturnDeliveryList" data-th-action="@{/purchase/showReturnDeliveryList}" id="form1"
+<!--/*@thymesVar id="deliverySearcher" type="com.huotu.agento2o.service.searchable.DeliverySearcher"*/-->
+<form method="get" action="/delivery/showReturnDeliveryList" data-th-action="@{/delivery/showReturnDeliveryList}" id="form1"
       th:object="${deliverySearcher}">
 
 
@@ -58,21 +59,22 @@
             <div class="cnt">
                 <div class="search-bar">
                     <div>
-                        <label class="first">发货单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="deliveryId" type="text" th:value="*{deliveryId}"  id="goodsName"
+                        <label class="first">退货单号:</label>
+                        <input name="deliveryId" type="text" th:value="*{deliveryId}"
                                class="input-small" style="width: 120px;"/>
                         &nbsp;
-                        <label class="first">退货单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="OrderId" type="text" th:value="*{orderId}"  id="goodsName"
+                        <label class="first">采购退货单号:</label>
+                        <input name="OrderId" type="text" th:value="*{orderId}"
                                class="input-small" style="width: 120px;"/>
                         &nbsp;
-                        <label class="first">物流单号:</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="logiNo" type="text" th:value="*{logiNo}"  id="goodsName"
+                        <label class="first">物流单号:</label>
+                        <input name="logiNo" type="text" th:value="*{logiNo}"
                                class="input-small" style="width: 120px;"/>
                         &nbsp;
                         <label class="first ">下级代理商/门店：</label>
                         <select name="agentId" id="agentId">
                             <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
+                            <!--/*@thymesVar id="authorList" type="java.util.List<com.huotu.agento2o.service.entity.author.Author>"*/-->
                             <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == deliverySearcher.agentId}">代理商/门店</option>
                         </select>
 
@@ -110,9 +112,9 @@
                     <thead>
                     <tr class="even">
 
-                        <th scope="col">发货单号
-                        </th>
                         <th scope="col">退货单号
+                        </th>
+                        <th scope="col">采购退货单号
                         </th>
                         <th scope="col">创建时间
                         </th>
@@ -130,7 +132,7 @@
                     </tr>
                     </thead>
                     <tbody data-th-remove="all-but-first">
-                    <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
+                    <!--/*@thymesVar id="purchaseDeliveryList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentDelivery>"*/-->
                     <tr data-th-each="purchaseDelivery,purchaseDeliveryStat:${purchaseDeliveryList}">
 
                         <td class="txt20 c">
@@ -139,7 +141,7 @@
                             </a>
                             <!--<span th:if="${agentReturnOrder.Disabled}" style="color:red;">已关闭</span>-->
                         </td>
-                        <td class="txt80 c" data-th-text="${purchaseDelivery.agentReturnedOrder.rOrderId}">
+                        <td class="txt80 c" data-th-text="${purchaseDelivery.agentReturnedOrder.ROrderId}">
                             采购单号
                         </td>
                         <td class="txt80 c" data-th-text="${#calendars.format(purchaseDelivery.createTime,'yyyy-MM-dd HH:mm:ss')}">
@@ -185,7 +187,7 @@
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
 
-    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    var basicUrl = /*[[@{/purchaseOrder/delivery}]]*/ "/purchaseOrder/delivery";
 
     function searchReturnDeliver() {
 
@@ -196,7 +198,7 @@
 
 
     function searchReturnOrderAll(){
-        window.location.href = /*[[@{/purchase/showReturnDeliveryList}]]*/ "";
+        window.location.href = /*[[@{/purchaseOrder/delivery/showReturnDeliveryList}]]*/ "";
     }
 
 

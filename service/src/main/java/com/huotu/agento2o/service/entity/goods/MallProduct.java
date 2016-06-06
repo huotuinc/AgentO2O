@@ -79,6 +79,11 @@ public class MallProduct {
      */
     @Transient
     private int usableStore = 0;
+    /**
+     * 购物车中商品数量
+     */
+    @Transient
+    private int shoppingStore=0;
 
     /**
      * 当前代理商/门店库存

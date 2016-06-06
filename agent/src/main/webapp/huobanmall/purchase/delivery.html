@@ -45,7 +45,7 @@
                 $.jBox.tip("请选择物流公司");
                 return;
             }
-            if (logisticsNo.length == 0) {
+            if (logisticsName.indexOf('songhuoshangmen')<=-1 && logisticsNo.length == 0) {
                 $.jBox.tip("请输入物流单号");
                 return;
             }
@@ -82,7 +82,8 @@
         }
 
         function getCheckedSendBn(checkboxName) {
-            var checkedObj = $("input[name='" + checkboxName + "']:checked");
+            var checkedObj = $("input[name='" + checkboxName + "']");
+//            var checkedObj = $("input[name='" + checkboxName + "']:checked");
             var checkedMenu = "|";
 
             checkedObj.each(function () {
@@ -90,12 +91,12 @@
             });
             return checkedMenu;
         }
-        $("#checkall").click(function () {
+        /*$("#checkall").click(function () {
             var option = $("#checkall").prop('checked');
             $("input[name='choice']:checkbox").each(function () {
                 $(this).prop("checked", option);
             })
-        })
+        })*/
     </script>
 </head>
 <body marginwidth="0" marginheight="0">
@@ -129,6 +130,7 @@
                     <select name="selLogiName" id="selLogiName" class="x-input-select  inputstyle"
                             onchange="quickSetLogiName();">
                         <option value="0">请输入或选择</option>
+                        <option value="songhuoshangmen">送货上门</option>
                         <option value="youzhengguonei">中国邮政</option>
                         <option value="shentong">申通快递</option>
                         <option value="yuantong">圆通速递</option>
@@ -210,7 +212,7 @@
             </colgroup>
             <thead>
             <tr>
-                <th width="20px"><!--<input type="checkbox" id="checkall"/>--></th>
+                <!--<th width="20px">&lt;!&ndash;<input type="checkbox" id="checkall"/>&ndash;&gt;</th>-->
                 <th>货号</th>
                 <th>商品名称</th>
                 <th>购买数量</th>
@@ -219,7 +221,8 @@
             </thead>
             <tbody th:remove="all-but-first">
             <tr th:each="orderItem:${purchaseOrder.orderItemList}">
-                <td><input th:if="${orderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.id}" checked="checked"/></td>
+                <input type="hidden" name="choice" th:value="${orderItem.id}"/>
+                <!--<td><input th:if="${orderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.id}" checked="checked"/></td>-->
                 <td th:text="${orderItem.bn}">G49B884C0349DE7</td>
                 <td>
                     <span th:text="${orderItem.name}">休闲男鞋(蓝色,37)(1)</span>
