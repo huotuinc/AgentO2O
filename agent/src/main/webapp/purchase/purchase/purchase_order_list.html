@@ -10,41 +10,40 @@
   -->
 
 <html xmlns:th="http://www.thymeleaf.org">
-<!--@thymesVar id="ordersList" type="java.util.List<com.huotu.hotsupplier.hbm.service.entity.order.MallOrder>"-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
     <title>
-        下级采购单列表
+        我的采购单列表
     </title>
-    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
-    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
           type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
             data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
             data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
             data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 
 </head>
 <body marginwidth="0" marginheight="0">
 
 <!--/*@thymesVar id="purchaseOrderSearcher" type="com.huotu.agento2o.service.searchable.PurchaseOrderSearcher"*/-->
-<form method="get" action="/purchaseOrder/showAgentPurchaseOrderList" th:action="@{/purchaseOrder/showAgentPurchaseOrderList}" id="form1" th:object="${purchaseOrderSearcher}">
+<form method="get" action="/purchaseOrder/showPurchaseOrderList" th:action="@{/purchaseOrder/showPurchaseOrderList}" id="form1" th:object="${purchaseOrderSearcher}">
     <div class="container">
         <div class="blank10">
         </div>
@@ -66,16 +65,10 @@
 
                     <div class="search-bar">
                         <label class="first ">采购单号：</label>
-                        <input name="pOrderId" type="text" th:value="*{pOrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
+                        <input name="pOrderId" type="text" th:value="*{POrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
                         &nbsp;
                         <label class="first ">商品名称：</label>
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
-                        &nbsp;
-                        <label class="first ">下级代理商/门店：</label>
-                        <select name="agentId" id="agentId">
-                            <option selected="selected"  value="0"  th:selected="*{agentId == 0}">==所有==</option>
-                            <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == purchaseOrderSearcher.agentId}">代理商/门店</option>
-                        </select>
                         <br/>
                         <br/>
                         <label class="first ">付款状态：</label>
@@ -121,6 +114,19 @@
                                   style="margin-bottom: 3px;"><span>搜索</span></a></label>
                         <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchOrderAll();"
                                   style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                        <br/>
+                        <br/>
+                        <label class="first ">导出采购单：</label>
+                        第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
+                                style="height:15px;width:28px;"/>页
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                                  style="height:15px;width:28px;"/>页
+
+                        <label>
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;" href="javascript:exportHelper.showDialogV2();">
+                                <span>导出主采购单</span>
+                            </a>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -152,8 +158,6 @@
                             </th>
                             <th scope="col">货品名称
                             </th>
-                            <th scope="col">采购方(代理商/门店)
-                            </th>
                             <th scope="col">下单时间
                             </th>
                             <th scope="col">支付时间
@@ -176,16 +180,12 @@
                                 1
                             </td>
                             <td class="txt80">
-                                <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.pOrderId}"></a>
+                                <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.POrderId}"></a>
                                 <span style="color: red" th:if="${pOrder.disabled}">（已取消）</span>
                             </td>
                             <td class="txt160">
                                 <span th:text="${pOrder.orderItemList.size()}>0?${pOrder.orderItemList[0].name}"></span>
-                                <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.pOrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
-                            </td>
-                            <td class="txt80" >
-                                <span th:text="${pOrder.author.name}"></span>
-                                <span style="color: red" th:text="${pOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
+                                <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
                             <td class="txt80 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                 2015/9/21 20:18:01
@@ -205,22 +205,23 @@
                                 未发货
                             </td>
                             <td style="color:red;" class="txt40 c" th:text="${pOrder.status.value}">
-                                未发货
+                                待审核
                             </td>
                             <td class="txt40 c tail">
                                 <div th:inline="text">
                                     <!--<span th:if="${orders.deliverable()}">
                                         <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliverable()}">发货</a> |
                                     </span>-->
-                                    <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
-                                    <span th:if="${pOrder.checkable()}"> | </span>
-                                    <a th:if="${pOrder.checkable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="checkOrder(this)" title="审核">审核</a>
-                                    <span th:if="${pOrder.deliverable()}"> | </span>
-                                    <a th:if="${pOrder.deliverable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.pOrderId}" onclick="deliveryOrder(this)" title="发货">发货</a>
+                                    <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="showDetail(this)" title="查看详细">查看详细</a>
+                                    <span  th:if="${pOrder.payabled()}"> | </span>
+                                    <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="payOrder(this)" title="支付">支付</a>
+                                    <span  th:if="${pOrder.receivable()}"> | </span>
+                                    <a th:if="${pOrder.receivable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="receiveOrder(this)" title="确认收货">确认收货</a>
+                                    <span  th:if="${pOrder.deletable()}"> | </span>
+                                    <a th:if="${pOrder.deletable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="deleteOrder(this)" title="取消">取消</a>
                                 </div>
                             </td>
                         </tr>
-
                         </tbody>
                     </table>
                 </div>
@@ -238,46 +239,7 @@
         </div>
     </div>
 </form>
-<!--审核对话框start-->
-<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
-     aria-labelledby="ui-dialog-title-managerInfoDialog"
-     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
-    <div id="checkDialog" style="width: auto; min-height: 49px; height: auto;"
-         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
-        <div class="hua_card">
-            <div style="width:300px">
-                <ul>
-                    <li style="text-align: center ; ">
-                        <label>
-                            <input type="radio" name="RadioGroup" value="1" id="RadioGroup1" style="
-    vertical-align: text-top; text-align: center;
-" onclick="javascript:change(1)"  checked="checked"/>
-                            审核通过</label>
-                        <label>
-                            <input type="radio" name="RadioGroup" value="2" id="RadioGroup2" onclick="javascript:change(2)"  style="vertical-align: text-top;"/>
-                            审核不通过</label>
-                    </li>
-                    <li style="display: none" id="comment">
-                        <label>
-                            审核说明<textarea  name="statusComment" id="statusComment"  style="width: 80%"></textarea>
-                        </label>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-        <div class="ui-dialog-buttonset">
-            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
-                    role="button" aria-disabled="false"><span class="ui-button-text">确定</span></button>
-            <button type="button"
-                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
-                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
-        </div>
-    </div>
-</div>
-<!--审核对话框end-->
-<script th:inline="javascript">
+<script type="application/javascript" th:inline="javascript">
     /*<![CDATA[*/
     var baseUrl = /*[[@{/purchaseOrder}]]*/ "/purchaseOrder";
 
@@ -285,71 +247,157 @@
     function showDetail(obj) {
         var pOrderId = $(obj).attr("pOrderId");
         window.location.href = baseUrl + "/showPurchaseOrderDetail?pOrderId=" + pOrderId;
-//        J.PopupIFrame(url, "订单详情", 1100, 680, "ifrm", "", "auto", "");
     }
-
-    //审核采购单
-    function checkOrder(obj){
-        var pOrderId = $(obj).attr("pOrderId");
-        J.ShowDialog("checkDialog", "采购单审核", function () {
-            var status = $("input[name='RadioGroup']:checked").val();
-            var data = {
-                'checkStatus':status,
-                'pOrderId':pOrderId
-            };
-            if(status == '2'){
-                var comment = $.trim($("#statusComment").val());
-                if(comment.length == 0){
-                    $.jBox.tip("请输入审核说明！");
-                    return;
-                }
-                data['statusComment'] = comment;
-            }
-            $.jBox.tip("正在保存...", "loading");
-            $.ajax({
-                type: "POST",
-                url: baseUrl + "/checkAgentPurchaseOrder",
-                data: data,
-                dataType: "json",
-                success: function (msg) {
-                    if (msg.code == 200) {
-                        $.jBox.tip("审核成功！","success");
-                        setTimeout(function(){
-                            window.location.reload();
-                        },500)
-                    } else {
-                        $.jBox.tip(msg.msg, 'error');
+    //取消采购单
+    function deleteOrder(obj){
+        $.jBox.confirm("确定要取消该采购单吗？","提示",function(v){
+            if(v == 'ok'){
+                var pOrderId = $(obj).attr("pOrderId");
+                $.jBox.tip("正在取消...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "/deletePurchaseOrder",
+                    data: {
+                        pOrderId: pOrderId
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip("取消采购单成功!",'success');
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
                     }
-                }
-            });
-        },function(){
-            $(this).dialog('close');
-        });
+                })
+            }
+        })
+    }
+    //支付采购单
+    function payOrder(obj){
+        $.jBox.confirm("请确认已线下支付","提示",function(v){
+            if(v == 'ok'){
+                var pOrderId = $(obj).attr("pOrderId");
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "/payPurchaseOrder",
+                    data: {
+                        pOrderId: pOrderId
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip("支付成功!",'success');
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                })
+            }
+        })
     }
 
-    //审核状态单选框单击事件
-    function change(type){
-        if(type == 1){
-            document.getElementById('comment').style.display='none';
-        }else{
-            document.getElementById('comment').style.display='';
+    //确认收货
+    function receiveOrder(obj){
+        $.jBox.confirm("请确认已收货","提示",function(v){
+            if(v == 'ok'){
+                var pOrderId = $(obj).attr("pOrderId");
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "/receive",
+                    data: {
+                        pOrderId: pOrderId
+                    },
+                    dataType: "json",
+                    success: function (msg) {
+                        if (msg.code == 200) {
+                            $.jBox.tip("确认收货成功!",'success');
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
+                        } else {
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+
+    //#region 导出助手
+    var exportHelper = {};
+
+    exportHelper.checkPage = function (txtBeginPage, txtEndPage) {
+        var numberBug = pageCount;//总页数
+        if (txtBeginPage == '' || txtEndPage == '') {
+            return {flag: false, msg: '请输入正确的起止页码'};
         }
-    }
+        var beginPage = parseInt(txtBeginPage);
+        var endPage = parseInt(txtEndPage);
+        if (endPage < beginPage) {
+            return {flag: false, msg: '结束页不能小于起始页'};
+        }
+        if (endPage > numberBug) {
+            return {flag: false, msg: '结束页不能大于总页数'};
+        }
+        var _maxPage = 500;
+        if (endPage - beginPage >= _maxPage) {
+            $('#txtEndPage').focus().select();
+            return {flag: false, msg: '最多导出' + _maxPage + '页'};
+        }
+//            return {flag: true, msg: ''};
+        return {flag: true};
+    };
 
-    //采购单发货
-    function deliveryOrder(obj){
-        var pOrderId = $(obj).attr("pOrderId");
-        var deliveryUrl = /*[[@{/purchaseOrder/delivery/showDelivery}]]*/ "/purchaseOrder/delivery/showDelivery";
-        var url =  deliveryUrl + "?pOrderId=" + pOrderId;
-        J.PopupIFrame(url, "采购单发货", 900, 480, "ifrm", "", "auto", "");
-    }
+    exportHelper.showDialogV2 = function () {
+        var txtBeginPage = $("#txtBeginPage").val();
+        var txtEndPage = $("#txtEndPage").val();
+
+        var chkResult = this.checkPage(txtBeginPage, txtEndPage);
+        if (!chkResult.flag) {
+            jBox.tip(chkResult.msg, 'info');
+            return;
+        }
+        var pOrderId = $("input[name=pOrderId]").val();
+        var orderItemName = $("input[name=orderItemName]").val();
+        var payStatusCode = $("#payStatusCode").val();
+        var shipStatusCode = $("#payStatusCode").val();
+        var statusCode = $("#statusCode").val();
+        var beginTime = $("#beginTime").val();
+        var endTime = $("#endTime").val();
+        var beginPayTime = $("#beginPayTime").val();
+        var endPayTime = $("#endPayTime").val();
+
+        var url = baseUrl + "/exportExcel";
+        url += '?rnd=' + Math.random()
+                + '&pOrderId=' + pOrderId
+                + '&orderItemName=' + orderItemName
+                + '&payStatusCode=' + payStatusCode
+                + '&shipStatusCode=' + shipStatusCode
+                + '&statusCode=' + statusCode
+                + '&beginTime=' + beginTime
+                + '&endTime=' + endTime
+                + '&beginPayTime=' + beginPayTime
+                + '&endPayTime=' + endPayTime
+                + '&beginPage=' + txtBeginPage
+                + '&endPage=' + txtEndPage;
+        window.location.href = url;
+    };
 
     function searchOrder() {
         $("input[name=pageIndex]").val(1);
         $('#form1').submit();
     }
     function searchOrderAll() {
-        window.location.href = /*[[@{/purchaseOrder/showAgentPurchaseOrderList}]]*/ "/purchaseOrder/showAgentPurchaseOrderList";
+        window.location.href = /*[[@{/purchaseOrder/showPurchaseOrderList}]]*/ "/purchaseOrder/showPurchaseOrderList";
     }
     /*]]>*/
 </script>

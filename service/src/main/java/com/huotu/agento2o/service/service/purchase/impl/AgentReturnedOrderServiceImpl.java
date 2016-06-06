@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
+import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
@@ -16,6 +17,8 @@ import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderItemReposi
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -356,5 +359,42 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             return new ApiResult("库存不足");
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public HSSFWorkbook createWorkBook(List<AgentReturnedOrder> returnedOrderList) {
+        List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
+        returnedOrderList.forEach(order -> {
+            StringBuffer sb = new StringBuffer("");
+            order.getOrderItemList().forEach(item->{
+                if(sb.length() != 0){
+                    sb.append("\r\n");
+                }
+                sb.append(item.getName());
+            });
+            List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
+            cellDescList.add(ExcelHelper.asCell(order.getROrderId()));
+            cellDescList.add(ExcelHelper.asCell(sb.toString()));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getName())));
+            if(order.getAuthor().getParentAuthor() != null){
+                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getParentAuthor().getName())));
+            }else {
+                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getCustomer().getNickName())));
+            }
+            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getCreateTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getPayTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(order.getFinalAmount(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getCostFreight(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getPayStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getSendmentStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getStatusComment())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthorComment())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getParentComment())));
+            cellDescList.add(ExcelHelper.asCell(order.isDisabled()?"已取消":"活动"));
+            rowAndCells.add(cellDescList);
+        });
+        return ExcelHelper.createWorkbook("退货单列表", SysConstant.RETURNED_ORDER_EXPORT_HEADER, rowAndCells);
     }
 }

@@ -9,31 +9,32 @@
   ~ 2013-2016. All rights reserved.
   ~
   -->
+
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <title>货品列表</title>
-    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
-    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
           type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
             data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
             data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
             data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
@@ -55,6 +56,8 @@
                         </th>
                         <th scope="col">当前库存
                         </th>
+                        <th scope="col">购物车数量
+                        </th>
                         <th scope="col">订购数量/单位
                         </th>
                         <th scope="col">操作
@@ -75,6 +78,9 @@
                             1000
                         </td>
                         <td class="txt20 c" data-th-text="${product.authorStore}">
+                            1000
+                        </td>
+                        <td class="txt20 c" data-th-text="${product.shoppingStore}">
                             1000
                         </td>
                         <td class="txt40 c">

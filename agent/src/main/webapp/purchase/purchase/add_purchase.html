@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -12,29 +13,29 @@
 <head>
     <meta charset="UTF-8"/>
     <title>确认采购单</title>
-    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
-    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
           type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
             data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
             data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
             data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
     <style type="text/css">
         .spModuleTitle {
             padding: 3px 10px 0px 10px;
@@ -104,6 +105,7 @@
     </style>
 </head>
 <body>
+<!--/*@thymesVar id="agentPurchaseOrder" type="com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder"*/-->
 <form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
       data-th-object="${agentPurchaseOrder}">
     <div class="container">
@@ -156,7 +158,7 @@
                             <!--/*@thymesVar id="sendmentEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.SendmentStatus"*/-->
                             <span th:each="sendment,sendmentStat:${sendmentEnum}" class="option" th:classappend="${sendmentStat.index}==0?'option_selected'" th:value="${sendment.code}">
                                 <span class="ononon" th:style="${sendmentStat.index}==0?'display: inline;':'display: none;'">
-                                    <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
+                                    <img src="../../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${sendment.value}"></th:block>
                             </span>
                         </div>
@@ -168,7 +170,7 @@
                             <span th:each="taxType:${taxTypeEnum}" class="option"
                                   th:classappend="${taxType.code} == ${agentPurchaseOrder.taxType.code}?'option_selected'" th:value="${taxType.code}" th:onclick="|changeInvoiceType(${taxType.code})|">
                                 <span class="ononon" th:style="${taxType.code} == ${agentPurchaseOrder.taxType.code}?'display: inline;':'display: none;'">
-                                    <img src="../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
+                                    <img src="../../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${taxType.value}"></th:block>
                             </span>
                         </div>
@@ -306,7 +308,6 @@
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
     var basicUrl = /*[[@{/purchaseOrder}]]*/ "/purchaseOrder";
-    var listSize = /*[[${shoppingCartList == null?0:shoppingCartList.size()}]]*/ 1;
     $("span[class~=option]").on("click", function () {
         $(this).siblings("span[class~=option_selected]").removeClass("option_selected");
         $(this).addClass("option_selected");

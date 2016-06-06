@@ -2,21 +2,16 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.common.util.SerialNo;
-import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
-import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
+import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
+import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
@@ -24,6 +19,7 @@ import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +29,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.List;
 
 @Controller
 @PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('PURCHASE')")
-@RequestMapping("/purchase")
+@RequestMapping("/returnedOrder")
 public class AgentReturnedOrderController {
 
     @Autowired
@@ -71,7 +71,7 @@ public class AgentReturnedOrderController {
     public ModelAndView showPurchasedProductList(
             @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("purchase/purchased_product_list");
+        model.setViewName("purchase/returned/purchased_product_list");
         List<AgentProduct> agentProductList = null;
         agentProductList = agentProductService.findByAgentId(author.getId());
         model.addObject("agentProductList", agentProductList);
@@ -134,7 +134,7 @@ public class AgentReturnedOrderController {
         searchCondition.setAgentId(author.getId());
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
         ModelAndView model = new ModelAndView();
-        model.setViewName("purchase/returned_product_list");
+        model.setViewName("purchase/returned/returned_order_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
 
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
@@ -165,10 +165,18 @@ public class AgentReturnedOrderController {
         return apiResult;
     }
 
+    /**
+     * 显示退货单详情
+     * @param author
+     * @param rOrderId
+     * @param subAuthorId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showReturnedOrderDetail")
     public ModelAndView showReturnOrderDetail(@AgtAuthenticationPrincipal Author author,String rOrderId,Integer subAuthorId) throws Exception{
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("purchase/returned_product_detail");
+        modelAndView.setViewName("purchase/returned/returned_order_detail");
         AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
         List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
         agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
@@ -194,12 +202,19 @@ public class AgentReturnedOrderController {
         return modelAndView;
     }
 
+    /**
+     * 显示退货单
+     * @param author
+     * @param rOrderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showDelivery")
     public ModelAndView showDelivery(@AgtAuthenticationPrincipal(type = Author.class) Author author,
                                @RequestParam(required = true) String rOrderId) throws Exception{
 
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("purchase/return_order_delivery");
+        modelAndView.setViewName("purchase/delivery/return_order_delivery");
         AgentReturnedOrder agentReturnedOrder = agentReturnedOrderService.findOne(rOrderId);
         List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemService.findAll(rOrderId);
         modelAndView.addObject("agentReturnedOrder",agentReturnedOrder);
@@ -252,7 +267,7 @@ public class AgentReturnedOrderController {
         List<Author> authorList = authorService.findByParentAgentId(agent);
 
         ModelAndView model = new ModelAndView();
-        model.setViewName("purchase/agent_return_order_list");
+        model.setViewName("purchase/returned/agent_return_order_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
 
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
@@ -321,7 +336,92 @@ public class AgentReturnedOrderController {
     public ApiResult payReturnOrder(@AgtAuthenticationPrincipal Author author,
                                     @RequestParam(required = true) String rOrderId){
         return agentReturnedOrderService.payReturnOrder(null,author.getId(),rOrderId);
+    }
 
+    @RequestMapping("/exportExcel")
+    @SuppressWarnings("Duplicates")
+    public void exportExcel(@AgtAuthenticationPrincipal Author author,
+                            int beginPage,
+                            int endPage,
+                            ReturnedOrderSearch returnedOrderSearch,
+                            HttpSession session,
+                            HttpServletResponse response) {
+        int pageSize = Constant.PAGESIZE * (endPage - beginPage + 1);
+        returnedOrderSearch.setAgentId(author.getId());
+        returnedOrderSearch.setPageIndex(beginPage);
+        returnedOrderSearch.setPageSize(pageSize);
+        Page<AgentReturnedOrder> returnedOrderPage = agentReturnedOrderService.findAll(returnedOrderSearch);
+        List<AgentReturnedOrder> returnedOrderList = returnedOrderPage.getContent();
+        session.setAttribute("state", null);
+        // 生成提示信息，
+        response.setContentType("apsplication/vnd.ms-excel");
+        OutputStream fOut = null;
+        try {
+            // 进行转码，使其支持中文文件名
+            String excelName = author.getName() + "-采购退货单-"
+                    + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
+            excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
+            response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
+            HSSFWorkbook workbook = agentReturnedOrderService.createWorkBook(returnedOrderList);
+            fOut = response.getOutputStream();
+            workbook.write(fOut);
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                assert fOut != null;
+                fOut.flush();
+                fOut.close();
+            } catch (IOException ignored) {
+            }
+            session.setAttribute("state", "open");
+        }
+    }
+
+    /**
+     * 导出下级门店/代理商列表
+     * @param author
+     * @param beginPage
+     * @param endPage
+     * @param returnedOrderSearch
+     * @param session
+     * @param response
+     */
+    @RequestMapping("/agent/exportExcel")
+    public void exportAgentExcel(@AgtAuthenticationPrincipal Author author,
+                            int beginPage,
+                            int endPage,
+                            ReturnedOrderSearch returnedOrderSearch,
+                            HttpSession session,
+                            HttpServletResponse response) {
+        int pageSize = Constant.PAGESIZE * (endPage - beginPage + 1);
+        returnedOrderSearch.setParentAgentId(author.getId());
+        returnedOrderSearch.setPageIndex(beginPage);
+        returnedOrderSearch.setPageSize(pageSize);
+        Page<AgentReturnedOrder> returnedOrderPage = agentReturnedOrderService.findAll(returnedOrderSearch);
+        List<AgentReturnedOrder> returnedOrderList = returnedOrderPage.getContent();
+        session.setAttribute("state", null);
+        // 生成提示信息，
+        response.setContentType("apsplication/vnd.ms-excel");
+        OutputStream fOut = null;
+        try {
+            // 进行转码，使其支持中文文件名
+            String excelName = author.getName() + "-下级采购退货单-"
+                    + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
+            excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
+            response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
+            HSSFWorkbook workbook = agentReturnedOrderService.createWorkBook(returnedOrderList);
+            fOut = response.getOutputStream();
+            workbook.write(fOut);
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                assert fOut != null;
+                fOut.flush();
+                fOut.close();
+            } catch (IOException ignored) {
+            }
+            session.setAttribute("state", "open");
+        }
     }
 
 

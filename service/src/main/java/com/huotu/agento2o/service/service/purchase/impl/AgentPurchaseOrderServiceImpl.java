@@ -10,6 +10,8 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.PurchaseEnum;
@@ -21,6 +23,7 @@ import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
@@ -29,6 +32,8 @@ import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderReposito
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +42,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -113,7 +119,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
 //            predicates.add(cb.isFalse(root.get("disabled")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        return purchaseOrderRepository.findAll(specification, new PageRequest(purchaseOrderSearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
+        return purchaseOrderRepository.findAll(specification, new PageRequest(purchaseOrderSearcher.getPageIndex() - 1, purchaseOrderSearcher.getPageSize(), new Sort(Sort.Direction.DESC, "createTime")));
     }
 
     /**
@@ -402,5 +408,51 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         agentPurchaseOrder.setLastUpdateTime(new Date());
         purchaseOrderRepository.save(agentPurchaseOrder);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public HSSFWorkbook createWorkBook(List<AgentPurchaseOrder> purchaseOrderList) {
+        List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
+        purchaseOrderList.forEach(order -> {
+            StringBuffer sb = new StringBuffer("");
+            order.getOrderItemList().forEach(item->{
+                if(sb.length() != 0){
+                    sb.append("\r\n");
+                }
+                sb.append(item.getName());
+            });
+            List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
+            cellDescList.add(ExcelHelper.asCell(order.getPOrderId()));
+            cellDescList.add(ExcelHelper.asCell(sb.toString()));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getName())));
+            if(order.getAuthor().getParentAuthor() != null){
+                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getName())));
+            }else{
+                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getCustomer().getNickName())));
+            }
+            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getCreateTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getPayTime(), StringUtil.TIME_PATTERN)));
+            cellDescList.add(ExcelHelper.asCell(order.getFinalAmount(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getCostFreight(), Cell.CELL_TYPE_NUMERIC));
+            cellDescList.add(ExcelHelper.asCell(order.getStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getPayStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipStatus().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipName()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipMobile()));
+            cellDescList.add(ExcelHelper.asCell(order.getShipAddr()));
+            cellDescList.add(ExcelHelper.asCell(order.getSendMode().getValue()));
+            cellDescList.add(ExcelHelper.asCell(order.getTaxType().getValue()));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getTaxTitle())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getTaxContent())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getTaxpayerCode())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getBankName())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAccountNo())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getStatusComment())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthorComment())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getParentComment())));
+            cellDescList.add(ExcelHelper.asCell(order.isDisabled()?"已取消":"活动"));
+            rowAndCells.add(cellDescList);
+        });
+        return ExcelHelper.createWorkbook("采购单列表", SysConstant.AGENT_ORDER_EXPORT_HEADER, rowAndCells);
     }
 }

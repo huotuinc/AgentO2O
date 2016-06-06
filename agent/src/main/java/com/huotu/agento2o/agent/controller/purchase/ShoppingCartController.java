@@ -66,7 +66,7 @@ public class ShoppingCartController {
     public ModelAndView showShoppingCart(
             @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
-        model.setViewName("/purchase/shopping_cart");
+        model.setViewName("/purchase/purchase/shopping_cart");
         List<ShoppingCart> shoppingCarts = shoppingCartService.findByAgentId(author);
         getPicUri(shoppingCarts);
         model.addObject("shoppingCartList", shoppingCarts);
@@ -153,7 +153,7 @@ public class ShoppingCartController {
             //如果没有选中的购物车货品ID，则跳转到购物车
             return new ModelAndView("redirect:/shoppingCart/showShoppingCart");
         }
-        model.setViewName("/purchase/add_purchase");
+        model.setViewName("/purchase/purchase/add_purchase");
         List<Integer> shoppingCartIds = new ArrayList<>();
         for (String shoppingCart : shoppingCartId) {
             shoppingCartIds.add(Integer.valueOf(shoppingCart));

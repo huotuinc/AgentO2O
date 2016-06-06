@@ -55,7 +55,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             AgtMenu ddgl = new AgtMenu(1, "", "订单管理", 0, orderMenu, "AGENT,SHOP,ORDER", 0, "0101");
             //二级子菜单 订单列表
             AgtMenu ddlb = new AgtMenu(2, "/order/getOrdersPage", "订单列表", 0, ddgl, "AGENT,SHOP,ORDER", 0, "010101");
-            menuRepository.save(ddgl);
+            menuRepository.save(ddlb);
 
             //二级子菜单 售后列表
             AgtMenu shlb = new AgtMenu(2, "/agent/afterSale/afterSaleList", "售后列表", 1, ddgl, "AGENT,SHOP,ORDER", 0, "010102");
@@ -90,9 +90,9 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             //二级菜单 我的采购单
             AgtMenu cgd = new AgtMenu(2, "/purchaseOrder/showPurchaseOrderList", "我的采购单", 0, wdcgd, "AGENT,SHOP,PURCHASE", 0, "020201");
             menuRepository.save(cgd);
-            AgtMenu thsq = new AgtMenu(2, "/purchase/showPurchasedProductList", "采购退货申请", 1, wdcgd, "AGENT,SHOP,PURCHASE", 0, "020202");
+            AgtMenu thsq = new AgtMenu(2, "/returnedOrder/showPurchasedProductList", "采购退货申请", 1, wdcgd, "AGENT,SHOP,PURCHASE", 0, "020202");
             menuRepository.save(thsq);
-            AgtMenu thd = new AgtMenu(2, "/purchase/showReturnedOrderList", "我的采购退货单", 2, wdcgd, "AGENT,SHOP,PURCHASE", 0, "020203");
+            AgtMenu thd = new AgtMenu(2, "/returnedOrder/showReturnedOrderList", "我的采购退货单", 2, wdcgd, "AGENT,SHOP,PURCHASE", 0, "020203");
             menuRepository.save(thd);
 
             //一级菜单 库存管理
@@ -107,16 +107,16 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             AgtMenu xjcgd = new AgtMenu(2, "/purchaseOrder/showAgentPurchaseOrderList", "下级采购单", 0, xjcggl, "AGENT,AGENT_PURCHASE", 0, "020401");
             menuRepository.save(xjcgd);
             //二级菜单 下级退货单
-            AgtMenu xjthd = new AgtMenu(2, "/purchase/showAgentReturnedOrderList", "下级退货单", 1, xjcggl, "AGENT,AGENT_PURCHASE", 0, "020402");
+            AgtMenu xjthd = new AgtMenu(2, "/returnedOrder/showAgentReturnedOrderList", "下级退货单", 1, xjcggl, "AGENT,AGENT_PURCHASE", 0, "020402");
             menuRepository.save(xjthd);
 
             //一级菜单 下级采购单据管理
             AgtMenu cgdjgl = new AgtMenu(1,"","下级采购单据管理",2,purchaseMenu,"AGENT,AGENT_PURCHASE",0,"0205");
             //二级菜单，采购单物流信息列表
-            AgtMenu cgdwl = new AgtMenu(2,"/purchase/showPurchaseDeliveryList","采购单物流表",0,cgdjgl,"AGENT,AGENT_PURCHASE",0,"020501");
+            AgtMenu cgdwl = new AgtMenu(2,"/purchaseOrder/delivery/showPurchaseDeliveryList","采购单物流表",0,cgdjgl,"AGENT,AGENT_PURCHASE",0,"020501");
             menuRepository.save(cgdwl);
             //二级菜单 退货单物流信息列表
-            AgtMenu thdwl = new AgtMenu(2,"/purchase/showReturnDeliveryList","退货单物流表",0,cgdjgl,"AGENT,AGENT_PURCHASE",0,"020502");
+            AgtMenu thdwl = new AgtMenu(2,"/purchaseOrder/delivery/showReturnDeliveryList","退货单物流表",0,cgdjgl,"AGENT,AGENT_PURCHASE",0,"020502");
             menuRepository.save(thdwl);
         }
     }
