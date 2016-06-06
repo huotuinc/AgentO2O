@@ -129,7 +129,6 @@ public class HbmAgentController {
         }
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("parentAgentLevelId", parentAgentLevelId);
-        model.addAttribute("ifShow", ifShow);
         return ifShow ? "huobanmall/agent/showAgent" : "huobanmall/agent/addAgent";
     }
 
@@ -159,9 +158,6 @@ public class HbmAgentController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
-        if(requestAgent == null || agentLevelId == null){
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
         if(StringUtil.isEmptyStr(requestAgent.getUsername())){
             return new ApiResult("请输入用户名");
         }
@@ -182,9 +178,6 @@ public class HbmAgentController {
         }
         if(StringUtil.isEmptyStr(requestAgent.getMobile())){
             return new ApiResult("请输入手机号码");
-        }
-        if(StringUtil.isEmptyStr(requestAgent.getTelephone())){
-            return new ApiResult("请输入电话号码");
         }
         if(StringUtil.isEmptyStr(requestAgent.getEmail())){
             return new ApiResult("请输入E-mail");
