@@ -29,10 +29,7 @@ import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
-import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
@@ -41,16 +38,12 @@ import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
-import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
-import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
-import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
-import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
+import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.config.AddressService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
-import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -64,7 +57,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -120,6 +112,9 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private AgentReturnOrderRepository agentReturnedOrderRepository;
 
     @Before
     public void initBase() {
@@ -468,5 +463,18 @@ public abstract class CommonTestBase extends SpringWebTest {
         address.setProvince(UUID.randomUUID().toString());
         address.setReceiver(UUID.randomUUID().toString());
         return addressRepository.saveAndFlush(address);
+    }
+
+    protected AgentReturnedOrder mockAgentReturnOrder(Author author){
+        AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
+        agentReturnedOrder.setROrderId(SerialNo.create());
+        agentReturnedOrder.setAuthor(author);
+        agentReturnedOrder.setDisabled(false);
+        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
+        agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
+        agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
+        agentReturnedOrder.setSendmentStatus(PurchaseEnum.SendmentStatus.HOME_DELIVERY);
+        agentReturnedOrder.setCreateTime(new Date());
+        return agentReturnedOrderRepository.saveAndFlush(agentReturnedOrder);
     }
 }
