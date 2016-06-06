@@ -161,13 +161,13 @@
                         <td class="txt80 c" data-th-text="${agentReturnOrder.author.name}">
                             代理商
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}">
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}" style="color:red;">
                             审核状态
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}">
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}" style="color:red;">
                             发货状态
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.payStatus.getValue()}">
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.payStatus.getValue()}" style="color:red;">
                             付款状态
                         </td>
                         <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
