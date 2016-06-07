@@ -103,8 +103,12 @@ public class DeliveryControllerTest extends CommonTestBase {
 
     }
 
+    /**
+     * 点击发货功能是，测试其是否有相应的库存，其库存的判断为nums<=freez<=store
+     * @throws Exception
+     */
     @Test
-    public void testJudgeStock() throws Exception {
+        public void testJudgeStock() throws Exception {
         MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop1 = mockMvc.perform(
                 get(BASE_URL + "/judgeStock")

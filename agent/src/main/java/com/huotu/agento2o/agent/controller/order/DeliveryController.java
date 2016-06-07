@@ -5,7 +5,6 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
@@ -95,7 +94,9 @@ public class DeliveryController {
     }
 
     /**
-     * 判断货品的库存是否满足订单所需的货品数量
+     * 判断货品的库存是否满足订单所需的货品数量,其规则为
+     * nums<=freez<=store
+     * 满足则返回200失败返回505
      * @param orderId
      * @return
      */
