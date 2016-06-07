@@ -103,7 +103,7 @@ public class DeliveryController {
     @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
     @ResponseBody
     public ApiResult judgeStock( @AgtAuthenticationPrincipal Shop shop,
-                                 String orderId,Model model){
+                                 String orderId){
         ApiResult apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS, "有货", null);
         MallOrder order = orderService.findByOrderId(orderId);
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
@@ -111,7 +111,8 @@ public class DeliveryController {
         for (MallOrderItem mallOrderItem : mallOrderItems){
             agentProduct = agentProductService.findAgentPeoduct(shop,mallOrderItem.getProduct());
             if (agentProduct.getFreez()<mallOrderItem.getNums() || agentProduct.getFreez()>agentProduct.getStore()){
-                apiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE, "缺货", null);
+                apiResult.setCode(ResultCodeEnum.INVENTORY_SHORTAGE.getResultCode());
+                apiResult.setMsg(ResultCodeEnum.INVENTORY_SHORTAGE.getResultMsg());
                 break;
             }
         }

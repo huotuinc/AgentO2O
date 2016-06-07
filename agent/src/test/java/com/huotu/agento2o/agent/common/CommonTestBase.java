@@ -273,7 +273,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         agentProduct.setAuthor(mockAuthor);
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
-        agentProduct.setStore(random.nextInt(5));
+        agentProduct.setStore(20);
         agentProduct.setFreez(10);
         agentProduct.setWarning(0);
         agentProduct.setDisabled(false);
@@ -433,14 +433,16 @@ public abstract class CommonTestBase extends SpringWebTest {
      * 模拟一个订单中的货单
      * @param order
      * @param product
+     * @param mallAfterSales
+     * @param nums
      * @return
      */
-    protected MallOrderItem mockMallOrderItem(MallOrder order, MallProduct product , MallAfterSales mallAfterSales){
+    protected MallOrderItem mockMallOrderItem(MallOrder order, MallProduct product , MallAfterSales mallAfterSales,int nums){
         MallOrderItem mallOrderItem = new MallOrderItem();
         mallOrderItem.setItemId(random.nextLong()+1);
         mallOrderItem.setOrder(order);
         mallOrderItem.setProduct(product);
-        mallOrderItem.setNums(10);
+        mallOrderItem.setNums(nums);
         mallOrderItem.setShipStatus(OrderEnum.ShipStatus.NOT_DELIVER);
         mallOrderItem.setAfterSales(mallAfterSales);
         mallOrderItemRepository.saveAndFlush(mallOrderItem);
