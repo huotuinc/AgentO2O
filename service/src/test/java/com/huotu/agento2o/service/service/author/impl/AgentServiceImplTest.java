@@ -246,16 +246,16 @@ public class AgentServiceImplTest extends CommonTestBase {
         mockAgent.setMobile(UUID.randomUUID().toString());
         mockAgent.setTelephone(UUID.randomUUID().toString());
         mockAgent.setAddress(UUID.randomUUID().toString());
-        ApiResult result = agentService.saveAgentConfig(mockAgent.getId(), mockAgent);
+        ApiResult result = agentService.saveAgentConfig(mockAgent.getId(), mockAgent,null);
        Assert.assertEquals("请求成功",result.getMsg());
-        result = agentService.saveAgentConfig(-1, mockAgent);
+        result = agentService.saveAgentConfig(-1, mockAgent,null);
         Assert.assertEquals("该账号已失效",result.getMsg());
-        result = agentService.saveAgentConfig(mockAgent.getId(), null);
+        result = agentService.saveAgentConfig(mockAgent.getId(), null,null);
         Assert.assertEquals("没有传输数据",result.getMsg());
         mockAgent.setDeleted(true);
         agentService.addAgent(mockAgent);
         agentService.flush();
-        result = agentService.saveAgentConfig(mockAgent.getId(), mockAgent);
+        result = agentService.saveAgentConfig(mockAgent.getId(), mockAgent,null);
         Assert.assertEquals("该账号已失效",result.getMsg());
     }
 }

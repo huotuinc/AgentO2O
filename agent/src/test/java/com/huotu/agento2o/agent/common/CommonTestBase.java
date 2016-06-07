@@ -440,11 +440,12 @@ public abstract class CommonTestBase extends SpringWebTest {
         return mallAfterSalesRepository.saveAndFlush(mallAfterSales);
     }
 
+    @SuppressWarnings("Duplicates")
     protected AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
         AgentLevel agentLevel = new AgentLevel();
         agentLevel.setLevelName(UUID.randomUUID().toString());
         agentLevel.setComment(UUID.randomUUID().toString());
-        agentLevel.setLevel(random.nextInt());
+        agentLevel.setLevel(Math.abs(random.nextInt()));
         agentLevel.setCustomer(mockCustomer);
         agentLevel = agentLevelService.addAgentLevel(agentLevel);
         agentLevelService.flush();

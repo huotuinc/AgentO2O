@@ -82,14 +82,15 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop addShop(Shop shop) {
-        saveOrUpdateShop(shop, null);
-        return findByUserName(shop.getUsername());
+        return shopRepository.save(shop);
     }
 
     @Override
     @Transactional
-    public ApiResult saveOrUpdateShop(Shop shop, String hotUserName) {
-
+    public ApiResult saveOrUpdateShop(Shop shop, String hotUserName, Agent agent) {
+        if (agent == null || agent.getCustomer() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         //小伙伴账号绑定限制
         UserBaseInfo userBaseInfo = null;
         if (StringUtil.isNotEmpty(hotUserName)) {
@@ -114,6 +115,8 @@ public class ShopServiceImpl implements ShopService {
             }
             shop.setCreateTime(new Date());
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
+            shop.setParentAuthor(agent);
+            shop.setCustomer(agent.getCustomer());
         } else {  //编辑
             Shop oldShop = shopRepository.findOne(shop.getId());
             if (oldShop.isDisabled()) {
@@ -121,6 +124,10 @@ public class ShopServiceImpl implements ShopService {
             }
             if (oldShop.isDeleted()) {
                 return new ApiResult("该门店已被刪除");
+            }
+            //当门店状态为待审核和审核通过时代理商不能修改
+            if (oldShop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || oldShop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
+                return new ApiResult("不能修改");
             }
             if (shop.getStatus() != null) {
                 oldShop.setStatus(shop.getStatus());
@@ -137,19 +144,62 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setLan(shop.getLan());
             oldShop.setLat(shop.getLat());
             oldShop.setComment(shop.getComment());
-            oldShop.setServeiceTel(shop.getServeiceTel());
-            oldShop.setAfterSalTel(shop.getAfterSalTel());
-            oldShop.setAfterSalQQ(shop.getAfterSalQQ());
-            oldShop.setAfterSalQQ(shop.getAfterSalQQ());
             oldShop.setUserBaseInfo(shop.getUserBaseInfo());
-            oldShop.setBankName(shop.getBankName());
-            oldShop.setAccountName(shop.getAccountName());
-            oldShop.setAccountNo(shop.getAccountNo());
             oldShop.setEmail(shop.getEmail());
-
             shop = oldShop;
         }
         shopRepository.save(shop);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult saveShopConfig(Shop shop, String hotUserName) {
+        Shop oldShop = shopRepository.findOne(shop.getId());
+        if (oldShop.isDisabled()) {
+            return new ApiResult("该门店已被冻结");
+        }
+        if (oldShop.isDeleted()) {
+            return new ApiResult("该门店已被刪除");
+        }
+        //只有当门店状态为审核通过时，门店才能修改
+        if (!(oldShop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode())) {
+            return new ApiResult("不能修改");
+        }
+        //小伙伴账号绑定限制
+        UserBaseInfo userBaseInfo = null;
+        if (StringUtil.isNotEmpty(hotUserName)) {
+            userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName,
+                    oldShop.getCustomer().getCustomerId());
+            if (userBaseInfo == null) {
+                return new ApiResult("小伙伴账号不存在", 400);
+            }
+            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
+                return new ApiResult("小伙伴账号已被绑定", 400);
+            }
+        }
+        oldShop.setUsername(shop.getUsername());
+        oldShop.setProvince(shop.getProvince());
+        oldShop.setCity(shop.getCity());
+        oldShop.setDistrict(shop.getDistrict());
+        oldShop.setName(shop.getName());
+        oldShop.setContact(shop.getContact());
+        oldShop.setMobile(shop.getMobile());
+        oldShop.setTelephone(shop.getTelephone());
+        oldShop.setAddress(shop.getAddress());
+        oldShop.setLan(shop.getLan());
+        oldShop.setLat(shop.getLat());
+        oldShop.setComment(shop.getComment());
+        oldShop.setServeiceTel(shop.getServeiceTel());
+        oldShop.setAfterSalTel(shop.getAfterSalTel());
+        oldShop.setAfterSalQQ(shop.getAfterSalQQ());
+        oldShop.setUserBaseInfo(userBaseInfo);
+        oldShop.setBankName(shop.getBankName());
+        oldShop.setAccountName(shop.getAccountName());
+        oldShop.setAccountNo(shop.getAccountNo());
+        oldShop.setEmail(shop.getEmail());
+        shopRepository.save(oldShop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
@@ -195,10 +245,13 @@ public class ShopServiceImpl implements ShopService {
         Shop shop = findByIdAndParentAuthor(shopId, agent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        } else {
-            shop.setDeleted(true);
-            shopRepository.save(shop);
         }
+        //当门店状态为待审核和审核通过时代理商不能删除
+        if (shop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || shop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
+            return new ApiResult("不可删除");
+        }
+        shop.setDeleted(true);
+        shopRepository.save(shop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
