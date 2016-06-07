@@ -14,9 +14,13 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/18.
@@ -80,4 +84,6 @@ public interface AgentPurchaseOrderService {
      * @return
      */
     ApiResult checkPurchaseOrder(Integer customerId, Integer authorId, String pOrderId, PurchaseEnum.OrderStatus status, String comment) throws Exception;
+
+    HSSFWorkbook createWorkBook(List<AgentPurchaseOrder> purchaseOrderList);
 }

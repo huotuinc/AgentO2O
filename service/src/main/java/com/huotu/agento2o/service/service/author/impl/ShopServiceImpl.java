@@ -113,9 +113,6 @@ public class ShopServiceImpl implements ShopService {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
             shop.setCreateTime(new Date());
-            if (shop.getStatus() == null) {
-                shop.setStatus(AgentStatusEnum.NOT_CHECK);
-            }
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
         } else {  //编辑
             Shop oldShop = shopRepository.findOne(shop.getId());
@@ -124,6 +121,9 @@ public class ShopServiceImpl implements ShopService {
             }
             if (oldShop.isDeleted()) {
                 return new ApiResult("该门店已被刪除");
+            }
+            if (shop.getStatus() != null) {
+                oldShop.setStatus(shop.getStatus());
             }
             oldShop.setUsername(shop.getUsername());
             oldShop.setProvince(shop.getProvince());
@@ -141,7 +141,6 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setAfterSalTel(shop.getAfterSalTel());
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
             oldShop.setAfterSalQQ(shop.getAfterSalQQ());
-            oldShop.setAuditComment(shop.getAuditComment());
             oldShop.setUserBaseInfo(shop.getUserBaseInfo());
             oldShop.setBankName(shop.getBankName());
             oldShop.setAccountName(shop.getAccountName());

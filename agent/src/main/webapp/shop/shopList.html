@@ -152,11 +152,6 @@
         });
     }
 
-    function showDetail(obj) {
-        var shopId = $(obj).attr("shopid");
-        window.location.href = '/shop/addShopPage?id=' + shopId;
-    }
-
     function searchShop() {
         $('#current-index').val(1);
         $('#form1').submit();
@@ -165,7 +160,7 @@
     function searchShopAll() {
         window.location.href = '/shop/shopList';
     }
-    function addGood(){
+    function addGood() {
         top.document.getElementById("content_left").contentDocument.getElementById("id_030101").getElementsByTagName("a")[0].click();
     }
 
@@ -368,8 +363,9 @@
                                             1
                                         </td>
                                         <td class="txt80 c">
-                                            <a href="javascript:void(0)" onclick="showDetail(this)"
-                                               th:attr="shopid=${shop.id}" th:text="${shop.name}"></a>
+                                            <a href="javascript:void(0)"
+                                               th:href="@{/shop/addShopPage(id=${shop.id},ifShow=true)}"
+                                               th:text="${shop.name}"></a>
                                         </td>
                                         <td class="txt80 c" th:text="${shop.username}">
                                         </td>
@@ -382,17 +378,18 @@
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>
-                                        <td class="txt40 c" style="color: red" th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                        <td class="txt40 c" style="color: red"
+                                            th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
                                         </td>
                                         <td class="txt80 c tail">
                                             <div>
-                                                <a href="javascript:void(0)" onclick="showDetail(this)"
-                                                   th:attr="shopid=${shop.id}">详细信息</a> |
+                                                <a href="javascript:void(0)"
+                                                   th:href="@{/shop/addShopPage(id=${shop.id},ifShow=true)}">详细信息</a> |
                                                 <a href="javascript:void(0)" onclick="resetPassword(this)"
                                                    th:attr="shopid=${shop.id}">重置密码</a>
-                                                <span th:if="${shop.status.code} == 0 or ${shop.status.code}==3" >
+                                                <span th:if="${shop.status.code} == 0 or ${shop.status.code}==3">
                                                     | <a href="javascript:void(0)" onclick="changeStatus(this)"
-                                                       th:attr="shopid=${shop.id}">提交</a>&nbsp;|
+                                                         th:attr="shopid=${shop.id}">提交</a>&nbsp;|
                                                     <a href="javascript:void(0)" onclick="toEdit(this)"
                                                        th:attr="shopid=${shop.id}">编辑</a>&nbsp;|
                                                     <a href="javascript:void(0)" onclick="toDel(this)"

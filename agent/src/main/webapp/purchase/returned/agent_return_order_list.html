@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -12,32 +13,31 @@
 <head>
     <meta charset="UTF-8"/>
     <title>商品采购</title>
-    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
-    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
           type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
             data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
             data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
             data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
-<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="get" action="/purchase/showAgentReturnedOrderList" data-th-action="@{/purchase/showAgentReturnedOrderList}" id="form1"
+<form method="get" action="/returnedOrder/showAgentReturnedOrderList" data-th-action="@{/returnedOrder/showAgentReturnedOrderList}" id="form1"
       th:object="${searchCondition}">
 
 
@@ -46,7 +46,7 @@
     <div class="search block" style="display: block;">
         <div class="h">
             <span class="icon-sprite icon-magnifier"></span>
-            <h3>商品采购</h3>
+            <h3>下级退货单</h3>
         </div>
         <div class="tl corner">
         </div>
@@ -111,6 +111,19 @@
                         </label>
                         <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchReturnOrderAll();"
                                   style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                        <br/>
+                        <br/>
+                        <label class="first ">导出退货单：</label>
+                        第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
+                                style="height:15px;width:28px;"/>页
+                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                                  style="height:15px;width:28px;"/>页
+
+                        <label>
+                            <a id="A1" class="btn-lit btn-middle" style="margin-bottom: 3px;" href="javascript:exportHelper.showDialogV2();">
+                                <span>导出主退货单</span>
+                            </a>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -128,13 +141,9 @@
 
                         <th scope="col">退单号
                         </th>
-                        <th scope="col">代理商
+                        <th scope="col">货品名称
                         </th>
-                        <th scope="col">审核状态
-                        </th>
-                        <th scope="col">发货状态
-                        </th>
-                        <th scope="col">付款状态
+                        <th scope="col">退货方(代理商/门店)
                         </th>
                         <th scope="col">申请时间
                         </th>
@@ -144,36 +153,37 @@
                         </th>
                         <th scope="col">金额
                         </th>
+                        <th scope="col">审核状态
+                        </th>
+                        <th scope="col">发货状态
+                        </th>
+                        <th scope="col">付款状态
+                        </th>
                         <th scope="col">操作
                         </th>
-
                     </tr>
                     </thead>
                     <tbody data-th-remove="all-but-first">
-                    <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
+                    <!--@thymesVar id="agentReturnedOrderList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder>"-->
                     <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.rOrderId}">
-
-                        <td class="txt20 c">
-                            <a th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showReturnedOrderDetail()">
+                        <td class="txt20">
+                            <a href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showReturnedOrderDetail()">
                                 <span th:text="${agentReturnOrder.rOrderId}">rOrderId</span>
                             </a>
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.author.name}">
-                            代理商
+                        <td class="txt160">
+                            <span th:text="${agentReturnOrder.orderItemList.size()}>0?${agentReturnOrder.orderItemList[0].name}"></span>
+                            <a th:if="${agentReturnOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showDetail(this)" title="更多"> 更多...</a>
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.status.getValue()}" style="color:red;">
-                            审核状态
+                        <td class="txt80 c">
+                            <span  data-th-text="${agentReturnOrder.author.name}">代理商</span>
+                            <span style="color: red" th:text="${agentReturnOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}" style="color:red;">
-                            发货状态
-                        </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.payStatus.getValue()}" style="color:red;">
-                            付款状态
-                        </td>
+
                         <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                             申请时间
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.sendmentStatus.getValue()}">
+                        <td class="txt40 c" data-th-text="${agentReturnOrder.sendmentStatus.getValue()}">
                             物流快递
                         </td>
                         <td class="txt80 c" data-th-text="${agentReturnOrder.authorComment}">
@@ -181,6 +191,15 @@
                         </td>
                         <td class="txt80 c">
                             ￥<span data-th-text="${agentReturnOrder.finalAmount}">100</span>
+                        </td>
+                        <td class="txt40 c" data-th-text="${agentReturnOrder.status.getValue()}" style="color: red;">
+                            审核状态
+                        </td>
+                        <td class="txt40 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}"  style="color: red;">
+                            发货状态
+                        </td>
+                        <td class="txt40 c" data-th-text="${agentReturnOrder.payStatus.getValue()}"  style="color: red;">
+                            付款状态
                         </td>
                         <td class="txt80 c">
                             <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.rOrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" title="查看详细">查看详细</a>
@@ -256,7 +275,7 @@
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
 
-    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    var basicUrl = /*[[@{/returnedOrder}]]*/ "/returnedOrder";
 
     function searchReturnedOrder() {
 
@@ -264,11 +283,65 @@
         $('#form1').submit();
     }
 
+    //#region 导出助手
+    var exportHelper = {};
+
+    exportHelper.checkPage = function (txtBeginPage, txtEndPage) {
+        var numberBug = pageCount;//总页数
+        if (txtBeginPage == '' || txtEndPage == '') {
+            return {flag: false, msg: '请输入正确的起止页码'};
+        }
+        var beginPage = parseInt(txtBeginPage);
+        var endPage = parseInt(txtEndPage);
+        if (endPage < beginPage) {
+            return {flag: false, msg: '结束页不能小于起始页'};
+        }
+        if (endPage > numberBug) {
+            return {flag: false, msg: '结束页不能大于总页数'};
+        }
+        var _maxPage = 500;
+        if (endPage - beginPage >= _maxPage) {
+            $('#txtEndPage').focus().select();
+            return {flag: false, msg: '最多导出' + _maxPage + '页'};
+        }
+//            return {flag: true, msg: ''};
+        return {flag: true};
+    };
+
+    exportHelper.showDialogV2 = function () {
+        var txtBeginPage = $("#txtBeginPage").val();
+        var txtEndPage = $("#txtEndPage").val();
+
+        var chkResult = this.checkPage(txtBeginPage, txtEndPage);
+        if (!chkResult.flag) {
+            jBox.tip(chkResult.msg, 'info');
+            return;
+        }
+        var rOrderId = $("input[name=rOrderId]").val();
+        var orderStatus = $("#orderStatus").val();
+        var shipStatus = $("#shipStatus").val();
+        var payStatus = $("#payStatus").val();
+        var beginTime = $("#beginTime").val();
+        var endTime = $("#endTime").val();
+
+        var url = basicUrl + "/agent/exportExcel";
+        url += '?rnd=' + Math.random()
+                + '&rOrderId=' + rOrderId
+                + '&orderStatus=' + orderStatus
+                + '&shipStatus=' + shipStatus
+                + '&payStatus=' + payStatus
+                + '&beginTime=' + beginTime
+                + '&endTime' + endTime
+                + '&beginPage=' + txtBeginPage
+                + '&endPage=' + txtEndPage;
+        window.location.href = url;
+    };
+
     // 确认收货
     function receiveReturnOrder(rOrderId){
         $.jBox.confirm("请确认已收到退货？","提示",function(v){
             if(v == 'ok'){
-                $.jBox.tip("确认收货...", "loading");
+                $.jBox.tip("正在保存...", "loading");
                 $.ajax({
                     url:basicUrl+"/receiveAgentReturnOrder",
                     type:"get",
@@ -297,7 +370,7 @@
     function payReturnOrder(rOrderId){
         $.jBox.confirm("请确认已线下退款给退货方？","提示",function(v){
             if(v == 'ok'){
-                $.jBox.tip("确认退款...", "loading");
+                $.jBox.tip("正在保存...", "loading");
                 $.ajax({
                     url:basicUrl+"/payAgentReturnOrder",
                     type:"get",
@@ -308,7 +381,9 @@
                     success:function(result){
                         if(result.code == 200){
                             $.jBox.tip(result.msg, "success");
-                            location.reload();
+                            setTimeout(function(){
+                                window.location.reload();
+                            },500);
                         }else{
                             $.jBox.tip(result.msg, "error");
                         }
@@ -370,7 +445,7 @@
     }
 
     function searchReturnOrderAll(){
-        window.location.href = /*[[@{/purchase/showReturnedOrderList}]]*/ "";
+        window.location.href = /*[[@{/returnedOrder/showAgentReturnedOrderList}]]*/ "/returnedOrder/showAgentReturnedOrderList";
     }
 
     function showReturnedOrderDetail(rOrderId,subAuthorId){

@@ -49,13 +49,13 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, Model model) throws Exception {
+    public String toAddShopPage(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, Model model,boolean ifShow) throws Exception {
         model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
             shop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
             model.addAttribute("shop", shop);
         }
-        return "shop/addShop";
+        return ifShow ? "shop/showShop" : "shop/addShop";
     }
 
     /**
@@ -67,10 +67,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/addShop", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult saveShop(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, String hotUserName) {
-        if (shop == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
+    public ApiResult saveShop(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, String hotUserName,Integer statusVal) {
         if (StringUtil.isEmptyStr(shop.getUsername())) {
             return new ApiResult("请输入用户名");
         }
@@ -89,17 +86,19 @@ public class ShopController {
         if (StringUtil.isEmptyStr(shop.getMobile())) {
             return new ApiResult("请输入手机号码");
         }
-        if (StringUtil.isEmptyStr(shop.getTelephone())) {
-            return new ApiResult("请输入电话号码");
-        }
         if (StringUtil.isEmptyStr(shop.getEmail())) {
             return new ApiResult("请输入E-mail");
         }
         if (StringUtil.isEmptyStr(shop.getAddress())) {
             return new ApiResult("请输入详细地址");
         }
-        if (shop.getLan() == 0 || shop.getLat() == 0) {
+        if (shop.getLan() == null || shop.getLat() == null || shop.getLan() == 0 || shop.getLat() == 0) {
             return new ApiResult("请输入经纬度");
+        }
+        if(statusVal == null || statusVal == 0){
+            shop.setStatus(AgentStatusEnum.NOT_CHECK);
+        }else if(statusVal == 1){
+            shop.setStatus(AgentStatusEnum.CHECKING);
         }
         //新增后上级代理商和平台就不可修改
         shop.setParentAuthor(curAgent);

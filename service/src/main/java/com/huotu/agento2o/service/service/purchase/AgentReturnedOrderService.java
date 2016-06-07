@@ -6,7 +6,10 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 /**
  * Created by wuxiongliu on 2016/5/18.
@@ -86,4 +89,6 @@ public interface AgentReturnedOrderService {
      * @return
      */
     ApiResult editReturnNum(Author author, Integer productId, Integer num);
+
+    HSSFWorkbook createWorkBook(List<AgentReturnedOrder> returnedOrderList);
 }

@@ -25,13 +25,13 @@ public class Shop extends Author{
      * 经度
      */
     @Column(name = "Lan")
-    private double lan;
+    private Double lan;
 
     /**
      * 纬度
      */
     @Column(name = "Lat")
-    private double lat;
+    private Double lat;
 
     /**
      * 客服电话

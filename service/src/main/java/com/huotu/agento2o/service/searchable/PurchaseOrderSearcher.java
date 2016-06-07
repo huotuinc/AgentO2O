@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.searchable;
 
+import com.huotu.agento2o.common.util.Constant;
 import lombok.Data;
 
 /**
@@ -50,7 +51,7 @@ public class PurchaseOrderSearcher {
     private String endPayTime;
 
     int pageIndex = 1;
-
+    int pageSize = Constant.PAGESIZE;
     /**
      * 货名名称
      */

@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.searchable;
 
+import com.huotu.agento2o.common.util.Constant;
 import lombok.Data;
 
 /**
@@ -54,6 +55,7 @@ public class ReturnedOrderSearch {
     private String endTime;
 
     private int pageIndex = 1;
+    private int pageSize = Constant.PAGESIZE;
 
     private int parent_agentLevel = -1;
 

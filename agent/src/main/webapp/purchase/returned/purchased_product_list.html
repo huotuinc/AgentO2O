@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -8,37 +9,36 @@
   ~ 2013-2016. All rights reserved.
   ~
   -->
+
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <title>商品采购</title>
-    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
-    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
-    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
-    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
           data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
-    <link href="../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
           type="text/css"/>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
             data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
             data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
             data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/admin.js"
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
             data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
-    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js"
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
-<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="post" action="/purchase/showGoodsList" data-th-action="@{/purchase/showGoodsList}" id="form1"
-      data-th-object="${goodsSearcher}">
+<form method="post" action="/returnedOrder/showPurchasedProductList" data-th-action="@{/returnedOrder/showPurchasedProductList}" id="form1">
 
         <div class="block">
 
@@ -55,6 +55,8 @@
                             </th>
                             <th scope="col">货品名称
                             </th>
+                            <th scope="col">规格
+                            </th>
                             <th scope="col">订购价
                             </th>
                             <th scope="col">库存
@@ -67,6 +69,7 @@
                         </tr>
                         </thead>
                         <tbody data-th-remove="all-but-first">
+                        <!--/*@thymesVar id="agentProductList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentProduct>"*/-->
                         <tr data-th-each="agentProduct,agentProductStat:${agentProductList}" data-th-id="${agentProduct.id}">
                             <td class="txt20 c">
                                 <input type="checkbox" name="checkProduct" th:value="${agentProduct.product.productId}" />
@@ -75,15 +78,18 @@
                             <td class="txt160 c" data-th-text="${agentProduct.product.name}">
                                 货品名称
                             </td>
+                            <td class="txt40 c" data-th-text="${agentProduct.product.standard}">
+                                货品规格
+                            </td>
                             <td class="txt80 c">
                                 ￥<span data-th-text="${agentProduct.product.price}">100</span>
                             </td>
-                            <td class="txt80 c store"  data-th-text="${agentProduct.store-agentProduct.freez}">
+                            <td class="txt80 c store"  data-th-text="${agentProduct.store - agentProduct.freez}">
                                 1000
                             </td>
                             <td class="txt80 c">
                                 <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
-                                       data-th-max="${agentProduct.store-agentProduct.freez}" data-th-min="0"/>
+                                       data-th-max="${agentProduct.store - agentProduct.freez}" data-th-min="0"/>
                             </td>
                             <td class="txt20 c">
                                 <span data-th-text="${agentProduct.product.unit}"></span>
@@ -92,18 +98,6 @@
                         </tbody>
                     </table>
                 </div>
-                <!--分页开始-->
-                <!--<script type="text/javascript" th:inline="javascript">-->
-                    <!--/*<![CDATA[*/-->
-                    <!--var pageSize = /*[[${pageSize}]]*/ '-1';-->
-                    <!--var pageIndex = /*[[*{pageNo}]]*/ '-1';-->
-                    <!--var pageCount = /*[[${totalPages}]]*/ '-1';-->
-                    <!--var recordCount = /*[[${totalRecords}]]*/ '-1';-->
-                    <!--var formName = 'form1';-->
-                    <!--Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);-->
-                    <!--/*]]>*/-->
-                <!--</script>-->
-                <!--分页结束-->
             </div>
             <div style="float: right; margin-right: 20px;font-size: 14px;">
 
@@ -146,7 +140,7 @@
 </form>
 <script type="application/javascript" data-th-inline="javascript">
     /*<![CDATA[*/
-    var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    var basicUrl = /*[[@{/returnedOrder}]]*/ "/returnedOrder";
     $("#checkall").click(function () {
         var option = $("#checkall").prop('checked');
 
@@ -206,32 +200,16 @@
         var i = $("input[name=num]").index($(this));
         var product = $("input[name='checkProduct']").eq(i);
         var productId = $(product).val();
-        var num = $(this).val();
+        var num = parseInt($(this).val());
+        var maxNum = parseInt($(this).attr('max'));
         if(num == 0){
             $.jBox.tip("请设置退货数量");
         } else if(num < 0){
             $.jBox.tip("请设置退货数量大于0");
             $(this).val(0);
-        } else{
-            $.ajax({
-                type: "GET",
-                url: basicUrl + "/editReturnNum",
-                data: {
-                    productId: productId,
-                    num:num
-                },
-                dataType: "json",
-                success: function (msg) {
-                    if (msg.code == 200) {
-                        $.jBox.tip(msg.msg,'success');
-                    } else {
-                        $.jBox.tip(msg.msg, 'error');
-                    }
-//                setTimeout(function(){
-//                    window.location.reload();
-//                },500);
-                }
-            });
+        } else if(num > maxNum){
+            $.jBox.tip("请设置退货数量小于库存数量");
+            $(this).val(maxNum);
         }
 
     });

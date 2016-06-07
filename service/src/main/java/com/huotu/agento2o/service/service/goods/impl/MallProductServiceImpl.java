@@ -13,8 +13,10 @@ package com.huotu.agento2o.service.service.goods.impl;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
+import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class MallProductServiceImpl implements MallProductService {
     private MallProductRepository productRepository;
     @Autowired
     private AgentProductRepository agentProductRepository;
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
 
 
     @Override
@@ -46,8 +50,12 @@ public class MallProductServiceImpl implements MallProductService {
             productList.forEach(product -> {
                 //当前库存
                 AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
+                ShoppingCart shoppingCart = shoppingCartRepository.findByAuthorAndProduct(author,product);
                 if (agentProduct != null) {
                     product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                }
+                if(shoppingCart != null){
+                    product.setShoppingStore(Math.max(0,shoppingCart.getNum()));
                 }
                 //上级可用库存
                 if(author.getParentAuthor() == null){

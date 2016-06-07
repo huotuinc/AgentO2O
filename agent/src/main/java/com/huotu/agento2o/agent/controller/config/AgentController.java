@@ -91,9 +91,6 @@ public class AgentController {
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
     public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent) {
-        if(requestAgent == null){
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
         if(StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())){
             return new ApiResult("请选择区域");
         }
@@ -105,9 +102,6 @@ public class AgentController {
         }
         if(StringUtil.isEmptyStr(requestAgent.getMobile())){
             return new ApiResult("请输入手机号码");
-        }
-        if(StringUtil.isEmptyStr(requestAgent.getTelephone())){
-            return new ApiResult("请输入电话号码");
         }
         if(StringUtil.isEmptyStr(requestAgent.getEmail())){
             return new ApiResult("请输入E-mail");
@@ -152,9 +146,6 @@ public class AgentController {
         }
         if(StringUtil.isEmptyStr(shop.getMobile())){
             return new ApiResult("请输入手机号码");
-        }
-        if(StringUtil.isEmptyStr(shop.getTelephone())){
-            return new ApiResult("请输入电话号码");
         }
         if(StringUtil.isEmptyStr(shop.getEmail())){
             return new ApiResult("请输入E-mail");
