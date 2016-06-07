@@ -42,9 +42,6 @@ public class HbmAgentLevelController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addAndSaveLevel(@RequestAttribute(value = "customerId") Integer customerId, AgentLevel requestAgentLevel, Integer levelId) {
-        if (requestAgentLevel == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
         if(StringUtil.isEmptyStr(requestAgentLevel.getLevelName())){
             return new ApiResult("请输入等级名称");
         }

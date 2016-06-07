@@ -119,7 +119,7 @@
                             <td class="txt40 c" th:text="${address.receiver}">张三</td>
                             <td class="txt40 c" th:text="${address.telephone}">18888888888</td>
                             <td class="txt40 c"
-                                th:text="${address.province+' '+address.city+' '+address.district+' '+address.address}">
+                                th:text="${address.address}">
                                 浙江
                                 杭州 滨江区
                             </td>
@@ -206,15 +206,15 @@
                         $("#receiver").val(address.receiver);
                         $("#telephone").val(address.telephone);
                         $("#address").val(address.address);
-                        pro = address.province;
+                        /*pro = address.province;
                         city = address.city;
-                        district = address.district;
+                        district = address.district;*/
                         $("#comment").val(address.comment);
                         $("#isDefault").attr("checked", address.default);
                     }
                 });
             }
-            selectAddress(pro, city, district);
+           /* selectAddress(pro, city, district);*/
             var title = addressId == 0 ? "新增收货地址" : "收货地址编辑";
             J.ShowDialog("edit_dialog", title, function () {
                 var self = this;
@@ -259,9 +259,9 @@
         checkForm: function (addressId) {
             var receiver = $.trim($("#receiver").val());
             var telephone = $.trim($("#telephone").val());
-            var province = $.trim($("#province").val());
+           /* var province = $.trim($("#province").val());
             var city = $.trim($("#city").val());
-            var district = $.trim($("#district").val());
+            var district = $.trim($("#district").val());*/
             var address = $.trim($("#address").val());
             var isDefault = $("#isDefault").is(':checked');
             var comment = $.trim($("#comment").val());
@@ -273,14 +273,14 @@
                 $.jBox.tip("请输入联系电话");
                 return null;
             }
-            if (!J.IsNumber(telephone)) {
-                $.jBox.tip("联系电话必须是数字");
+            if (!(J.IsTel(telephone) || J.IsMobile(telephone))) {
+                $.jBox.tip("联系电话格式不正确");
                 return null;
             }
-            if (province.length == 0 || city.length == 0 || district.length == 0) {
+           /* if (province.length == 0 || city.length == 0 || district.length == 0) {
                 $.jBox.tip("请选择地区");
                 return null;
-            }
+            }*/
             if (address.length == 0) {
                 $.jBox.tip("请输入详细地址");
                 return null;
@@ -289,9 +289,9 @@
                 id: addressId,
                 receiver: receiver,
                 telephone: telephone,
-                province: province,
+               /* province: province,
                 city: city,
-                district: district,
+                district: district,*/
                 address: address,
                 default: isDefault,
                 comment: comment
@@ -302,7 +302,7 @@
 </script>
 
 <script type="text/html" id="address_edit_template">
-    <div class="cnt form" style="padding: 10px; width: 500px; height: 260px;">
+    <div class="cnt form" style="padding: 10px; width: 500px; height: 220px;">
         <table id="contenttable" class="data-form" border="0" cellspacing="1" cellpadding="0"
                style="background: #e1e1e1;">
             <tbody>
@@ -318,7 +318,7 @@
                     <input type="text" id="telephone"/>
                 </td>
             </tr>
-            <tr style="color: #e8e8e8">
+            <!--<tr style="color: #e8e8e8">
                 <th scope="row">地区：</th>
                 <td>
                     <span id="citys">
@@ -330,7 +330,7 @@
                                     name="district"></select>
                         </span>
                 </td>
-            </tr>
+            </tr>-->
             <tr style="color: #e8e8e8">
                 <th scope="row">详细地址：</th>
                 <td>

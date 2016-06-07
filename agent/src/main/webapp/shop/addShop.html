@@ -13,7 +13,7 @@
 
 <head lang="en">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>门店基本资料设置</title>
+    <title>门店新增</title>
     <link href="../resource/3rdParty/css/tzCheckbox.css" rel="stylesheet" type="text/css"
           th:href="@{/resource/3rdParty/css/tzCheckbox.css}"/>
     <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
@@ -73,6 +73,9 @@
         a:hover {
             text-decoration: none;
         }
+        .must{
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -84,7 +87,7 @@
         <div class="block">
             <div class="h">
                 <span class="icon-sprite icon-list"></span>
-                <h3><B style="font-size: 120%" th:text="*{id}!=null ? '门店基本资料编辑' : '门店基本资料设置' ">门店基本资料设置</B></h3>
+                <h3><B style="font-size: 120%" th:text="*{id}!=null ? '门店编辑' : '门店新增' ">门店新增</B></h3>
             </div>
             <div class="cnt-wp">
                 <div class="cnt form">
@@ -96,14 +99,14 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>用户名：</th>
+                                    <th>用户名<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="username" th:field="*{username}"
                                                th:value="*{username}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>登陆密码：</th>
+                                    <th>登陆密码<span class="must">*</span>:</th>
                                     <td>
                                         <input type="password" class="input-normal" id="password" th:field="*{password}"
                                                th:value="*{password}"/>
@@ -123,14 +126,14 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>上级代理商等级：</th>
+                                    <th>上级代理商等级:</th>
                                     <td>
                                         <span type="text" class="input-normal" readonly="readonly"
                                               th:text="${agent.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>上级代理商账户：</th>
+                                    <th>上级代理商账户:</th>
                                     <td>
                                         <span type="text" class="input-normal" id="author" readonly="readonly"
                                               th:field="${agent.username}" th:text="${agent.username}"></span>
@@ -140,7 +143,7 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th style="height: 22px">小伙伴用户名：</th>
+                                    <th style="height: 22px">小伙伴用户名:</th>
                                     <td>
                                         <div id="hotUser">
                                             <input id="hotUserName"
@@ -161,7 +164,7 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>门店所在区域:</th>
+                                    <th>门店所在区域<span class="must">*</span>:</th>
                                     <td>
                                         <div id="citys">
                                             <select class="prov" id="province"></select>
@@ -171,21 +174,21 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>门店名称:</th>
+                                    <th>门店名称<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="name" th:field="*{name}"
                                                th:value="*{name}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>联系人:</th>
+                                    <th>联系人<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="contact" th:field="*{contact}"
                                                th:value="*{contact}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>手机号码:</th>
+                                    <th>手机号码<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="mobile" th:field="*{mobile}"
                                                th:value="*{mobile}"/>
@@ -199,14 +202,14 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>E-mail:</th>
+                                    <th>E-mail<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="email" th:field="*{email}"
                                                th:value="*{email}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>详细地址:</th>
+                                    <th>详细地址<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" id="address" th:field="*{address}" th:value="*{address}"
                                                class="input-normal" style="width: 300px;"/><br/>
@@ -249,45 +252,13 @@
                     <div style="text-align: center;">
                         <a class="btn-lit" href="javascript:saveShopConfig();" id="saveShopConfig"
                            th:if="*{id}==null or *{status.code}==0 or *{status.code}==3"><span>保存</span></a>
-                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
-                        <!--<a class="btn-lit" href="javascript:subShopConfig();" id="subShopConfig"><span>提交</span></a>-->
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </form>
-<script>
-    /**
-     * 转换form查看
-     */
-    function change2view2form(formId) {
-        var winfra = $('#' + formId);
-        try {
-            //替换所有的输入框为文本框
-            winfra.find(":input").each(
-                    function (i) {
-                        var inputType = this.type ? this.type.toLowerCase() : null;
-                        console.log(inputType)
-                        if (inputType != "hidden") {
-                            if (inputType == "button") {
-                                $(this).remove();
-                            } else {
-                                var tmpvalue = $(this).val();
-                                if (inputType == "select-one") {
-                                    var tmpText = $(this).find("option:selected").text();
-                                    $(this).replaceWith("<span>" + tmpText + "</span>");
-                                } else {
-                                    $(this).replaceWith("<span>" + tmpvalue + "</span>");
-                                }
-                            }
-                        }
-                    });
-        } catch (e) {
-        }
-    }
-</script>
+<div id="submit_dialog" style="display: none;"></div>
 <script th:inline="javascript">
     /*<![CDATA[*/
     //保存
@@ -339,9 +310,9 @@
             $.jBox.tip("手机号码格式不正确");
             return;
         }
-        if (telephone.length == 0) {
-            $.jBox.tip("请输入电话号码");
-            return;
+        if (telephone.length != 0 && !(J.IsTel(telephone) || J.IsMobile(telephone))) {
+            $.jBox.tip("电话号码格式不正确");
+            return null;
         }
         if (email.length == 0) {
             $.jBox.tip("请输入E-mail");
@@ -363,40 +334,54 @@
             $.jBox.tip("经纬度不能为0");
             return;
         }
-        $.jBox.tip("正在保存...", "loading");
-        $.ajax({
-            type: 'POST',
-            url: "/shop/addShop",
-            data: {
-                id: id,
-                username: username,
-                password: password,
-                province: province,
-                city: city,
-                district: district,
-                name: name,
-                contact: contact,
-                mobile: mobile,
-                telephone: telephone,
-                address: address,
-                lan: lan,
-                lat: lat,
-                comment: comment,
-                auditComment: auditComment,
-                hotUserName: hotUserName,
-                email: email
-            },
-            success: function (result) {
-                if (result.code == 200) {
-                    $.jBox.tip(result.msg, "success");
-                    setTimeout(function () {
-                        window.location.href = "/shop/shopList";
-                    }, 500);
-                } else {
-                    $.jBox.tip(result.msg, 'error');
+
+        $("#submit_dialog").html($("#submit_template").html());
+        J.ShowDialog("submit_dialog", "门店保存", function () {
+            var _this = $(this);
+            var statusVal = $("input[name=status_radio]:checked").val()
+            $.jBox.tip("正在保存...", "loading");
+            $.ajax({
+                type: 'POST',
+                url: "/shop/addShop",
+                data: {
+                    id: id,
+                    username: username,
+                    password: password,
+                    province: province,
+                    city: city,
+                    district: district,
+                    name: name,
+                    contact: contact,
+                    mobile: mobile,
+                    telephone: telephone,
+                    address: address,
+                    lan: lan,
+                    lat: lat,
+                    comment: comment,
+                    auditComment: auditComment,
+                    hotUserName: hotUserName,
+                    email: email,
+                    statusVal:statusVal
+                },
+                success: function (result) {
+                    if (result.code == 200) {
+                        $.jBox.tip("保存成功", "success");
+                        $(self).dialog('close');
+                        setTimeout(function () {
+                            window.location.href = "/shop/shopList";
+                        }, 500);
+                    } else {
+                        $.jBox.tip(result.msg, 'error');
+                    }
                 }
-            }
+            });
+        }, function () {
+            $(this).dialog('close');
         });
+
+
+
+
     }
     /*]]>*/
 </script>
@@ -512,3 +497,13 @@
 </script>
 </body>
 </html>
+<script type="text/html" id="submit_template">
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 30px;">
+        <div>
+            <input id="not_check" type="radio" name="status_radio" value="0" checked="checked"/>
+            <label for="not_check">仅保存</label>
+            <input id="checking" type="radio" name="status_radio" value="1"/>
+            <label for="checking">保存并提交审核</label>
+        </div>
+    </div>
+</script>

@@ -165,7 +165,7 @@ public class OrderController {
                             HttpSession session,
                             HttpServletResponse response) {
         searchCondition.setAgentId(agentId);
-        int pageSize = 20 * (txtEndPage - txtBeginPage + 1);
+        int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
         Page<MallOrder> pageInfo = orderService.findAll(txtBeginPage,author ,pageSize, searchCondition);
         List<MallOrder> orderList = pageInfo.getContent();
         session.setAttribute("state", null);

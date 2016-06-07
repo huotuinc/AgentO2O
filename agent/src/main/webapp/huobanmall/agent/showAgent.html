@@ -64,6 +64,11 @@
             font-family: 微软雅黑;
         }
     </style>
+    <script type="application/javascript">
+        function goBack(){
+            window.location.href=document.referrer;
+        }
+    </script>
 </head>
 <body>
 <!--/*@thymesVar id="agent" type="com.huotu.agento2o.service.entity.author.Agent"*/-->
@@ -86,7 +91,7 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>用户名：</th>
+                                    <th>用户名:</th>
                                     <td>
                                         <span class="input-normal" id="username" th:field="*{username}"
                                               th:text="*{username}"></span>
@@ -107,13 +112,13 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>代理商等级：</th>
+                                    <th>代理商等级:</th>
                                     <td>
                                         <span th:text="*{parentAuthor==null || parentAuthor.agentLevel==null ? '':parentAuthor.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>代理商账户：</th>
+                                    <th>代理商账户:</th>
                                     <td>
                                         <span th:text="*{parentAuthor==null ? '':parentAuthor.username}"></span>
                                     </td>
@@ -122,7 +127,7 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>小伙伴用户名：</th>
+                                    <th>小伙伴用户名:</th>
                                     <td>
                                         <span type="text" class="input-normal" id="hotUserName"
                                               th:text="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
@@ -215,6 +220,9 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <a class="btn-lit" href="javascript:goBack();" id="saveAgent"><span>返回</span></a>
                     </div>
                 </div>
             </div>

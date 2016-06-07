@@ -68,6 +68,9 @@
             font-weight: bold;
             font-family: 微软雅黑;
         }
+        .must{
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -79,7 +82,7 @@
         <div class="block">
             <div class="h">
                 <span class="icon-sprite icon-list"></span>
-                <h3><B style="font-size: 120%">门店基本资料设置</B></h3>
+                <h3><B style="font-size: 120%">门店基本设置</B></h3>
             </div>
             <div class="cnt-wp">
                 <div class="cnt form">
@@ -91,7 +94,7 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>用户名：</th>
+                                    <th>用户名:</th>
                                     <td>
                                         <span type="text" class="input-normal" id="username" th:field="*{username}"
                                                th:text="*{username}"></span>
@@ -111,14 +114,14 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定上级代理商账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>上级代理商等级：</th>
+                                    <th>上级代理商等级:</th>
                                     <td>
                                         <span type="text" class="input-normal" readonly="readonly"
                                               th:text="*{parentAuthor.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>上级代理商账户：</th>
+                                    <th>上级代理商账户:</th>
                                     <td>
                                         <span type="text" class="input-normal" id="author" readonly="readonly"
                                               th:field="*{parentAuthor.username}" th:text="*{parentAuthor.username}"></span>
@@ -128,7 +131,7 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>小伙伴用户名：</th>
+                                    <th>小伙伴用户名:</th>
                                     <td>
                                         <span type="text" class="input-normal" id="hotUserName"
                                                th:text="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
@@ -145,7 +148,7 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>门店所在区域:</th>
+                                    <th>门店所在区域<span class="must">*</span>:</th>
                                     <td>
                                         <div id="citys">
                                             <select class="prov" id="province"></select>
@@ -155,21 +158,21 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>门店名称:</th>
+                                    <th>门店名称<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="name" th:field="*{name}"
                                                th:value="*{name}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>联系人:</th>
+                                    <th>联系人<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="contact" th:field="*{contact}"
                                                th:value="*{contact}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>手机号码:</th>
+                                    <th>手机号码<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="mobile" th:field="*{mobile}"
                                                th:value="*{mobile}"/>
@@ -183,26 +186,14 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>E-mail:</th>
+                                    <th>E-mail<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="email" th:field="*{email}"
                                                th:value="*{email}"/>
                                     </td>
                                 </tr>
-                                <!--<tr>-->
-                                <!--<th>传真:</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
-                                <!--<tr>-->
-                                <!--<th>E-mail:</th>-->
-                                <!--<td>-->
-                                <!--<input type="text" class="input-normal"/>-->
-                                <!--</td>-->
-                                <!--</tr>-->
                                 <tr>
-                                    <th>详细地址:</th>
+                                    <th>详细地址<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" id="address" th:field="*{address}" th:value="*{address}"
                                                class="input-normal" style="width: 300px;"/><br/>
@@ -230,13 +221,6 @@
                                                   th:field="*{comment}" th:value="*{comment}"></textarea>
                                     </td>
                                 </tr>
-                                <!--<tr th:if="*{auditComment!=null and auditComment!=''} ">-->
-                                    <!--<th>审核意见:</th>-->
-                                    <!--<td>-->
-                                        <!--<span type="text" rows="6" style="width: 80%" id="auditComment"-->
-                                              <!--th:text="*{auditComment}"></span>-->
-                                    <!--</td>-->
-                                <!--</tr>-->
                                 </tbody>
                             </table>
                         </div>
@@ -249,7 +233,7 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>客服电话:</th>
+                                    <th>客服电话<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="serveiceTel"
                                                th:field="*{serveiceTel}" th:value="*{serveiceTel}"/>
@@ -257,14 +241,14 @@
                                 </tr>
 
                                 <tr>
-                                    <th>售后电话:</th>
+                                    <th>售后电话<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="afterSalTel"
                                                th:field="*{afterSalTel}" th:value="*{afterSalTel}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>售后QQ:</th>
+                                    <th>售后QQ<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="afterSalQQ" th:field="*{afterSalQQ}"
                                                th:value="*{afterSalQQ}"/>
@@ -282,14 +266,14 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>开户名称:</th>
+                                    <th>开户名称<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="accountName"
                                                th:field="*{accountName}" th:value="*{accountName}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>开户银行:</th>
+                                    <th>开户银行<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="bankName"
                                                th:field="*{bankName}" th:value="*{bankName}"/>
@@ -297,7 +281,7 @@
                                 </tr>
 
                                 <tr>
-                                    <th>银行卡号:</th>
+                                    <th>银行卡号<span class="must">*</span>:</th>
                                     <td>
                                         <input type="text" class="input-normal" id="accountNo"
                                                th:field="*{accountNo}" th:value="*{accountNo}"/>
@@ -365,9 +349,9 @@
             $.jBox.tip("手机号码格式不正确");
             return;
         }
-        if (telephone.length == 0) {
-            $.jBox.tip("请输入电话号码");
-            return;
+        if (telephone.length != 0 && !(J.IsTel(telephone) || J.IsMobile(telephone))) {
+            $.jBox.tip("电话号码格式不正确");
+            return null;
         }
         if (email.length == 0) {
             $.jBox.tip("请输入E-mail");
@@ -393,7 +377,7 @@
             $.jBox.tip("请输入客服电话");
             return;
         }
-        if (!J.IsMobile(serveiceTel)) {
+        if (!(J.IsMobile(serveiceTel) || J.IsTel(serveiceTel))) {
             $.jBox.tip("客服电话格式不正确");
             return;
         }
@@ -401,7 +385,7 @@
             $.jBox.tip("请输入售后电话");
             return;
         }
-        if (!J.IsMobile(afterSalTel)) {
+        if (!(J.IsMobile(afterSalTel) || J.IsTel(afterSalTel))) {
             $.jBox.tip("售后电话格式不正确");
             return;
         }
@@ -421,7 +405,7 @@
             $.jBox.tip("请输入银行卡号");
             return;
         }
-        if (!J.IsNumber(accountNo)) {
+        if (!/^[0-9]*$/.test(accountNo)) {
             $.jBox.tip("银行卡号必须是数字");
             return;
         }
@@ -438,7 +422,7 @@
                 city: city,
                 district: district,
                 name: name,
-                Contact: Contact,
+                contact: contact,
                 mobile: mobile,
                 telephone: telephone,
                 address: address,
@@ -457,7 +441,7 @@
             },
             success: function (result) {
                 if (result.code == 200) {
-                    $.jBox.tip(result.msg, "success");
+                    $.jBox.tip("保存成功", "success");
                     setTimeout(function () {
                         window.location.reload();
                     }, 500);

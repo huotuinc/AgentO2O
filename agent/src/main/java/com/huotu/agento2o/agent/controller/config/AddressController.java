@@ -70,18 +70,15 @@ public class AddressController {
     @RequestMapping(value = "/saveAddress", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addOrSaveAddress(@AgtAuthenticationPrincipal Author author, Model model, Address requestAddress) {
-        if(requestAddress == null){
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
         if(StringUtil.isEmptyStr(requestAddress.getReceiver())){
             return new ApiResult("请输入收货人");
         }
         if(StringUtil.isEmptyStr(requestAddress.getTelephone())){
             return new ApiResult("请输入联系电话");
         }
-        if(StringUtil.isEmptyStr(requestAddress.getProvince()) || StringUtil.isEmptyStr(requestAddress.getCity()) || StringUtil.isEmptyStr(requestAddress.getDistrict())){
+       /* if(StringUtil.isEmptyStr(requestAddress.getProvince()) || StringUtil.isEmptyStr(requestAddress.getCity()) || StringUtil.isEmptyStr(requestAddress.getDistrict())){
             return new ApiResult("请选择地区");
-        }
+        }*/
         if(StringUtil.isEmptyStr(requestAddress.getAddress())){
             return new ApiResult("请输入详细地址");
         }

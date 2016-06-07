@@ -508,17 +508,18 @@
 </body>
 </html>
 <script type="text/html" id="audit_template">
-    <div class="cnt form" style="padding: 10px; width: 300px; height: 150px;">
-        <span scope="row">备注：</span>
-        <div>
-            <textarea id="auditComment"
-                      style="margin-top: 10px;margin-bottom: 10px; width: 260px; height: 100px;"></textarea>
-        </div>
+    <div class="cnt form" style="padding: 10px; width: 300px; height: 160px;">
         <div>
             <input id="audit_pass" type="radio" name="audit_radio" value="CHECKED" checked="checked"/>
             <label for="audit_pass">通过</label>
             <input id="audit_nopass" type="radio" name="audit_radio" value="RETURNED"/>
             <label for="audit_nopass">不通过</label>
+        </div>
+        <br/>
+        <span scope="row">备注：</span>
+        <div>
+            <textarea id="auditComment"
+                      style="margin-top: 10px;margin-bottom: 10px; width: 260px; height: 100px;"></textarea>
         </div>
     </div>
 </script>
