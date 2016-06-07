@@ -54,15 +54,4 @@ public class ServiceConfig {
     public EmailConfig emailConfig() {
         return new EmailConfig(apiUser, apiKey,template,from,fromName);
     }
-
-    @Bean
-    public JavaMailSenderImpl getJavaMailSender() {
-        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-        javaMailSender.setHost("smtp.163.com");
-        javaMailSender.setUsername("15620711024");
-        javaMailSender.setPassword("liu8975");
-
-
-        return javaMailSender;
-    }
 }

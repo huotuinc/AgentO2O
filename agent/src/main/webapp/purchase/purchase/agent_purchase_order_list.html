@@ -66,7 +66,7 @@
 
                     <div class="search-bar">
                         <label class="first ">采购单号：</label>
-                        <input name="pOrderId" type="text" th:value="*{pOrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
+                        <input name="pOrderId" type="text" th:value="*{POrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
                         &nbsp;
                         <label class="first ">商品名称：</label>
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
@@ -74,6 +74,7 @@
                         <label class="first ">下级代理商/门店：</label>
                         <select name="agentId" id="agentId">
                             <option selected="selected"  value="0"  th:selected="*{agentId == 0}">==所有==</option>
+                            <!--/*@thymesVar id="authorList" type="java.util.List<com.huotu.agento2o.service.entity.author.Author>"*/-->
                             <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == purchaseOrderSearcher.agentId}">代理商/门店</option>
                         </select>
                         <br/>
@@ -126,7 +127,8 @@
                         <label class="first ">导出下级采购单：</label>
                         第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
                                 style="height:15px;width:28px;"/>页
-                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                        至 第<!--/*@thymesVar id="totalPages" type="java.lang.Integer"*/-->
+                        <input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
                                   style="height:15px;width:28px;"/>页
 
                         <label>
@@ -193,7 +195,7 @@
                                 <span style="color: red" th:if="${pOrder.disabled}">（已取消）</span>
                             </td>
                             <td class="txt160">
-                                <span th:text="${pOrder.orderItemList.size()}>0?${pOrder.orderItemList[0].name}"></span>
+                                <span th:text="${pOrder.orderItemList.size() > 0 ? pOrder.orderItemList[0].name : ''}"></span>
                                 <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
                             <td class="txt80" >
@@ -211,10 +213,10 @@
                             <td class="txt40">￥
                                 <span th:text="${pOrder.finalAmount}">100</span>
                             </td>
-                            <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus} != null ? ${pOrder.payStatus.value}">
+                            <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus != null ? pOrder.payStatus.value:''}">
                                 未支付
                             </td>
-                            <td style="color:red;" class="txt40 c" th:text="${pOrder.shipStatus} != null ? ${pOrder.shipStatus.value}">
+                            <td style="color:red;" class="txt40 c" th:text="${pOrder.shipStatus != null ? pOrder.shipStatus.value:''}">
                                 未发货
                             </td>
                             <td style="color:red;" class="txt40 c" th:text="${pOrder.status.value}">

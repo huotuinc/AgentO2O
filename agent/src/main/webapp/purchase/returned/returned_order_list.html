@@ -37,8 +37,8 @@
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
-<!--/*@thymesVar id="searchCondition" type=""*/-->
-<form method="get" action="/purchase/showReturnedOrderList" data-th-action="@{/purchase/showReturnedOrderList}" id="form1"
+<!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.ReturnedOrderSearch"*/-->
+<form method="get" action="/returnedOrder/showReturnedOrderList" data-th-action="@{/returnedOrder/showReturnedOrderList}" id="form1"
       th:object="${searchCondition}">
 
 
@@ -60,7 +60,7 @@
                 <div class="search-bar">
                     <div>
                         <label class="first">退货单号：</label>
-                        <input name="rOrderId" type="text" th:value="*{rOrderId}"
+                        <input name="rOrderId" type="text" th:value="*{ROrderId}"
                                class="input-small" style="width: 120px;"/>
                         <br />
                         <br />
@@ -109,7 +109,8 @@
                         <label class="first ">导出退货单：</label>
                         第<input name="txtBeginPage" type="text" value="1" id="txtBeginPage"
                                 style="height:15px;width:28px;"/>页
-                        至 第<input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
+                        至 第<!--/*@thymesVar id="totalPages" type="java.lang.Integer"*/-->
+                        <input name="txtEndPage" type="text" value="5" id="txtEndPage" th:value="${totalPages}" class="input-small OnlyNum"
                                   style="height:15px;width:28px;"/>页
 
                         <label>
@@ -158,8 +159,8 @@
                     <!--@thymesVar id="agentReturnedOrderList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder>"-->
                     <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.ROrderId}">
 
-                        <td class="txt20 c">
-                            <a th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" onclick="showReturnedOrderDetail()">
+                        <td class="txt20">
+                            <a href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" onclick="showReturnedOrderDetail()">
                                 <span th:text="${agentReturnOrder.ROrderId}">rOrderId</span>
                             </a>
                             <span th:if="${agentReturnOrder.disabled}" style="color:red;">（已关闭）</span>
@@ -311,15 +312,15 @@
         window.location.href = url;
     };
 
-    //采购单发货
+    //采购退货单退货
     function deliverReturnedOrder(rOrderId){
-        var deliveryUrl = /*[[@{/purchase/showDelivery}]]*/ "/purchase/showDelivery";
+        var deliveryUrl = /*[[@{/returnedOrder/showDelivery}]]*/ "/returnedOrder/showDelivery";
         var url =  deliveryUrl + "?rOrderId=" + rOrderId;
-        J.PopupIFrame(url, "采购单发货", 900, 480, "ifrm", "", "auto", "");
+        J.PopupIFrame(url, "采购退货单退货", 900, 480, "ifrm", "", "auto", "");
     }
 
     function searchReturnOrderAll(){
-        window.location.href = /*[[@{/purchase/showReturnedOrderList}]]*/ "";
+        window.location.href = /*[[@{/returnedOrder/showReturnedOrderList}]]*/ "";
     }
 
     function showReturnedOrderDetail(rOrderId){

@@ -167,9 +167,10 @@
                         <span class="spModuleTitle">开具发票</span>
                         <br/>
                         <div class="division" style="height: 40px;" name="invoiceInfo">
+                            <!--/*@thymesVar id="taxTypeEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.TaxType"*/-->
                             <span th:each="taxType:${taxTypeEnum}" class="option"
-                                  th:classappend="${taxType.code} == ${agentPurchaseOrder.taxType.code}?'option_selected'" th:value="${taxType.code}" th:onclick="|changeInvoiceType(${taxType.code})|">
-                                <span class="ononon" th:style="${taxType.code} == ${agentPurchaseOrder.taxType.code}?'display: inline;':'display: none;'">
+                                  th:classappend="${taxType.code == agentPurchaseOrder.taxType.code}?'option_selected':''" th:value="${taxType.code}" th:onclick="|changeInvoiceType(${taxType.code})|">
+                                <span class="ononon" th:style="${taxType.code == agentPurchaseOrder.taxType.code}?'display: inline;':'display: none;'">
                                     <img src="../../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
                                 </span><th:block th:text="${taxType.value}"></th:block>
                             </span>
@@ -254,7 +255,7 @@
                                     <td class="txt20 c" data-th-text="${shoppingCartStat.count}">1</td>
                                     <td style="padding: 10px" class="txt120 c">
                            <span style="width: 20%;float: left;">
-                               <img th:src="${shoppingCart.product.goods.picUri}!=null?${shoppingCart.product.goods.picUri}"
+                               <img th:src="${shoppingCart.product.goods.picUri!=null?shoppingCart.product.goods.picUri:''}"
                                     style="vertical-align: top;width: 59px;height: 59px;border: 1px solid #eaeaea;"/>
                            </span>
                             <span style="width: 75%;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
