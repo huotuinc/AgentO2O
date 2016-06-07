@@ -66,8 +66,9 @@ public class AddressControllerTest extends CommonTestBase {
     @Test
     public void testShowAddressList() throws Exception {
         String controllerUrl = BASE_URL + "/addressList";
-        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
-        MvcResult agentResult = mockMvc.perform(get(controllerUrl).session(session))
+        //代理商登录
+        MockHttpSession agentSession = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MvcResult agentResult = mockMvc.perform(get(controllerUrl).session(agentSession))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("addressList"))
                 .andReturn();
@@ -77,6 +78,19 @@ public class AddressControllerTest extends CommonTestBase {
         Assert.assertTrue(addressList.size() == agentAddress.size());
         for (int i = 0; i < agentAddress.size(); i++) {
             Assert.assertEquals(agentAddress.get(i).getId(), addressList.get(i).getId());
+        }
+        //门店登录
+        MockHttpSession shopSession = loginAs(mockShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MvcResult shopResult = mockMvc.perform(get(controllerUrl).session(shopSession))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("addressList"))
+                .andReturn();
+        addressList = (List<Address>) shopResult.getModelAndView().getModel().get("addressList");
+        Assert.assertEquals("config/addressList", shopResult.getModelAndView().getViewName());
+        Assert.assertNotNull(addressList);
+        Assert.assertTrue(addressList.size() == shopAddress.size());
+        for (int i = 0; i < shopAddress.size(); i++) {
+            Assert.assertEquals(shopAddress.get(i).getId(), addressList.get(i).getId());
         }
     }
     @Test

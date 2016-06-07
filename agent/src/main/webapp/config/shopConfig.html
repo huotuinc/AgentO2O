@@ -56,6 +56,8 @@
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
     <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
             th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/bootstrap-typeahead.js"
+            th:src="@{/resource/3rdParty/js/bootstrap-typeahead.js}"></script>
 
     <style type="text/css">
         body, td, th {
@@ -67,6 +69,18 @@
             font-size: 16px;
             font-weight: bold;
             font-family: 微软雅黑;
+        }
+        #hotUser {
+            position: absolute;
+            background-color: #fff;
+        }
+
+        li:hover {
+            background-color: #CCCCCC;
+        }
+
+        a:hover {
+            text-decoration: none;
         }
         .must{
             color: red;
@@ -131,10 +145,14 @@
                                     <td colspan="2"><B style="font-size: 120%">绑定小伙伴账号</B></td>
                                 </tr>
                                 <tr>
-                                    <th>小伙伴用户名:</th>
+                                    <th style="height: 22px">小伙伴用户名:</th>
                                     <td>
-                                        <span type="text" class="input-normal" id="hotUserName"
-                                               th:text="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
+                                        <div id="hotUser">
+                                            <input id="hotUserName"
+                                                   th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"
+                                                   type="text" class="input-normal" data-items="10"
+                                                   data-provide="typeahead"/>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -320,14 +338,14 @@
         var serveiceTel = $.trim($("#serveiceTel").val());
         var afterSalTel = $.trim($("#afterSalTel").val());
         var afterSalQQ = $.trim($("#afterSalQQ").val());
-        var auditComment = $("#auditComment").text();
         var id = $.trim($("#shopID").val());
 
-        var hotUserName = $.trim($("#hotUserName").text());
+        var hotUserName = $.trim($("#hotUserName").val());
 
         var bankName = $.trim($("#bankName").val());
         var accountName = $.trim($("#accountName").val());
         var accountNo = $.trim($("#accountNo").val());
+        debugger;
 
         if (province.length == 0 || city.length == 0 || district.length == 0) {
             $.jBox.tip("请选择区域");
@@ -432,7 +450,6 @@
                 serveiceTel: serveiceTel,
                 afterSalTel: afterSalTel,
                 afterSalQQ: afterSalQQ,
-                auditComment: auditComment,
                 hotUserName: hotUserName,
                 bankName: bankName,
                 accountName: accountName,
@@ -458,6 +475,24 @@
     var city = /*[[${shop.city}]]*/"";
     var dist = /*[[${shop.district}]]*/"";
     var id = /*[[${shop.id}]]*/"";
+        $('#hotUserName').typeahead({
+            source: function (query, process) {
+                $.ajax({
+                    type: 'POST',
+                    url: "/config/getShopUserNames",
+                    async: false,
+                    data: {
+                        hotUserName: query
+                    },
+                    success: function (json) {
+                        if (json.code == 200) {
+                            return process(json.data);
+                        }
+                    }
+                });
+            }
+        })
+
     if (id != null) {
         $("#citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
