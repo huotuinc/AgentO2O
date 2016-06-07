@@ -163,7 +163,7 @@ public interface AgentService extends UserDetailsService {
      * @param requestAgent
      * @return
      */
-    ApiResult saveAgentConfig(Integer agentId, Agent requestAgent);
+    ApiResult saveAgentConfig(Integer agentId, Agent requestAgent,String hotUserName);
 
     /**
      * 根据平台id和用户名模糊查询小伙伴的用户名集合

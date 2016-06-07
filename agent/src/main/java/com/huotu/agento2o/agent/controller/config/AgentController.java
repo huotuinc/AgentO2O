@@ -90,7 +90,10 @@ public class AgentController {
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent) {
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent,String hotUserName) {
+        if (!agent.getId().equals(requestAgent.getId())) {
+            return new ApiResult("没有权限");
+        }
         if(StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())){
             return new ApiResult("请选择区域");
         }
@@ -118,7 +121,35 @@ public class AgentController {
         if(StringUtil.isEmptyStr(requestAgent.getAccountNo())){
             return new ApiResult("请输入银行卡号");
         }
-        return agentService.saveAgentConfig(agent.getId(), requestAgent);
+        return agentService.saveAgentConfig(agent.getId(), requestAgent,hotUserName);
+    }
+
+    /**
+     * 代理商获取可绑定的小伙伴用户名集合
+     *
+     * @param agent
+     * @param hotUserName
+     * @return
+     */
+    @RequestMapping(value = "/getAgentUserNames", method = RequestMethod.POST)
+    @ResponseBody
+    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, String hotUserName) {
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(agent.getCustomer().getCustomerId(), hotUserName));
+    }
+
+    /**
+     * 门店获取可绑定的小伙伴用户名集合
+     *
+     * @param curShop
+     * @param hotUserName
+     * @return
+     */
+    @RequestMapping(value = "/getShopUserNames", method = RequestMethod.POST)
+    @ResponseBody
+    @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Shop.class) Shop curShop, String hotUserName) {
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(curShop.getCustomer().getCustomerId(), hotUserName));
     }
 
 
@@ -132,8 +163,8 @@ public class AgentController {
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
     public ApiResult updateShop(@AgtAuthenticationPrincipal(type = Shop.class) Shop curShop, Shop shop, String hotUserName) {
-        if (shop == null || shop.getId() == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        if (!curShop.getId().equals(shop.getId())) {
+            return new ApiResult("没有权限");
         }
         if(StringUtil.isEmptyStr(shop.getProvince()) || StringUtil.isEmptyStr(shop.getCity()) || StringUtil.isEmptyStr(shop.getDistrict())){
             return new ApiResult("请选择区域");
@@ -174,7 +205,7 @@ public class AgentController {
         if(StringUtil.isEmptyStr(shop.getAccountNo())){
             return new ApiResult("请输入银行卡号");
         }
-        return shopService.saveOrUpdateShop(shop, hotUserName);
+        return shopService.saveShopConfig(shop, hotUserName);
     }
 
 }

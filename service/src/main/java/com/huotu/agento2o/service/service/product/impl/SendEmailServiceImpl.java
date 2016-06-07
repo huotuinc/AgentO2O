@@ -32,15 +32,13 @@ public class SendEmailServiceImpl implements SendEmailService {
     private static final Log log = LogFactory.getLog(SendEmailServiceImpl.class);
 
     @Autowired
-    private JavaMailSender mailSender;
-    @Autowired
     private EmailConfig emailConfig;
 
     /**
      * 废弃
      * @param agentProducts
      */
-    @Override
+    /*@Override
     public void sendEmail(List<AgentProduct> agentProducts) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
@@ -103,7 +101,7 @@ public class SendEmailServiceImpl implements SendEmailService {
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr) {
@@ -141,11 +139,11 @@ public class SendEmailServiceImpl implements SendEmailService {
     }
 
 
-    @Async
+    /*@Async
     public void sayNumber(int i) throws InterruptedException {
         Thread.sleep(1000);
         System.out.println("Execute method asynchronously. "
                 + Thread.currentThread().getName() + "   Say" + i);
-    }
+    }*/
 
 }

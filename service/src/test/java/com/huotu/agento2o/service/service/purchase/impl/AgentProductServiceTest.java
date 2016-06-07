@@ -68,13 +68,13 @@ public class AgentProductServiceTest {
     @Test
     public void testGetWaringAgentInfo() throws InterruptedException {
 
-        List<Object> agents = agentProductService.findNeedWaringAgent();
+        /*List<Object> agents = agentProductService.findNeedWaringAgent();
         for(int i=0;i<agents.size();i++){
             List<AgentProduct> info = agentProductService.findWaringAgentInfo(Integer.parseInt(agents.get(i).toString()));
             sendEmailService.sendEmail(info);
         }
 
-        Thread.sleep(5000);
+        Thread.sleep(5000);*/
 
     }
 }

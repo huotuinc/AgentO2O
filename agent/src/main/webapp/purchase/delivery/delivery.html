@@ -99,7 +99,7 @@
 <body marginwidth="0" marginheight="0">
 <form method="post" id="form2">
 
-    <input type="hidden" name="pOrderId" id="pOrderId" th:value="${purchaseOrder.pOrderId}"/>
+    <input type="hidden" name="pOrderId" id="pOrderId" th:value="${purchaseOrder.POrderId}"/>
 
     <!--/*@thymesVar id="purchaseOrder" type="com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder"*/-->
     <div class="division" th:object="${purchaseOrder}">
@@ -108,7 +108,7 @@
             <tr>
                 <th>订单号:</th>
                 <td>
-                    <span id="lblOrderId" th:text="*{pOrderId}"></span>
+                    <span id="lblOrderId" th:text="*{POrderId}"></span>
                 </td>
                 <th>下单日期:</th>
                 <td>

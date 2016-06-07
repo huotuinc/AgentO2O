@@ -120,7 +120,7 @@
                                     <th>小伙伴用户名：</th>
                                     <td>
                                         <span type="text" class="input-normal"
-                                              th:value="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
+                                              th:text="*{userBaseInfo == null ? '':userBaseInfo.loginName}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -138,9 +138,6 @@
                                     <td>
                                         <div id="citys">
                                             <span th:text="|*{province} *{city} *{district}|"></span>
-                                            <!--<select class="prov" id="province"></select>-->
-                                            <!--<select class="city" id="city" disabled="disabled"></select>-->
-                                            <!--<select class="dist" id="district" disabled="disabled"></select>-->
                                         </div>
                                     </td>
                                 </tr>

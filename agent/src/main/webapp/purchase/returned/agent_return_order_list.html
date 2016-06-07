@@ -58,7 +58,7 @@
             <div class="cnt">
                 <div class="search-bar">
                     <div>
-                        <label class="first">退货单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
+                        <label class="first">退货单号：</label>
                         <input name="rOrderId" type="text" th:value="*{rOrderId}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
 
@@ -74,14 +74,14 @@
 
                         <label class="first ">审核状态：</label>
                         <select name="orderStatus" id="orderStatus">
-                            <option selected="selected" value="-1" th:selected="*{orderStatus == -1}" >==所有==</option><!--th:selected="*{shipStatus == -1}"-->
-                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option selected="selected" value="-1" th:selected="*{orderStatus == -1}" >==所有==</option>
+                            <!--/*@thymesVar id="orderStatusEnums" type="com.huotu.agento2o.service.common.PurchaseEnum.OrderStatus"*/-->
                             <option th:each="orderStatusEnum:${orderStatusEnums}" th:value="${orderStatusEnum.code}" th:text="${orderStatusEnum.value}" th:selected="${orderStatusEnum.code == searchCondition.orderStatus}">未发货</option>
                         </select>
 
                         <label class="first ">退货状态：</label>
                         <select name="shipStatus" id="shipStatus">
-                            <option selected="selected" value="-1" th:selected="*{shipStatus == -1}" >==所有==</option><!--th:selected="*{shipStatus == -1}"-->
+                            <option selected="selected" value="-1" th:selected="*{shipStatus == -1}" >==所有==</option>
                             <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
                         </select>
@@ -165,10 +165,10 @@
                     </thead>
                     <tbody data-th-remove="all-but-first">
                     <!--@thymesVar id="agentReturnedOrderList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder>"-->
-                    <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.rOrderId}">
+                    <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.ROrderId}">
                         <td class="txt20">
                             <a href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showReturnedOrderDetail()">
-                                <span th:text="${agentReturnOrder.rOrderId}">rOrderId</span>
+                                <span th:text="${agentReturnOrder.ROrderId}">rOrderId</span>
                             </a>
                         </td>
                         <td class="txt160">
@@ -202,7 +202,7 @@
                             付款状态
                         </td>
                         <td class="txt80 c">
-                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.rOrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" title="查看详细">查看详细</a>
+                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" title="查看详细">查看详细</a>
                             <span th:if="${agentReturnOrder.checkable()}"> | </span>
                             <a th:if="${agentReturnOrder.checkable()}" href="javascript:void(0)" th:onclick="|checkReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="checkReturnOrder()" title="审核">审核</a>
                             <span th:if="${agentReturnOrder.receivable()}"> | </span>

@@ -76,7 +76,7 @@ public class ShopServiceImplTest extends CommonTestBase {
         Agent parentMockAgent = mockAgent(mockCustomer, null);
         Shop getShop = mockShop(parentMockAgent);
         getShop.setCustomer(mockCustomer);
-        shopService.saveOrUpdateShop(getShop, null);
+        shopService.saveOrUpdateShop(getShop, null,parentMockAgent);
 
         Shop curShop = shopService.findByIdAndCustomer_Id(getShop.getId(), mockCustomer.getCustomerId());
         Assert.assertTrue(curShop.getCustomer().equals(mockCustomer));

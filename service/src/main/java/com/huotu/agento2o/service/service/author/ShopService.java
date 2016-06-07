@@ -38,7 +38,9 @@ public interface ShopService extends UserDetailsService {
 
     Shop addShop(Shop shop);
 
-    ApiResult saveOrUpdateShop(Shop shop, String hotUserName);
+    ApiResult saveOrUpdateShop(Shop shop, String hotUserName,Agent agent);
+
+    ApiResult saveShopConfig(Shop shop, String hotUserName);
 
     void flush();
 

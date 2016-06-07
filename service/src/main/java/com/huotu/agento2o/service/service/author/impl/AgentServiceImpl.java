@@ -266,7 +266,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional
-    public ApiResult saveAgentConfig(Integer agentId, Agent requestAgent) {
+    public ApiResult saveAgentConfig(Integer agentId, Agent requestAgent,String hotUserName) {
         if (agentId == null || requestAgent == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -275,6 +275,19 @@ public class AgentServiceImpl implements AgentService {
         if (agent == null || agent.isDeleted() || agent.isDisabled()) {
             return new ApiResult("该账号已失效");
         }
+        UserBaseInfo userBaseInfo = null;
+        //小伙伴账号绑定限制
+        if (StringUtil.isNotEmpty(hotUserName)) {
+            userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName, agent.getCustomer().getCustomerId());
+            if (userBaseInfo == null) {
+                return new ApiResult("小伙伴账号不存在");
+            }
+            Agent userAgent = agentRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            if (userAgent != null && userAgent.getId() != requestAgent.getId()) {
+                return new ApiResult("小伙伴账号已被绑定");
+            }
+        }
+        agent.setUserBaseInfo(userBaseInfo);
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
         agent.setAddress(requestAgent.getAddress());

@@ -17,6 +17,8 @@ import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.product.SendEmailService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import java.util.List;
  */
 @Service
 public class ProductScheduleServiceImpl implements ProductScheduleService {
+    private static final Log log = LogFactory.getLog(ProductScheduleServiceImpl.class);
     @Autowired
     private AgentProductService agentProductService;
     @Autowired
@@ -37,8 +40,8 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
 
 
     @Override
-    //每天早上1点获取库存预警信息
-//    @Scheduled(cron = "0 0 1 * * ?")
+    //每天早上10点获取库存预警信息
+//    @Scheduled(cron = "0 0 10 * * ?")
     @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
     public void productSchedule() {
         //查询出需要提醒的库存信息

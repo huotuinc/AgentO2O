@@ -14,9 +14,9 @@ public interface SendEmailService {
      * 发送邮件
      */
 //    @Async
-    public void sendEmail(List<AgentProduct> agentProducts);
+//    public void sendEmail(List<AgentProduct> agentProducts);
 
-    @Async
+//    @Async
     public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr);
 
 
@@ -25,7 +25,7 @@ public interface SendEmailService {
      * @param i
      * @throws InterruptedException
      */
-    @Async
-    public void sayNumber(int i) throws InterruptedException;
+//    @Async
+//    public void sayNumber(int i) throws InterruptedException;
 
 }

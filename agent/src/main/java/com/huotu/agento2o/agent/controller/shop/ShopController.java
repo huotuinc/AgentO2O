@@ -100,10 +100,7 @@ public class ShopController {
         }else if(statusVal == 1){
             shop.setStatus(AgentStatusEnum.CHECKING);
         }
-        //新增后上级代理商和平台就不可修改
-        shop.setParentAuthor(curAgent);
-        shop.setCustomer(curAgent.getCustomer());
-        return shopService.saveOrUpdateShop(shop, hotUserName);
+        return shopService.saveOrUpdateShop(shop, hotUserName,curAgent);
     }
 
     /**

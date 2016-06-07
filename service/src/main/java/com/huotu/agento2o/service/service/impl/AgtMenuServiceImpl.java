@@ -13,6 +13,8 @@ package com.huotu.agento2o.service.service.impl;
 import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import com.huotu.agento2o.service.repository.AgtMenuRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ import java.util.List;
  */
 @Service
 public class AgtMenuServiceImpl implements AgtMenuService {
+    private static final Log log = LogFactory.getLog(AgtMenuServiceImpl.class);
+
 
     @Autowired
     private AgtMenuRepository menuRepository;
@@ -33,6 +37,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
     @PostConstruct
     @Transactional
     public void init() {
+        log.info("start check...");
         //01
         initOrderMenu();
         //02
