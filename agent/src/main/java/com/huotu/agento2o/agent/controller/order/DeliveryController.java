@@ -110,7 +110,7 @@ public class DeliveryController {
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
         AgentProduct agentProduct ;
         for (MallOrderItem mallOrderItem : mallOrderItems){
-            agentProduct = agentProductService.findAgentPeoduct(shop,mallOrderItem.getProduct());
+            agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
             if (agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore()){
                 apiResult.setCode(ResultCodeEnum.SUCCESS.getResultCode());
                 apiResult.setMsg(ResultCodeEnum.SUCCESS.getResultMsg());
@@ -133,7 +133,7 @@ public class DeliveryController {
         MallOrder order = orderService.findByOrderId(orderId);
         AgentProduct agentProduct ;
         for (int i=0; i<order.getOrderItems().size(); i++){
-            agentProduct = agentProductService.findAgentPeoduct(shop,order.getOrderItems().get(i).getProduct());
+            agentProduct = agentProductService.findAgentProduct(shop,order.getOrderItems().get(i).getProduct());
             if (agentProduct!=null) {
                 order.getOrderItems().get(i).setStore(agentProduct.getStore());
                 order.getOrderItems().get(i).setFreez(agentProduct.getFreez());
