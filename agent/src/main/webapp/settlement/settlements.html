@@ -234,31 +234,6 @@
                 </script>
 
             </div>
-            <!--            <div style="color: red;"  th:if="${totalRecords}==0">暂无数据</div>
-                        <div class="pager-bar" th:if="${totalRecords}!=0">-->
-            <!--<div class="pager-bar">
-                <div class="msg" style="margin-left: 10px; margin-top: -10px;">共<span th:text="${totalRecords}">2</span>条记录，当前第<span th:text="*{pageNo}" id="currentPage">1</span>/共<span th:text="${totalPages==0?1:totalPages}">1</span>页，每页<span th:text="${pageSize}">20</span>条记录
-                </div>
-                <div style="margin-right: 10px; margin-top: -12px;">
-                    <a class="button-white disable" onclick="javascript:changePage('firstPage')">
-                        <span>首页</span>
-                    </a>
-                    <a class="button-white disable" onclick="javascript:changePage('previousPage')">
-                        <span>上一页</span>
-                    </a>
-                    <a class="button-white" onclick="javascript:changePage('nextPage')">
-                        <span>下一页</span>
-                    </a>
-                    <a class="button-white disable" onclick="javascript:changePage('lastPage')">
-                        <span>末页</span>
-                    </a>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;第<input class="input-small" id="pageNo" style="text-align: center; ime-mode: disabled;" type="text" name="pageNo" value="1" th:value="*{pageNo}"/>
-                    页&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a class="button-white disable" onclick="changePage()">
-                        <span>跳转</span>
-                    </a>
-                </div>
-            </div>-->
         </div>
     </div>
 </form>
@@ -315,29 +290,6 @@
         var url = baseUrl + "/settlements";
         window.location.href = url;
     }
-    //首页、上一页、下一页、尾页、跳转
-    /*function changePage(pageType) {
-     if(pageType=='firstPage') {
-     $("#pageNo").val(1);
-     }
-     if(pageType=='previousPage') {
-     $("#pageNo").val(currentPage-1);
-     }
-     if(pageType=='nextPage') {
-     $("#pageNo").val(currentPage+1);
-     }
-     if(pageType=='lastPage') {
-     $("#pageNo").val(totalPages);
-     }
-     var pageNo = parseInt($("#pageNo").val());
-     if(pageNo<1) {
-     $("#pageNo").val(1);
-     }
-     if(pageNo>totalPages) {
-     $("#pageNo").val(totalPages);
-     }
-     $("#form1").submit();
-     }*/
 
     function showSettlementDetail(obj) {
         var settlementNo = $(obj).attr("settlementNo");
