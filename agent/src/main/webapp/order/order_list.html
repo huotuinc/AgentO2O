@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <!--@thymesVar id="ordersList" type="java.util.List<com.huotu.agento2o.service.entity.order.MallOrder>"-->
+<!--@thymesVar id="author" type="com.huotu.agento2o.service.entity.author.Author"-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
@@ -328,7 +329,7 @@
                     <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
                         <span>批量发货</span></a>
                         -->
-                    <span th:if="${authorType=='Shop'}">
+                    <span th:if="${!author.isAgent()}">
                         <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
                             <span>批量发货</span>
                         </a>
@@ -454,18 +455,16 @@
                                             </td>
                                             <td class="txt40 c tail">
                                                 <div th:inline="text">
-                                                    <span th:if="${authorType=='Shop'and orders.shop!=null and orders.beneficiaryShop==null}">
-                                                        <span th:if="${orders.deliveryable()}">
+                                                        <span th:if="${orders.deliveryable() and !author.isAgent()}">
                                                             <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
                                                         </span>
-                                                    </span>
-                                                   <span th:if="${authorType=='Shop'and orders.shop==null and orders.beneficiaryShop!=null}">
+                                                  <!--/* <span th:if="${!author.isAgent()and orders.shop==null and orders.beneficiaryShop!=null}">
                                                         <span th:if="${orders.deliveryable()}">
                                                             <a href="javascript:submitShip();" title="平台代发">发货</a> |
                                                         </span>
-                                                    </span>
+                                                    </span>*/-->
                                                     <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a>
-                                                    <span th:if="${authorType=='Shop'}">
+                                                    <span th:if="${!author.isAgent()}">
                                                         |<a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
                                                     </span>
                                                     <!--/*<a th:attr="orderId=''+${orders.orderId}" onclick="showRefunds(this)" title="退货" th:if="${orders.returnable()}">退货</a>*/-->

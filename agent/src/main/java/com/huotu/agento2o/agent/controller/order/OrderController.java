@@ -91,7 +91,7 @@ public class OrderController {
         model.addAttribute("pageSize", ordersList.getSize());
         model.addAttribute("searchCondition", searchCondition);
         model.addAttribute("pageIndex", pageIndex);
-        model.addAttribute("authorType", author.getClass().getSimpleName());
+        model.addAttribute("author", author);
         return "order/order_list";
     }
 

@@ -196,7 +196,7 @@ public class MallOrder {
     //支付状态为 已支付，部分退款
     //为可发货
     public boolean deliveryable() {
-        return (shipStatus == OrderEnum.ShipStatus.NOT_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_RETURN) &&
+        return shop!=null&&beneficiaryShop==null&&(shipStatus == OrderEnum.ShipStatus.NOT_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_RETURN) &&
                 (payStatus == OrderEnum.PayStatus.PAYED || payStatus == OrderEnum.PayStatus.PARTY_REFUND);
     }
 
