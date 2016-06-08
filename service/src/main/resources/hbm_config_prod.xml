@@ -14,9 +14,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     <context:annotation-config/>
     <context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" file-encoding="UTF-8"/>
-    <bean id="hbmEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="hbmJpaDataSource"></property>
-        <property name="persistenceUnitName" value="hbmEntity" />
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="persistenceUnitName" value="entity" />
         <property name="packagesToScan" value="com.huotu.agento2o.service.entity"/>
         <property name="persistenceProvider">
             <bean class="org.eclipse.persistence.jpa.PersistenceProvider"/>
@@ -33,7 +33,7 @@
         </property>
     </bean>
 
-    <bean id="hbmDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
         <property name="jndiName">
             <value>jdbc/huobanplus_supplier</value>
         </property>
@@ -42,7 +42,7 @@
         </property>
     </bean>
 
-    <bean id="hbmJpaDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <bean id="jdbcDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
         <property name="jndiName">
             <value>jdbc/huobanplus_supplier</value>
         </property>
@@ -52,11 +52,7 @@
     </bean>
 
     <!--事务管理器配置 -->
-    <bean id="hbmTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="hbmEntityManagerFactory"/>
-    </bean>
-
-    <bean id="jdbcHbmTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="hbmDataSource"/>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 </beans>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>T+1结算审核</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}" type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <style type="text/css">
+        .over {
+            background-color: #00ff21;
+        }
+
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+
+<!--/*@thymesVar id="settlementSearcher" type="com.huotu.agento2o.service.searchable.SettlementSearcher"*/-->
+<form method="get" action="settlements" id="form1" th:object="${settlementSearcher}">
+
+    <div class="container">
+        <div class="blank10">
+        </div>
+
+
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>T+1结算审核</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first ">结算单产生起止时间：</label>
+                            <input name="createStartDate" type="text" id="txtCreateBeginTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;" th:value="*{createStartDate}"/>
+                            <label class="first ">---</label>
+                            <input name="createEndDate" type="text" id="txtCreateEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{createEndDate}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'txtCreateBeginTime\')}'})"/>
+                            <label class="first ">结算号：</label>
+                            <input name="settlementNo" type="text" th:value="*{settlementNo}" id="settlementNo" class="input-small" style="width: 120px;"/>
+                            <br/>
+                            <br/>
+                            <label class="first ">结算单生效起止日期：</label>
+                            <input name="startDate" type="text" id="txtBeginTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false})"
+                                   style="margin-left: 8px;" th:value="*{startDate}"/>
+                            <label class="first ">---</label>
+                            <input name="endDate" type="text" id="txtEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{endDate}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false,minDate:'#F{$dp.$D(\'txtBeginTime\')}'})"/>
+
+                            <label class="first"> 分销商审核状态：
+                                <select id="customerStatus" name="customerStatus">
+                                    <option value="-1" th:selected="*{customerStatus==-1}">请选择</option>
+                                    <option value="0" th:selected="*{customerStatus==0}">待审核</option>
+                                    <option value="1" th:selected="*{customerStatus==1}">审核通过</option>
+                                    <option value="2" th:selected="*{customerStatus==2}">审核不通过</option>
+                                </select>
+                            </label>
+                            <label class="first"> 门店审核状态：
+                                <select id="authorStatus" name="authorStatus">
+                                    <option value="-1" th:selected="*{authorStatus==-1}">请选择</option>
+                                    <option value="0" th:selected="*{authorStatus==0}">待审核</option>
+                                    <option value="1" th:selected="*{authorStatus==1}">审核通过</option>
+                                    <option value="2" th:selected="*{authorStatus==2}">审核不通过</option>
+                                </select>
+                            </label>
+                            <label>
+                                <a class="btn-lit btn-middle" onclick="searchSettlement()"
+                                   style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                                <a class="btn-lit btn-middle" onclick="searchAll()"
+                                   style="margin-bottom: 3px;">
+                                    <span>显示全部</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div>
+                <label>
+                    <a class="btn-lit btn-middle" onclick="batchChangeSettlementStatus(1)"
+                       style="margin-bottom: 2px;margin-left: 10px;margin-top: 3px;">
+                        <span>批量审核通过</span>
+                    </a>
+                </label>
+                <label>
+                    <a class="btn-lit btn-middle" onclick="batchChangeSettlementStatus(2)"
+                       style="margin-bottom: 2px;margin-left: 10px;margin-top: 3px;">
+                        <span>批量审核不通过</span>
+                    </a>
+                </label>
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th><input type="checkbox" id="checkall"/></th>
+                            <th scope="col">序号
+                            </th>
+                            <th scope="col">门店
+                            </th>
+                            <th scope="col">产生时间
+                            </th>
+                            <th scope="col">生效时间
+                            </th>
+                            <th scope="col">应收货款
+                            </th>
+                            <th scope="col">邮费
+                            </th>
+                            <th scope="col">备注
+                            </th>
+                            <th scope="col">门店审核状态
+                            </th>
+                            <th scope="col">分销商审核状态
+                            </th>
+                            <th scope="col">操作
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+
+                        <!--/*@thymesVar id="settlements" type="java.util.List<com.huotu.agento2o.service.entity.settlement.Settlement>"*/-->
+                        <tr th:each="settlement:${settlements}">
+                            <td class="txt20 c"><input th:if="${settlement.shopCheckable() and settlement.checkAble()}" type="checkbox" name="choice" th:value="${settlement.settlementNo}"/></td>
+                            <td class="txt40 c" th:text="${settlement.settlementNo}" name="settlementNo">
+
+                            </td>
+                            <td class="txt80 c" th:text="${settlement.shop.name}">
+                                供应商
+                            </td>
+                            <td class="txt80 c" th:date="${#dates.format(settlement.createDateTime,'yyyy-MM-dd HH:mm:ss')}">
+                                2015-10-19
+                            </td>
+                            <td class="txt80 c" th:date="${#dates.format(settlement.settlementDate,'yyyy-MM-dd HH:mm:ss')}">
+                                2015-10-19
+                            </td>
+                            <td class="txt80 c" th:text="${settlement.finalAmount}">
+                                0
+                            </td>
+                            <td class="txt80 c" th:text="${settlement.freight}">
+                                0
+                            </td>
+                            <td class="txt80 c" th:text="${settlement.remark}">
+                                备注
+                            </td>
+                            <!--<td class="txt80 c" >
+                                <span style="color:red;"
+                                      th:style="${settlement.getStatus()}!='审核通过'?'color:red':'color:green'"
+                                      th:text="${settlement.getStatus()}">待审核</span>
+                            </td>-->
+                            <td class="txt40 c">
+                                <span style="color:red;" th:text="${settlement.authorStatus.value}">待审核</span>
+                            </td>
+                            <td class="txt40 c">
+                                <span style="color:red;" th:text="${settlement.customerStatus.value}">待审核</span>
+                            </td>
+                            <td class="txt80 c">
+                                <a th:attr="settlementNo=${settlement.settlementNo}" onclick="showSettlementDetail(this)"
+                                   title="查看明细">查看明细</a>
+                                <a th:if="${settlement.shopCheckable() and settlement.checkAble()}" th:attr="settlementNo=${settlement.settlementNo}" onclick="showUpdateStatus(this)">审核</a>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[*{pageNo}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'form1';
+                    //                                    var pageNoStr = 'pageNoStr';
+                    Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+
+            </div>
+        </div>
+    </div>
+</form>
+<!--审核对话框start-->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
+     aria-labelledby="ui-dialog-title-managerInfoDialog"
+     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
+    <div id="settlementDialog" style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div style="width:300px">
+                <ul>
+                    <li style="text-align: center ; ">
+                        <label>
+                            <input type="radio" name="RadioGroup" value="1" id="RadioGroup1" style="
+    vertical-align: text-top; text-align: center;
+" onclick="javascript:change(1)" checked="checked"/>
+                            审核通过</label>
+                        <label>
+                            <input type="radio" name="RadioGroup" value="2" id="RadioGroup2" onclick="javascript:change(2)" style="vertical-align: text-top;"/>
+                            审核不通过</label>
+                    </li>
+                    <li style="display: none" id="comment">
+                        <label>
+                            审核说明<textarea name="settlementComment" id="settlementComment" style="width: 80%"></textarea>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                    role="button" aria-disabled="false"><span class="ui-button-text">确定</span></button>
+            <button type="button"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
+                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
+        </div>
+    </div>
+</div>
+<!--审核对话框end-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var baseUrl = /*[[@{/settlement}]]*/"/settlement";
+    var totalPages = /*[[${totalPages}]]*/ 1;
+    var currentPage = parseInt($("#currentPage").text());
+    //查询
+    function searchSettlement() {
+        $("input[name=pageNo]").val(1);
+        $("#form1").submit();
+    }
+    function searchAll(){
+        var url = baseUrl + "/settlements";
+        window.location.href = url;
+    }
+
+    function showSettlementDetail(obj) {
+        var settlementNo = $(obj).attr("settlementNo");
+        window.location.href = baseUrl + "/settlementDetail?settlementNo=" + settlementNo + "&pageNo=1";
+    }
+
+    //审核状态单选框单击事件
+    function change(type) {
+        if (type == 1) {
+            document.getElementById('comment').style.display = 'none';
+        } else {
+            document.getElementById('comment').style.display = '';
+        }
+    }
+
+    //显示审核对话框
+    function showUpdateStatus(obj) {
+        var settlementNo = $(obj).attr("settlementNo");
+        J.ShowDialog("settlementDialog", "结算单审核", function () {
+            var status = $("input[name='RadioGroup']:checked").val();
+            var settlementComment = $("#settlementComment").val();
+            if (status == 2 && settlementComment.length == 0) {
+                $.jBox.tip("请输入审核说明");
+                return;
+            }
+            $.jBox.tip("正在保存...", "loading");
+            $.ajax({
+                type: "POST",
+                url: baseUrl + "/changeSettlementStatus",
+                data: {
+                    settlementNo: settlementNo,
+                    authorStatus: status,
+                    settlementComment: settlementComment
+                },
+                dataType: "json",
+                success: function (result) {
+                    if (result.code == 200) {
+                        window.location.reload();
+                    } else {
+                        $.jBox.tip(result.msg);
+                    }
+                },
+                error: function () {
+                    $.jBox.tip("发生错误", "error");
+                }
+            });
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+
+    function changeSettlementStatus(obj, authorStatus) {
+        var settlementNo = $(obj).attr("settlementNo");
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/changeSettlementStatus",
+            data: {
+                settlementNo: settlementNo,
+                authorStatus: authorStatus
+            },
+            dataType: "json",
+            success: function (result) {
+                if (result.code == 200) {
+                    window.location.reload();
+                } else {
+                    $.jBox.tip(result.msg);
+                }
+            },
+            error: function () {
+                $.jBox.tip("发生错误", "error");
+            }
+        });
+    }
+    function batchChangeSettlementStatus(authorStatus) {
+        var settlementNo = getCheckedItems("choice");
+        if (settlementNo.length == 0) {
+            $.jBox.tip("请选择要处理的结算单");
+            return;
+        }
+        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/batchChangeSettlementStatus",
+            data: {
+                settlementNo: settlementNo,
+                authorStatus: authorStatus
+            },
+            dataType: "json",
+            success: function (result) {
+                if (result.code == 200) {
+                    $.jBox.tip(result.msg, 'success');
+                    window.location.reload();
+                } else {
+                    $.jBox.tip(result.msg, 'error');
+                    window.location.reload();
+                }
+            },
+            error: function () {
+                $.jBox.tip("发生错误", "error");
+            }
+        });
+    }
+    function getCheckedItems(checkboxName) {
+        var checkedObj = $("input[name='" + checkboxName + "']:checked");
+        var checkedMenu = "";
+
+        checkedObj.each(function () {
+            checkedMenu += $(this).val() + ",";
+        });
+        return checkedMenu.substring(0, checkedMenu.lastIndexOf(","));
+    }
+    $("#checkall").click(function () {
+        var option = $("#checkall").prop('checked');
+        $("[name='choice']:checkbox").each(function () {
+            $(this).prop("checked", option);
+        })
+    })
+    /*]]>*/
+</script>
+</body>
+</html>

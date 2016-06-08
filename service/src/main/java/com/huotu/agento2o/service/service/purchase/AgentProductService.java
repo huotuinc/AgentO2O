@@ -49,7 +49,7 @@ public interface AgentProductService {
 
     List<AgentProduct> findWaringAgentInfo(Integer agentId);
 
-    AgentProduct findAgentPeoduct(Author author, MallProduct product);
+    AgentProduct findAgentProduct(Author author, MallProduct product);
 
 
 }

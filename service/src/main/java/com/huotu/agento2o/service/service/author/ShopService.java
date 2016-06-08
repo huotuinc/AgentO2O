@@ -74,6 +74,8 @@ public interface ShopService extends UserDetailsService {
 
     Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
 
+    List<Shop> findAll();
+
     HSSFWorkbook createWorkBook(List<Shop> shops);
 
     /**

@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 )
 @ImportResource({"classpath:hbm_config_prod.xml", "classpath:hbm_config_test.xml"})
 public class ServiceConfig {
-    @Resource(name = "dataSource")
+    @Resource(name = "jdbcDataSource")
     private DataSource dataSource;
 
     @Value("${mail.apiUser}")

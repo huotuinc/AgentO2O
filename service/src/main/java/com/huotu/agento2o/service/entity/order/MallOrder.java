@@ -1,6 +1,7 @@
 package com.huotu.agento2o.service.entity.order;
 
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.marketing.MallPintuan;
 import lombok.Getter;
@@ -170,6 +171,26 @@ public class MallOrder {
     private int isTax;
     @Column(name = "Is_Protect")
     private int isProtect;
+
+
+    /*以下用于结算*/
+    /**
+     * 结算状态
+     */
+    @Column(name = "SettleStatus")
+    private Integer settleStatus;
+//    private SettlementEnum.SettlementStatusEnum settleStatus;
+    /**
+     * 预计结算时间
+     */
+    @Column(name = "PreSettleDate")
+    private Date preSettleDate;
+    /**
+     * 实际结算时间
+     */
+    @Column(name = "ActualSettleDate")
+    private Date actualSettleDate;
+    /*以上用于结算*/
 
     //发货状态为 未发货，部分发货，部分退货
     //支付状态为 已支付，部分退款

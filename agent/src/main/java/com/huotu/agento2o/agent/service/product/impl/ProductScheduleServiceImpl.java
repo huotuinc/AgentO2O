@@ -41,8 +41,8 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
 
     @Override
     //每天早上10点获取库存预警信息
-//    @Scheduled(cron = "0 0 10 * * ?")
-    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
+    @Scheduled(cron = "0 0 10 * * ?")
+//    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
     public void productSchedule() {
         //查询出需要提醒的库存信息
         List<Object> agents = agentProductService.findNeedWaringAgent();

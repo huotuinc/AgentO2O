@@ -83,7 +83,7 @@ public class AgentProductServiceImpl implements AgentProductService {
     }
 
     @Override
-    public AgentProduct findAgentPeoduct(Author author, MallProduct product) {
+    public AgentProduct findAgentProduct(Author author, MallProduct product) {
         return agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
     }
 }
