@@ -55,6 +55,18 @@ public class MallOrderItem {
     @OneToOne(mappedBy = "orderItem")
     private MallAfterSales afterSales;
 
+    /**
+     * 用于保存该条订单所对应的门店的库存和预占库存
+     * 其对应的表为Agt_product
+     * 对应的entity为AgentProduct
+     */
+    @Transient
+    private Integer store = 0;
+    @Transient
+    private Integer freez = 0;
+    @Transient
+    public boolean stockAdequate = false;
+
     public boolean returnable() {
         return afterSales != null && (afterSales.getAfterSaleStatus() == AfterSaleEnum.AfterSaleStatus.WAITING_FOR_CONFIRM ||
                 afterSales.getAfterSaleStatus() == AfterSaleEnum.AfterSaleStatus.REFUNDING ||

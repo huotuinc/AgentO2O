@@ -105,15 +105,15 @@ public class DeliveryController {
     @ResponseBody
     public ApiResult judgeStock( @AgtAuthenticationPrincipal Shop shop,
                                  String orderId){
-        ApiResult apiResult = ApiResult.resultWith(ResultCodeEnum.SUCCESS, "有货", null);
+        ApiResult apiResult = ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE, ResultCodeEnum.INVENTORY_SHORTAGE.getResultMsg(), null);
         MallOrder order = orderService.findByOrderId(orderId);
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
         AgentProduct agentProduct ;
         for (MallOrderItem mallOrderItem : mallOrderItems){
             agentProduct = agentProductService.findAgentPeoduct(shop,mallOrderItem.getProduct());
-            if (agentProduct.getFreez()<mallOrderItem.getNums() || agentProduct.getFreez()>agentProduct.getStore()){
-                apiResult.setCode(ResultCodeEnum.INVENTORY_SHORTAGE.getResultCode());
-                apiResult.setMsg(ResultCodeEnum.INVENTORY_SHORTAGE.getResultMsg());
+            if (agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore()){
+                apiResult.setCode(ResultCodeEnum.SUCCESS.getResultCode());
+                apiResult.setMsg(ResultCodeEnum.SUCCESS.getResultMsg());
                 break;
             }
         }
@@ -129,8 +129,17 @@ public class DeliveryController {
      */
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
     @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
-    public String showConsignFlow(String orderId, Model model) {
+    public String showConsignFlow(@AgtAuthenticationPrincipal Shop shop,String orderId, Model model) {
         MallOrder order = orderService.findByOrderId(orderId);
+        AgentProduct agentProduct ;
+        for (int i=0; i<order.getOrderItems().size(); i++){
+            agentProduct = agentProductService.findAgentPeoduct(shop,order.getOrderItems().get(i).getProduct());
+            if (agentProduct!=null) {
+                order.getOrderItems().get(i).setStore(agentProduct.getStore());
+                order.getOrderItems().get(i).setFreez(agentProduct.getFreez());
+                order.getOrderItems().get(i).setStockAdequate(agentProduct.getFreez() >= order.getOrderItems().get(i).getNums() && agentProduct.getFreez() <= agentProduct.getStore());
+            }
+        }
         model.addAttribute("order", order);
         return "order/delivery";
     }

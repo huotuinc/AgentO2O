@@ -215,16 +215,20 @@
         <table cellpadding="0" cellspacing="0" class="gridlist data-table">
             <colgroup>
                 <col style="width: 5%"/>
-                <col style="width: 20%"/>
-                <col style="width: 35%"/>
                 <col style="width: 15%"/>
-                <col style="width: 10%"/>
+                <col style="width: 29%"/>
+                <col style="width: 9%"/>
+                <col style="width: 9%"/>
+                <col style="width: 9%"/>
+                <col style="width: 9%"/>
             </colgroup>
             <thead>
             <tr>
                 <th width="20px"><!--<input type="checkbox" id="checkall"/>--></th>
                 <th>货号</th>
                 <th>商品名称</th>
+                <th>库存</th>
+                <th>预占库存</th>
                 <th>购买数量</th>
                 <th>已发货</th>
                 <!--<th>此单发货</th>-->
@@ -233,12 +237,21 @@
             <tbody th:remove="all-but-first">
             <!--/*@thymesVar id="orderItems" type="java.util.List<com.huotu.agento2o.service.entity.order.MallOrderItem>"*/-->
             <tr th:each="orderItem:${order.orderItems}">
-                <td><input th:if="${orderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.itemId}" checked="checked"/></td>
+                <td>
+                    <span th:if="${orderItem.deliverable()and orderItem.stockAdequate}">
+                        <input th:if="${orderItem.deliverable()}" type="checkbox" name="choice" th:value="${orderItem.itemId}" checked="checked"/>
+                    </span>
+                    <span th:if="${!orderItem.deliverable() or !orderItem.stockAdequate}">
+                        <input  disabled="disabled" type="checkbox" name="choice" th:value="${orderItem.itemId}" />
+                    </span>
+                </td>
                 <td th:text="${orderItem.bn}">G49B884C0349DE7</td>
                 <td>
                     <span th:text="${orderItem.name}">休闲男鞋(蓝色,37)(1)</span>
                     <span style="color: red;" th:if="${orderItem.afterSales!=null}" th:text="${orderItem.afterSales.afterSaleStatus.value}"></span>
                 </td>
+                <td th:text="${orderItem.store}">00</td>
+                <td th:text="${orderItem.freez}">00</td>
                 <td th:text="${orderItem.nums}">0</td>
                 <td th:text="${orderItem.sendNum}">0</td>
             </tr>
