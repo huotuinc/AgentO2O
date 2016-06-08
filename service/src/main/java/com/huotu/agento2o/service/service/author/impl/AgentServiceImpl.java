@@ -10,10 +10,12 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
+import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
+import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
@@ -55,6 +57,9 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     private UserBaseInfoRepository userBaseInfoRepository;
+
+    @Autowired
+    private AuthorAccountRepository authorAccountRepository;
 
 
     @Override
@@ -226,7 +231,13 @@ public class AgentServiceImpl implements AgentService {
         agent.setProvince(requestAgent.getProvince());
         agent.setTelephone(requestAgent.getTelephone());
         agent.setEmail(requestAgent.getEmail());
-        agentRepository.save(agent);
+        agent = agentRepository.save(agent);
+        AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(agent.getId());
+        if(authorAccount == null){
+            authorAccount = new AuthorAccount();
+            authorAccount.setAuthor(agent);
+            authorAccountRepository.save(authorAccount);
+        }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
@@ -301,6 +312,12 @@ public class AgentServiceImpl implements AgentService {
         agent.setAccountNo(requestAgent.getAccountNo());
         agent.setBankName(requestAgent.getBankName());
         agent.setEmail(requestAgent.getEmail());
+        AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(agent.getId());
+        if(authorAccount == null){
+            authorAccount = new AuthorAccount();
+            authorAccount.setAuthor(agent);
+            authorAccountRepository.save(authorAccount);
+        }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
 
     }

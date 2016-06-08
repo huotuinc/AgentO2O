@@ -46,6 +46,8 @@ public class AgtMenuServiceImpl implements AgtMenuService {
         initShopMenu();
         //04
         initConfigMenu();
+        //05
+        initSettlementMenu();
     }
 
     /**
@@ -172,6 +174,28 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             //二级菜单 收货地址列表
             AgtMenu shdzlb = new AgtMenu(2, "/config/addressList", "收货地址列表", 0, shdzgl, "AGENT,SHOP,BASE_DATA", 0, "040301");
             menuRepository.save(shdzlb);
+        }
+    }
+
+    /**
+     * 初始化结算模块，结算模块以 05 开头
+     */
+    private void initSettlementMenu(){
+        if(menuRepository.findOne("05") == null){
+            //结算管理
+            AgtMenu settlementMenu = new AgtMenu(0,"","结算管理",4,null,"SHOP,SETTLEMENT",0,"05");
+
+            //一级子菜单 结算单管理
+            AgtMenu jsdgl = new AgtMenu(1,"","结算单管理",0,settlementMenu,"SHOP,SETTLEMENT",0,"0501");
+            //二级子菜单 结算单列表
+            AgtMenu jsdlb = new AgtMenu(2,"/settlement/settlements","结算单列表",0,jsdgl,"SHOP,SETTLEMENT",0,"050101");
+            menuRepository.save(jsdlb);
+
+            //一级子菜单 结算账户
+            AgtMenu jszh = new AgtMenu(1,"","结算账户",1,settlementMenu,"SHOP,SETTLEMENT",0,"0502");
+            //二级子菜单 我的账户
+            AgtMenu wdzh = new AgtMenu(2,"","我的账户",0,jszh,"SHOP,SETTLEMENT",0,"050201");
+            menuRepository.save(wdzh);
         }
     }
 

@@ -2,6 +2,7 @@ package com.huotu.agento2o.service.repository.order;
 
 
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,4 +62,29 @@ public interface MallOrderRepository extends JpaRepository<MallOrder, String>, J
      * @return
      */
     int countByShop_IdAndPayStatusAndShipStatus(Integer shopId, OrderEnum.PayStatus payStatus, OrderEnum.ShipStatus shipStatus);
+
+    /**
+     * 将结算状态改为已结算，每次获取结算单时调用，下次获取结算单就不会再获取
+     * @param shopId
+     * @param customerId
+     * @param settleTime
+     */
+    @Query("UPDATE MallOrder SET settleStatus=2 , actualSettleDate=?4 " +
+            "WHERE settleStatus=1 AND payStatus <> ?4 " +
+            "AND preSettleDate<=?3 AND customerId=?2 AND shop.id=?1")
+    @Modifying(clearAutomatically = true)
+    void updateSettle(Integer shopId, Integer customerId, Date settleTime,OrderEnum.PayStatus payStatus);
+
+
+    /**
+     * 修改结算单状态，分销商或供应商审核拒绝时调用
+     * @param authorId
+     * @param customerId
+     * @param settleTime
+     * @param settleStatus
+     */
+    @Query("UPDATE MallOrder SET settleStatus=?4 " +
+            "WHERE settleStatus=2 AND actualSettleDate=?3 AND customerId=?2 AND shop.id=?1")
+    @Modifying(clearAutomatically = true)
+    void resetSettle(Integer authorId, Integer customerId, Date settleTime, Integer settleStatus);
 }

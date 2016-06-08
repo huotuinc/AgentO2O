@@ -23,4 +23,8 @@ public class Constant {
     public static final String DEFAULT_PASSWORD = "$2a$10$emR/n8XClY/Bzjx1qKp3HOEJsoJril3.gX";
 
     public static final String ENCODING = "UTF-8";
+    /**
+     * 提现次数，默认为2次
+     */
+    public static final int WITHDRAWCOUNT = 2;
 }

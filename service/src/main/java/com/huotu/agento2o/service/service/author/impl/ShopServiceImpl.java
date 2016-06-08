@@ -21,9 +21,11 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
+import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
@@ -58,6 +60,8 @@ public class ShopServiceImpl implements ShopService {
     private UserBaseInfoRepository userBaseInfoRepository;
     @Autowired
     private MallCustomerRepository mallCustomerRepository;
+    @Autowired
+    private AuthorAccountRepository authorAccountRepository;
 
     @Override
     public Shop findByUserName(String userName) {
@@ -87,6 +91,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
+    @SuppressWarnings("Duplicates")
     public ApiResult saveOrUpdateShop(Shop shop, String hotUserName, Agent agent) {
         if (agent == null || agent.getCustomer() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
@@ -148,12 +153,20 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setEmail(shop.getEmail());
             shop = oldShop;
         }
-        shopRepository.save(shop);
+        shop = shopRepository.save(shop);
+        //如果结算账户不存在，则新建结算账户
+        AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(shop.getId());
+        if(authorAccount == null){
+            authorAccount = new AuthorAccount();
+            authorAccount.setAuthor(shop);
+            authorAccountRepository.save(authorAccount);
+        }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
     @Override
     @Transactional
+    @SuppressWarnings("Duplicates")
     public ApiResult saveShopConfig(Shop shop, String hotUserName) {
         Shop oldShop = shopRepository.findOne(shop.getId());
         if (oldShop.isDisabled()) {
@@ -359,6 +372,11 @@ public class ShopServiceImpl implements ShopService {
         };
 
         return shopRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
+    }
+
+    @Override
+    public List<Shop> findAll() {
+        return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum.CHECKED);
     }
 
     @Override

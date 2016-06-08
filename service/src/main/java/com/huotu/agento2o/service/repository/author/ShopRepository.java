@@ -26,4 +26,6 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecifi
     Shop findByIdAndParentAuthor(Integer id, Agent agent);
 
     Shop findByIdAndCustomer(Integer id, MallCustomer customer);
+
+    List<Shop> findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum status);
 }

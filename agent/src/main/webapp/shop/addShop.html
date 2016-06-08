@@ -261,6 +261,7 @@
 <div id="submit_dialog" style="display: none;"></div>
 <script th:inline="javascript">
     /*<![CDATA[*/
+    var baseUrl = /*[[@{/shop/}]]*/ "/shop";
     //保存
     function saveShopConfig() {
         var username = $.trim($("#username").val());
@@ -342,7 +343,7 @@
             $.jBox.tip("正在保存...", "loading");
             $.ajax({
                 type: 'POST',
-                url: "/shop/addShop",
+                url: baseUrl + "/addShop",
                 data: {
                     id: id,
                     username: username,
@@ -368,7 +369,7 @@
                         $.jBox.tip("保存成功", "success");
                         $(self).dialog('close');
                         setTimeout(function () {
-                            window.location.href = "/shop/shopList";
+                            window.location.href = baseUrl + "/shopList";
                         }, 500);
                     } else {
                         $.jBox.tip(result.msg, 'error');
