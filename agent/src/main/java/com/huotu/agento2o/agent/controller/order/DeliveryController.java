@@ -110,7 +110,7 @@ public class DeliveryController {
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
         AgentProduct agentProduct ;
         for (MallOrderItem mallOrderItem : mallOrderItems){
-            agentProduct = agentProductService.findAgentPeoduct(shop,mallOrderItem.getProduct());
+            agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
             if (agentProduct.getFreez()<mallOrderItem.getNums() || agentProduct.getFreez()>agentProduct.getStore()){
                 apiResult.setCode(ResultCodeEnum.INVENTORY_SHORTAGE.getResultCode());
                 apiResult.setMsg(ResultCodeEnum.INVENTORY_SHORTAGE.getResultMsg());
