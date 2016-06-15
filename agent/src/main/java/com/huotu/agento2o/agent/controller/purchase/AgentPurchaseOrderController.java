@@ -131,6 +131,7 @@ public class AgentPurchaseOrderController {
         model.setViewName("/purchase/purchase/purchase_order_list");
         purchaseOrderSearcher.setAgentId(author.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
+        setPicUri(purchaseOrderPage.getContent());
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", purchaseOrderSearcher.getPageIndex());
@@ -140,6 +141,17 @@ public class AgentPurchaseOrderController {
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
         model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
         return model;
+    }
+
+    private void setPicUri(List<AgentPurchaseOrder> purchaseOrderList){
+        if(purchaseOrderList != null && purchaseOrderList.size() > 0){
+            purchaseOrderList.forEach(order->{
+                try {
+                    resourceService.setListUri(order.getOrderItemList(), "thumbnailPic", "picUri");
+                } catch (NoSuchFieldException e) {
+                }
+            });
+        }
     }
 
     /**
@@ -238,6 +250,7 @@ public class AgentPurchaseOrderController {
         model.setViewName("/purchase/purchase/agent_purchase_order_list");
         purchaseOrderSearcher.setParentAgentId(agent.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
+        setPicUri(purchaseOrderPage.getContent());
         List<Author> authorList = authorService.findByParentAgentId(agent);
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);

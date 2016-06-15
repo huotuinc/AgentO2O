@@ -38,7 +38,7 @@ public interface ShopService extends UserDetailsService {
 
     Shop addShop(Shop shop);
 
-    ApiResult saveOrUpdateShop(Shop shop, String hotUserName,Agent agent);
+    ApiResult saveOrUpdateShop(Shop shop, String hotUserName, Agent agent);
 
     ApiResult saveShopConfig(Shop shop, String hotUserName);
 
@@ -76,6 +76,8 @@ public interface ShopService extends UserDetailsService {
 
     List<Shop> findAll();
 
+    List<Shop> findByCustomerId(Integer customerId);
+
     HSSFWorkbook createWorkBook(List<Shop> shops);
 
     /**
@@ -86,4 +88,6 @@ public interface ShopService extends UserDetailsService {
      * @return
      */
     List<String> getHotUserNames(Integer customerId, String name);
+
+    ApiResult updateAccountInfo(Integer shopId, String bankName, String accountName, String accountNo);
 }

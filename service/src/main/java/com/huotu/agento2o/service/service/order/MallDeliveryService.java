@@ -30,7 +30,7 @@ import java.util.List;
 public interface MallDeliveryService {
     List<MallDelivery> findByOrderId(String orderId);
 
-    List<MallDelivery> findByAutor(Author author);
+    List<MallDelivery> findByAuthor(Author author);
 
     Page<MallDelivery> getPage(int pageIndex, Author author, int pageSize, DeliverySearcher deliverySearcher, String type);
 

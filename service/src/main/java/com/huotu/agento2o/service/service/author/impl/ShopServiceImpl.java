@@ -156,7 +156,7 @@ public class ShopServiceImpl implements ShopService {
         shop = shopRepository.save(shop);
         //如果结算账户不存在，则新建结算账户
         AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(shop.getId());
-        if(authorAccount == null){
+        if (authorAccount == null) {
             authorAccount = new AuthorAccount();
             authorAccount.setAuthor(shop);
             authorAccountRepository.save(authorAccount);
@@ -380,6 +380,11 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    public List<Shop> findByCustomerId(Integer customerId) {
+        return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatusAndCustomer_CustomerId(AgentStatusEnum.CHECKED,customerId);
+    }
+
+    @Override
     public HSSFWorkbook createWorkBook(List<Shop> shops) {
         List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
         shops.forEach(shop -> {
@@ -412,5 +417,18 @@ public class ShopServiceImpl implements ShopService {
         List<String> names = new ArrayList<>();
         names = userBaseInfoRepository.findByLoginNameLikeAndMallCustomer_customerId("%" + name + "%", customerId);
         return names;
+    }
+
+    @Override
+    public ApiResult updateAccountInfo(Integer shopId, String bankName, String accountName, String accountNo) {
+        Shop shop = findById(shopId);
+        if(shop == null || shop.isDeleted() || shop.isDisabled()){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        shop.setBankName(bankName);
+        shop.setAccountName(accountName);
+        shop.setAccountNo(accountNo);
+        shopRepository.save(shop);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }

@@ -194,7 +194,7 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             //一级子菜单 结算账户
             AgtMenu jszh = new AgtMenu(1,"","结算账户",1,settlementMenu,"SHOP,SETTLEMENT",0,"0502");
             //二级子菜单 我的账户
-            AgtMenu wdzh = new AgtMenu(2,"","我的账户",0,jszh,"SHOP,SETTLEMENT",0,"050201");
+            AgtMenu wdzh = new AgtMenu(2,"/withdraw/withdrawRecords","我的账户",0,jszh,"SHOP,SETTLEMENT",0,"050201");
             menuRepository.save(wdzh);
         }
     }

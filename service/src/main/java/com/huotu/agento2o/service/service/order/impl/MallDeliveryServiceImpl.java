@@ -55,7 +55,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
     }
 
     @Override
-    public List<MallDelivery> findByAutor(Author author) {
+    public List<MallDelivery> findByAuthor(Author author) {
         return null;
     }
 
@@ -164,6 +164,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
             if (deliveryInfo.getRemark() != null && !"".equals(deliveryInfo.getRemark())) {
                 map.put("remark", deliveryInfo.getRemark());
             }
+            // TODO: 2016/6/14
             map.put("agentId", agentId);
             map.put("dicDeliverItemsStr", dicDeliverItemsStr.substring(0, dicDeliverItemsStr.length() - 1));
             String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);

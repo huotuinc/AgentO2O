@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.entity.author;
 
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
@@ -191,5 +192,9 @@ public abstract class Author implements Serializable, UserDetails {
 
     public boolean isAgent() {
         return this instanceof Agent;
+    }
+
+    public boolean hasAccountInfo() {
+        return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
     }
 }

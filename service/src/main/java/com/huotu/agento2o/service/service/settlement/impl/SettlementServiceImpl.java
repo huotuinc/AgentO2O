@@ -12,21 +12,28 @@ package com.huotu.agento2o.service.service.settlement.impl;
 
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.config.InvoiceConfig;
+import com.huotu.agento2o.service.entity.order.*;
+import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
 import com.huotu.agento2o.service.entity.settlement.Settlement;
 import com.huotu.agento2o.service.entity.settlement.SettlementOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
-import com.huotu.agento2o.service.repository.order.MallOrderRepository;
+import com.huotu.agento2o.service.repository.MallCustomerRepository;
+import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
+import com.huotu.agento2o.service.repository.order.*;
+import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
+import com.huotu.agento2o.service.repository.settlement.SettlementOrderRepository;
 import com.huotu.agento2o.service.repository.settlement.SettlementRepository;
 import com.huotu.agento2o.service.searchable.SettlementSearcher;
 import com.huotu.agento2o.service.service.settlement.SettlementService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.ss.formula.functions.Na;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,8 +58,23 @@ public class SettlementServiceImpl implements SettlementService {
     @Autowired
     private SettlementRepository settlementRepository;
     @Autowired
+    private SettlementOrderRepository settlementOrderRepository;
+    @Autowired
     private MallOrderRepository orderRepository;
-
+    @Autowired
+    private MallOrderItemRepository orderItemRepository;
+    @Autowired
+    private MallDeliveryRepository deliveryRepository;
+    @Autowired
+    private MallRefundsRepository refundsRepository;
+    @Autowired
+    private MallPaymentsRepository paymentsRepository;
+    @Autowired
+    private MallCustomerRepository customerRepository;
+    @Autowired
+    private AuthorAccountRepository accountRepository;
+    @Autowired
+    private InvoiceConfigRepository invoiceConfigRepository;
     /**
      * 得到结算单
      *
@@ -81,7 +103,11 @@ public class SettlementServiceImpl implements SettlementService {
         settlement.setFreight((double) Math.round(freight * 100) / 100);
         settlement.setSettlementOrders(settlementOrders);
         // TODO: 2016/6/8 test
-        settlementRepository.save(settlement);
+        settlement = settlementRepository.save(settlement);
+        for(SettlementOrder settlementOrder : settlementOrders){
+            settlementOrder.setSettlement(settlement);
+        }
+        settlementOrderRepository.save(settlementOrders);
         log.info("shopId:" + shop.getId() + ",customerId:" + shop.getCustomer().getCustomerId() + "settlementNo:" + settlement.getSettlementNo() + ",finalAmount:" + finalAmount + ",freight:" + freight);
         orderRepository.updateSettle(shop.getId(),shop.getCustomer().getCustomerId(),settleTime, OrderEnum.PayStatus.REFUNDING);
     }
@@ -180,7 +206,45 @@ public class SettlementServiceImpl implements SettlementService {
 
     @Override
     public OrderDetailModel findOrderDetail(String orderId) {
-        return null;
+        OrderDetailModel orderDetailModel = new OrderDetailModel();
+        MallOrder orders = orderRepository.findOne(orderId);
+        List<MallOrderItem> mallOrderItem = orderItemRepository.findByOrder_OrderId(orderId);
+        List<MallDelivery> deliveryList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.DEVERY.getCode());
+        List<MallDelivery> refundList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.RETURN.getCode());
+        List<MallRefunds> refundsMoneyList = refundsRepository.findByOrderId(orderId);
+        List<MallPayments> paymentsList = paymentsRepository.findByOrderId(orderId);
+        orderDetailModel.setOrderId(orders.getOrderId());
+        if (deliveryList != null && deliveryList.size() > 0) {
+            orderDetailModel.setDeliveryList(deliveryList);
+        }
+        if (refundList != null && refundList.size() > 0) {
+            orderDetailModel.setRefundsList(refundList);
+        }
+        if (refundsMoneyList != null && refundsMoneyList.size() > 0) {
+            orderDetailModel.setRefundsMoneyList(refundsMoneyList);
+        }
+        if(paymentsList != null && paymentsList.size() > 0){
+            orderDetailModel.setPaymentsList(paymentsList);
+        }
+        orderDetailModel.setShipName(orders.getShipName());
+        orderDetailModel.setShipTel(orders.getShipTel());
+        orderDetailModel.setShipMobile(orders.getShipMobile());
+        orderDetailModel.setShipArea(orders.getShipArea());
+        orderDetailModel.setShipAddr(orders.getShipAddr());
+        orderDetailModel.setFinalAmount(orders.getFinalAmount());
+        orderDetailModel.setCostFreight(orders.getCostFreight());
+        orderDetailModel.setCreateTime(StringUtil.DateFormat(orders.getCreateTime(), StringUtil.TIME_PATTERN));
+        orderDetailModel.setPayTime(StringUtil.DateFormat(orders.getPayTime(), StringUtil.TIME_PATTERN));
+        orderDetailModel.setSupOrderItemList(mallOrderItem);
+        orderDetailModel.setRemark(orders.getRemark());
+        orderDetailModel.setMemo(orders.getMemo());
+        orderDetailModel.setAgentRemark(orders.getAgentMarkText());
+        double costPrice = 0;
+        for (MallOrderItem orderItem : mallOrderItem) {
+            costPrice += orderItem.getCost() * orderItem.getNums();
+        }
+        orderDetailModel.setCostPrice((double) Math.round(costPrice * 100) / 100);
+        return orderDetailModel;
     }
 
     @Override
@@ -190,7 +254,58 @@ public class SettlementServiceImpl implements SettlementService {
 
     @Override
     @Transactional
-    public ApiResult updateSettlementStatus(String settlementNo, int customerStatus, int supplierStatus, String settlementComment) throws Exception {
-        return null;
+    public ApiResult updateSettlementStatus(String settlementNo, int customerStatus, int authorStatus, String settlementComment) throws Exception {
+        Settlement settlement = settlementRepository.findBySettlementNo(settlementNo);
+        SettlementEnum.SettlementCheckStatus customerSettlementCheckStatus = settlement.getCustomerStatus(), authorSettlementCheckStatus = settlement.getAuthorStatus();
+        if (settlement == null) {
+            return new ApiResult("结算单编号错误！");
+        }
+        if ((customerStatus != -1 && settlement.getCustomerStatus() != SettlementEnum.SettlementCheckStatus.NOT_CHECK)
+                || (authorStatus != -1 && settlement.getAuthorStatus() != SettlementEnum.SettlementCheckStatus.NOT_CHECK)) {
+            return new ApiResult("结算单已审核，无法操作！");
+        }
+        //修改分销商和门店的审核状态
+        if (customerStatus != -1) {
+            customerSettlementCheckStatus = EnumHelper.getEnumType(SettlementEnum.SettlementCheckStatus.class, customerStatus);
+            //如果门店已审核不通过，则不做处理
+            if (settlement.getAuthorStatus() == SettlementEnum.SettlementCheckStatus.RETURNED) {
+                return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+            }
+        }
+        if (authorStatus != -1) {
+            authorSettlementCheckStatus = EnumHelper.getEnumType(SettlementEnum.SettlementCheckStatus.class, authorStatus);
+            //如果分销商已审核不通过，则不做处理
+            if (settlement.getCustomerStatus() == SettlementEnum.SettlementCheckStatus.RETURNED) {
+                return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+            }
+        }
+        //如果审核不通过，记录备注
+        if (settlementComment != null && settlementComment.length() > 0) {
+            settlement.setRemark(settlementComment);
+        }
+        //如果分销商或门店审核不通过，则通知伙伴商城
+        if (customerSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.RETURNED || authorSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.RETURNED) {
+            orderRepository.resetSettle(settlement.getShop().getId(), settlement.getCustomerId(),
+                    settlement.getCreateDateTime(), SettlementEnum.SettlementStatusEnum.READY_SETTLE.getCode());
+            log.info("returned:" + settlement.getShop().getId() + "," + settlement.getCustomerId() + "," +
+                    settlement.getCreateDateTime() + "," + SettlementEnum.SettlementStatusEnum.READY_SETTLE);
+        }
+        //分销商和门店均审核通过
+        Shop shop = settlement.getShop();
+        if (customerSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED && authorSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED) {
+            AuthorAccount shopAccount = accountRepository.findByAuthor(shop);
+            //审核通过，待提货款增加
+            shopAccount.setBalance((double) Math.round((shopAccount.getBalance() + settlement.getFinalAmount()) * 100) / 100);
+            accountRepository.save(shopAccount);
+            settlement.setSettlementDate(new Date());
+            orderRepository.updateSettle(settlement.getShop().getId(), settlement.getCustomerId(),
+                     settlement.getCreateDateTime(),OrderEnum.PayStatus.REFUNDING);
+            log.info("shopId:" + settlement.getShop().getId() + ",customerId:" + settlement.getCustomerId() + "date:" +
+                    settlement.getCreateDateTime());
+        }
+        settlement.setCustomerStatus(customerSettlementCheckStatus);
+        settlement.setAuthorStatus(authorSettlementCheckStatus);
+        settlementRepository.save(settlement);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }

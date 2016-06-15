@@ -23,12 +23,14 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.goods.MallGoodsTypeService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,8 @@ public class PurchaseController {
     private AgentPurchaseOrderService purchaseOrderService;
     @Autowired
     private MallGoodsTypeService goodsTypeService;
+    @Autowired
+    private AgentProductService agentProductService;
 
     /**
      * 显示商品采购列表
@@ -143,7 +147,7 @@ public class PurchaseController {
         }
         //校验货品
         MallProduct product = null;
-        //货品未空时，如果商品只有一件货品，则取第一个货品；否则提示请选择货品
+        //货品为空时，如果商品只有一件货品，则取第一个货品；否则提示请选择货品
         if (productId == null || productId.equals(0)) {
             if (goods != null && goods.getProducts() != null && goods.getProducts().size() == 1) {
                 product = goods.getProducts().get(0);
@@ -157,9 +161,18 @@ public class PurchaseController {
             return new ApiResult("请选择要订购的商品！");
         }
         //校验库存
-        if (num > product.getStore() - product.getFreez()) {
-            return new ApiResult("库存不足！");
+        if(author.getParentAuthor() == null){
+            //上级为平台方
+            if (num > product.getStore() - product.getFreez()) {
+                return new ApiResult("库存不足！");
+            }
+        }else{
+            AgentProduct agentProduct = agentProductService.findAgentProduct(author,product);
+            if(agentProduct != null && num > agentProduct.getStore() - agentProduct.getFreez()){
+                return new ApiResult("库存不足！");
+            }
         }
+
         //增加购物车记录
         ShoppingCart cart = new ShoppingCart();
         cart.setAuthor(author);

@@ -190,22 +190,29 @@
                             <td class="txt20 c" th:text="${pOrderStat.count}">
                                 1
                             </td>
-                            <td class="txt80">
+                            <td class="txt100">
                                 <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.POrderId}"></a>
                                 <span style="color: red" th:if="${pOrder.disabled}">（已取消）</span>
                             </td>
-                            <td class="txt160">
-                                <span th:text="${pOrder.orderItemList.size() > 0 ? pOrder.orderItemList[0].name : ''}"></span>
-                                <a th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
+                            <td class="txt120">
+                                <span style="width: 20%;float: left;"><img
+                                        th:src="${pOrder.orderItemList.size() >0 and pOrder.orderItemList[0].picUri !=null ? pOrder.orderItemList[0].picUri : ''}"
+                                        style="width:50px;height:50px;float:left;"
+                                        th:styleappend="${pOrder.orderItemList.size() >0 and pOrder.orderItemList[0].picUri !=null ? 'margin-left: 5px;' :''}"/>
+                                </span>
+                                <span style="overflow: hidden;text-align: left; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical; width:60%; float:left;margin-top:10px;"
+                                      data-th-text="${pOrder.orderItemList.size() >0 ? pOrder.orderItemList[0].name : ''}">商品名称</span>
+                                <a style="margin-top:10px;margin-right: 5px;float:right;" th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
-                            <td class="txt80" >
+                            <td class="txt100" >
                                 <span th:text="${pOrder.author.name}"></span>
                                 <span style="color: red" th:text="${pOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
                             </td>
-                            <td class="txt80 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                            <td class="txt60 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                 2015/9/21 20:18:01
                             </td>
-                            <td class="txt80 c">
+                            <td class="txt60 c">
                                                 <span style='color:#ccc;'
                                                       th:if="${pOrder.payTime!=null and pOrder.payTime!=''}"
                                                       th:text="${#dates.format(pOrder.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
@@ -222,7 +229,7 @@
                             <td style="color:red;" class="txt40 c" th:text="${pOrder.status.value}">
                                 未发货
                             </td>
-                            <td class="txt40 c tail">
+                            <td class="txt80 c tail">
                                 <div th:inline="text">
                                     <!--<span th:if="${orders.deliverable()}">
                                         <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliverable()}">发货</a> |

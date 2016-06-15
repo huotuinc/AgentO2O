@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.net.URI;
 
 /**
  * Created by allan on 1/8/16.
@@ -54,6 +55,10 @@ public class MallOrderItem {
     private String customFieldValues;
     @OneToOne(mappedBy = "orderItem")
     private MallAfterSales afterSales;
+    @Column(name = "Thumbnail_Pic")
+    private String thumbnailPic;
+    @Transient
+    private URI picUri;
 
     /**
      * 用于保存该条订单所对应的门店的库存和预占库存

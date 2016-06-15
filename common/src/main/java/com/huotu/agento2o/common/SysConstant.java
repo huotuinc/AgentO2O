@@ -13,7 +13,7 @@ public class SysConstant {
     public static String COOKIE_DOMAIN;
     public static String HUOBANMALL_PUSH_URL;
     public static String HUOBANMALL_RESOURCE_HOST;
-    public static String AGENT_KEY;
+    public static String AGENT_KEY = "1232228433";
 
     @Autowired
     private void initConstant(Environment environment) {

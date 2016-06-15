@@ -35,19 +35,30 @@ public class SettlementScheduleServiceImpl implements SettlementScheduleService 
     private SettlementService settlementService;
 
     @Override
-    //每天早上10点获取库存预警信息
-//    @Scheduled(cron = "0 0 10 * * ?")
-    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
+    //每日早上3点获取结算单
+    @Scheduled(cron = "0 0 3 ? * *")
+//    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每0,5结尾分钟结算一次
     public void settlementSchedule() {
         log.info("start settle . . .");
         Date now = new Date();
         List<Shop> shopList = shopService.findAll();
-        if(shopList != null && shopList.size() > 0){
-            shopList.forEach(shop->{
-                try {
-                    settlementService.settle(shop,now);
-                } catch (Exception e) {
-                    log.error("结算异常",e);
+        if (shopList != null && shopList.size() > 0) {
+            shopList.forEach(shop -> {
+                int num = 3;
+                while (num > 0) {
+                    try {
+                        //有时会出现连接超时问题
+                        settlementService.settle(shop, now);
+                        break;
+                    } catch (Exception e) {
+                        log.error("结算异常 " + (4 - num ), e);
+                        //结算异常时等待 500 ms
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e1) {
+                        }
+                        num--;
+                    }
                 }
             });
         }

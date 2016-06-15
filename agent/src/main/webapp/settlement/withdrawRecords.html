@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>结算账户</title>
+    <link href="../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}" type="text/css"/>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <style type="text/css">
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+        /*  以下为华蕊新增样式*/
+        .hua_w .data-table td.txt4r {
+            text-indent: 5px;
+            width: 16.6%;
+        }
+        .hua_w .data-table td.thr {
+            text-indent: 5px;
+            width: 16.6%;
+            border-right: none;
+        }
+        /*华蕊新增样式结束*/
+    </style>
+
+</head>
+<body>
+<!--/*@thymesVar id="withdrawRecordSearcher" type="com.huotu.agento2o.service.searchable.WithdrawRecordSearcher"*/-->
+<!--/*@thymesVar id="authorAccount" type="com.huotu.agento2o.service.entity.settlement.AuthorAccount"*/-->
+<!--/*@thymesVar id="withdrawRecordPage" type="java.util.List<com.huotu.agento2o.service.entity.settlement.WithdrawRecord>"*/-->
+<form method="get" action="/withdraw/withdrawRecords" th:action="@{/withdraw/withdrawRecords}" id="form1" th:object="${withdrawRecordSearcher}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+                <input type="hidden" th:value="${authorAccount.author.customer.customerId}" id="customerNo" name="customerNo"/>
+                <input type="hidden" th:value="${authorAccount.withdrawCount}" id="withdrawCount" name="withdrawCount"/>
+                <input type="hidden" th:value="${authorAccount.id}" id="supplierAccountId" name="supplierAccountId"/>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <div class="search-bar" style="position:relative;font-size:16px;">
+                        <label class="first">
+                            <div th:if="${authorAccount}!=null">
+                                待提货款：<span style="color:red;" th:text="${authorAccount.balance}">1000.00</span>元&nbsp;&nbsp;&nbsp;
+                                申请中货款：<span style="color:red;" th:text="${authorAccount.applyingMoney}">1000.00</span>元&nbsp;&nbsp;&nbsp;
+                                已提货款：<span style="color:red;" th:text="${authorAccount.withdrew}">1000.00</span>元&nbsp;&nbsp;&nbsp;
+                                总货款：<span style="color:red;" th:text="${#numbers.formatDecimal(authorAccount.balance+authorAccount.withdrew+authorAccount.applyingMoney,1,2)}">10000.00</span>元
+                            </div>
+                            <div th:if="${authorAccount.author.hasAccountInfo() == false}">
+                                <span style="color:red;">您还没有提现账户，请点击右边按钮设置！</span>
+                            </div>
+                        </label>
+                        <div style="position:absolute;top: 0px;right: 10px;text-align: right;padding-top: 10px;" >
+                            <a th:if="${authorAccount.author.hasAccountInfo() == true}" class="btn-lit aucontrol" href="javascript:withdrawDialog();" >
+                                <span >申请提现</span>
+                            </a>
+                            <a th:if="${authorAccount.author.hasAccountInfo() == false}" class="btn-lit aucontrol" href="javascript:infoDialog();" >
+                                <span>设置提现账户</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">提现记录</h3>
+
+
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+
+
+            <div class="cnt-wp">
+                <div class="cnt" style="margin-bottom:10px;">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first ">申请时间：</label>
+                            <input name="applyStartTime" type="text" id="applyStartTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate" th:value="*{applyStartTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;"/>
+                            <label class="first ">---</label>
+                            <input name="applyEndTime" type="text" id="applyEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{applyEndTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'applyStartTime\')}'})"/>
+                            <br/>
+                            <br/>
+                            <label class="first ">打款时间：</label>
+                            <input name="remitStartTime" type="text" id="remitStartTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate" th:value="*{remitStartTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;"/>
+                            <label class="first ">---</label>
+                            <input name="remitEndTime" type="text" id="remitEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{remitEndTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'remitStartTime\')}'})"/>
+
+                            <label class="first"> 状态：
+                                <select id="status" name="status">
+                                    <option value="-1" th:selected="*{status}==-1 ? true">请选择</option>
+                                    <option value="0" th:selected="*{status}==0 ? true">申请中</option>
+                                    <option value="1" th:selected="*{status}==1 ? true">已打款</option>
+                                </select>
+                            </label>
+                            <label>
+                                <a class="btn-lit btn-middle" onclick="searchWithdrawRecords()"
+                                   style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                                <a class="btn-lit btn-middle" onclick="searchAll()"
+                                   style="margin-bottom: 3px;">
+                                    <span>显示全部</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="cnt hua_w">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">提款单号</th>
+                            <th scope="col">申请时间</th>
+                            <th scope="col">打款时间</th>
+                            <th scope="col">提款金额</th>
+                            <th scope="col">状态</th>
+
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="withdrawRecord:${withdrawRecordPage}">
+                            <td class="txt4r c" th:text="${withdrawRecord.withdrawNo}"></td>
+                            <td class="txt4r c" th:text="${#dates.format(withdrawRecord.applyTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td class="txt4r c" th:text="${#dates.format(withdrawRecord.remitTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td class="txt4r c" th:text="${withdrawRecord.amount}"></td>
+
+                            <td class="txt4r c" style="color:red;" th:text="${withdrawRecord.status.value}">
+                                申请中，已打款
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[*{pageNo}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'form1';
+                    //                                    var pageNoStr = 'pageNoStr';
+                    Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+            </div>
+        </div>
+    </div>
+</form>
+<!--设置提现账户页start-->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
+     aria-labelledby="ui-dialog-title-managerInfoDialog"
+     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
+    <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title"
+                                                                                            id="ui-dialog-title-managerInfoDialog">新增</span><a
+            href="javascript:void(0)" class="ui-dialog-titlebar-close ui-corner-all ui-state-focus" role="button"><span
+            class="ui-icon ui-icon-closethick">close</span></a></div>
+    <div id="authorAccountDialog" style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div class="card_main">
+                <div class="card_set">
+                    <div class="hua_cardset">
+                        <ul>
+                            <li class="account">
+                                <span>开户银行名称：</span>
+
+                                <div class="text-oper">
+                                    <em class="fontredstar">*</em>
+                                    <input id="bankName" name="bankName" type="text" value="" class="input input1"/>
+                                </div>
+                            </li>
+                            <li class="account"><span>账户名：</span>
+
+                                <div class="text-oper"><em class="fontredstar">*</em>
+                                    <input maxlength="30" class="input input1" id="accountName" name="accountName"/>
+                                </div>
+                            </li>
+                            <li class="account"><span>银行账号：</span>
+
+                                <div class="text-oper"><em class="fontredstar">*</em>
+                                    <input class="input input1" id="accountNo" name="accountNo"/>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                    role="button" aria-disabled="false"><span class="ui-button-text">确定</span></button>
+            <button type="button"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
+                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
+        </div>
+    </div>
+</div>
+<!--设置提现账户页end-->
+<!--提现对话框start-->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
+     aria-labelledby="ui-dialog-title-managerInfoDialog"
+     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
+    <div id="withdrawDialog" style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div class="card_main">
+                <div class="card_set">
+                    <div class="hua_cardset">
+                        <ul>
+                            <li>
+                                <span>提现金额:</span>
+                                <div class="text-oper">
+                                    <em class="fontredstar">*</em>
+                                    <input id="balance" readonly="readonly" name="balance" type="text" class="input input1" th:value="${authorAccount.balance}"/>
+                                </div>
+                            </li>
+                            <li class="account">
+                                <span>开户银行名称：</span>
+
+                                <div class="text-oper">
+                                    <em class="fontredstar">*</em>
+                                    <input id="bankName1" name="bankName1" th:value="${authorAccount.author.bankName}" type="text" value="" class="input input1" readonly="readonly"/>
+                                </div>
+                            </li>
+                            <li class="account"><span>账户名：</span>
+
+                                <div class="text-oper"><em class="fontredstar">*</em>
+                                    <input maxlength="30" th:value="${authorAccount.author.accountName}" class="input input1" id="accountName1" name="accountName1" readonly="readonly"/>
+                                </div>
+                            </li>
+                            <li class="account"><span>银行账号：</span>
+
+                                <div class="text-oper"><em class="fontredstar">*</em>
+                                    <input class="input input1" id="accountNo1" th:value="${authorAccount.author.accountNo}" name="accountNo1" readonly="readonly"/>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                    role="button" aria-disabled="false"><span class="ui-button-text">确定</span></button>
+            <button type="button"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
+                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
+        </div>
+    </div>
+</div>
+<!--提现对话框end-->
+
+
+<script  th:inline="javascript">
+    /*<![CDATA[*/
+    var baseUrl = /*[[@{/withdraw}]]*/"/withdraw";
+    //申请提现页面
+    function withdrawDialog() {
+        var balance = parseFloat($("#balance").val());
+        var customerNo = $("#customerNo").val();
+        if(!balance>0) {
+            $.jBox.tip("没有待提货款，不能申请提现！");
+            return;
+        }
+        $.ajax({
+            type:"GET",
+            url:baseUrl + "/checkWithdrawNum",
+            data:{
+                customerNo:customerNo
+            },
+            dataType:"json",
+            success:function(result) {
+                if (result.code == 200) {
+                    withdraw();
+                } else {
+                    $.jBox.tip(result.msg, "error");
+                }
+            },
+            error:function() {
+                $.jBox.tip("发生错误","error");
+            }
+        });
+    }
+
+    function withdraw() {
+        J.ShowDialog("withdrawDialog", "提现", function () {
+            applyWithdraw(function (result) {
+                if (result.code == 200) {
+                    $.jBox.tip(result.msg, "success");
+                    location.reload();
+                } else {
+                    $.jBox.tip(result.msg, "error");
+                }
+            })
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+    function applyWithdraw(callback) {
+        var supplierAccountId = parseInt($("#supplierAccountId").val());
+        var bankName1 = $.trim($("#bankName1").val());
+        var accountName1 = $.trim($("#accountName1").val());
+        var accountNo1 = $.trim($("#accountNo1").val());
+        var balance = parseFloat($.trim($("#balance").val()));
+        $.jBox.tip("保存中...", "loading");
+        var requestData = {
+            balance:balance,
+            bankName:bankName1,
+            accountName: accountName1,
+            accountNo: accountNo1,
+            supplierAccountId:supplierAccountId
+        };
+        setTimeout(function () {
+            J.GetJsonRespons(baseUrl + "/addWithdrawRecord", requestData, function (result) {
+                callback(result);
+            }, function () { $.jBox.tip("保存失败，请重试", "error"); }, "post");
+        }, 400);
+
+    }
+    //设置提现账户页面
+    function infoDialog() {
+        J.ShowDialog("authorAccountDialog", "设置提现账户", function () {
+            setAuthorAccount(function (result) {
+                if (result.code == 200) {
+                    $.jBox.tip(result.msg, "success");
+                    location.reload();
+                } else {
+                    $.jBox.tip(result.msg, "error");
+                }
+            })
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+    function setAuthorAccount(callback) {
+        var bankName = $.trim($("#bankName").val());
+        var accountName = $.trim($("#accountName").val());
+        var accountNo = $.trim($("#accountNo").val());
+        if (bankName.length == 0) {
+            $.jBox.tip("请设置开户银行名称");
+            return;
+        }
+        if (accountName.length == 0) {
+            $.jBox.tip("请设置账户名");
+            return;
+        }
+        if (accountNo.length == 0) {
+            $.jBox.tip("请设置银行账号");
+            return;
+        }
+        $.jBox.confirm("确认保存？","提示",function(v) {
+            if(v == "ok") {
+                $.jBox.tip("保存中...", "loading");
+                var requestData = {
+                    bankName:bankName,
+                    accountName: accountName,
+                    accountNo: accountNo
+                };
+                setTimeout(function () {
+                    J.GetJsonRespons(baseUrl + "/saveAuthorAccountInfo", requestData, function (result) {
+                        callback(result);
+                    }, function () { $.jBox.tip("保存失败，请重试", "error"); }, "post");
+                }, 400);
+            }
+        });
+    }
+    function searchWithdrawRecords() {
+        $("input[name=pageNo]").val(1);
+        $("#form1").submit();
+    }
+    function searchAll(){
+        var url = baseUrl + "/withdrawRecords";
+        window.location.href = url;
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

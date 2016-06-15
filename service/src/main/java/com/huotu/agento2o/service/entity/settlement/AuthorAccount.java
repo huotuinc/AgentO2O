@@ -34,25 +34,25 @@ public class AuthorAccount {
 
     @JsonIgnore
     @OneToOne
-    @JoinColumn(name = "Agent_Id" )
+    @JoinColumn(name = "Agent_Id")
     private Author author;
 
     /**
      * 账户余额（待提货款）
      */
-    @Column(name = "Balance",precision = 2)
+    @Column(name = "Balance", precision = 2)
     private double balance = 0.0;
 
     /**
      * 已提货款
      */
-    @Column(name = "Withdrew",precision = 2)
+    @Column(name = "Withdrew", precision = 2)
     private double withdrew = 0.0;
 
     /**
      * 申请中货款
      */
-    @Column(name = "ApplyingMoney",precision = 2)
+    @Column(name = "ApplyingMoney", precision = 2)
     private double applyingMoney = 0.0;
 
     /**

@@ -1,0 +1,203 @@
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head id="Head1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>结算明细</title>
+        <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+              th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+        <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+              th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+        <link href="../../resource/css/settlements.css" rel="stylesheet" type="text/css"
+              th:href="@{/resource/css/settlements.css}"/>
+        <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
+                th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+        <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
+                th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+        <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+              th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+        <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+                th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+        <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
+                th:src="@{/resource/3rdParty/js/admin.js}"></script>
+        <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
+                th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+        <style type="text/css">
+            body, td, th {
+                font-family: "微软雅黑", "宋体", Arial;
+            }
+        </style>
+    </head>
+    <body>
+    <form method="get" action="settlementDetail" th:action="@{/huobanmall/settlement/settlementDetail}" id="form1">
+      <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block">
+           <div class="h">
+              <span class="icon-sprite icon-magnifier"></span>
+              <h3><a th:href="@{/settlements}">T+1结算对账</a>》结算明细</h3>
+            </div>
+            <div class="tl corner">
+          </div>
+          <div class="tr corner">
+          </div>
+          <div class="bl corner">
+          </div>
+          <div class="br corner">
+          </div>
+          <div class="cnt-wp">
+
+            <div class="cnt">
+              <div class="search-bar"  style="position: relative;">
+                  <!--/*@thymesVar id="settlement" type="com.huotu.agento2o.service.entity.settlement.Settlement"*/-->
+                  <input type="hidden" name="settlementNo" th:value="${settlement.settlementNo}"/>
+                <label class="first ">结算日期：<span th:text="${settlement.settlementDate != null ?  #dates.format(settlement.settlementDate,'yyyy-MM-dd HH:mm:ss') :''}">2015-10-25</span></label>
+                <br/>
+                <br/>
+                <label class="first ">总货款：<span style="color:red;" th:text="${#numbers.formatDecimal(settlement.finalAmount,1,2)}">1100.01元</span></label>
+                <!--<br/>
+                <br/>
+                <label class="first ">小计：<span style="color:red;"><span th:text="${#numbers.formatDecimal(settlement.amount+settlement.freight,1,2)}">1100.01</span>元=<span th:text="${settlement.amount}">1000.00</span>元（货款）+<span th:text="${settlement.freight}">100.01</span>元（邮费）</span></label>-->
+                  <label class="first ">导出明细：</label>
+                  第<input name="beginPage"  type="text" value="1" id="beginPage"
+                          style="height:15px;width:28px;"/>页
+                  至 第<!--/*@thymesVar id="totalPages" type="java.lang.Integer"*/-->
+                  <input name="endPage" type="text" value="5" id="endPage" th:value="${totalPages}" class="input-small OnlyNum"
+                            style="height:15px;width:28px;"/>页
+                <div class="" style="position: absolute;top: 0px;right: 10px;text-align: right;padding-top: 10px;">
+                  <a class="btn-lit aucontrol"  th:if="${settlement.customerCheckable() and settlement.checkAble()}"  th:attr="settlementNo=${settlement.settlementNo}" onclick="updateStatusById(1,this);">
+                  <span>审核通过</span>
+                  </a>
+                    <a class="btn-lit aucontrol"  th:if="${settlement.customerCheckable() and settlement.checkAble()}"  th:attr="settlementNo=${settlement.settlementNo}" onclick="updateStatusById(2,this);">
+                        <span>审核不通过</span>
+                    </a>
+                  <a class="btn-lit aucontrol" href="javascript:exportDetail();">
+                  <span>导出明细</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+          <div class="tl corner">
+          </div>
+          <div class="tr corner">
+          </div>
+          <div class="bl corner">
+          </div>
+          <div class="br corner">
+          </div>
+          <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+            <div class="cnt hua_w">
+              <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                <thead>
+                  <tr class="even">
+                    <th scope="col">订单编号 </th>
+                    <th scope="col">下单时间 </th>
+                    <th scope="col">支付时间 </th>
+                    <th scope="col">总货款 </th>
+                    <th scope="col">邮费 </th>
+                    <th scope="col">查看订单 </th>
+                  </tr>
+                </thead>
+                <tbody th:remove="all-but-first">
+                <!--/*@thymesVar id="settlementOrders" type="java.util.List<com.huotu.agento2o.service.entity.settlement.SettlementOrder>"*/-->
+                <tr th:each="so:${settlementOrders}" class="even">
+                    <td class="txt4r c"  th:text="${so.orderId}"></td>
+                    <td class="txt4r c"  th:text="${so.orderDateTime} != null ? ${ #dates.format(so.orderDateTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td class="txt4r c"  th:date="${so.payDateTime}"></td>
+                    <td class="txt4r c"  th:text="${so.finalAmount}"></td>
+                    <td class="txt4r c" th:text="${so.freight}"></td>
+                    <td class="txt4r c" >
+                        <a href="javascript:void(0)" th:attr="orderId=''+${so.orderId}"  onclick="showOrderDetail(this)"  title="查看订单">
+                      查看订单
+                      </a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+              <script type="text/javascript" th:inline="javascript">
+                  /*<![CDATA[*/
+                  var pageSize = /*[[${settlementOrders.getSize()}]]*/ '-1';
+                  var pageIndex = /*[[${currentPageNo}]]*/ '-1';
+                  var pageCount = /*[[${totalPages}]]*/ '-1';
+                  var recordCount = /*[[${totalRecords}]]*/ '-1';
+                  Pager.Output('form1', 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                  /*]]>*/
+              </script>
+            
+          </div>
+        </div>
+      </div>
+    </form>
+</body>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var baseUrl = /*[[@{/huobanmall/settlement}]]*/ "/huobanmall/settlement";
+        var settlementNo = /*[[${settlement.settlementNo}]]*/ 1;
+        function showOrderDetail(obj) {
+            var orderId = $(obj).attr("orderId");
+            var url = baseUrl + "/showOrderDetail?orderId=" + orderId;
+            window.location.href = url ;
+//            J.PopupIFrame(url,"订单详情",1100,500,"ifrm","","auto","");
+        }
+
+        //审核结算单（status=1表示审核通过，status=2表示审核不通过，status=3表示取消审核）
+        function updateStatusById(status,obj) {
+            var settlementNo = $(obj).attr("settlementNo");
+            $.jBox.tip("正在保存...", "loading");
+            $.ajax({
+                type:"POST",
+                url:"updateStatusSettlement",
+                data:{
+                    settlementNo:settlementNo,
+                    status:status
+                },
+                dataType:"json",
+                success: function (msg) {
+                    $.jBox.prompt(msg.msg,"提示", 'info', { closed: function () {
+                        window.parent.document.getElementById("form1").submit();
+                        top.$.jBox.close(true); } });
+
+                }
+            });
+        }
+
+        function exportDetail() {
+            var beginPage = $("#beginPage").val();
+            var endPage = $("#endPage").val();
+            if(beginPage==''||endPage=='') {
+                jBox.tip("请输入正确的起止页码","info");
+                return;
+            }
+            beginPage = parseInt(beginPage);
+            endPage = parseInt(endPage);
+            if(endPage < beginPage) {
+                jBox.tip("结束页不能小于起始页","info");
+                return;
+            }
+            if(endPage > totalPages) {
+                jBox.tip("结束页不能大于总页数","info");
+                return
+            }
+            var url = "exportSettlementDetail?settlementNo=" +
+                    settlementNo +"&beginPage=" + beginPage +
+                            "&endPage=" + endPage;
+            window.location.href = url;
+        }
+        /*]]>*/
+    </script>
+</html>

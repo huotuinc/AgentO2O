@@ -185,7 +185,7 @@ public class SettlementController {
         cell.setCellStyle(style);
 
         cell = row.createCell(3);
-        cell.setCellValue("货款");
+        cell.setCellValue("总货款");
         cell.setCellStyle(style);
 
         cell = row.createCell(4);
@@ -215,7 +215,6 @@ public class SettlementController {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("Duplicates")
     @RequestMapping(value = "/showOrderDetail", method = RequestMethod.GET)
     public ModelAndView showOrderDetail(@RequestParam("orderId") String orderId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();

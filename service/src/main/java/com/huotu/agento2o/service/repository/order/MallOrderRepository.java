@@ -69,7 +69,7 @@ public interface MallOrderRepository extends JpaRepository<MallOrder, String>, J
      * @param customerId
      * @param settleTime
      */
-    @Query("UPDATE MallOrder SET settleStatus=2 , actualSettleDate=?4 " +
+    @Query("UPDATE MallOrder SET settleStatus=2 , actualSettleDate=?3 " +
             "WHERE settleStatus=1 AND payStatus <> ?4 " +
             "AND preSettleDate<=?3 AND customerId=?2 AND shop.id=?1")
     @Modifying(clearAutomatically = true)

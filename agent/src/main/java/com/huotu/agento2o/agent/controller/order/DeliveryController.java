@@ -38,7 +38,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/order")
-@PreAuthorize("hasAnyRole('ORDER')")
+@PreAuthorize("hasAnyRole('SHOP','AGENT') or hasAnyAuthority('ORDER')")
 public class DeliveryController {
     private static final Log log = LogFactory.getLog(DeliveryController.class);
 
@@ -68,7 +68,6 @@ public class DeliveryController {
      * @throws Exception
      */
     @RequestMapping(value = "/deliveries", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
     public ModelAndView showDeliveryList(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = false, defaultValue = "1") int pageIndex,
@@ -101,23 +100,20 @@ public class DeliveryController {
      * @return
      */
     @RequestMapping(value = "/judgeStock" ,method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
     @ResponseBody
-    public ApiResult judgeStock( @AgtAuthenticationPrincipal Shop shop,
+    @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
+    public ApiResult judgeStock( @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
                                  String orderId){
-        ApiResult apiResult = ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE, ResultCodeEnum.INVENTORY_SHORTAGE.getResultMsg(), null);
         MallOrder order = orderService.findByOrderId(orderId);
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
         AgentProduct agentProduct ;
         for (MallOrderItem mallOrderItem : mallOrderItems){
             agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
             if (agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore()){
-                apiResult.setCode(ResultCodeEnum.SUCCESS.getResultCode());
-                apiResult.setMsg(ResultCodeEnum.SUCCESS.getResultMsg());
-                break;
+                return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
             }
         }
-        return apiResult;
+        return ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE);
     }
 
     /**
@@ -127,8 +123,8 @@ public class DeliveryController {
      * @param model
      * @return
      */
+    @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
     public String showConsignFlow(@AgtAuthenticationPrincipal Shop shop,String orderId, Model model) {
         MallOrder order = orderService.findByOrderId(orderId);
         AgentProduct agentProduct ;
@@ -148,8 +144,8 @@ public class DeliveryController {
      * 发货单保存接口
      * 未完成
      */
+    @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)
-    @PreAuthorize("hasAnyRole('SHOP','ORDER')")
     @ResponseBody
     public ApiResult addDelivery(
             @AgtAuthenticationPrincipal Shop shop,

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>提现审核</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css" th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css" th:href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../../resource/css/settlements.css" rel="stylesheet" th:href="@{/resource/css/settlements.css}" type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js" th:src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js" th:src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js" th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+
+    <style type="text/css">
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+
+<!--/*@thymesVar id="withdrawRecordSearcher" type="com.huotu.agento2o.service.searchable.WithdrawRecordSearcher"*/-->
+<!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
+<form method="get" action="withdrawRecord" th:action="@{/huobanmall/withdraw/withdrawRecord}" id="form1" th:object="${withdrawRecordSearcher}">
+
+    <div class="container">
+        <div class="blank10">
+        </div>
+
+
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+
+                <h3>提现审核</h3>
+                <div style="position:absolute;top: 0px;right: 10px;text-align: right;padding-top: 10px;" >
+                    <label class="first ">导出明细：</label>
+                    第<input name="beginPage"  type="text" value="1" id="beginPage"
+                            style="height:15px;width:28px;"/>页
+                    至 第<!--/*@thymesVar id="totalPages" type="java.lang.Integer"*/-->
+                    <input name="endPage" type="text" value="5" id="endPage" th:value="${totalPages}" class="input-small OnlyNum"
+                              style="height:15px;width:28px;"/>页
+                    <a class="btn-lit aucontrol" href="javascript:exportDetail();" >
+                        <span>导出记录</span>
+                    </a>
+                    <a class="btn-lit aucontrol" href="javascript:showWithdrawCount();" >
+                        <span>设置提现次数</span>
+                    </a>
+                </div>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first ">申请时间：</label>
+                            <input name="applyStartTime" type="text" id="applyStartTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate" th:value="*{applyStartTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;"/>
+                            <label class="first ">---</label>
+                            <input name="applyEndTime" type="text" id="applyEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{applyEndTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'applyStartTime\')}'})"/>
+                            <label class="first">提现单号：
+                                <input name="withdrawNo" type="text" id="txWithdrawNo" placeholder=" [提款单号]" class="input-normal" th:value="*{withdrawNo}" />
+                            </label>
+                            <br/>
+                            <br/>
+                            <label class="first ">打款时间：</label>
+                            <input name="remitStartTime" type="text" id="remitStartTime" placeholder=" [开始时间]"
+                                   class="input-normal Wdate" th:value="*{remitStartTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"
+                                   style="margin-left: 8px;"/>
+                            <label class="first ">---</label>
+                            <input name="remitEndTime" type="text" id="remitEndTime" placeholder=" [结束时间]"
+                                   class="input-normal Wdate" th:value="*{remitEndTime}"
+                                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'remitStartTime\')}'})"/>
+
+                            <label class="first">门店：
+                                <select id="shopId" name="shopId">
+                                    <option value="0" th:selected="*{shopId==0}">请选择</option>
+                                    <option th:each="shop:${shopList}" th:value="${shop.id}" th:selected="${withdrawRecordSearcher.shopId == shop.id ? true : false}" th:text="${shop.name}"></option>
+                                </select>
+                            </label>
+                            <label class="first"> 状态：
+                                <select id="searchType" name="status">
+                                    <option value="-1" th:selected="*{status==-1}">请选择</option>
+                                    <option value="0" th:selected="*{status==0}">申请中</option>
+                                    <option value="1" th:selected="*{status==1}">已打款</option>
+                                    <!--<option value="2" th:selected="*{status==2}">审核不通过</option>-->
+                                </select>
+                            </label>
+                            <label>
+                                <a class="btn-lit btn-middle" onclick="searchWithdrawRecord()"
+                                   style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                                <a class="btn-lit btn-middle" onclick="searchAll()"
+                                   style="margin-bottom: 3px;">
+                                    <span>显示全部</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div >
+                <label>
+                    <a class="btn-lit btn-middle" onclick="updateStatus(1)"
+                       style="margin-bottom: 2px;margin-left: 10px;margin-top: 3px;">
+                        <span>批量打款</span>
+                    </a>
+                </label>
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+
+                <div class="cnt">
+
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">
+                                <input type="checkbox" id="checkall" />
+                            </th>
+                            <th scope="col">提款单号
+                            </th>
+                            <th scope="col">门店
+                            </th>
+                            <th scope="col">提现金额
+                            </th>
+                            <th scope="col">开户行
+                            </th>
+                            <th scope="col">户名
+                            </th>
+                            <th scope="col">提现账户
+                            </th>
+                            <th scope="col">状态
+                            </th>
+                            <th scope="col">申请时间
+                            </th>
+                            <th scope="col">打款时间
+                            </th>
+                            <th scope="col">操作
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <!--/*@thymesVar id="withdrawRecordPage" type="java.util.List<com.huotu.agento2o.service.entity.settlement.WithdrawRecord>"*/-->
+                        <tr th:each="withdrawRecord:${withdrawRecordPage}">
+                            <td class="txt20 c"><input type="checkbox" name="choice" th:value="${withdrawRecord.id}" th:if="${withdrawRecord.status.code}==0"/></td>
+                            <td class="txt80 c" th:text="${withdrawRecord.withdrawNo}">
+                            </td>
+                            <td class="txt80 c" th:text="${withdrawRecord.shopAccount.author.name}">
+                            </td>
+                            <td class="txt80 c" th:text="${withdrawRecord.amount}">
+                            </td>
+                            <td class="txt80 c" th:text="${withdrawRecord.bankName}">
+                            </td>
+                            <td class="txt80 c" th:text="${withdrawRecord.accountName}">
+                            </td>
+                            <td class="txt40 c" th:text="${withdrawRecord.accountNo}">
+                            </td>
+                            <td class="txt80 c" th:text="${withdrawRecord.status.value}">申请中，已打款
+
+                            </td>
+                            <td class="txt80 c" th:text="${withdrawRecord.applyTime != null ? #dates.format(withdrawRecord.applyTime,'yyyy-MM-dd HH:mm:ss') : ''}">
+                                2015-10-19
+                            </td>
+                            <td class="txt80 c"  th:text="${withdrawRecord.remitTime != null ? #dates.format(withdrawRecord.remitTime,'yyyy-MM-dd HH:mm:ss') : ''}">
+                                2015-10-19
+                            </td>
+                            <td class="txt80 c">
+                                <a href="javascript:void(0)" th:if="${withdrawRecord.status.code}==0" th:attr="id=${withdrawRecord.id}"  onclick="showUpdateStatus(this)">打款</a>
+                                <!--<a href="javascript:void(0)" th:if="${withdrawRecord.status.code}==0" th:attr="id=${withdrawRecord.id}" onclick="unpassStatus(this)">申请不通过</a>-->
+                                <a href="javascript:void(0)" th:if="${withdrawRecord.status.code}!=0" th:attr="id=${withdrawRecord.id}" onclick="showUpdateStatus(this)">查看详细</a>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--分页开始-->
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[*{pageNo}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'form1';
+                    Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+                <!--分页结束-->
+            </div>
+        </div>
+    </div>
+</form>
+<!--设置提现次数对话框start-->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
+     aria-labelledby="ui-dialog-title-managerInfoDialog"
+     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
+    <div id="withdrawCountDialog" style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div class="card_main">
+                <div class="card_set">
+                    <div class="hua_cardset">
+
+                        <div class="cnt-wp">
+                            <div class="cnt form">
+                                <ul>
+                                    <li class="account">
+                                        <span>供应商：</span>
+                                        <select id="withdrawcount_authorId" name="withdrawcount_authorId">
+                                            <option value="0" th:selected="${withdrawRecordSearcher.shopId == 0}">请选择</option>
+                                            <option th:each="shop:${shopList}" th:value="${shop.id}" th:selected="${withdrawRecordSearcher.shopId == shop.id ? true : false}" th:text="${shop.name}"></option>
+                                        </select>
+                                    </li>
+                                    <li class="account">
+                                        <span>提现次数：</span>
+                                        <input id="withdrawCount" name="withdrawCount" style="text-align: left" />
+                                    </li>
+                                </ul>
+                                <div class="blank10"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                    role="button" aria-disabled="false"><span class="ui-button-text">确定</span></button>
+            <button type="button"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
+                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
+        </div>
+    </div>
+</div>
+<!--设置提现次数对话框end-->
+
+
+<!--审核对话框start-->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable" tabindex="-1" role="dialog"
+     aria-labelledby="ui-dialog-title-managerInfoDialog"
+     style="display: none; z-index: 1014; outline: 0px; height: auto; width: auto; top: 180px; left: 379.5px;">
+    <div id="withdrawDialog" style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div class="card_main">
+                <div class="card_set">
+                    <div class="hua_cardset">
+
+                        <div class="cnt-wp">
+                            <div class="cnt form">
+                                <ul>
+                                    <li class="account">
+                                        <span>提款单号：</span>
+                                        <span id="withdrawNo1" name="withdrawNo1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                    <li class="account">
+                                        <span>提现金额：</span>
+                                        <span id="account1" name="account1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                    <li class="account">
+                                        <span>开户银行名称：</span>
+                                        <span id="bankName1" name="bankName1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                    <li class="account">
+                                        <span>账户名：</span>
+                                        <span id="accountName1" name="accountName1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                    <li class="account">
+                                        <span>银行账号：</span>
+                                        <span id="accountNo1" name="accountNo1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                    <li class="account">
+                                        <span>门店名称：</span>
+                                        <span id="nickName1" name="nickName1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                    <li class="account">
+                                        <span>状态：</span>
+                                        <span id="status1" name="status1" style="text-align: left;width:300px;"></span>
+                                    </li>
+                                </ul>
+                                <div class="blank10"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                    role="button" aria-disabled="false"><span class="ui-button-text">打款</span></button>
+            <button type="button"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-focus"
+                    role="button" aria-disabled="false"><span class="ui-button-text">取消</span></button>
+        </div>
+    </div>
+</div>
+<!--审核对话框end-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var baseUrl = /*[[@{/huobanmall/withdraw}]]*/ "/huobanmall/withdraw";
+
+    //查询
+    function searchWithdrawRecord() {
+        $("input[name=pageNo]").val(1);
+        $("#form1").submit();
+    }
+    function searchAll(){
+        var url = baseUrl + "/withdrawRecords";
+        window.location.href = url;
+    }
+
+    //提现审核不通过
+    function unpassStatus(obj){
+        var id = $(obj).attr("id");
+        var submit = function (v) {
+            if (v == 'ok') {
+                updateWithdrawRecord(id,2);
+            }
+            else if (v == 'cancel') {
+                // 取消
+            }
+            return true; //close
+        };
+
+        $.jBox.confirm("确定要拒绝该申请吗？", "提示", submit);
+    }
+
+
+    //显示审核对话框
+    function showUpdateStatus(obj){
+        var id = $(obj).attr("id");
+        var status;
+//        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type:"GET",
+            url:baseUrl + "/getWithdrawRecordInfo",
+            data:{id:id},
+            dataType:"json",
+            success: function (result) {
+                $("#withdrawNo1").text(result.data.withdrawNo);
+                $("#account1").text(result.data.balance);
+                $("#bankName1").text(result.data.bankName);
+                $("#accountName1").text(result.data.accountName);
+                $("#accountNo1").text(result.data.accountNo);
+                $("#nickName1").text(result.data.shopName);
+                status = result.data.status;
+                if(status.indexOf("PAYED")>-1){
+                    $("#status1").text('已打款');
+                }else if(status.indexOf("APPLYING")>-1){
+                    $("#status1").text('申请中');
+                }
+            },
+            error: function () {
+                $.jBox.tip("发生错误", "error");
+            }
+        });
+        J.ShowDialog("withdrawDialog", "提现打款", function () {
+            if(status.indexOf("PAYED")>-1){
+                $(this).dialog('close');
+            }else if(status.indexOf("APPLYING")>-1){
+                updateWithdrawRecord(id,1);
+            }else{
+                $(this).dialog('close');
+            }
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+
+    function updateWithdrawRecord(id,status){
+        $.jBox.confirm('请确认已线下打款！',function(v){
+            if(v == 'ok'){
+                $.jBox.tip("正在保存...", "loading");
+                $.ajax({
+                    type:"POST",
+                    url: baseUrl + "/updateWithdrawRecord",
+                    data:{
+                        id:id,
+                        status:status
+                    },
+                    dataType:"json",
+                    success: function (msg) {
+                        if(msg.code == 200){
+                            $.jBox.tip(msg.msg, 'success');
+                        }else{
+                            $.jBox.tip(msg.msg, 'error');
+                        }
+                        setTimeout(function(){
+                            window.location.reload();
+                        },500);
+
+                    }
+                });
+            }
+        })
+    }
+    //审核提现单（status  0：申请中 1：已打款  2： 申请不通过）
+    function updateStatusById(status,obj) {
+        var settlementId = $(obj).attr("settlementId");
+        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type:"POST",
+            url: baseUrl + "/updateStatusSettlement",
+            data:{
+                id:settlementId,
+                status:status
+            },
+            dataType:"json",
+            success: function (msg) {
+                if(msg.code == 200){
+                    $.jBox.tip(msg.msg, 'success',{closed:function(){
+                        window.location.reload();}});
+                }else{
+                    $.jBox.tip(msg.msg, 'error',{closed:function(){
+                        window.location.reload();}});
+                }
+            }
+        });
+    }
+
+    //批量审核结算单（status表示当前审核状态）
+    function updateStatus(status){
+        var checkedObj = $("input[name='choice']:checked");
+        var checkedNo = "";
+        var count = 0;
+        checkedObj.each(function () {
+            checkedNo += $(this).val() + ",";
+            count++;
+        });
+        if(checkedNo.length <= 0){
+            $.jBox.tip("请选择要处理的提现申请记录", 'into');
+            return;
+        }
+//        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type:"GET",
+            url: baseUrl + "/getWithdrawRecordsInfo?choice="+checkedNo,
+            dataType:"json",
+            success: function (result) {
+                if(result.code == 200){
+                    $("#withdrawNo1").text(result.data.withdrawNo);
+                    $("#account1").text(result.data.balance);
+                    $("#bankName1").text(result.data.bankName);
+                    $("#accountName1").text(result.data.accountName);
+                    $("#accountNo1").text(result.data.accountNo);
+                    $("#nickName1").text(result.data.shopName);
+                    status = result.data.status.value;
+                    if(result.data.status == 1){
+                        $("#status1").text('已打款');
+                    } else {
+                        $("#status1").text('申请中');
+                    }
+                    J.ShowDialog("withdrawDialog", "批量打款", function () {
+                        if (status == 1) {
+                            $(this).dialog('close');
+                        } else {
+                            $.jBox.tip("正在保存...", "loading");
+                            $.ajax({
+                                type: "POST",
+                                url: baseUrl + "/updateWithdrawRecords",
+                                data: {
+                                    status: 1,
+                                    choice: checkedNo
+                                },
+                                dataType: "json",
+                                success: function (msg) {
+                                    if (msg.code == 200) {
+                                        $.jBox.tip(msg.msg, 'success');
+                                    } else {
+                                        $.jBox.tip(msg.msg, 'error');
+                                    }
+                                    setTimeout(function(){
+                                        window.location.reload();
+                                    },500);
+                                }
+                            });
+                        }
+                    }, function () {
+                        $(this).dialog('close');
+                    });
+                }else{
+                    $.jBox.tip(result.msg, 'error');
+                    return;
+                }
+            },
+            error: function () {
+                $.jBox.tip("发生错误", "error");
+            }
+        });
+
+    }
+    $("#withdrawcount_authorId").change(function(){
+//        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type:"GET",
+            url:baseUrl + "/showWithdrawCount",
+            data:{authorId:$("#withdrawcount_authorId").val()},
+            dataType:"json",
+            success: function (result) {
+                $("#withdrawCount").val(result.data);
+            },
+            error: function () {
+                $.jBox.tip("发生错误", "error");
+            }
+        });
+    })
+
+    $("#checkall").click(function(){
+        var option = $("#checkall").prop('checked');
+        $("[name='choice']:checkbox").each(function(){
+            $(this).prop("checked",option);
+        })
+    })
+
+    //显示供应商的提现次数
+    function showWithdrawCount(){
+        J.ShowDialog("withdrawCountDialog", "设置提现次数", function () {
+            $.jBox.tip("正在保存...", "loading");
+            $.ajax({
+                type:"POST",
+                url:baseUrl + "/updateWithdrawCount",
+                data:{
+                    authorId:$("#withdrawcount_authorId").val(),
+                    withdrawCount:$("#withdrawCount").val()
+                },
+                dataType:"json",
+                success: function (msg) {
+                    if(msg.code == 200){
+                        $.jBox.tip(msg.msg, 'success',{closed:function(){
+                            $(this).dialog('close');
+                            window.location.reload();
+                        }});
+                    }else{
+                        $.jBox.tip(msg.msg, 'error',{closed:function(){
+                            $(this).dialog('close');
+                            window.location.reload();
+                        }});
+                    }
+                }
+            });
+        }, function () {
+            $(this).dialog('close');
+        });
+    }
+
+    //导出记录
+    function exportDetail() {
+        var beginPage = $("#beginPage").val();
+        var endPage = $("#endPage").val();
+        if(beginPage==''||endPage=='') {
+            jBox.tip("请输入正确的起止页码","info");
+            return;
+        }
+        beginPage = parseInt(beginPage);
+        endPage = parseInt(endPage);
+        if(endPage < beginPage) {
+            jBox.tip("结束页不能小于起始页","info");
+            return;
+        }
+        if(endPage > totalPages) {
+            jBox.tip("结束页不能大于总页数","info");
+            return
+        }
+        var url = baseUrl + "/exportWithdrawRecords?beginPage=" +
+                beginPage +"&endPage=" + endPage;
+        window.location.href = url;
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

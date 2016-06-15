@@ -76,12 +76,14 @@
 .data-table td.r { text-align: right; }
 .data-table td.txt { text-indent: 5px; }
 .data-table td.chk { text-indent: 1px; width: 40px; text-align: center; }
-.data-table td.txt20 { text-indent: 5px; width: 20px; *text-indent: 5px; *width: 60px; }
-.data-table td.txt40 { text-indent: 5px; width: 40px; *text-indent: 5px; *width: 150px; }
-.data-table td.txt80 { text-indent: 5px; width: 80px; *text-indent: 5px; *width: 250px; }
-.data-table td.txt120 { text-indent: 5px; width: 120px; *text-indent: 5px; *width: 300px; }
-.data-table td.txt160 { text-indent: 5px; width: 160px; *text-indent: 5px; *width: 350px; }
-.data-table td.txt200 { text-indent: 5px; width: 200px; *text-indent: 5px; *width: 400px; }
+.data-table td.txt20 { text-indent: 5px; width: 2%; *text-indent: 5px; *width: 60px; }
+.data-table td.txt40 { text-indent: 5px; width: 4%; *text-indent: 5px; *width: 150px; }
+.data-table td.txt60 { text-indent: 5px; width: 6%; *text-indent: 5px; *width: 150px; }
+.data-table td.txt80 { text-indent: 5px; width: 8%; *text-indent: 5px; *width: 250px; }
+.data-table td.txt100 { text-indent: 5px; width: 10%; *text-indent: 5px; *width: 250px; }
+.data-table td.txt120 { text-indent: 5px; width: 20%; *text-indent: 5px; *width: 300px; }
+.data-table td.txt160 { text-indent: 5px; width: 25%; *text-indent: 5px; *width: 350px; }
+.data-table td.txt200 { text-indent: 5px; width: 30%; *text-indent: 5px; *width: 400px; }
 .data-table td.icon { width: 20px; text-align: center; }
 .data-table td.tail { border-right: 0 none; }
 .data-table .opt { position: relative; width: 35px; display: block; height: 25px; text-align: center; cursor: pointer; }

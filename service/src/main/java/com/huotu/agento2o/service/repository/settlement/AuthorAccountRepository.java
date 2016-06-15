@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * Created by helloztt on 2016/6/8.
  */
 @Repository
-public interface AuthorAccountRepository extends JpaRepository<AuthorAccount,Integer> {
+public interface AuthorAccountRepository extends JpaRepository<AuthorAccount, Integer> {
 
     AuthorAccount findByAuthor(Author author);
 

@@ -60,6 +60,7 @@ public interface OrderEnum {
     enum PaymentOptions implements ICommonEnum {
         ALIPAY_MOBILE(1, "支付宝手机网页即时到账"),
         WEIXINPAY(2, "微信支付"),
+        HUODAOFUKUAN(6, "货到付款"),
         ALIPAY_PC(7, "支付宝网页即时到账"),
         REDEMPTION(8, "提货券"),
         WEIXINPAY_V3(9, "微信支付V3"),

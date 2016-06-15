@@ -423,15 +423,23 @@
                                             <td class="txt20 c" th:text="${ordersStat.count}">
                                                 1
                                             </td>
-                                            <td class="txt80">
+                                            <td class="txt80 r">
                                                 <label>
-                                                    <img th:src="@{'/resource/images/remark_icons/'+${orders.agentMarkType}+'.gif'}" width="20" height="20"/>
+                                                    <img th:if="${orders.agentMarkType != null}" th:src="@{'/resource/images/remark_icons/'+${orders.agentMarkType}+'.gif'}" width="20" height="20"/>
                                                 </label>
                                                 <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="查看详细" th:text="${orders.orderId}"></a>
                                             </td>
-                                            <td class="txt160">
-                                                <span th:text="${orders.orderItems.size()}>0?${orders.orderItems[0].name}"></span>
-                                                <a th:if="${orders.orderItems.size() > 1}" href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
+                                            <td class="txt120">
+                                                <span style="width: 20%;    float: left;"><img
+                                                        th:src="${orders.orderItems.size() >0 and orders.orderItems[0].picUri !=null ? orders.orderItems[0].picUri : ''}"
+                                                        style="width:50px;height:50px;float:left;" th:styleappend="${orders.orderItems.size() >0 and orders.orderItems[0].picUri !=null ? 'margin-left: 5px;' :''}"/></span>
+                                                <span style="overflow: hidden;text-align: left; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1;
+                                                 -webkit-box-orient: vertical; width:60%; float:left;margin-top:10px;"
+                                                      data-th-text="${orders.orderItems.size()}>0?${orders.orderItems[0].name}">商品名称</span>
+                                                <!--<span th:text="${orders.orderItems.size()}>0?${orders.orderItems[0].name}"></span>-->
+                                                <a style="margin-top:10px;margin-right: 5px;float:right;" th:if="${orders.orderItems.size() > 1}" href="javascript:void(0)"
+                                                   th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)"
+                                                   title="更多"> 更多...</a>
                                             </td>
                                             <td class="txt80" th:text="${#dates.format(orders.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                                 2015/9/21 20:18:01
@@ -456,7 +464,7 @@
                                             <td class="txt80" th:text="${orders.paymentType.value}">
                                                 银联在线支付
                                             </td>
-                                            <td class="txt40 c tail">
+                                            <td class="txt80 c tail">
                                                 <div th:inline="text">
                                                         <span th:if="${orders.deliveryable() and !author.isAgent()}">
                                                             <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |

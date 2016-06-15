@@ -36,6 +36,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -163,6 +165,8 @@ public class MallOrderServiceImpl implements MallOrderService {
         }
         return orderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, sort));
     }
+
+
 
     /**
      * 用于分页查询时判断订单发货的方式

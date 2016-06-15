@@ -12,6 +12,8 @@ package com.huotu.agento2o.service.model.order;
 
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.entity.order.MallPayments;
+import com.huotu.agento2o.service.entity.order.MallRefunds;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -37,6 +39,14 @@ public class OrderDetailModel {
      * 退货单列表
      */
     private List<MallDelivery> refundsList;
+    /**
+     * 付款列表
+     */
+    private List<MallPayments> paymentsList;
+    /**
+     * 退款列表
+     */
+    private List<MallRefunds> refundsMoneyList;
 
 //    /**
 //     * 物流公司名字

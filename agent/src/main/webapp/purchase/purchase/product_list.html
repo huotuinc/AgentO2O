@@ -68,7 +68,7 @@
                     <!--@thymesVar id="productList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallProduct>"-->
                     <tr data-th-each="product,productStat:${productList}" th:id="${product.productId}">
                         <td class="txt20 c" data-th-text="${productStat.count}">1</td>
-                        <td class="txt80 c" data-th-text="${product.standard}">
+                        <td class="txt40 c" data-th-text="${product.standard}">
                             规格描述
                         </td>
                         <td class="txt20 c">

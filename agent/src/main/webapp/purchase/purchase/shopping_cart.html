@@ -68,7 +68,8 @@
                     </thead>
                     <tbody data-th-remove="all-but-first">
                     <!--@thymesVar id="shoppingCartList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.ShoppingCart>"-->
-                    <tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}" onclick="choice(this)">
+                    <tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}">
+                    <!--<tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}" onclick="choice(this)">-->
                         <td class="txt20 c">
                             <input type="checkbox" name="choice" th:value="${shoppingCart.id}"
                                                    th:if="${shoppingCart.product.usableStore >= shoppingCart.num }"/>

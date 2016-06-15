@@ -2,6 +2,7 @@ package com.huotu.agento2o.agent.controller.order;
 
 import com.alibaba.fastjson.JSON;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -39,6 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +51,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/order")
-@PreAuthorize("hasAnyRole('AGENT','SHOP','ORDER')")
+@PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('ORDER')")
 public class OrderController {
 
     private static final Log log = LogFactory.getLog(OrderController.class);
@@ -64,6 +67,8 @@ public class OrderController {
 
     @Autowired
     private AgentProductService agentProductService;
+    @Autowired
+    private StaticResourceService resourceService;
     /**
      * 获取订单全部数据 query 查询分页
      * Modified By cwb
@@ -80,6 +85,7 @@ public class OrderController {
     ) {
         searchCondition.setAgentId(author.getId());
         Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
+        getPicUri(ordersList.getContent());
         int totalPages = ordersList.getTotalPages();
         model.addAttribute("payStatusEnums", OrderEnum.PayStatus.values());
         model.addAttribute("shipStatusEnums",OrderEnum.ShipStatus.values());
@@ -95,11 +101,32 @@ public class OrderController {
         return "order/order_list";
     }
 
+    private void getPicUri(List<MallOrder> mallOrderList) {
+        mallOrderList.forEach(order -> {
+            if(order.getOrderItems() != null && order.getOrderItems().size() > 0){
+                getItemPicUri(order.getOrderItems());
+            }
+        });
+    }
+
+    private void getItemPicUri(List<MallOrderItem> mallOrderItemList){
+        mallOrderItemList.forEach(item->{
+            if(!StringUtil.isEmptyStr(item.getThumbnailPic())){
+                try {
+                    URI picUri = resourceService.getResource(item.getThumbnailPic());
+                    item.setPicUri(picUri);
+                } catch (URISyntaxException e) {
+                }
+            }
+        });
+    }
+
     @RequestMapping(value = "/showOrderDetail", method = RequestMethod.GET)
     public ModelAndView showOrderDetail(@RequestParam("orderId") String orderId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("order/order_detail");
         OrderDetailModel orderDetailModel = orderService.findOrderDetail(orderId);
+        getItemPicUri(orderDetailModel.getSupOrderItemList());
         modelAndView.addObject("orderDetail", orderDetailModel);
         return modelAndView;
     }

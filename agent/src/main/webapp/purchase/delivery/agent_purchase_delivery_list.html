@@ -144,7 +144,7 @@
                             <!--</a>-->
                             <!--<span th:if="${agentReturnOrder.Disabled}" style="color:red;">已关闭</span>-->
                         </td>
-                        <td class="txt80 c" data-th-text="${purchaseDelivery.purchaseOrder.POrderId}">
+                        <td class="txt80 c" data-th-text="${purchaseDelivery.purchaseOrder != null ? purchaseDelivery.purchaseOrder.POrderId : ''}">
                             采购单号
                         </td>
                         <td class="txt80 c" data-th-text="${#calendars.format(purchaseDelivery.createTime,'yyyy-MM-dd HH:mm:ss')}">

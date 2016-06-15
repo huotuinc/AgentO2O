@@ -1,0 +1,319 @@
+<!DOCTYPE html >
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>查看订单</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="../../resource/css/settlements.css" th:href="@{/resource/css/settlements.css}" rel="stylesheet"
+          type="text/css"/>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"
+            src="../../resource/3rdParty/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/jquery.utils.js}"
+            src="../../resource/3rdParty/js/jquery.utils.js"></script>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"
+            src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/admin.js}"
+            src="../../resource/3rdParty/js/admin.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"
+            src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"></script>
+    <style type="text/css">
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+<form method="post" action="" id="form1">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="blank10">
+        </div>
+        <!--/*@thymesVar id="orderDetail" type="com.huotu.agento2o.service.model.order.OrderDetailModel"*/-->
+        <div class="block" th:if="${orderDetail.deliveryList}!=null">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">发货信息</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">快递公司</th>
+                            <th scope="col">物流单号</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="delivery:${orderDetail.deliveryList}">
+                            <td class="txt40 c" th:text="${delivery.logisticsName}">天天快递</td>
+                            <td class="txt40 c" th:text="${delivery.logisticsNo}">天天快递</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="block" th:if="${orderDetail.refundsList}!=null">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">退货信息</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">快递公司</th>
+                            <th scope="col">物流单号</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="refunds:${orderDetail.refundsList}">
+                            <td class="txt40 c" th:text="${refunds.logisticsName}">天天快递</td>
+                            <td class="txt40 c" th:text="${refunds.logisticsNo}">天天快递</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="block" th:if="${orderDetail.paymentsList}!=null">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">收款单据列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">单据日期</th>
+                            <th scope="col">支付金额</th>
+                            <th scope="col">支付方式</th>
+                            <th scope="col">状态</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="payment:${orderDetail.paymentsList}">
+                            <td class="txt40 c" th:text="${payment.begin != null ?  #dates.format(payment.begin,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                            <td class="txt40 c" th:text="${payment.money}"></td>
+                            <td class="txt40 c" th:text="${payment.payMethod}"></td>
+                            <td class="txt40 c" th:text="${payment.status.value}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="block" th:if="${orderDetail.refundsMoneyList}!=null">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">退款单据列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">单据日期</th>
+                            <th scope="col">退款金额</th>
+                            <th scope="col">退款方式</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="refundsMoney:${orderDetail.refundsMoneyList}">
+                            <td class="txt40 c" th:text="${refundsMoney.readyTime != null ?  #dates.format(refundsMoney.readyTime,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                            <td class="txt40 c" th:text="${refundsMoney.money}"></td>
+                            <td class="txt40 c" th:text="${refundsMoney.payMethod}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3>订单信息</h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt form">
+                    <div class="search-bar">
+                        <div>
+                            <label class="first">订单号：</label>
+                            <label class="first" style="margin-right:50px;"
+                                   th:text="${orderDetail.orderId}">23424234234</label>
+                        </div>
+                    </div>
+                    <div class="division">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                            <tr>
+                                <th>收货人姓名：</th>
+                                <td th:text="${orderDetail.shipName}"> 陆军</td>
+                            </tr>
+                            <tr>
+                                <th>收货人电话：</th>
+                                <td th:text="${orderDetail.shipTel}"></td>
+                            </tr>
+                            <tr>
+                                <th>收货人手机：</th>
+                                <td th:text="${orderDetail.shipMobile}">13967147031</td>
+                            </tr>
+                            <tr style="display:none">
+                                <th>收货地区：</th>
+                                <td th:text="${orderDetail.shipArea}"> 浙江省杭州市萧山区</td>
+                            </tr>
+                            <tr>
+                                <th>收货地址：</th>
+                                <td th:text="${orderDetail.shipAddr}"> 浙江省杭州市萧山区靖江农贸市场西门如意童装店</td>
+                            </tr>
+                            <tr>
+                                <th>订单备注：</th>
+                                <td th:text="${orderDetail.remark}"> 订单备注</td>
+                            </tr>
+                            <tr>
+                                <th>供应商备注：</th>
+                                <td th:text="${orderDetail.agentRemark}"> 订单备注</td>
+                            </tr>
+                            <tr>
+                                <th>用户附言：</th>
+                                <td th:text="${orderDetail.memo}"> 用户附言</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="search-bar">
+                        <div>
+                            <label class="first" style="padding:0px 300px 0px 50px; ">实付金额：<span
+                                    th:text="${orderDetail.finalAmount}"></span></label>
+                            <label class="first " style="padding:0px 300px 0px 50px; ">运费：<span
+                                    th:text="${orderDetail.costFreight}"></span></label>
+                            <!--<br/>
+                            <br/>
+                            <label class="first" style="padding:0px 300px 0px 50px; ">成本总价：<span
+                                    th:text="${orderDetail.costPrice}"></span></label>-->
+                            <br/>
+                            <br/>
+                            <label class="first" style="padding:0px 200px 0px 50px; ">下单时间：<span
+                                    th:text="${orderDetail.createTime}"></span></label>
+                            <label class="first " style="padding:0px 200px 0px 50px; ">支付时间：<span
+                                    th:text="${orderDetail.payTime}"></span></label>
+                            <!--<br/>
+                            <br/>
+                            <label class="first" style="padding:0px 300px 0px 50px; ">支付方式：</label>-->
+                        </div>
+                    </div>
+                    <div class="blank10"></div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">商品列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">货号</th>
+                            <th scope="col">商品名称</th>
+                            <th scope="col">销售价</th>
+                            <th scope="col">成本价</th>
+                            <th scope="col">购买数量</th>
+                            <th scope="col">销售合计</th>
+                            <th scope="col">成本合计</th>
+                            <th scope="col">已发货量</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="supOrderItem:${orderDetail.supOrderItemList}">
+                            <td class="txt40 c" th:text="${supOrderItem.bn}"></td>
+                            <td class="txt120 c" th:text="${supOrderItem.name}"> OL圈梦想合伙人首次公开众筹正式开启(1)</td>
+                            <td class="txt40 c" th:text="${supOrderItem.price}"> 1000.000</td>
+                            <td class="txt40 c" th:text="${supOrderItem.cost}"> 1000.000</td>
+                            <td class="txt40 c" th:text="${supOrderItem.nums}"> 1</td>
+                            <td class="txt40 c" th:text="${#numbers.formatDecimal(supOrderItem.price*supOrderItem.nums,1,2)}"> 1000.000</td>
+                            <td class="txt40 c" th:text="${#numbers.formatDecimal(supOrderItem.cost*supOrderItem.nums,1,2)}"> 1000.000</td>
+                            <td class="txt40 c" th:text="${supOrderItem.sendNum}"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>
