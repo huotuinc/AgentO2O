@@ -342,7 +342,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
         if (!agentReturnedOrder.payabled()) {
             return new ApiResult("该退货单已付款，无法再次付款！");
-        }
+        }// FIXME: 2016/6/7 
 
         agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.PAYED);
         agentReturnOrderRepository.save(agentReturnedOrder);

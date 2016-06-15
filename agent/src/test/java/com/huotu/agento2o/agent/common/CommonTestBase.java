@@ -43,7 +43,6 @@ import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
-import com.huotu.agento2o.service.service.config.AddressService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -116,6 +115,9 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     @Autowired
     private AgentReturnOrderRepository agentReturnedOrderRepository;
+
+    @Autowired
+    private AgentReturnOrderItemRepository agentReturnedOrderItemRepository;
 
     @Autowired
     private MallOrderItemRepository mallOrderItemRepository;
@@ -528,5 +530,13 @@ public abstract class CommonTestBase extends SpringWebTest {
         agentReturnedOrder.setSendmentStatus(PurchaseEnum.SendmentStatus.HOME_DELIVERY);
         agentReturnedOrder.setCreateTime(new Date());
         return agentReturnedOrderRepository.saveAndFlush(agentReturnedOrder);
+    }
+
+    protected AgentReturnedOrderItem mockAgentReturnOrderItem(AgentReturnedOrder agentReturnedOrder,MallProduct mallProduct){
+        AgentReturnedOrderItem agentReturnedOrderItem = new AgentReturnedOrderItem();
+        agentReturnedOrderItem.setReturnedOrder(agentReturnedOrder);
+        agentReturnedOrderItem.setProduct(mallProduct);
+        agentReturnedOrderItem.setNum(random.nextInt(5));
+        return agentReturnedOrderItemRepository.saveAndFlush(agentReturnedOrderItem);
     }
 }
