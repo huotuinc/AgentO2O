@@ -180,10 +180,10 @@ public class AgentServiceImpl implements AgentService {
         Agent agent = null;
         UserBaseInfo userBaseInfo = null;
         //必须保证平台方和等级存在才能保存代理商
-        if (customer == null || agentLevel == null || requestAgent == null) {
+        if (customer == null || agentLevel == null || requestAgent == null || requestAgent.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if (parentAgentId != -1) {
+        if (parentAgentId != null && parentAgentId != -1) {
             parentAgent = findById(parentAgentId, customerId);
         }
         //小伙伴账号绑定限制
