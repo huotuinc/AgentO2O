@@ -115,15 +115,15 @@
                         <tbody>
                         <!--/*@thymesVar id="addressList" type="java.util.List<com.huotu.agento2o.service.entity.config.Address>"*/-->
                         <tr th:each="address:${addressList}">
-                            <td class="txt40 c" th:text="${addressStat.count}">1</td>
-                            <td class="txt40 c" th:text="${address.receiver}">张三</td>
-                            <td class="txt40 c" th:text="${address.telephone}">18888888888</td>
-                            <td class="txt40 c"
+                            <td class="txt80 c" th:text="${addressStat.count}">1</td>
+                            <td class="txt80 c" th:text="${address.receiver}">张三</td>
+                            <td class="txt80 c" th:text="${address.telephone}">18888888888</td>
+                            <td class="txt160 c"
                                 th:text="${address.address}">
                                 浙江
                                 杭州 滨江区
                             </td>
-                            <td class="txt40 c">
+                            <td class="txt100 c">
                                 <span th:if="${!address.isDefault()}">
                                 <a href="javascript:addressHandler.configDefault(1)"
                                    th:href="|javascript:addressHandler.configDefault(${address.id})|">设为默认</a> |

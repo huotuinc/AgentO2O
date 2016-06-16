@@ -24,6 +24,7 @@ public interface AgentProductService {
 
     /**
      * 查找上级代理商（除平台）商品
+     *
      * @param author
      * @return
      */
@@ -31,6 +32,7 @@ public interface AgentProductService {
 
     /**
      * 查找指定代理商的库存信息
+     *
      * @param agentId
      * @return
      */
@@ -42,6 +44,7 @@ public interface AgentProductService {
 
     /**
      * 查找出需要发送库存警告的信息代理商
+     *
      * @return
      */
 
@@ -50,6 +53,8 @@ public interface AgentProductService {
     List<AgentProduct> findWaringAgentInfo(Integer agentId);
 
     AgentProduct findAgentProduct(Author author, MallProduct product);
+
+    AgentProduct findByAgentProductId(Integer agentProductId);
 
 
 }

@@ -17,7 +17,7 @@ public interface SendEmailService {
 //    public void sendEmail(List<AgentProduct> agentProducts);
 
 //    @Async
-    public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr);
+    public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr) throws Exception;
 
 
     /**

@@ -1,17 +1,18 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
-import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
@@ -33,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,6 +63,8 @@ public class AgentReturnedOrderController {
 
     @Autowired
     private AgentDeliveryService agentDeliveryService;
+    @Autowired
+    private StaticResourceService resourceService;
 
     /**
      *  显示已采购商品列表(代理商/门店)
@@ -72,16 +77,58 @@ public class AgentReturnedOrderController {
             @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/returned/purchased_product_list");
-        List<AgentProduct> agentProductList = null;
-        agentProductList = agentProductService.findByAgentId(author.getId());
+        List<AgentProduct> agentProductList = agentProductService.findByAgentId(author.getId());
+        setPicUri(agentProductList);
         model.addObject("agentProductList", agentProductList);
+        return model;
+    }
+
+    public void setPicUri(List<AgentProduct> agentProductList){
+        if(agentProductList != null && agentProductList.size() > 0){
+            agentProductList.forEach(agentProduct -> {
+                if(agentProduct.getProduct() != null || StringUtil.isNotEmpty(agentProduct.getProduct().getGoods().getThumbnailPic())){
+                    try {
+                        URI picUri = resourceService.getResource(agentProduct.getProduct().getGoods().getThumbnailPic());
+                        agentProduct.getProduct().getGoods().setPicUri(picUri);
+                    } catch (URISyntaxException e) {
+                    }
+                }
+            });
+        }
+    }
+
+    @RequestMapping("/showAddReturnOrder")
+    public ModelAndView showAddReturnOrder(
+            @AgtAuthenticationPrincipal Author author,
+            String data) throws Exception{
+        if(StringUtil.isEmptyStr(data)){
+            throw new Exception("没有传输数据！");
+        }
+        List<AgentProduct> agentProductList = new ArrayList<>();
+        JSONArray array = JSONArray.parseArray(data);
+        for(int i = 0 ; i < array.size() ; i++){
+            JSONObject obj = array.getJSONObject(i);
+            Integer agentProductId = obj.getInteger("agentProductId");
+            Integer num = obj.getInteger("nums");
+            AgentProduct agentProduct = agentProductService.findByAgentProductId(agentProductId);
+            if(agentProduct == null || num == null || num <= 0 || num > (agentProduct.getStore() - agentProduct.getFreez())){
+                throw new Exception("数据错误！");
+            }
+            agentProduct.setReturnedNum(num);
+            agentProductList.add(agentProduct);
+        }
+        setPicUri(agentProductList);
+        ModelAndView model = new ModelAndView();
+        model.setViewName("purchase/returned/add_return");
+        model.addObject("agentProductList",agentProductList);
+        model.addObject("sendmentEnum", PurchaseEnum.SendmentStatus.values());
         return model;
     }
 
     /**
      *  增加退货单（代理商/门店）
      * @param author 代理商
-     * @param productIds 货品id数组
+     * @param agentProductIds 货品id数组
      * @param productNums 退货数量数组
      * @return
      * @throws Exception
@@ -89,35 +136,17 @@ public class AgentReturnedOrderController {
     @RequestMapping(value = "/addReturnOrder")
     @ResponseBody
     public ApiResult addReturnOrder(
-            @AgtAuthenticationPrincipal Author author, Integer[] productIds, Integer[] productNums, ReturnOrderInfo returnOrderInfo) throws Exception {
-
-        AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
-        agentReturnedOrder.setROrderId(SerialNo.create());
-        agentReturnedOrder.setAuthor(author);
-        agentReturnedOrder.setAuthorComment(returnOrderInfo.getAuthorComment());
-        agentReturnedOrder.setShipMobile(returnOrderInfo.getMobile());
-        agentReturnedOrder.setSendmentStatus(returnOrderInfo.getSendmentStatus());
-        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
-        agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
-        agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
-        agentReturnedOrder.setCreateTime(new Date());
-
-        double finalPrice = 0.0;
-        for(int i=0;i<productIds.length;i++){
-            MallProduct mallProduct = mallProductService.findByProductId(productIds[i]);
-            finalPrice += mallProduct.getPrice()*productNums[i];
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam(name = "productIds") Integer[] agentProductIds, Integer[] productNums, AgentReturnedOrder agentReturnedOrder,String sendModeCode) throws Exception {
+        if(agentProductIds == null || agentProductIds.length == 0 || productNums == null || productNums.length == 0 || agentProductIds.length != productNums.length){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_BAD_PARSER);
         }
-        agentReturnedOrder.setFinalAmount(finalPrice);
-
-        AgentReturnedOrder savedAgentReturnedOrder= agentReturnedOrderService.addReturnOrder(agentReturnedOrder);
-        if(savedAgentReturnedOrder == null){
-            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        if (StringUtil.isEmptyStr(sendModeCode)) {
+            return new ApiResult("请选择配送方式！");
         }
-        List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemService.addReturnOrderItemList(author,agentReturnedOrder,productIds,productNums);
-        if(agentReturnedOrderItems.size() == 0){
-            return ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
-        }
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        agentReturnedOrder.setSendmentStatus(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class,Integer.parseInt(sendModeCode)));
+        ApiResult result = agentReturnedOrderService.addReturnOrder(agentReturnedOrder,author,agentProductIds,productNums);
+        return result;
     }
 
     /**
@@ -133,10 +162,10 @@ public class AgentReturnedOrderController {
 
         searchCondition.setAgentId(author.getId());
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
+        setOrderPicUri(agentReturnedOrderPage.getContent());
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/returned/returned_order_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
-
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
         model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
@@ -150,6 +179,17 @@ public class AgentReturnedOrderController {
         model.addObject("authorType", author.getClass().getSimpleName());
 
         return model;
+    }
+
+    public void setOrderPicUri(List<AgentReturnedOrder> agentReturnedOrderList){
+        if(agentReturnedOrderList != null && agentReturnedOrderList.size() > 0){
+            agentReturnedOrderList.forEach(order->{
+                try {
+                    resourceService.setListUri(order.getOrderItemList(), "thumbnailPic", "picUri");
+                } catch (NoSuchFieldException e) {
+                }
+            });
+        }
     }
 
     /**

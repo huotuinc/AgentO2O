@@ -149,9 +149,9 @@
                         </th>
                         <th scope="col">配送方式
                         </th>
-                        <th scope="col">原因说明
-                        </th>
                         <th scope="col">金额
+                        </th>
+                        <th scope="col">原因说明
                         </th>
                         <th scope="col">审核状态
                         </th>
@@ -171,11 +171,19 @@
                                 <span th:text="${agentReturnOrder.ROrderId}">rOrderId</span>
                             </a>
                         </td>
-                        <td class="txt160">
-                            <span th:text="${agentReturnOrder.orderItemList.size()}>0?${agentReturnOrder.orderItemList[0].name}"></span>
-                            <a th:if="${agentReturnOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showDetail(this)" title="更多"> 更多...</a>
+                        <td class="txt160 c" style="padding: 10px 0px;">
+                            <span style="width: 20%;float: left;">
+                                    <img th:src="${agentReturnOrder.orderItemList.size() >0 and agentReturnOrder.orderItemList[0].picUri !=null ? agentReturnOrder.orderItemList[0].picUri : ''}"
+                                         style="width:50px;height:50px;float:left;"
+                                         th:styleappend="${agentReturnOrder.orderItemList.size() >0 and agentReturnOrder.orderItemList[0].picUri !=null ? 'margin-left: 5px;' :''}"/>
+                                </span>
+                                <span style="overflow: hidden;text-align: left; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical; width:60%; float:left;margin-top:10px;"
+                                      data-th-text="${agentReturnOrder.orderItemList.size() >0 ? agentReturnOrder.orderItemList[0].name : ''}">商品名称</span>
+                            <a style="margin-top:10px;margin-right: 5px;float:right;" th:if="${agentReturnOrder.orderItemList.size() > 1}"
+                               href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="更多"> 更多...</a>
                         </td>
-                        <td class="txt80 c">
+                        <td class="txt100 c">
                             <span  data-th-text="${agentReturnOrder.author.name}">代理商</span>
                             <span style="color: red" th:text="${agentReturnOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
                         </td>
@@ -186,11 +194,11 @@
                         <td class="txt40 c" data-th-text="${agentReturnOrder.sendmentStatus.getValue()}">
                             物流快递
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.authorComment}">
-                            1000
-                        </td>
                         <td class="txt80 c">
                             ￥<span data-th-text="${agentReturnOrder.finalAmount}">100</span>
+                        </td>
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.authorComment}">
+                            1000
                         </td>
                         <td class="txt40 c" data-th-text="${agentReturnOrder.status.getValue()}" style="color: red;">
                             审核状态

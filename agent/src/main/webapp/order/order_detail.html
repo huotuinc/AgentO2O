@@ -258,8 +258,8 @@
                         </thead>
                         <tbody th:remove="all-but-first">
                         <tr th:each="supOrderItem:${orderDetail.supOrderItemList}">
-                            <td class="txt40 c" th:text="${supOrderItem.bn}"></td>
-                            <td class="txt160">
+                            <td class="txt80 c" th:text="${supOrderItem.bn}"></td>
+                            <td class="txt160" style="padding: 10px 0px;">
                                                 <span style="width: 20%;    float: left;"><img
                                                         th:src="${supOrderItem.picUri !=null ? supOrderItem.picUri : ''}"
                                                         style="width:50px;height:50px;float:left;margin-left: 5px;"/></span>
@@ -267,11 +267,11 @@
                                                  -webkit-box-orient: vertical; width:70%; float:left;margin-top:10px;"
                                                       data-th-text="${supOrderItem.name}">商品名称</span>
                             </td>
-                            <td class="txt120 c" th:text="${supOrderItem.name}"> OL圈梦想合伙人首次公开众筹正式开启(1)</td>
-                            <td class="txt40 c" th:text="${supOrderItem.price}"> 1000.000</td>
-                            <td class="txt40 c" th:text="${supOrderItem.nums}"> 1</td>
-                            <td class="txt40 c" th:text="${#numbers.formatDecimal(supOrderItem.price*supOrderItem.nums,1,2)}"> 1000.000</td>
-                            <td class="txt40 c" th:text="${supOrderItem.sendNum}"> 1</td>
+                            <!--<td class="txt120 c" th:text="${supOrderItem.name}"> OL圈梦想合伙人首次公开众筹正式开启(1)</td>-->
+                            <td class="txt80 c" th:text="${supOrderItem.price}"> 1000.000</td>
+                            <td class="txt80 c" th:text="${supOrderItem.nums}"> 1</td>
+                            <td class="txt80 c" th:text="${#numbers.formatDecimal(supOrderItem.price*supOrderItem.nums,1,2)}"> 1000.000</td>
+                            <td class="txt80 c" th:text="${supOrderItem.sendNum}"> 1</td>
                         </tr>
                         </tbody>
                     </table>

@@ -59,10 +59,7 @@
 </head>
 <body marginwidth="0" marginheight="0" style="cursor: auto;">
 <form method="post" action="accountManage" id="form1">
-
     <div>
-        <div class="blank10">
-        </div>
         <div class="blank10">
         </div>
         <div class="block">
@@ -94,14 +91,14 @@
                         <tbody>
                         <!--/*@thymesVar id="addressList" type="java.util.List<com.huotu.agento2o.service.entity.config.Address>"*/-->
                         <tr th:each="address:${addressList}">
-                            <td class="c" th:text="${address.receiver}" name="receiver">张三</td>
-                            <td class="c" th:text="${address.telephone}" name="telephone">18888888888</td>
-                            <td class="c"
+                            <td class="txt80 c" th:text="${address.receiver}" name="receiver">张三</td>
+                            <td class="txt80 c" th:text="${address.telephone}" name="telephone">18888888888</td>
+                            <td class="txt120 c"
                                 th:text="${address.address}" name="address">
                                 浙江
                                 杭州 滨江区
                             </td>
-                            <td class="c">
+                            <td class="txt100 c">
                                 <a href="javascript:addressHandler.choice(1)" th:href="|javascript:addressHandler.choice(${address.id})|">选择</a> |
                                 <a href="javascript:addressHandler.configDefault(1)" th:if="${!address.isDefault()}"
                                    th:href="|javascript:addressHandler.configDefault(${address.id})|">设为默认</a> <span

@@ -59,22 +59,22 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int subPurchaseOrderCountByDate(int agentId, Date start, Date end) {
-        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(agentId,start,end);
+        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(agentId, start, end);
     }
 
     @Override
     public int returnedOrderCountByDate(int authorId, Date start, Date end) {
-        return returnOrderRepository.countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(authorId,start,end);
+        return returnOrderRepository.countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(authorId, start, end);
     }
 
     @Override
     public int subReturnedOrderCountByDate(int agentId, Date start, Date end) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(agentId,start,end);
+        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(agentId, start, end);
     }
 
     @Override
     public int unDeliveryOrderCount(int shopId) {
-        return orderRepository.countByShop_IdAndPayStatusAndShipStatus(shopId,OrderEnum.PayStatus.PAYED,OrderEnum.ShipStatus.NOT_DELIVER);
+        return orderRepository.countByShop_IdAndPayStatusAndShipStatus(shopId, OrderEnum.PayStatus.PAYED, OrderEnum.ShipStatus.NOT_DELIVER);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int unDeliveryReturnedOrderCount(int agentId) {
-        return returnOrderRepository.countByAuthor_IdAndStatusAndShipStatusAndDisabledFalse(agentId,PurchaseEnum.OrderStatus.CHECKED,PurchaseEnum.ShipStatus.NOT_DELIVER);
+        return returnOrderRepository.countByAuthor_IdAndStatusAndShipStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.NOT_DELIVER);
     }
 
     @Override
@@ -120,12 +120,12 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         if (author instanceof Agent) {
             indexStatistics.setAgent(true);
             //今日下级采购单数，昨日下级采购单数
-            indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(),todayStart,todayEnd));
-            indexStatistics.setYesterdaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
+            indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
+            indexStatistics.setYesterdaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
 
             //今日退货单数，昨日退货单数
-            indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(),todayStart,todayEnd));
-            indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
+            indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(), todayStart, todayEnd));
+            indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
 
             //待审核采购单数
             indexStatistics.setToCheckPurchaseOrderCount(checkingPurchaseOrderCount(author.getId()));
@@ -148,8 +148,8 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         indexStatistics.setYesterdayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
 
         //今日我的退货单数，昨日我的退货单数
-        indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(),todayStart,todayEnd));
-        indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(),yesterdayStart,yesterdayEnd));
+        indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(), todayStart, todayEnd));
+        indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
 
         //待发货订单数
         indexStatistics.setToDeliveryOrderCount(unDeliveryOrderCount(author.getId()));

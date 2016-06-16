@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>确认退货单</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.cityselect.js" th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <style type="text/css">
+        .spModuleTitle {
+            padding: 3px 10px 0px 10px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 微软雅黑;
+        }
+
+        .ononon {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 16px;
+            height: 22px;
+            display: none;
+        }
+
+        .option {
+            float: left;
+            position: relative;
+            height: 38px;
+            border: 2px solid #ddd;
+            line-height: 38px;
+            text-align: center;
+            font-size: 14px;
+            min-width: 2em;
+            overflow: hidden;
+            padding: 0 7px;
+            background: #fff;
+            margin: 0 10px 10px 0;
+            word-break: break-all;
+            color: #333;
+            position: relative;
+        }
+
+        .option_selected {
+            border-color: #ff8c00;
+        }
+
+        .division th {
+            padding: 18px;
+            text-align: right;
+            white-space: nowrap;
+            width: 140px;
+            background: #E2E8EB;
+            font-size: 14px;
+            border-right: 1px solid #ccc;
+        }
+
+        .input-normal {
+            width: 180px;
+            border: 1px solid #ddd;
+            height: 37px;
+        }
+
+        .division {
+            border-top:  0px solid #ccc;
+            border-left:  0px solid #ccc;
+            border-right:  0px solid #ccc;
+            border-bottom:  0px solid #ccc;
+            background: #fff;
+            margin: 10px;
+            padding: 5px;
+            line-height: 150%;
+            white-space: normal;
+        }
+    </style>
+</head>
+<body>
+<!--/*@thymesVar id="agentPurchaseOrder" type="com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder"*/-->
+<form  id="form1">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+                <h3>退货信息核对</h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt form">
+                    <div>
+                        <span class="spModuleTitle">选择配送方式</span>
+                        <div class="division" style="height: 40px;" name="sendMode">
+                            <!--/*@thymesVar id="sendmentEnum" type="com.huotu.agento2o.service.common.PurchaseEnum.SendmentStatus"*/-->
+                            <span th:each="sendment,sendmentStat:${sendmentEnum}" class="option" th:classappend="${sendmentStat.index}==0?'option_selected'" th:value="${sendment.code}">
+                                <span class="ononon" th:style="${sendmentStat.index}==0?'display: inline;':'display: none;'">
+                                    <img src="../../resource/images/check.jpg" th:src="@{/resource/images/check.jpg}"/>
+                                </span><th:block th:text="${sendment.value}"></th:block>
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="spModuleTitle">订单结算信息</span>
+                        <div style="background: #fff;margin: 10px;padding: 5px;line-height: 150%;white-space: normal;">
+                            <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <thead>
+                                <tr class="even">
+                                    <th scope="col" style="text-align: center;">序号
+                                    </th>
+                                    <th scope="col" style="text-align: center;">商品名称
+                                    </th>
+                                    <th scope="col" style="text-align: center;">规格
+                                    </th>
+                                    <th scope="col" style="text-align: center;">订购价
+                                    </th>
+                                    <th scope="col" style="text-align: center;">库存
+                                    </th>
+                                    <th scope="col" style="text-align: center;">退货数量/单位
+                                    </th>
+                                    <th scope="col" style="text-align: center;">小计
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody data-th-remove="all-but-first">
+                                <!--@thymesVar id="agentProductList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentProduct>"-->
+                                <tr data-th-each="agentProduct,agentProductStat:${agentProductList}"
+                                    th:id="${agentProduct.id}">
+                                    <td class="txt20 c" data-th-text="${agentProductStat.count}">1</td>
+                                    <td style="padding: 10px 0px" class="txt120 c">
+                                        <span style="width: 20%;float: left;">
+                                            <img th:src="${agentProduct.product.goods.picUri!=null?agentProduct.product.goods.picUri:''}"
+                                                 style="vertical-align: top;width: 50px;height: 50px;"/>
+                                        </span>
+                                        <span style="width: 75%;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
+                            -webkit-line-clamp: 2;-webkit-box-orient: vertical;float: left;margin-right: 20px; margin-top: 16px" data-th-text="${agentProduct.product.name}">商品名称</span>
+                                    </td>
+                                    <td class="txt40 c" data-th-text="${agentProduct.product.standard}">
+                                        规格描述
+                                    </td>
+                                    <td class="txt40 c" name="td-price">
+                                        ￥<span data-th-text="${agentProduct.product.price}" name="price">100</span>
+                                    </td>
+                                    <td class="txt40 c"
+                                        data-th-text="${agentProduct.store - agentProduct.freez}">
+                                        1000
+                                    </td>
+                                    <td class="txt40 c" name="td-num">
+                                        <span data-th-text="${agentProduct.returnedNum}" name="num"></span>
+                                        <span data-th-text="${agentProduct.product.unit}"></span>
+                                    </td>
+                                    <td class="txt40 c" data-th-text="${agentProduct.product.price * agentProduct.returnedNum}">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="division">
+                            <span style="font-size: 14px;">备注：</span>
+                            <span><textarea rows="3" style="width: 90%" name="authorComment"/></span>
+
+                        </div>
+                    </div>
+                    <div style="margin: 10px">
+                        <div style="font-size: 14px; float: right">
+                            <span>订单总计金额</span>
+                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="${#aggregates.sum(agentProductList.![product.price * returnedNum])}"></b></span>
+                        </div>
+                        <p style="clear: both"></p>
+                        <div style="float: right;margin-top: -21px;">
+                            <a class="btn-lit" href="javascript:saveBasicConfig();" id="saveConfig"><span>提交订单</span></a>
+                        </div>
+                        <p style="clear: both"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="application/javascript" data-th-inline="javascript">
+    /*<![CDATA[*/
+    var basicUrl = /*[[@{/returnedOrder}]]*/ "/returnedOrder";
+    $("span[class~=option]").on("click", function () {
+        $(this).siblings("span[class~=option_selected]").removeClass("option_selected");
+        $(this).addClass("option_selected");
+        $(this).parent().find("span[class=ononon]").attr("style", "display: none;");
+        $(this).find("span[class=ononon]").attr("style", "display: inline;");
+    })
+
+    function saveBasicConfig(){
+        //配送方式选择
+        var data = {};
+        var sendMode = "0";
+        if($("div[name=sendMode] span[class~=option_selected]").length == 1){
+            sendMode = $("span[class~=option_selected]").attr("value");
+            data['sendModeCode'] = sendMode;
+        }else{
+            $.jBox.tip("请选择配送方式");
+            return;
+        }
+        //退货商品信息
+        var productIds = "";
+        var productNums = "";
+        $("table[class~=data-table] tr").each(function(){
+            var value = $.trim($(this).attr("id"));
+            if(value.length > 0){
+                productIds += value + ",";
+            }
+            var num = $("#" + value).find("span[name=num]").text();
+            if(num.length > 0){
+                productNums += num + ",";
+            }
+        });
+        productIds = productIds.substring(0, productIds.lastIndexOf(","));
+        productNums = productNums.substring(0, productNums.lastIndexOf(","));
+        if(productIds.length == 0){
+            $.jBox.tip("请选择要退货的货品");
+            return;
+        }
+        data['productIds']=productIds;
+        data['productNums'] = productNums;
+        //备注
+        var authorComment = $.trim($("textarea[name=authorComment]").val());
+        if(authorComment.length > 0 ){
+            data['authorComment']=authorComment;
+        }
+        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type: "POST",
+            url: basicUrl + "/addReturnOrder",
+            data: data,
+            dataType: "json",
+            success: function (msg) {
+                if (msg.code == 200) {
+                    $.jBox.tip("新增退货单成功！",'success');
+                    setTimeout(function(){
+                        top.document.getElementById("content_left").contentDocument.getElementById("id_020203").getElementsByTagName("a")[0].click();
+                    },500)
+                } else {
+                    $.jBox.tip(msg.msg, 'error');
+                }
+            }
+        });
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

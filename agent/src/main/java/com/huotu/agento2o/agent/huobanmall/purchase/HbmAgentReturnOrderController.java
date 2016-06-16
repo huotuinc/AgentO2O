@@ -1,6 +1,7 @@
 package com.huotu.agento2o.agent.huobanmall.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
+import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -39,6 +40,8 @@ public class HbmAgentReturnOrderController {
     private AgentReturnOrderItemService agentReturnOrderItemService;
     @Autowired
     private AgentDeliveryService agentDeliveryService;
+    @Autowired
+    private StaticResourceService resourceService;
 
 
     /**
@@ -56,6 +59,7 @@ public class HbmAgentReturnOrderController {
         searchCondition.setParentAgentId(0);
         searchCondition.setCustomerId(customerId);
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
+        setPicUri(agentReturnedOrderPage.getContent());
         ModelAndView model = new ModelAndView();
         model.setViewName("huobanmall/purchase/returned_product_list");
 
@@ -73,6 +77,17 @@ public class HbmAgentReturnOrderController {
         model.addObject("pageIndex", searchCondition.getPageIndex());
 //        model.addObject("authorType", author.getClass().getSimpleName());
         return model;
+    }
+
+    public void setPicUri(List<AgentReturnedOrder> agentReturnedOrderList){
+        if(agentReturnedOrderList != null && agentReturnedOrderList.size() > 0){
+            agentReturnedOrderList.forEach(order->{
+                try {
+                    resourceService.setListUri(order.getOrderItemList(), "thumbnailPic", "picUri");
+                } catch (NoSuchFieldException e) {
+                }
+            });
+        }
     }
 
     @RequestMapping(value = "/showReturnedOrderDetail")

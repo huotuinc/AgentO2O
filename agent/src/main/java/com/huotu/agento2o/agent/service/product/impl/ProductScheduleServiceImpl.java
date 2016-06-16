@@ -41,19 +41,32 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
 
     @Override
     //每天早上10点获取库存预警信息
-    @Scheduled(cron = "0 0 10 * * ?")
-//    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
+//    @Scheduled(cron = "0 0 10 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
     public void productSchedule() {
         //查询出需要提醒的库存信息
         List<Object> agents = agentProductService.findNeedWaringAgent();
-        for(int i=0;i<agents.size();i++){
+        for (int i = 0; i < agents.size(); i++) {
             Integer agentId = Integer.parseInt(agents.get(i).toString());
             Author author = authorService.findById(agentId);
-            if(author.getEmail() == null && StringUtil.isEmptyStr(author.getEmail())){
+            if (author.getEmail() == null && StringUtil.isEmptyStr(author.getEmail())) {
                 continue;
             }
             List<AgentProduct> agentProducts = agentProductService.findWaringAgentInfo(agentId);
-            sendEmailService.sendCloudEmail(agentProducts,author.getEmail());
+            int num = 3;
+            while (num > 0) {
+                try {
+                    sendEmailService.sendCloudEmail(agentProducts, author.getEmail());
+                    break;
+                } catch (Exception e) {
+                    log.error("发送邮件预警失败" + (4 - num), e);
+                    num--;
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e1) {
+                    }
+                }
+            }
         }
     }
 }

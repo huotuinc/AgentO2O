@@ -75,5 +75,10 @@ public class AgentProduct {
      */
     @Column(name = "Disabled")
     private boolean disabled;
+    /**
+     * 退货单退货数量
+     */
+    @Transient
+    private Integer returnedNum;
 
 }

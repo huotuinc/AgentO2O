@@ -31,6 +31,8 @@ public interface AgentReturnedOrderService {
      */
     AgentReturnedOrder addReturnOrder(AgentReturnedOrder agentReturnedOrder);
 
+    ApiResult addReturnOrder(AgentReturnedOrder agentReturnedOrder,Author author, Integer[] agentProductIds, Integer[] productNums) throws Exception;
+
     /**
      * 分页查询所有的退货单列表
      * @param returnedOrderSearch

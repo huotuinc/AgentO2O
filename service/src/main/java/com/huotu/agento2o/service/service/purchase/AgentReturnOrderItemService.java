@@ -18,15 +18,6 @@ public interface AgentReturnOrderItemService  {
      */
     List<AgentReturnedOrderItem> addReturnOrderItemList(List<AgentReturnedOrderItem> agentReturnedOrderItems);
 
-    /**
-     *
-     * @param agentReturnedOrder
-     * @param productIds
-     * @param productNums
-     * @return
-     */
-    List<AgentReturnedOrderItem> addReturnOrderItemList(Author author, AgentReturnedOrder agentReturnedOrder, Integer[]productIds, Integer[] productNums);
-
     List<AgentReturnedOrderItem> findAll(String rOrderId);
 
 

@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.agent.controller.settlement;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -59,6 +60,8 @@ public class SettlementController {
     private MallGoodsService goodService;
     @Autowired
     private MallProductService productService;
+    @Autowired
+    private StaticResourceService resourceService;
 
     /**
      * 结算单列表
@@ -146,6 +149,7 @@ public class SettlementController {
     }
 
     @RequestMapping(value = "/exportSettlementDetail", method = RequestMethod.GET)
+    @SuppressWarnings("Duplicates")
     public void exportSettlementDetail(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
                                        @RequestParam(value = "settlementNo") String settlementNo,
                                        @RequestParam(value = "beginPage") Integer beginPage,
@@ -220,6 +224,7 @@ public class SettlementController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("settlement/settlements_orderDetail");
         OrderDetailModel orderDetailModel = settlementService.findOrderDetail(orderId);
+        resourceService.setListUri(orderDetailModel.getSupOrderItemList(),"thumbnailPic","picUri");
         modelAndView.addObject("orderDetail", orderDetailModel);
         return modelAndView;
     }

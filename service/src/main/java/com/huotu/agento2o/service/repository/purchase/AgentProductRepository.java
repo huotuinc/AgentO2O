@@ -26,7 +26,7 @@ import java.util.List;
  * Created by helloztt on 2016/5/12.
  */
 @Repository
-public interface AgentProductRepository extends JpaRepository<AgentProduct,Integer>, JpaSpecificationExecutor<AgentProduct> {
+public interface AgentProductRepository extends JpaRepository<AgentProduct, Integer>, JpaSpecificationExecutor<AgentProduct> {
 
 //    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.author.id = ?1 AND product.disabled = false ")
 //    List<Integer> findGoodsListByAgentId(Integer agentId);
@@ -35,27 +35,29 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct,Integ
 
     @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2")
     @Modifying
-    int updateWaring(Integer agentId,Integer productId,Integer warning);
+    int updateWaring(Integer agentId, Integer productId, Integer warning);
 
     AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
 
     /**
      * 查询出需要提醒的用户
+     *
      * @return 用户ID
      */
-    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>product.store-product.freez")
+    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>=product.store-product.freez")
     @Modifying
     List<Object> findNeedWaringAgent();
 
     /**
      * 查出需要提醒用户对应的所有需要提醒的商品信息
+     *
      * @param authorId
      * @return
      */
-    @Query("select a from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>a.store-a.freez  and a.author.id =?1")
+    @Query("select a from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez  and a.author.id =?1")
     List<AgentProduct> findWaringAgentInfo(Integer authorId);
 
-    @Query("select count(a) from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>a.store-a.freez and a.author.id =?1")
+    @Query("select count(a) from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez and a.author.id =?1")
     int countByWaringAgentInfo(Integer authorId);
 
    /* List<AgentProduct> findAgentProductByAuthor_IdAndStoreLessThanWarning(Integer authorId);*/

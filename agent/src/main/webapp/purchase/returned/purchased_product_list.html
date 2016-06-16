@@ -13,7 +13,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>商品采购</title>
+    <title>商品退货</title>
     <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
           data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
     <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
@@ -72,7 +72,7 @@
                         <!--/*@thymesVar id="agentProductList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentProduct>"*/-->
                         <tr data-th-each="agentProduct,agentProductStat:${agentProductList}" data-th-id="${agentProduct.id}">
                             <td class="txt20 c">
-                                <input type="checkbox" name="checkProduct" th:value="${agentProduct.product.productId}" />
+                                <input type="checkbox" name="checkProduct" th:value="${agentProduct.id}" />
                             </td>
                             <td class="txt20 c" data-th-text="${agentProductStat.count}">1</td>
                             <td class="txt160 c" data-th-text="${agentProduct.product.name}">
@@ -271,7 +271,24 @@
     }
 
 
+    //提交退货单
     function addReturnOrder(){
+        var data = [];
+        $('input[type=checkbox]:checked').each(function(){
+            var agentProductId = $(this).val();
+            var nums = $('#' + agentProductId).find('input[name=num]').val();
+            var maxNum = $('#' + agentProductId).find('input[name=num]').attr('max');
+            nums = parseInt(nums);
+            maxNum = parseInt(maxNum);
+            if(nums > 0 && nums <= maxNum){
+                data.push({agentProductId:agentProductId,nums:nums});
+            }
+        });
+        var url = basicUrl + "/showAddReturnOrder?data=" + JSON.stringify(data);
+        window.location.href = url;
+    }
+
+    function addReturnOrder1(){
 
         var self2 = this;
         var productIds = getCheckedItems();

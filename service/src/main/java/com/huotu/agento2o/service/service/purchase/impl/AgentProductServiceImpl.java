@@ -60,14 +60,14 @@ public class AgentProductServiceImpl implements AgentProductService {
     @Transactional
     public ApiResult updateWarning(Author author, Integer agentProductId, Integer warning) {
         AgentProduct agentProduct = agentProductRepository.findOne(agentProductId);
-        if(agentProduct == null){
+        if (agentProduct == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if(author.getId().equals(agentProduct.getAuthor().getId())){
+        if (author.getId().equals(agentProduct.getAuthor().getId())) {
             agentProduct.setWarning(warning);
             agentProductRepository.save(agentProduct);
             return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-        }else{
+        } else {
             return new ApiResult("没有权限！");
         }
     }
@@ -85,5 +85,10 @@ public class AgentProductServiceImpl implements AgentProductService {
     @Override
     public AgentProduct findAgentProduct(Author author, MallProduct product) {
         return agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
+    }
+
+    @Override
+    public AgentProduct findByAgentProductId(Integer agentProductId) {
+        return agentProductRepository.findOne(agentProductId);
     }
 }

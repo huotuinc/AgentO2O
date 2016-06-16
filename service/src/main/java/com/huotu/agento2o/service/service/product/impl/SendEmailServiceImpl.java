@@ -36,6 +36,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
     /**
      * 废弃
+     *
      * @param agentProducts
      */
     /*@Override
@@ -102,36 +103,35 @@ public class SendEmailServiceImpl implements SendEmailService {
             }
         }
     }*/
-
     @Override
-    public void sendCloudEmail(List<AgentProduct> agentProducts,String emailStr) {
+    public void sendCloudEmail(List<AgentProduct> agentProducts, String emailStr) throws Exception {
         StringBuffer sb = new StringBuffer("");
-        if(agentProducts != null && agentProducts.size() > 0){
+        if (agentProducts != null && agentProducts.size() > 0) {
             String authorName = agentProducts.get(0).getAuthor().getName();
-            agentProducts.forEach(product->{
+            agentProducts.forEach(product -> {
                 sb.append("货品名称：" + product.getProduct().getName());
                 sb.append("，规格：" + product.getProduct().getStandard());
                 sb.append("，可用库存：<span style='color:red;'>" + (product.getStore() - product.getFreez()) + "</span>");
-                sb.append("（预警数：" + product.getWarning()+ "）");
+                sb.append("（预警数：" + product.getWarning() + "）");
                 sb.append("<br/>");
             });
             Email email = Email.template(emailConfig.getTemplate())
                     .from(emailConfig.getFrom())
                     .fromName(emailConfig.getFromName())
                     .substitutionVars(Substitution.sub()
-                            .set("info",sb.toString())
-                            .set("name",authorName))
+                            .set("info", sb.toString())
+                            .set("name", authorName))
                     .subject("库存预警")
                     .to(emailStr);
             SendCloud webApi = SendCloud.createWebApi(emailConfig.getApiUser(), emailConfig.getApiKey());
             Result result = null;
             int sendNum = 0;
             //发送失败的最多尝试3次
-            while (sendNum < 3 && (result ==null || !result.isSuccess())){
+            while (sendNum < 3 && (result == null || !result.isSuccess())) {
                 result = webApi.mail().send(email);
-                sendNum ++;
+                sendNum++;
             }
-            if(!result.isSuccess()){
+            if (!result.isSuccess()) {
                 log.error(result.getStatusCode() + ":" + result.getMessage());
             }
         }

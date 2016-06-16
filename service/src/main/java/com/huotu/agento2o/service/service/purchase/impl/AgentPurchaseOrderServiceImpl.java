@@ -187,7 +187,8 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             //删除购物车
             shoppingCartRepository.delete(shoppingCart);
         }
-        purchaseOrder.setFinalAmount(itemList.stream().mapToDouble(p -> p.getNum() * p.getPrice()).sum());
+        double finalAmount = itemList.stream().mapToDouble(p -> p.getNum() * p.getPrice()).sum();
+        purchaseOrder.setFinalAmount((double) Math.round(finalAmount * 100) / 100);
         // TODO: 2016/5/18 邮费
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setOrderItemList(itemList);
@@ -222,7 +223,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             return new ApiResult("采购单已审核或已支付，无法删除！");
         }
         //审核不通过，已经减少预占库存
-        if(!PurchaseEnum.OrderStatus.RETURNED.equals(agentPurchaseOrder.getStatus())){
+        if (!PurchaseEnum.OrderStatus.RETURNED.equals(agentPurchaseOrder.getStatus())) {
             List<AgentPurchaseOrderItem> purchaseOrderItemList = agentPurchaseOrder.getOrderItemList();
             for (AgentPurchaseOrderItem item : purchaseOrderItemList) {
                 //如果采购单未审核 减少 预占库存
@@ -237,7 +238,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                     productRepository.save(customerProduct);
                 } else {
                     //如果采购单未审核 修改代理商库存
-                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse( author.getParentAuthor(), item.getProduct());
+                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), item.getProduct());
                     if (agentProduct.getFreez() - item.getNum() < 0) {
                         // TODO: 2016/5/19 单元测试 库存不足
                         throw new Exception("库存不足，无法删除！");
@@ -380,15 +381,15 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         if (status == PurchaseEnum.OrderStatus.RETURNED) {
             List<AgentPurchaseOrderItem> itemList = agentPurchaseOrder.getOrderItemList();
             for (AgentPurchaseOrderItem item : itemList) {
-                if(agentPurchaseOrder.getAuthor().getParentAuthor() == null){
+                if (agentPurchaseOrder.getAuthor().getParentAuthor() == null) {
                     //减少平台方预占库存
                     MallProduct customerProduct = item.getProduct();
-                    if(item.getNum() > customerProduct.getFreez()){
+                    if (item.getNum() > customerProduct.getFreez()) {
                         throw new Exception("库存不足！");
                     }
                     customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
                     productRepository.save(customerProduct);
-                }else {
+                } else {
                     //修改代理商货品预占库存
                     AgentProduct product = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor().getParentAuthor(), item.getProduct());
                     if (product != null) {
@@ -415,8 +416,8 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
         purchaseOrderList.forEach(order -> {
             StringBuffer sb = new StringBuffer("");
-            order.getOrderItemList().forEach(item->{
-                if(sb.length() != 0){
+            order.getOrderItemList().forEach(item -> {
+                if (sb.length() != 0) {
                     sb.append("\r\n");
                 }
                 sb.append(item.getName());
@@ -425,9 +426,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             cellDescList.add(ExcelHelper.asCell(order.getPOrderId()));
             cellDescList.add(ExcelHelper.asCell(sb.toString()));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getName())));
-            if(order.getAuthor().getParentAuthor() != null){
+            if (order.getAuthor().getParentAuthor() != null) {
                 cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getName())));
-            }else{
+            } else {
                 cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getCustomer().getNickName())));
             }
             cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getCreateTime(), StringUtil.TIME_PATTERN)));
@@ -450,7 +451,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getStatusComment())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthorComment())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getParentComment())));
-            cellDescList.add(ExcelHelper.asCell(order.isDisabled()?"已取消":"活动"));
+            cellDescList.add(ExcelHelper.asCell(order.isDisabled() ? "已取消" : "活动"));
             rowAndCells.add(cellDescList);
         });
         return ExcelHelper.createWorkbook("采购单列表", SysConstant.AGENT_ORDER_EXPORT_HEADER, rowAndCells);

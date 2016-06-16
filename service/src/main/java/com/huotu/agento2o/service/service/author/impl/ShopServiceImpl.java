@@ -381,7 +381,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public List<Shop> findByCustomerId(Integer customerId) {
-        return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatusAndCustomer_CustomerId(AgentStatusEnum.CHECKED,customerId);
+        return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum.CHECKED);
     }
 
     @Override
