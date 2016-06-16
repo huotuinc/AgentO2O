@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping(value = "/agent/afterSale/ajax", method = RequestMethod.POST)
+@PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
 public class AfterSaleHandler {
     @Autowired
     private MallAfterSalesService afterSalesService;
@@ -50,7 +51,6 @@ public class AfterSaleHandler {
      * @return
      */
     @RequestMapping("/refundAgree")
-    @PreAuthorize("hasAnyRole('ORDER','SHOP')")
     @ResponseBody
     public ApiResult refundAgree(String afterId) throws UnsupportedEncodingException {
         MallAfterSales afterSales = afterSalesService.findByAfterId(afterId);
@@ -87,7 +87,6 @@ public class AfterSaleHandler {
      * @return
      */
     @RequestMapping("/returnAgree")
-    @PreAuthorize("hasAnyRole('ORDER','SHOP')")
     @ResponseBody
     public ApiResult returnAgree(String afterId, String returnAddr) {
         MallAfterSales afterSales = afterSalesService.findByAfterId(afterId);
@@ -109,7 +108,6 @@ public class AfterSaleHandler {
      * @return
      */
     @RequestMapping("/afterSaleRefuse")
-    @PreAuthorize("hasAnyRole('ORDER','SHOP')")
     @ResponseBody
     public ApiResult afterSalesRefuse(String afterId, String reason) {
         MallAfterSales afterSales = afterSalesService.findByAfterId(afterId);

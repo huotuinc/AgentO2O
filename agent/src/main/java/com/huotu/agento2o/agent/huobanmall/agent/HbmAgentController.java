@@ -77,7 +77,7 @@ public class HbmAgentController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteAgent(Integer agentId) {
-        if(agentId == null){
+        if (agentId == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (agentService.findByParentAgentId(agentId).size() > 0) {
@@ -96,7 +96,10 @@ public class HbmAgentController {
      */
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult updateDisabledStatus(Integer status,Integer agentId) {
+    public ApiResult updateDisabledStatus(Integer status, Integer agentId) {
+        if (status == null || agentId == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         int result = 0;
         if (status == 0) {
             result = agentService.freezeAgent(agentId);
@@ -111,18 +114,22 @@ public class HbmAgentController {
      *
      * @param customerId
      * @param model
-     * @param agent         当agentId>0时，是修改页面
-     * @param ifShow        true-查看页面
+     * @param agent      当agentId>0时，是修改页面
+     * @param ifShow     true-查看页面
      * @return
      */
     @RequestMapping(value = "/showAgent", method = RequestMethod.GET)
     public String showAgent(@RequestAttribute(value = "customerId") Integer customerId, Model model, Agent agent, boolean ifShow) {
+        //id没传默认为0代表增加
+        if (agent.getId() == null) {
+            agent.setId(0);
+        }
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
         if (agentId > 0) {
             Agent oldAgent = agentService.findById(agentId, customerId);
             //获取上级代理商的代理商等级
-            if (oldAgent.getParentAuthor() != null && ((Agent) oldAgent.getParentAuthor()).getAgentLevel() != null) {
+            if (oldAgent.getParentAuthor() != null && (oldAgent.getParentAuthor()).getAgentLevel() != null) {
                 parentAgentLevelId = oldAgent.getParentAuthor().getAgentLevel().getLevelId();
             }
             model.addAttribute("agent", oldAgent);
@@ -148,7 +155,7 @@ public class HbmAgentController {
     /**
      * 增加或修改代理商
      *
-     * @param customerId 平台id
+     * @param customerId    平台id
      * @param agentLevelId  等级id
      * @param parentAgentId 上级代理商id
      * @param hotUserName   小伙伴用户名
@@ -158,31 +165,31 @@ public class HbmAgentController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addOrSaveAgent(@RequestAttribute(value = "customerId") Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
-        if(StringUtil.isEmptyStr(requestAgent.getUsername())){
+        if (StringUtil.isEmptyStr(requestAgent.getUsername())) {
             return new ApiResult("请输入用户名");
         }
-        if(requestAgent.getId() == 0 && StringUtil.isEmptyStr(requestAgent.getPassword())){
+        if ( requestAgent.getId() != null && requestAgent.getId() == 0 && StringUtil.isEmptyStr(requestAgent.getPassword())) {
             return new ApiResult("请输入密码");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())){
+        if (StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())) {
             return new ApiResult("请选择区域");
         }
-        if(agentLevelId == -1){
+        if (agentLevelId == null || agentLevelId == -1) {
             return new ApiResult("请选择代理商等级");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getName())){
+        if (StringUtil.isEmptyStr(requestAgent.getName())) {
             return new ApiResult("请输入代理商名称");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getContact())){
+        if (StringUtil.isEmptyStr(requestAgent.getContact())) {
             return new ApiResult("请输入联系人");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getMobile())){
+        if (StringUtil.isEmptyStr(requestAgent.getMobile())) {
             return new ApiResult("请输入手机号码");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getEmail())){
+        if (StringUtil.isEmptyStr(requestAgent.getEmail())) {
             return new ApiResult("请输入E-mail");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getAddress())){
+        if (StringUtil.isEmptyStr(requestAgent.getAddress())) {
             return new ApiResult("请输入详细地址");
         }
         return agentService.addOrUpdate(customerId, agentLevelId, parentAgentId, hotUserName, requestAgent);

@@ -126,7 +126,6 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
         expectAgentLevel = agentLevels.get(1);
         Agent mockAgent = mockAgent(mockCustomer,null);
         mockAgent.setAgentLevel(expectAgentLevel);
-        agentService.addAgent(mockAgent);
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("levelId",String.valueOf(expectAgentLevel.getLevelId())))
                 .andExpect(status().isOk())
