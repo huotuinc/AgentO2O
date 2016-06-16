@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -35,6 +36,7 @@ import java.util.List;
         "com.huotu.agento2o.agent",
         "com.huotu.agento2o.common"
 })
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class MVCConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private Environment env;

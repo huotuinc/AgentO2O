@@ -29,7 +29,7 @@ public interface AgentPurchaseOrderService {
 
     Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher);
 
-    ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds);
+    ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception;
 
     AgentPurchaseOrder findByPOrderId(String pOrderId);
 

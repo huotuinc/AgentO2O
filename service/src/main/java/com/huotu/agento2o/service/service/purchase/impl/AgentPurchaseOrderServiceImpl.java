@@ -15,6 +15,7 @@ import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.config.annotation.SystemServiceLog;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -130,8 +131,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      * @return
      */
     @Override
+    @SystemServiceLog(description = "新增采购单")
     @Transactional(rollbackFor = RuntimeException.class)
-    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) {
+    public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception{
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         purchaseOrder.setAuthor(author);

@@ -11,6 +11,7 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
@@ -72,10 +73,11 @@ public class AgentPurchaseOrderController {
      * @throws Exception
      */
     @RequestMapping(value = "/addPurchase",method = RequestMethod.POST)
+    @SystemControllerLog(description = "新增采购单")
     @ResponseBody
     public ApiResult addPurchase(
             @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
-            AgentPurchaseOrder agentPurchaseOrder, String... shoppingCartIds){
+            AgentPurchaseOrder agentPurchaseOrder, String... shoppingCartIds) throws Exception {
         String sendModeCode = request.getParameter("sendModeCode");
         String taxTypeCode = request.getParameter("taxTypeCode");
         //采购信息校验
