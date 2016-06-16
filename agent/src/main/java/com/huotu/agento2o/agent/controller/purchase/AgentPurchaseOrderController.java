@@ -73,7 +73,7 @@ public class AgentPurchaseOrderController {
      * @throws Exception
      */
     @RequestMapping(value = "/addPurchase",method = RequestMethod.POST)
-    @SystemControllerLog(description = "新增采购单")
+    @SystemControllerLog(value = "采购单新增")
     @ResponseBody
     public ApiResult addPurchase(
             @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
@@ -186,6 +186,7 @@ public class AgentPurchaseOrderController {
      */
     @RequestMapping(value = "/deletePurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
+    @SystemControllerLog(value = "采购单取消")
     public ApiResult deletePurchaseOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
@@ -206,6 +207,7 @@ public class AgentPurchaseOrderController {
      */
     @RequestMapping(value = "/payPurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
+    @SystemControllerLog(value = "采购单支付")
     public ApiResult payPurchaseOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
@@ -226,6 +228,7 @@ public class AgentPurchaseOrderController {
      */
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @ResponseBody
+    @SystemControllerLog(value = "采购单确认收货")
     public ApiResult receivePurchaseOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
@@ -279,6 +282,7 @@ public class AgentPurchaseOrderController {
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping("/checkAgentPurchaseOrder")
     @ResponseBody
+    @SystemControllerLog(value = "下级采购单审核")
     public ApiResult checkAgentPurchaseOrder(
             @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             @RequestParam(required = true) String pOrderId,
@@ -299,6 +303,7 @@ public class AgentPurchaseOrderController {
 
     /**
      * 采购单发货（代理商）
+     * todo 废弃 发货需填写发货单
      *
      * @param agent
      * @param pOrderId

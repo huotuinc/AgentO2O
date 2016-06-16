@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.agent.controller.settlement;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
@@ -83,8 +84,18 @@ public class SettlementController {
         return modelAndView;
     }
 
+    /**
+     * 门店结算单审核
+     * @param shop
+     * @param settlementNo
+     * @param authorStatus
+     * @param settlementComment
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/changeSettlementStatus", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
+    @SystemControllerLog(value = "结算单审核")
     public ApiResult changeSettlementStatus(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
                                             @RequestParam("settlementNo") String settlementNo,
                                             @RequestParam("authorStatus") Integer authorStatus,
@@ -93,17 +104,18 @@ public class SettlementController {
         try {
             apiResult = settlementService.updateSettlementStatus(settlementNo, -1, authorStatus, settlementComment);
         } catch (Exception e) {
-            log.error("结算单编号" + settlementNo + " 结算失败", e);
-            return new ApiResult("结算单结算失败！");
+            log.error("结算单编号" + settlementNo + " 审核失败", e);
+            return new ApiResult("结算单审核失败！");
         }
         if (apiResult == null) {
-            apiResult = new ApiResult("结算单结算失败！");
+            apiResult = new ApiResult("结算单审核失败！");
         }
         return apiResult;
     }
 
     @RequestMapping(value = "/batchChangeSettlementStatus", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
+    @SystemControllerLog(value = "结算单批量审核")
     public ApiResult batchChangeSettlementStatus(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
                                                  @RequestParam("authorStatus") Integer authorStatus,
                                                  @RequestParam("settlementNo") String... settlementNo) throws Exception {

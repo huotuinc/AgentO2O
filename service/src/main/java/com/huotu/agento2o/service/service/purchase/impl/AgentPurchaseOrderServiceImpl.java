@@ -131,7 +131,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      * @return
      */
     @Override
-    @SystemServiceLog(description = "新增采购单")
+    @SystemServiceLog(value = "新增采购单")
     @Transactional(rollbackFor = RuntimeException.class)
     public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception{
         purchaseOrder.setPOrderId(SerialNo.create());

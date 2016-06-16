@@ -2,6 +2,7 @@ package com.huotu.agento2o.agent.controller.product;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -45,6 +46,7 @@ public class ProductController {
     }
 
     @RequestMapping("save")
+    @SystemControllerLog(value = "库存数量修改")
     public @ResponseBody
     ApiResult saveInfo(@AgtAuthenticationPrincipal Author author,
                        @RequestParam(required = true,defaultValue = "0") Integer agentProductId,

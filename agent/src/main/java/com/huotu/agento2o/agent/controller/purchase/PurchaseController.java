@@ -126,7 +126,7 @@ public class PurchaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/addShopping", method = RequestMethod.POST)
-    @SystemControllerLog(description = "加入购物车")
+    @SystemControllerLog(value = "加入购物车")
     @ResponseBody
     public ApiResult addShopping(
             @AgtAuthenticationPrincipal Author author,
@@ -197,7 +197,6 @@ public class PurchaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/showProductList")
-    @SystemControllerLog(description = "显示货品列表")
     public ModelAndView showProductList(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(value = "goodsId", required = true) Integer goodsId) throws Exception {

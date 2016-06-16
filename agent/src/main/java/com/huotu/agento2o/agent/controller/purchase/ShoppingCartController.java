@@ -96,7 +96,6 @@ public class ShoppingCartController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    @SystemControllerLog(description = "删除购物车")
     public ApiResult delete(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true, name = "shoppingCartId") Integer id) throws Exception {
@@ -133,7 +132,7 @@ public class ShoppingCartController {
      */
     @RequestMapping("/deleteAll")
     @ResponseBody
-    @SystemControllerLog()
+    @SystemControllerLog(value = "清空购物车")
     public ApiResult deleteAll(@AgtAuthenticationPrincipal Author author) throws Exception {
         shoppingCartService.deleteAllShoppingCartByAgentId(author.getId());
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);

@@ -92,6 +92,7 @@ public class ControllerLogAspect {
             log.setType("error");
             log.setMethod(joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName() + "()");
             log.setDescription(getControllerMethodDescription(joinPoint));
+            log.setExceptionCode(e.getClass().getName());
             log.setParams(params);
             log.setCreateBy(userDetails.getUsername());
             log.setCreateTime(new Date());
@@ -158,7 +159,7 @@ public class ControllerLogAspect {
             throws Exception {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        String description = method.getAnnotation(SystemServiceLog.class).description();
+        String description = method.getAnnotation(SystemServiceLog.class).value();
         return description;
     }
 
@@ -172,7 +173,7 @@ public class ControllerLogAspect {
     public static String getControllerMethodDescription(JoinPoint joinPoint) throws Exception {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        String description = method.getAnnotation(SystemControllerLog.class).description();
+        String description = method.getAnnotation(SystemControllerLog.class).value();
         return description;
     }
 
