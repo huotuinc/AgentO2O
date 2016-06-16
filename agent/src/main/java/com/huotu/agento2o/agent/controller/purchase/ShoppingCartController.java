@@ -11,6 +11,7 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
@@ -95,6 +96,7 @@ public class ShoppingCartController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
+    @SystemControllerLog(description = "删除购物车")
     public ApiResult delete(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true, name = "shoppingCartId") Integer id) throws Exception {
@@ -131,6 +133,7 @@ public class ShoppingCartController {
      */
     @RequestMapping("/deleteAll")
     @ResponseBody
+    @SystemControllerLog()
     public ApiResult deleteAll(@AgtAuthenticationPrincipal Author author) throws Exception {
         shoppingCartService.deleteAllShoppingCartByAgentId(author.getId());
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);

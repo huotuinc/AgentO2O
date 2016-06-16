@@ -49,13 +49,13 @@ public class AgentLog {
     private String description;
 
     /**
-     * 异常代码
+     * 异常代码(暂时不用)
      */
     @Column(name = "Exception_Code")
     private String exceptionCode;
 
     /**
-     * 异常信息
+     * 异常信息（暂时不用）
      */
     @Column(name = "Exception_Detail")
     private String exceptionDetail;
@@ -83,4 +83,16 @@ public class AgentLog {
      */
     @Column(name = "CreateTime")
     private Date createTime;
+
+    /**
+     * 返回结果
+     */
+    @Column(name = "Result_Code")
+    private Integer resultCode;
+
+    /**
+     * 返回信息
+     */
+    @Column(name = "Result_Msg")
+    private String resultMsg;
 }

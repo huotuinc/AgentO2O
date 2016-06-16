@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.config.annotation.SystemServiceLog;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -20,10 +21,8 @@ import com.huotu.agento2o.service.service.log.AgentLogService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,50 +57,12 @@ public class ControllerLogAspect {
     }
 
     /**
-     * 前置通知 用于拦截Controller层记录用户的操作
-     *
-     * @param joinPoint 切点
-     */
-    @Before("controllerAspect()")
-    public void doBefore(JoinPoint joinPoint) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        //读取登录用户
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-        if (userDetails instanceof Author) {
-            //请求的IP
-            String ip = request.getRemoteAddr();
-            try {
-                String description = getControllerMethodDescription(joinPoint);
-                if(StringUtil.isNotEmpty(description)){
-                    AgentLog log = new AgentLog();
-                    log.setType("info");
-                    log.setMethod(joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName() + "()");
-                    log.setDescription(description);
-                    log.setExceptionCode(null);
-                    log.setExceptionDetail(null);
-                    log.setParams(null);
-                    log.setCreateBy(userDetails.getUsername());
-                    log.setCreateTime(new Date());
-                    log.setIp(ip);
-                    logService.save(log);
-                }
-            } catch (Exception e) {
-                //记录本地异常日志
-                log.error("异常信息:{}", e);
-            }
-        }
-
-    }
-
-    /**
-     * 异常通知 用于拦截service层记录异常日志
+     * 异常通知 用于拦截controller层记录异常日志
      *
      * @param joinPoint
      * @param e
      */
-    @AfterThrowing(pointcut = "serviceAspect()", throwing = "e")
+    @AfterThrowing(pointcut = "controllerAspect()", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable e) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         //读取登录用户
@@ -123,7 +84,7 @@ public class ControllerLogAspect {
             log.error("异常代码:" + e.getClass().getName());
             log.error("异常信息:" + e.getMessage());
             log.error("异常方法:" + (joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName() + "()"));
-            log.error("方法描述:" + getServiceMethodDescription(joinPoint));
+            log.error("方法描述:" + getControllerMethodDescription(joinPoint));
             log.error("请求人:" + userDetails.getUsername());
             log.error("请求IP:" + ip);
             log.error("请求参数:" + params);
@@ -131,8 +92,6 @@ public class ControllerLogAspect {
             log.setType("error");
             log.setMethod(joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName() + "()");
             log.setDescription(getControllerMethodDescription(joinPoint));
-            log.setExceptionCode(e.getClass().getName());
-            log.setExceptionDetail(e.getMessage());
             log.setParams(params);
             log.setCreateBy(userDetails.getUsername());
             log.setCreateTime(new Date());
@@ -148,6 +107,47 @@ public class ControllerLogAspect {
 
 
     /**
+     * 后置通知 用于拦截Controller层记录用户的操作
+     *
+     * @param joinPoint 切点
+     * @param result 返回结果
+     */
+    @AfterReturning(pointcut = "controllerAspect()", returning = "result")
+    public void doAfterReturning(JoinPoint joinPoint, Object result) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        //读取登录用户
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        if (userDetails instanceof Author) {
+            //请求的IP
+            String ip = request.getRemoteAddr();
+            try {
+                String description = getControllerMethodDescription(joinPoint);
+                if (StringUtil.isNotEmpty(description)) {
+                    AgentLog log = new AgentLog();
+                    log.setType("info");
+                    log.setMethod(joinPoint.getTarget().getClass().getName() + "." + joinPoint.getSignature().getName() + "()");
+                    log.setDescription(description);
+                    log.setParams(null);
+                    log.setCreateBy(userDetails.getUsername());
+                    log.setCreateTime(new Date());
+                    log.setIp(ip);
+                    if(result instanceof ApiResult){
+                        log.setResultCode(((ApiResult) result).getCode());
+                        log.setResultMsg(((ApiResult) result).getMsg());
+                    }
+                    logService.save(log);
+                }
+            } catch (Exception e) {
+                //记录本地异常日志
+                log.error("异常信息:{}", e);
+            }
+        }
+    }
+
+
+    /**
      * 获取注解中对方法的描述信息 用于service层注解
      *
      * @param joinPoint 切点
@@ -156,21 +156,9 @@ public class ControllerLogAspect {
      */
     public static String getServiceMethodDescription(JoinPoint joinPoint)
             throws Exception {
-        String targetName = joinPoint.getTarget().getClass().getName();
-        String methodName = joinPoint.getSignature().getName();
-        Object[] arguments = joinPoint.getArgs();
-        Class targetClass = Class.forName(targetName);
-        Method[] methods = targetClass.getMethods();
-        String description = "";
-        for (Method method : methods) {
-            if (method.getName().equals(methodName)) {
-                Class[] clazzs = method.getParameterTypes();
-                if (clazzs.length == arguments.length) {
-                    description = method.getAnnotation(SystemServiceLog.class).description();
-                    break;
-                }
-            }
-        }
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        String description = method.getAnnotation(SystemServiceLog.class).description();
         return description;
     }
 
@@ -182,21 +170,9 @@ public class ControllerLogAspect {
      * @throws Exception
      */
     public static String getControllerMethodDescription(JoinPoint joinPoint) throws Exception {
-        String targetName = joinPoint.getTarget().getClass().getName();
-        String methodName = joinPoint.getSignature().getName();
-        Object[] arguments = joinPoint.getArgs();
-        Class targetClass = Class.forName(targetName);
-        Method[] methods = targetClass.getMethods();
-        String description = "";
-        for (Method method : methods) {
-            if (method.getName().equals(methodName)) {
-                Class[] clazzs = method.getParameterTypes();
-                if (clazzs.length == arguments.length) {
-                    description = method.getAnnotation(SystemControllerLog.class).description();
-                    break;
-                }
-            }
-        }
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        String description = method.getAnnotation(SystemControllerLog.class).description();
         return description;
     }
 
