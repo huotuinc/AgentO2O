@@ -13,6 +13,7 @@ import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
+import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
@@ -200,7 +201,11 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
-    public ApiResult cancelReturnOrder(@AgtAuthenticationPrincipal Author author,String rOrderId) throws Exception {
+    public ApiResult cancelReturnOrder(@AgtAuthenticationPrincipal Author author,
+                                       @RequestParam(required = true) String rOrderId) throws Exception {
+        if(StringUtil.isEmpty(rOrderId)){
+            return new ApiResult("退单号不能为空");
+        }
         ApiResult apiResult = agentReturnedOrderService.cancelReturnOrder(author,rOrderId);
         return apiResult;
     }
