@@ -11,7 +11,6 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
@@ -73,7 +72,6 @@ public class AgentPurchaseOrderController {
      * @throws Exception
      */
     @RequestMapping(value = "/addPurchase",method = RequestMethod.POST)
-    @SystemControllerLog(value = "采购单新增")
     @ResponseBody
     public ApiResult addPurchase(
             @AgtAuthenticationPrincipal Author author, HttpServletRequest request,
@@ -81,9 +79,6 @@ public class AgentPurchaseOrderController {
         String sendModeCode = request.getParameter("sendModeCode");
         String taxTypeCode = request.getParameter("taxTypeCode");
         //采购信息校验
-        if (agentPurchaseOrder == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
         if (shoppingCartIds == null || shoppingCartIds.length == 0) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -166,9 +161,10 @@ public class AgentPurchaseOrderController {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/purchase/purchase_order_detail");
         AgentPurchaseOrder purchaseOrder = purchaseOrderService.findByPOrderId(pOrderId);
-        if (purchaseOrder != null) {
-            resourceService.setListUri(purchaseOrder.getOrderItemList(), "thumbnailPic", "picUri");
+        if (purchaseOrder == null) {
+            throw new Exception("采购单不存在！");
         }
+        resourceService.setListUri(purchaseOrder.getOrderItemList(), "thumbnailPic", "picUri");
         //获取发货信息
         DeliverySearcher deliverySearcher = new DeliverySearcher();
         deliverySearcher.setOrderId(pOrderId);
@@ -186,7 +182,6 @@ public class AgentPurchaseOrderController {
      */
     @RequestMapping(value = "/deletePurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
-    @SystemControllerLog(value = "采购单取消")
     public ApiResult deletePurchaseOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
@@ -207,7 +202,6 @@ public class AgentPurchaseOrderController {
      */
     @RequestMapping(value = "/payPurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
-    @SystemControllerLog(value = "采购单支付")
     public ApiResult payPurchaseOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
@@ -228,7 +222,6 @@ public class AgentPurchaseOrderController {
      */
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @ResponseBody
-    @SystemControllerLog(value = "采购单确认收货")
     public ApiResult receivePurchaseOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(required = true) String pOrderId) throws Exception {
@@ -282,7 +275,6 @@ public class AgentPurchaseOrderController {
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping("/checkAgentPurchaseOrder")
     @ResponseBody
-    @SystemControllerLog(value = "下级采购单审核")
     public ApiResult checkAgentPurchaseOrder(
             @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             @RequestParam(required = true) String pOrderId,

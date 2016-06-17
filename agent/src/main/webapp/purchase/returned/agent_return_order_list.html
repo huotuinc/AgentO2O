@@ -37,6 +37,7 @@
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
+<!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.ReturnedOrderSearch"*/-->
 <form method="get" action="/returnedOrder/showAgentReturnedOrderList" data-th-action="@{/returnedOrder/showAgentReturnedOrderList}" id="form1"
       th:object="${searchCondition}">
 
@@ -59,13 +60,14 @@
                 <div class="search-bar">
                     <div>
                         <label class="first">退货单号：</label>
-                        <input name="rOrderId" type="text" th:value="*{rOrderId}"  id="goodsName"
+                        <input name="rOrderId" type="text" th:value="*{ROrderId}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
 
                         &nbsp;
                         <label class="first ">下级代理商/门店：</label>
                         <select name="agentId" id="agentId">
                             <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
+                            <!--/*@thymesVar id="authorList" type="java.util.List<com.huotu.agento2o.service.entity.author.Author>"*/-->
                             <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == searchCondition.agentId}">代理商/门店</option>
                         </select>
 
@@ -174,8 +176,7 @@
                         <td class="txt160 c" style="padding: 10px 0px;">
                             <span style="width: 20%;float: left;">
                                     <img th:src="${agentReturnOrder.orderItemList.size() >0 and agentReturnOrder.orderItemList[0].picUri !=null ? agentReturnOrder.orderItemList[0].picUri : ''}"
-                                         style="width:50px;height:50px;float:left;"
-                                         th:styleappend="${agentReturnOrder.orderItemList.size() >0 and agentReturnOrder.orderItemList[0].picUri !=null ? 'margin-left: 5px;' :''}"/>
+                                         style="width:50px;height:50px;float:left;margin-left: 5px;"/>
                                 </span>
                                 <span style="overflow: hidden;text-align: left; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1;
                                 -webkit-box-orient: vertical; width:60%; float:left;margin-top:10px;"

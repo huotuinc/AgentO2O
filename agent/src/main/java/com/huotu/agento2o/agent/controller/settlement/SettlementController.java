@@ -10,7 +10,6 @@
 
 package com.huotu.agento2o.agent.controller.settlement;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
@@ -29,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -95,7 +93,6 @@ public class SettlementController {
      */
     @RequestMapping(value = "/changeSettlementStatus", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    @SystemControllerLog(value = "结算单审核")
     public ApiResult changeSettlementStatus(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
                                             @RequestParam("settlementNo") String settlementNo,
                                             @RequestParam("authorStatus") Integer authorStatus,
@@ -115,7 +112,6 @@ public class SettlementController {
 
     @RequestMapping(value = "/batchChangeSettlementStatus", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    @SystemControllerLog(value = "结算单批量审核")
     public ApiResult batchChangeSettlementStatus(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
                                                  @RequestParam("authorStatus") Integer authorStatus,
                                                  @RequestParam("settlementNo") String... settlementNo) throws Exception {

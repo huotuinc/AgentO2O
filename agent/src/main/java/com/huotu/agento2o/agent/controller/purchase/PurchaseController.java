@@ -11,21 +11,15 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
-import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.ienum.ICommonEnum;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
@@ -126,7 +120,6 @@ public class PurchaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/addShopping", method = RequestMethod.POST)
-    @SystemControllerLog(value = "加入购物车")
     @ResponseBody
     public ApiResult addShopping(
             @AgtAuthenticationPrincipal Author author,
@@ -169,7 +162,7 @@ public class PurchaseController {
                 return new ApiResult("库存不足！");
             }
         }else{
-            AgentProduct agentProduct = agentProductService.findAgentProduct(author,product);
+            AgentProduct agentProduct = agentProductService.findAgentProduct(author.getParentAuthor(),product);
             if(agentProduct != null && num > agentProduct.getStore() - agentProduct.getFreez()){
                 return new ApiResult("库存不足！");
             }

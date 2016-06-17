@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -33,7 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -138,12 +141,70 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
                 mockFirstLevelAgentShoppingCartList.add(mockShoppingCart);
             }
         }
-        //一级代理商采购单（数据仅用于查询，可能与货品的预占库存不匹配）
-        for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()); i++) {
-            AgentPurchaseOrder mockPurchaseOrder = mockAgentPurchaseOrder(mockFirstLevelAgent);
-            int randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
-            AgentPurchaseOrderItem mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        //一级代理商采购单（数据仅用于查询，可能与货品的预占库存不匹配）,保证至少有10个
+        AgentPurchaseOrderItem mockPurchaseOrderItem = null;
+        AgentPurchaseOrder mockPurchaseOrder = null;
+        List<AgentPurchaseOrderItem> itemList = new ArrayList<>();
+        int randomProduct = 0;
+        //可删除
+        mockPurchaseOrder = mockDisablePurchaseOrder(mockFirstLevelAgent);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelAgentPurchaseOrderList.add(mockPurchaseOrder);
+        //可审核
+        mockPurchaseOrder = mockCheckablePurchaseOrder(mockFirstLevelAgent);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelAgentPurchaseOrderList.add(mockPurchaseOrder);
+        //可支付
+        mockPurchaseOrder = mockPayablePurchaseOrder(mockFirstLevelAgent);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelAgentPurchaseOrderList.add(mockPurchaseOrder);
+        //可发货
+        mockPurchaseOrder = mockDeliverablePurchaseOrder(mockFirstLevelAgent);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelAgentPurchaseOrderList.add(mockPurchaseOrder);
+        //可收货
+        mockPurchaseOrder = mockReceivablePurchaseOrder(mockFirstLevelAgent);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelAgentPurchaseOrderList.add(mockPurchaseOrder);
+
+        for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()) + 5; i++) {
+            mockPurchaseOrder = mockAgentPurchaseOrder(mockFirstLevelAgent);
+            randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+            mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
             mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+            itemList.clear();
+            itemList.add(mockPurchaseOrderItem);
+            mockPurchaseOrder.setOrderItemList(itemList);
             mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
             mockFirstLevelAgentPurchaseOrderList.add(mockPurchaseOrder);
         }
@@ -579,7 +640,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Assert.assertEquals(mockFirstLevelAgentPurchaseOrderList.get(0).getPOrderId(), purchaseOrderListWithPOrderId.get(0).getPOrderId());
 
         // 3.按商品名称搜索
-        String searchGoodsName = mockFirstLevelAgentProductList.get(0).getProduct().getName();
+        String searchGoodsName = mockFirstLevelAgentPurchaseOrderList.get(0).getOrderItemList().get(0).getName();
         long goodsNameCount = mockFirstLevelAgentPurchaseOrderList.stream().filter(order ->
                 order.getOrderItemList().stream().filter(
                         item -> item.getProduct().getName().equals(searchGoodsName)).count() > 0
@@ -601,7 +662,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Integer pageSizeWithGoodsName = (Integer) resultWithNoSearch.getModelAndView().getModel().get("pageSize");
         Assert.assertNotNull(purchaseOrderListWithGoodsName);
         Assert.assertEquals(Math.min(pageSizeWithGoodsName, goodsNameCount), purchaseOrderListWithGoodsName.size());
-        if(purchaseOrderListWithGoodsName.size() > 0){
+        if (purchaseOrderListWithGoodsName.size() > 0) {
             purchaseOrderListWithGoodsName.forEach(order -> {
                 long filterCount = order.getOrderItemList().stream().filter(item -> item.getProduct().getName().equals(searchGoodsName)).count();
                 Assert.assertTrue(filterCount > 0);
@@ -629,7 +690,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Integer pageSizeWithPayStatus = (Integer) resultWithPayStatus.getModelAndView().getModel().get("pageSize");
         Assert.assertNotNull(purchaseOrderListWithPayStatus);
         Assert.assertEquals(Math.min(pageSizeWithPayStatus, payedCount), purchaseOrderListWithPayStatus.size());
-        if(purchaseOrderListWithPayStatus.size() > 0){
+        if (purchaseOrderListWithPayStatus.size() > 0) {
             purchaseOrderListWithPayStatus.forEach(p -> {
                 Assert.assertEquals(PurchaseEnum.PayStatus.PAYED.getCode(), p.getPayStatus().getCode());
             });
@@ -656,7 +717,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Integer pageSizeWithDeliveryCount = (Integer) resultWithDeliveryStatus.getModelAndView().getModel().get("pageSize");
         Assert.assertNotNull(purchaseOrderListWithDeliveryStatus);
         Assert.assertEquals(Math.min(pageSizeWithDeliveryCount, deliveryCount), purchaseOrderListWithDeliveryStatus.size());
-        if(purchaseOrderListWithDeliveryStatus.size() > 0){
+        if (purchaseOrderListWithDeliveryStatus.size() > 0) {
             purchaseOrderListWithDeliveryStatus.forEach(p -> {
                 Assert.assertEquals(PurchaseEnum.ShipStatus.DELIVERED.getCode(), p.getShipStatus().getCode());
             });
@@ -682,9 +743,9 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         List<AgentPurchaseOrder> purchaseOrderListWithStatus = (List<AgentPurchaseOrder>) resultWithStatus.getModelAndView().getModel().get("purchaseOrderList");
         Integer pageSizeWithStatus = (Integer) resultWithStatus.getModelAndView().getModel().get("pageSize");
         Assert.assertNotNull(purchaseOrderListWithStatus);
-        Assert.assertEquals(Math.min(pageSizeWithStatus,statusCount),purchaseOrderListWithStatus.size());
-        if(purchaseOrderListWithStatus.size() > 0){
-            purchaseOrderListWithStatus.forEach(p->{
+        Assert.assertEquals(Math.min(pageSizeWithStatus, statusCount), purchaseOrderListWithStatus.size());
+        if (purchaseOrderListWithStatus.size() > 0) {
+            purchaseOrderListWithStatus.forEach(p -> {
                 Assert.assertEquals(PurchaseEnum.OrderStatus.CHECKED.getCode(), p.getStatus().getCode());
             });
         }
@@ -695,5 +756,197 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         // TODO: 2016/5/30
     }
 
+    /**
+     * 一级代理商登录 采购单详细
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testShowPurchaseOrderDetailByFirstLevelAgent() throws Exception {
+        String controllerUrl = BASE_URL + "/showPurchaseOrderDetail";
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        //1.不传参数
+        MvcResult resultWithNoParam = mockMvc.perform(get(controllerUrl).session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoParam = new String(resultWithNoParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject obj = JSONObject.parseObject(contentWithNoParam);
+        Assert.assertEquals("Required String parameter 'pOrderId' is not present", obj.getString("msg"));
+
+        //2.参数为空
+        MvcResult resultWithEmptyParam = mockMvc.perform(get(controllerUrl).session(session).param("pOrderId", ""))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithEmptyParam = new String(resultWithEmptyParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithEmptyParam = JSONObject.parseObject(contentWithEmptyParam);
+        Assert.assertEquals("采购单不存在！", objWithEmptyParam.getString("msg"));
+
+        //3.传正确参数
+        MvcResult result = mockMvc.perform(get(controllerUrl)
+                .session(session)
+                .param("pOrderId", mockFirstLevelAgentPurchaseOrderList.get(0).getPOrderId()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("deliveryList"))
+                .andExpect(model().attributeExists("purchaseOrder"))
+                .andExpect(model().attributeExists("sendmentEnum"))
+                .andExpect(model().attributeExists("taxTypeEnum"))
+                .andReturn();
+        AgentPurchaseOrder realAgentPurchaseOrder = (AgentPurchaseOrder) result.getModelAndView().getModel().get("purchaseOrder");
+        Assert.assertEquals(mockFirstLevelAgentPurchaseOrderList.get(0).getPOrderId(), realAgentPurchaseOrder.getPOrderId());
+
+    }
+
+    /**
+     * 一级代理商登录 取消采购单
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDeletePurchaseOrderByFirstLevelAgent() throws Exception {
+        String controllerUrl = BASE_URL + "/deletePurchaseOrder";
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        //获取一个不可取消的采购单
+        AgentPurchaseOrder cannotDeletePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> !p.deletable()).findAny().get();
+        //获取一个可取消的采购单
+        AgentPurchaseOrder deletablePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> p.deletable()).findAny().get();
+
+        //1.不传参数
+        MvcResult resultWithNoParam = mockMvc.perform(post(controllerUrl)
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoParam = new String(resultWithNoParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoParam = JSONObject.parseObject(contentWithNoParam);
+        Assert.assertEquals("Required String parameter 'pOrderId' is not present", objWithNoParam.getString("msg"));
+
+        //2.参数为空
+        MvcResult resultWithEmptyParam = mockMvc.perform(post(controllerUrl)
+                .session(session).param("pOrderId", ""))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithEmptyParam = new String(resultWithEmptyParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithEmptyParam = JSONObject.parseObject(contentWithEmptyParam);
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultCode(), objWithEmptyParam.getIntValue("code"));
+
+        //3.传不可取消的采购单单号
+        MvcResult resultWithCanNotDelete = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", cannotDeletePurchaseOrder.getPOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithCanNotDeleteParam = new String(resultWithCanNotDelete.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithCanNotDeleteParam = JSONObject.parseObject(contentWithCanNotDeleteParam);
+        Assert.assertEquals("采购单已审核或已支付，无法删除！", objWithCanNotDeleteParam.getString("msg"));
+
+        //4.传可取消的采购单单号
+        MvcResult result = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", deletablePurchaseOrder.getPOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject obj = JSONObject.parseObject(content);
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultCode(), obj.getIntValue("code"));
+    }
+
+    /**
+     * 一级代理商登录 支付采购单
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPayPurchaseOrderByFirstLevelAgent() throws Exception {
+        String controllerUrl = BASE_URL + "/payPurchaseOrder";
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        //获取一个可支付的采购单
+        AgentPurchaseOrder payablePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> p.payabled()).findAny().get();
+        //获取一个不可支付的采购单
+        AgentPurchaseOrder cannotPayPurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> !p.payabled()).findAny().get();
+        //1.不传参数
+        MvcResult resultWithNoParam = mockMvc.perform(post(controllerUrl)
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoParam = new String(resultWithNoParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoParam = JSONObject.parseObject(contentWithNoParam);
+        Assert.assertEquals("Required String parameter 'pOrderId' is not present", objWithNoParam.getString("msg"));
+
+        //2.参数为空
+        MvcResult resultWithEmptyParam = mockMvc.perform(post(controllerUrl)
+                .session(session).param("pOrderId", ""))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithEmptyParam = new String(resultWithEmptyParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithEmptyParam = JSONObject.parseObject(contentWithEmptyParam);
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultCode(), objWithEmptyParam.getIntValue("code"));
+
+        //3.传不可取消的采购单单号
+        MvcResult resultWithCanNotDelete = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", cannotPayPurchaseOrder.getPOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithCanNotDeleteParam = new String(resultWithCanNotDelete.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithCanNotDeleteParam = JSONObject.parseObject(contentWithCanNotDeleteParam);
+        Assert.assertEquals("采购单未审核或已已支付，无法支付！", objWithCanNotDeleteParam.getString("msg"));
+
+        //4.传可取消的采购单单号
+        MvcResult result = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", payablePurchaseOrder.getPOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject obj = JSONObject.parseObject(content);
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultCode(), obj.getIntValue("code"));
+
+    }
+
+    @Test
+    public void testReceivePurchaseOrderByFirstLevelAgent() throws Exception{
+        String controllerUrl = BASE_URL + "/receive";
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        //获取一个可支付的采购单
+        AgentPurchaseOrder receivablePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> p.receivable()).findAny().get();
+        //获取一个不可支付的采购单
+        AgentPurchaseOrder cannotReceivePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> !p.receivable()).findAny().get();
+        //1.不传参数
+        MvcResult resultWithNoParam = mockMvc.perform(post(controllerUrl)
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoParam = new String(resultWithNoParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoParam = JSONObject.parseObject(contentWithNoParam);
+        Assert.assertEquals("Required String parameter 'pOrderId' is not present", objWithNoParam.getString("msg"));
+
+        //2.参数为空
+        MvcResult resultWithEmptyParam = mockMvc.perform(post(controllerUrl)
+                .session(session).param("pOrderId", ""))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithEmptyParam = new String(resultWithEmptyParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithEmptyParam = JSONObject.parseObject(contentWithEmptyParam);
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultCode(), objWithEmptyParam.getIntValue("code"));
+
+        //3.传不可取消的采购单单号
+        MvcResult resultWithCanNotDelete = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", cannotReceivePurchaseOrder.getPOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithCanNotParam = new String(resultWithCanNotDelete.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithCanNotParam = JSONObject.parseObject(contentWithCanNotParam);
+        Assert.assertEquals("采购单无法确认收货！", objWithCanNotParam.getString("msg"));
+
+        //4.传可取消的采购单单号
+        MvcResult result = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("pOrderId", receivablePurchaseOrder.getPOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject obj = JSONObject.parseObject(content);
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultCode(), obj.getIntValue("code"));
+    }
 
 }

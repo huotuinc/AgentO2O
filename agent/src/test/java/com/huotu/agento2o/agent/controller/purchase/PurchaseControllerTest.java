@@ -10,9 +10,11 @@
 
 package com.huotu.agento2o.agent.controller.purchase;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -114,19 +116,20 @@ public class PurchaseControllerTest extends CommonTestBase {
         }
 
         //一级代理商货品
-        for (int i = 0; i <= random.nextInt(mockGoodsWith1ProductList.size()); i++) {
+        for (int i = 0; i <= random.nextInt(mockGoodsWith1ProductList.size() - 5) + 5; i++) {
             mockFirstLevelAgentGoodsWith1ProductList.add(mockGoodsWith1ProductList.get(i));
             MallGoods mockGoodsWith1Products = mockGoodsWith1ProductList.get(i);
             mockGoodsWith1Products.getProducts().forEach(product -> {
                 mockFirstLevelAgentProductList.add(mockAgentProduct(product, mockFirstLevelAgent));
             });
         }
-        for (int i = 0; i <= random.nextInt(mockGoodsWithNProductList.size()); i++) {
+        for (int i = 0; i <= random.nextInt(mockGoodsWithNProductList.size() - 5) + 5; i++) {
             mockFirstLevelAgentGoodsWithNProductList.add(mockGoodsWithNProductList.get(i));
             for (int j = 0; j <= random.nextInt(mockGoodsWithNProductList.get(i).getProducts().size()); j++) {
                 mockFirstLevelAgentProductList.add(mockAgentProduct(mockGoodsWithNProductList.get(i).getProducts().get(j), mockFirstLevelAgent));
             }
         }
+
     }
 
     /**
@@ -365,7 +368,7 @@ public class PurchaseControllerTest extends CommonTestBase {
                 .andReturn();
         String contentWithNum0 = new String(resultWithNum0.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject objWithNum0 = JSONObject.parseObject(contentWithNum0);
-        Assert.assertEquals("请输入要订购的数量", objWithNum0.getString("msg"));
+        Assert.assertEquals("订购数量必须大于0！", objWithNum0.getString("msg"));
 
         //2.商品为空且货品未空 校验
         MvcResult resultWithNoGoodsIdAndProductId = mockMvc.perform(
@@ -525,7 +528,7 @@ public class PurchaseControllerTest extends CommonTestBase {
                 .andReturn();
         String contentWithNum0 = new String(resultWithNum0.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject objWithNum0 = JSONObject.parseObject(contentWithNum0);
-        Assert.assertEquals("请输入要订购的数量", objWithNum0.getString("msg"));
+        Assert.assertEquals("订购数量必须大于0！", objWithNum0.getString("msg"));
 
         //2.商品为空且货品未空 校验
         MvcResult resultWithNoGoodsIdAndProductId = mockMvc.perform(
@@ -575,17 +578,17 @@ public class PurchaseControllerTest extends CommonTestBase {
         Assert.assertEquals("请选择要订购的商品！", objWithNotExistProductId.getString("msg"));
 
         //6.数量大于可用库存 校验
-        Integer randomNum = random.nextInt(100) + mockFirstLevelAgentGoodsWith1ProductList.get(0).getProducts().get(0).getStore() - mockFirstLevelAgentGoodsWith1ProductList.get(0).getProducts().get(0).getFreez() + 1;
+        Integer randomNum = random.nextInt(100) + mockFirstLevelAgentProductList.get(0).getStore() - mockFirstLevelAgentProductList.get(0).getFreez() + 1;
         MvcResult resultWithTooMuchNum = mockMvc.perform(
                 post("/purchase/addShopping")
                         .session(session)
                         .param("num", String.valueOf(randomNum))
-                        .param("goodsId", String.valueOf(mockFirstLevelAgentGoodsWith1ProductList.get(0).getGoodsId())))
+                        .param("goodsId", String.valueOf(mockFirstLevelAgentProductList.get(0).getGoodsId())))
                 .andExpect(status().isOk())
                 .andReturn();
         String contentWithTooMuchNum = new String(resultWithTooMuchNum.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject objWithTooMuchNum = JSONObject.parseObject(contentWithTooMuchNum);
-        Assert.assertTrue(randomNum > (mockFirstLevelAgentGoodsWith1ProductList.get(0).getProducts().get(0).getStore() - mockFirstLevelAgentGoodsWith1ProductList.get(0).getProducts().get(0).getFreez()));
+        Assert.assertTrue(randomNum > (mockFirstLevelAgentProductList.get(0).getStore() - mockFirstLevelAgentProductList.get(0).getFreez()));
         Assert.assertEquals("库存不足！", objWithTooMuchNum.getString("msg"));
 
 
@@ -625,15 +628,15 @@ public class PurchaseControllerTest extends CommonTestBase {
         Assert.assertEquals("200", objWith1Product.getString("code"));
 
         //获取多规格商品中货品可用数量大于1的货品
-        MallProduct mockProductWithNProdct = null;
+        MallProduct mockProductWithNProduct = null;
         for (MallGoods mockGoods : mockFirstLevelAgentGoodsWithNProductList) {
             for (MallProduct mockProduct : mockGoods.getProducts()) {
                 if (mockProduct.getStore() - mockProduct.getFreez() > 1) {
-                    mockProductWithNProdct = mockProduct;
+                    mockProductWithNProduct = mockProduct;
                     break;
                 }
             }
-            if (mockProductWithNProdct != null) {
+            if (mockProductWithNProduct != null) {
                 break;
             }
         }
@@ -642,7 +645,7 @@ public class PurchaseControllerTest extends CommonTestBase {
                 post("/purchase/addShopping")
                         .session(session)
                         .param("num", "1")
-                        .param("productId", String.valueOf(mockProductWithNProdct.getProductId())))
+                        .param("productId", String.valueOf(mockProductWithNProduct.getProductId())))
                 .andExpect(status().isOk())
                 .andReturn();
         String contentWithNProduct = new String(resultWithNProduct.getResponse().getContentAsByteArray(), "UTF-8");
@@ -710,7 +713,7 @@ public class PurchaseControllerTest extends CommonTestBase {
      * @throws Exception
      */
     @Test
-    public void testShowProductListBySecondLevelShop() throws Exception {
+    public void testShowProductListBySecondLevelAgent() throws Exception {
         //一级代理商下级门店登录
         MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         testShowProductList(session);
@@ -753,6 +756,49 @@ public class PurchaseControllerTest extends CommonTestBase {
                 .andReturn();
         List<MallProduct> productList = (List<MallProduct>) result.getModelAndView().getModel().get("productList");
         Assert.assertEquals(expectSize, productList.size());
+    }
+
+    @Test
+    public void testGetStandardType() throws Exception {
+        //一级代理商登录
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        String controllerUrl = "/purchase/getType";
+        //1.不传standardTypeId
+        MvcResult resultWithNoParam = mockMvc.perform(post(controllerUrl).session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoParam = new String(resultWithNoParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject obj = JSONObject.parseObject(contentWithNoParam);
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultCode(), obj.getIntValue("code"));
+        List<MallGoodsType> expectTypeList = goodsTypeRepository.findByParentStandardTypeIdAndDisabledFalseAndCustomerIdOrderByTOrderAsc("0", -1);
+        List<MallGoodsType> realTypeListWithNoParam = JSONArray.parseArray(obj.getString("data"), MallGoodsType.class);
+        Assert.assertEquals(expectTypeList.size(), realTypeListWithNoParam.size());
+        for (int i = 0; i < expectTypeList.size(); i++) {
+            Assert.assertEquals(expectTypeList.get(i).getName(), realTypeListWithNoParam.get(i).getName());
+        }
+        //2.standardTypeId为0
+        MvcResult resultWith0 = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("standardTypeId", "0"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWith0 = new String(resultWith0.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWith0 = JSONObject.parseObject(contentWith0);
+        Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultCode(), objWith0.getIntValue("code"));
+        List<MallGoodsType> realTypeWith0 = JSONArray.parseArray(objWith0.getString("data"), MallGoodsType.class);
+        Assert.assertEquals(expectTypeList.size(), realTypeWith0.size());
+        for (int i = 0; i < expectTypeList.size(); i++) {
+            Assert.assertEquals(expectTypeList.get(i).getName(), realTypeWith0.get(i).getName());
+        }
+        //3.standardTypeId 不存在
+        MvcResult resultWithErrorParam = mockMvc.perform(post(controllerUrl)
+                .session(session)
+                .param("standardTypeId", "-1"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithErrorParam = new String(resultWithErrorParam.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithErrorParam = JSONObject.parseObject(contentWithErrorParam);
+        Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultCode(), objWithErrorParam.getIntValue("code"));
     }
 
 }

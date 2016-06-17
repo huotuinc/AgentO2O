@@ -11,7 +11,6 @@
 package com.huotu.agento2o.agent.controller.settlement;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -66,7 +65,6 @@ public class WithdrawRecordController {
     }
 
     @RequestMapping("saveAuthorAccountInfo")
-    @SystemControllerLog(value = "结算账户保存")
     @ResponseBody
     public ApiResult saveAuthorAccountInfo(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop ,
                                            @RequestParam(value = "bankName") String bankName,
@@ -106,7 +104,6 @@ public class WithdrawRecordController {
 
     @RequestMapping(value = "/addWithdrawRecord", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    @SystemControllerLog(value = "申请提现")
     public ApiResult applyWithdraw(@RequestParam("supplierAccountId") Integer supplierAccountId, WithdrawApplyInfo withdrawApplyInfo) throws Exception {
         ApiResult apiResult = new ApiResult();
         if (withdrawApplyInfo.getBalance() == 0) {

@@ -36,7 +36,6 @@ import java.util.List;
         "com.huotu.agento2o.agent",
         "com.huotu.agento2o.common"
 })
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class MVCConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private Environment env;

@@ -3,7 +3,6 @@ package com.huotu.agento2o.agent.controller.purchase;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
@@ -12,9 +11,7 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
-import com.huotu.agento2o.service.model.purchase.ReturnOrderInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
-import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
@@ -137,7 +134,6 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/addReturnOrder")
     @ResponseBody
-    @SystemControllerLog(value = "退货单新增")
     public ApiResult addReturnOrder(
             @AgtAuthenticationPrincipal Author author,
             @RequestParam(name = "productIds") Integer[] agentProductIds, Integer[] productNums, AgentReturnedOrder agentReturnedOrder,String sendModeCode) throws Exception {
@@ -203,7 +199,6 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/cancelReturnOrder")
     @ResponseBody
-    @SystemControllerLog(value = "退货单取消")
     public ApiResult cancelReturnOrder(@AgtAuthenticationPrincipal Author author,
                                        @RequestParam(required = true) String rOrderId) throws Exception {
         if(StringUtil.isEmpty(rOrderId)){
@@ -279,7 +274,6 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/delivery")
     @ResponseBody
-    @SystemControllerLog(value = "退货单退货")
     public ApiResult deliveryReturnOrder(
             @AgtAuthenticationPrincipal Author author,
             ReturnOrderDeliveryInfo deliveryInfo) throws Exception {
@@ -350,7 +344,6 @@ public class AgentReturnedOrderController {
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
     @RequestMapping(value = "/checkAgentReturnOrder")
     @ResponseBody
-    @SystemControllerLog(value = "下级退货单审核")
     public ApiResult checkAgentReturnOrder(@AgtAuthenticationPrincipal(type=Agent.class) Agent agent,
                                            @RequestParam(required = true) String rOrderId,
                                            @RequestParam(required = true) String checkStatus,
@@ -377,7 +370,6 @@ public class AgentReturnedOrderController {
      */
     @RequestMapping(value = "/receiveAgentReturnOrder")
     @ResponseBody
-    @SystemControllerLog(value = "下级退货单确认收货")
     public ApiResult receiveReturnOrder(@AgtAuthenticationPrincipal Author author,
                                         @RequestParam(required = true) String rOrderId){
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);

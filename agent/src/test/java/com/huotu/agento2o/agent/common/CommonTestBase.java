@@ -124,6 +124,9 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     @Autowired
     private MallProductRepository mallProductRepository;
+    @Autowired
+    private MallGoodsTypeRepository mallGoodsTypeRepository;
+
     @Before
     public void initBase() {
         standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167", -1);
@@ -256,9 +259,9 @@ public abstract class CommonTestBase extends SpringWebTest {
         mockMallProduct.setName(mockGoods.getName());
         mockMallProduct.setMarketable(true);
         mockMallProduct.setLocalStock(false);
-        int store = random.nextInt(100) + 1;
+        int store = random.nextInt(100) + 20;
         mockMallProduct.setStore(store);
-        mockMallProduct.setFreez(random.nextInt(store));
+        mockMallProduct.setFreez(random.nextInt(store - 20 + 1) + 10);
         return mockMallProduct;
     }
 
@@ -286,7 +289,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setAuthor(author);
         shoppingCart.setProduct(mockMallProduct);
-        shoppingCart.setNum(random.nextInt(mockMallProduct.getStore() - mockMallProduct.getFreez()) + 1);
+        shoppingCart.setNum(random.nextInt(mockMallProduct.getStore() - mockMallProduct.getFreez() - 1) + 1);
         shoppingCart.setCreateTime(new Date());
         return shoppingCartRepository.saveAndFlush(shoppingCart);
     }
@@ -298,7 +301,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         if (agentProduct.getStore() - agentProduct.getFreez() == 0) {
             shoppingCart.setNum(0);
         } else {
-            shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez()) + 1);
+            shoppingCart.setNum(random.nextInt(agentProduct.getStore() - agentProduct.getFreez() - 1) + 1);
         }
         shoppingCart.setCreateTime(new Date());
         return shoppingCartRepository.saveAndFlush(shoppingCart);
@@ -333,6 +336,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         return invoiceConfigRepository.saveAndFlush(invoiceConfig);
     }
 
+    @SuppressWarnings("Duplicates")
     protected AgentPurchaseOrder mockAgentPurchaseOrder(Author author) {
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
@@ -368,6 +372,11 @@ public abstract class CommonTestBase extends SpringWebTest {
                 int randomShipStatus = random.nextInt(2);
                 purchaseOrder.setShipStatus(EnumHelper.getEnumType(PurchaseEnum.ShipStatus.class, randomShipStatus));
                 if (randomShipStatus == PurchaseEnum.ShipStatus.DELIVERED.getCode()) {
+                    //已发货
+                    int randomReceiveStatus = random.nextInt(2);
+                    if(randomReceiveStatus == 1){
+                        purchaseOrder.setReceivedTime(new Date());
+                    }
                 }
             }
             purchaseOrder.setDisabled(false);
@@ -383,6 +392,194 @@ public abstract class CommonTestBase extends SpringWebTest {
         return purchaseOrder;
     }
 
+    /**
+     * 模拟可取消采购单
+     * 待审核 或 审核不通过 或 审核通过且未支付
+     * @param author
+     * @return
+     */
+    @SuppressWarnings("Duplicates")
+    protected AgentPurchaseOrder mockDisablePurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setAuthor(author);
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, randomTaxType));
+        purchaseOrder.setCreateTime(new Date());
+        if (randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+        } else if (randomTaxType == PurchaseEnum.TaxType.TAX.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setBankName(UUID.randomUUID().toString());
+            purchaseOrder.setAccountNo(UUID.randomUUID().toString());
+        }
+        int randomMode = random.nextInt(3);
+        if(randomMode == 0){
+            purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
+        }else if(randomMode == 1){
+            purchaseOrder.setStatus(PurchaseEnum.OrderStatus.RETURNED);
+        }else{
+            purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+            purchaseOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
+        }
+        purchaseOrder.setDisabled(false);
+        return purchaseOrder;
+    }
+
+    /**
+     * 模拟可审核采购单
+     * 待审核
+     * @param author
+     * @return
+     */
+    @SuppressWarnings("Duplicates")
+    protected AgentPurchaseOrder mockCheckablePurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setAuthor(author);
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, randomTaxType));
+        purchaseOrder.setCreateTime(new Date());
+        if (randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+        } else if (randomTaxType == PurchaseEnum.TaxType.TAX.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setBankName(UUID.randomUUID().toString());
+            purchaseOrder.setAccountNo(UUID.randomUUID().toString());
+        }
+        purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
+        purchaseOrder.setDisabled(false);
+        return purchaseOrder;
+    }
+
+    /**
+     * 模拟可支付采购单
+     * 已审核,且 支付状态 为空或 未支付
+     * @param author
+     * @return
+     */
+    @SuppressWarnings("Duplicates")
+    protected AgentPurchaseOrder mockPayablePurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setAuthor(author);
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, randomTaxType));
+        purchaseOrder.setCreateTime(new Date());
+        if (randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+        } else if (randomTaxType == PurchaseEnum.TaxType.TAX.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setBankName(UUID.randomUUID().toString());
+            purchaseOrder.setAccountNo(UUID.randomUUID().toString());
+        }
+        purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        purchaseOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
+        purchaseOrder.setDisabled(false);
+        return purchaseOrder;
+    }
+
+    /**
+     * 模拟可发货采购单
+     * 已审核 且支付状态为 已支付 且发货状态 为空 或未发货
+     * @param author
+     * @return
+     */
+    @SuppressWarnings("Duplicates")
+    protected AgentPurchaseOrder mockDeliverablePurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setAuthor(author);
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, randomTaxType));
+        purchaseOrder.setCreateTime(new Date());
+        if (randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+        } else if (randomTaxType == PurchaseEnum.TaxType.TAX.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setBankName(UUID.randomUUID().toString());
+            purchaseOrder.setAccountNo(UUID.randomUUID().toString());
+        }
+        purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        purchaseOrder.setPayStatus(PurchaseEnum.PayStatus.PAYED);
+        purchaseOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
+        purchaseOrder.setDisabled(false);
+        return purchaseOrder;
+    }
+
+    /**
+     * 模拟可确认收货采购单
+     * 已审核 且支付状态为 已支付 且发货状态为已发货 且确认收货时间为空
+     * @param author
+     * @return
+     */
+    @SuppressWarnings("Duplicates")
+    protected AgentPurchaseOrder mockReceivablePurchaseOrder(Author author){
+        AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
+        purchaseOrder.setPOrderId(SerialNo.create());
+        purchaseOrder.setAuthor(author);
+        purchaseOrder.setCostFreight(0);
+        purchaseOrder.setShipName(UUID.randomUUID().toString());
+        purchaseOrder.setShipMobile(UUID.randomUUID().toString());
+        purchaseOrder.setShipAddr(UUID.randomUUID().toString());
+        int randomSendMode = random.nextInt(2);
+        purchaseOrder.setSendMode(EnumHelper.getEnumType(PurchaseEnum.SendmentStatus.class, randomSendMode));
+        int randomTaxType = random.nextInt(3);
+        purchaseOrder.setTaxType(EnumHelper.getEnumType(PurchaseEnum.TaxType.class, randomTaxType));
+        purchaseOrder.setCreateTime(new Date());
+        if (randomTaxType == PurchaseEnum.TaxType.NORMAL.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+        } else if (randomTaxType == PurchaseEnum.TaxType.TAX.getCode()) {
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setTaxContent(UUID.randomUUID().toString());
+            purchaseOrder.setTaxTitle(UUID.randomUUID().toString());
+            purchaseOrder.setBankName(UUID.randomUUID().toString());
+            purchaseOrder.setAccountNo(UUID.randomUUID().toString());
+        }
+        purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
+        purchaseOrder.setPayStatus(PurchaseEnum.PayStatus.PAYED);
+        purchaseOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        purchaseOrder.setDisabled(false);
+        return purchaseOrder;
+    }
+
     protected AgentPurchaseOrder mockAgentPurchaseOrder(AgentPurchaseOrder mockPurchaseOrder) {
         return agentPurchaseOrderRepository.saveAndFlush(mockPurchaseOrder);
     }
@@ -390,7 +587,13 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrderItem mockAgentPurchaseOrderItem(AgentPurchaseOrder agentPurchaseOrder, MallProduct mallProduct) {
         AgentPurchaseOrderItem orderItem = new AgentPurchaseOrderItem();
         orderItem.setPurchaseOrder(agentPurchaseOrder);
-        orderItem.setNum(random.nextInt(100));
+        //保证单个采购单数量大于0且不超过预占库存
+        if (agentPurchaseOrder.getAuthor().getParentAuthor() == null) {
+            orderItem.setNum(random.nextInt(mallProduct.getFreez() - 1) + 1);
+        } else {
+            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor(), mallProduct);
+            orderItem.setNum(random.nextInt(agentProduct.getFreez() - 1) + 1);
+        }
         orderItem.setProduct(mallProduct);
         orderItem.setBn(mallProduct.getBn());
         orderItem.setName(mallProduct.getName());
@@ -433,33 +636,34 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     /**
      * 模拟一个订单中的货单
+     *
      * @param order
      * @param product
      * @param mallAfterSales
      * @param nums
      * @return
      */
-    protected MallOrderItem mockMallOrderItem(MallOrder order, MallProduct product , MallAfterSales mallAfterSales,int nums){
+    protected MallOrderItem mockMallOrderItem(MallOrder order, MallProduct product, MallAfterSales mallAfterSales, int nums) {
         MallOrderItem mallOrderItem = new MallOrderItem();
-        mallOrderItem.setItemId(random.nextLong()+1);
+        mallOrderItem.setItemId(random.nextLong() + 1);
         mallOrderItem.setOrder(order);
         mallOrderItem.setProduct(product);
         mallOrderItem.setNums(nums);
         mallOrderItem.setShipStatus(OrderEnum.ShipStatus.NOT_DELIVER);
         mallOrderItem.setAfterSales(mallAfterSales);
         mallOrderItemRepository.saveAndFlush(mallOrderItem);
-        return  mallOrderItem;
+        return mallOrderItem;
     }
 
-    protected MallProduct mockMallProduct(){
+    protected MallProduct mockMallProduct() {
         MallProduct mallProduct = new MallProduct();
-        mallProduct.setProductId(random.nextInt()+1);
+        mallProduct.setProductId(random.nextInt() + 1);
         mallProduct.setGoods(new MallGoods());
         mallProduct.setName("xxx");
         return mallProductRepository.saveAndFlush(mallProduct);
     }
 
-    protected MallAfterSales mockMallAfterSales(Shop shop ,String orderId) {
+    protected MallAfterSales mockMallAfterSales(Shop shop, String orderId) {
         MallAfterSales mallAfterSales = new MallAfterSales();
         mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setOrderItem(new MallOrderItem());
@@ -519,7 +723,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         return addressRepository.saveAndFlush(address);
     }
 
-    protected AgentReturnedOrder mockAgentReturnOrder(Author author){
+    protected AgentReturnedOrder mockAgentReturnOrder(Author author) {
         AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
         agentReturnedOrder.setROrderId(SerialNo.create());
         agentReturnedOrder.setAuthor(author);
@@ -532,7 +736,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         return agentReturnedOrderRepository.saveAndFlush(agentReturnedOrder);
     }
 
-    protected AgentReturnedOrderItem mockAgentReturnOrderItem(AgentReturnedOrder agentReturnedOrder,MallProduct mallProduct){
+    protected AgentReturnedOrderItem mockAgentReturnOrderItem(AgentReturnedOrder agentReturnedOrder, MallProduct mallProduct) {
         AgentReturnedOrderItem agentReturnedOrderItem = new AgentReturnedOrderItem();
         agentReturnedOrderItem.setReturnedOrder(agentReturnedOrder);
         agentReturnedOrderItem.setProduct(mallProduct);

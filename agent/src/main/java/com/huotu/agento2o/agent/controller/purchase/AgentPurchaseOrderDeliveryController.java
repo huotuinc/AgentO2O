@@ -11,8 +11,6 @@
 package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
-import com.huotu.agento2o.agent.config.annotataion.SystemControllerLog;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -81,7 +79,6 @@ public class AgentPurchaseOrderDeliveryController {
      */
     @RequestMapping(value = "/delivery")
     @ResponseBody
-    @SystemControllerLog(value = "采购单发货")
     public ApiResult delivery(
             @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
             DeliveryInfo deliveryInfo) throws Exception{

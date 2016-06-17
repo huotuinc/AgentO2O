@@ -139,7 +139,7 @@ public class AgentReturnedOrder {
     @Column(name = "Received_Time")
     private Date receivedTime;
 
-    @OneToMany(mappedBy = "returnedOrder", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "returnedOrder", cascade = CascadeType.ALL)
     private List<AgentReturnedOrderItem> orderItemList;
 
 
