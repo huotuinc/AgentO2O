@@ -16,7 +16,6 @@ import org.omg.PortableInterceptor.INACTIVE;
  * Created by liual on 2015-09-21.
  */
 public enum ResultCodeEnum {
-    //// TODO: 2016/5/10 重新定义？？？ 
     SUCCESS(200, "请求成功"),
     USERNAME_NULL(401, "用户名不能为空"),
     PASSWORD_NULL(402, "密码不能为空"),
@@ -35,7 +34,6 @@ public enum ResultCodeEnum {
     CONFIG_SAVE_FAILURE(502, "设置失败"),
     INVENTORY_SHORTAGE(505, "库存不足");
 
-    //todo 其他状态
     private int resultCode;
     private String resultMsg;
 

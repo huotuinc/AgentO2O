@@ -76,6 +76,8 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     private List<AgentProduct> mockFirstLevelShopProductList = new ArrayList<>();
     //一级代理商下级门店 购物车
     private List<ShoppingCart> mockFirstLevelShopShoppingCartList = new ArrayList<>();
+    //一级代理商下级门店采购单
+    private List<AgentPurchaseOrder> mockFirstLevelShopPurchaseOrderList = new ArrayList<>();
 
     //一级代理商下级代理商 购物车
     private List<ShoppingCart> mockSecondLevelAgentShoppingCartList = new ArrayList<>();
@@ -214,6 +216,71 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
             ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i), mockFirstLevelShop);
             mockFirstLevelShopShoppingCartList.add(mockShoppingCart);
         }
+        //一级代理商下级门店采购单
+        //可删除
+        mockPurchaseOrder = mockDisablePurchaseOrder(mockFirstLevelShop);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelShopPurchaseOrderList.add(mockPurchaseOrder);
+        //可审核
+        mockPurchaseOrder = mockCheckablePurchaseOrder(mockFirstLevelShop);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelShopPurchaseOrderList.add(mockPurchaseOrder);
+        //可支付
+        mockPurchaseOrder = mockPayablePurchaseOrder(mockFirstLevelShop);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelShopPurchaseOrderList.add(mockPurchaseOrder);
+        //可发货
+        mockPurchaseOrder = mockDeliverablePurchaseOrder(mockFirstLevelShop);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelShopPurchaseOrderList.add(mockPurchaseOrder);
+        //可收货
+        mockPurchaseOrder = mockReceivablePurchaseOrder(mockFirstLevelShop);
+        randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+        mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+        mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+        itemList.clear();
+        itemList.add(mockPurchaseOrderItem);
+        mockPurchaseOrder.setOrderItemList(itemList);
+        mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+        mockFirstLevelShopPurchaseOrderList.add(mockPurchaseOrder);
+
+        for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()) + 5; i++) {
+            mockPurchaseOrder = mockAgentPurchaseOrder(mockFirstLevelShop);
+            randomProduct = random.nextInt(mockFirstLevelAgentProductList.size());
+            mockPurchaseOrderItem = mockAgentPurchaseOrderItem(mockPurchaseOrder, mockFirstLevelAgentProductList.get(randomProduct).getProduct());
+            mockPurchaseOrder.setFinalAmount(mockPurchaseOrderItem.getPrice() * mockPurchaseOrderItem.getNum());
+            itemList.clear();
+            itemList.add(mockPurchaseOrderItem);
+            mockPurchaseOrder.setOrderItemList(itemList);
+            mockPurchaseOrder = mockAgentPurchaseOrder(mockPurchaseOrder);
+            mockFirstLevelShopPurchaseOrderList.add(mockPurchaseOrder);
+        }
+
+
         //一级代理商下级代理商购物车
         for (int i = 0; i <= random.nextInt(mockFirstLevelAgentProductList.size()); i++) {
             ShoppingCart mockShoppingCart = mockShoppingCart(mockFirstLevelAgentProductList.get(i), mockSecondLevelAgent);
@@ -230,7 +297,6 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     public void testAddPurchaseByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
         MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
-        // TODO: 2016/5/25
         // 1.不传参数 校验
         // 1-1.不传 shoppingCartIds
         MvcResult resultWithNoId = mockMvc.perform(
@@ -947,6 +1013,42 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultCode(), obj.getIntValue("code"));
+    }
+
+    /**
+     * 显示下级采购单列表
+     * @throws Exception
+     */
+    @Test
+    public void testShowAgentPurchaseOrderList() throws Exception{
+        String controllerUrl = BASE_URL + "/showAgentPurchaseOrderList";
+
+        //1.门店登录（预期没有权限）
+        MockHttpSession shopSession = loginAs(mockFirstLevelShop.getUsername(),passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MvcResult resultWithErrorRole = mockMvc.perform(get(controllerUrl)
+                .session(shopSession))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithErrorRole = new String(resultWithErrorRole.getResponse().getContentAsByteArray(),"UTF-8");
+        JSONObject objWithErrorRole = JSONObject.parseObject(contentWithErrorRole);
+        Assert.assertEquals("没有权限",objWithErrorRole.getString("msg"));
+
+        //2.无搜索条件
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(),passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MvcResult resultWithNoSearch = mockMvc.perform(get(controllerUrl)
+                .session(session))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("purchaseOrderList"))
+                .andExpect(model().attributeExists("pageSize"))
+                .andExpect(model().attributeExists("pageNo"))
+                .andExpect(model().attributeExists("totalPages"))
+                .andExpect(model().attributeExists("totalRecords"))
+                .andExpect(model().attributeExists("payStatusEnums"))
+                .andExpect(model().attributeExists("shipStatusEnums"))
+                .andExpect(model().attributeExists("orderStatusEnums"))
+                .andReturn();
+        List<AgentPurchaseOrder> realPurchaseOrderList = (List<AgentPurchaseOrder>) resultWithNoSearch.getModelAndView().getModel().get("purchaseOrderList");
+        Assert.assertEquals(mockFirstLevelShopPurchaseOrderList.size(),realPurchaseOrderList.size());
     }
 
 }

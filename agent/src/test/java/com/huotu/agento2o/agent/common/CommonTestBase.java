@@ -591,7 +591,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         if (agentPurchaseOrder.getAuthor().getParentAuthor() == null) {
             orderItem.setNum(random.nextInt(mallProduct.getFreez() - 1) + 1);
         } else {
-            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor(), mallProduct);
+            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor().getParentAuthor(), mallProduct);
             orderItem.setNum(random.nextInt(agentProduct.getFreez() - 1) + 1);
         }
         orderItem.setProduct(mallProduct);

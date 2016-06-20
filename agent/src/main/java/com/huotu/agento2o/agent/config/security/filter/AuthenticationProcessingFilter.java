@@ -55,7 +55,6 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
             if (userDetails instanceof Author) {
                 authorId = ((Author) userDetails).getId();
             }
-            //TODO 操作员
             CookieHelper.setCookie(response, "authorId", String.valueOf(authorId), SysConstant.COOKIE_DOMAIN);
         }
 

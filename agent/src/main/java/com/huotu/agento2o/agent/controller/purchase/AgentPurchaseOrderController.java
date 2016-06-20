@@ -293,29 +293,6 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
-    /**
-     * 采购单发货（代理商）
-     * todo 废弃 发货需填写发货单
-     *
-     * @param agent
-     * @param pOrderId
-     * @return
-     * @throws Exception
-     */
-    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('AGENT_PURCHASE')")
-    @RequestMapping("delivery")
-    @ResponseBody
-    public ApiResult deliveryAgentPurchaseOrder(
-            @AgtAuthenticationPrincipal(type = Agent.class) Agent agent,
-            @RequestParam(required = true) String pOrderId) throws Exception {
-        ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        if (StringUtil.isEmptyStr(pOrderId)) {
-            return result;
-        }
-        result = purchaseOrderService.deliveryAgentPurchaseOrder(null, agent.getId(), pOrderId);
-        return result;
-    }
-
     @RequestMapping("/exportExcel")
     @SuppressWarnings("Duplicates")
     public void exportExcel(@AgtAuthenticationPrincipal Author author,

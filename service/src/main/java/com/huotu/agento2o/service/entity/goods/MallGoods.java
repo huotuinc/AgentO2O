@@ -88,5 +88,4 @@ public class MallGoods {
      */
     @Column(name = "Type_Id")
     private Integer typeId;
-    // TODO: 3/17/16
 }

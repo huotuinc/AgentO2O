@@ -25,7 +25,6 @@ public class BlockExecutor {
                     Thread.sleep(2000);
                     System.out.println("Thread Name is "+Thread.currentThread().getName());
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

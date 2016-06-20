@@ -233,7 +233,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                     //修改平台方货品预占库存
                     MallProduct customerProduct = item.getProduct();
                     if (customerProduct.getFreez() - item.getNum() < 0) {
-                        // TODO: 2016/5/19 单元测试，库存不足
                         throw new Exception("库存不足，无法删除！");
                     }
                     customerProduct.setFreez(customerProduct.getFreez() - item.getNum());
@@ -242,7 +241,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                     //如果采购单未审核 修改代理商库存
                     AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), item.getProduct());
                     if (agentProduct.getFreez() - item.getNum() < 0) {
-                        // TODO: 2016/5/19 单元测试 库存不足
                         throw new Exception("库存不足，无法删除！");
                     }
                     agentProduct.setFreez(agentProduct.getFreez() - item.getNum());

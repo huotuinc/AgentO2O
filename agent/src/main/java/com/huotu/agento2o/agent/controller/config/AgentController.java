@@ -43,19 +43,6 @@ public class AgentController {
     private AuthorService authorService;
     @Autowired
     private ShopService shopService;
-
-    /**
-     * 展示代理商基本信息(废弃)
-     * todo delete
-     * @param agent
-     * @param model
-     * @return
-     */
-    /*@RequestMapping(value = "/agentConfig", method = RequestMethod.GET)
-    public String showAgent(@AgtAuthenticationPrincipal Agent agent, Model model) {
-        model.addAttribute("agent", agentService.findByAgentId(agent.getId()));
-        return "config/agentConfig";
-    }*/
     /**
      * 基本资料设置
      *

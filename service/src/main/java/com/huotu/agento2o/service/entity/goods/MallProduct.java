@@ -97,6 +97,4 @@ public class MallProduct {
     @Column(name = "Is_Local_Stock", nullable = false)
     private boolean isLocalStock;
 
-    // TODO: 3/17/16
-
 }

@@ -270,7 +270,6 @@
             return;
         }
         if(is_parent){
-            //TODO: 刷新等待界面
             $.ajax({
                 type:"POST",
                 url: basicUrl + "/getType",
@@ -284,7 +283,9 @@
                         createTidSelect(typeList,parent_id, standardTypeId);
                     }else{
                         $.jBox.tip(msg.msg, 'error');
-                        window.location.reload();
+                        setTimeout(function(){
+                            window.location.reload();
+                        },500);
                     }
                 }
             });
