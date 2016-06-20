@@ -22,7 +22,7 @@ public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpeci
 
     List<Agent> findByAgentLevel_levelIdAndIsDeletedFalse(Integer levelId);
 
-    Agent findByUsernameAndIsDeletedFalse(String userName);
+    Agent findByUsername(String userName);
 
     @Modifying(clearAutomatically = true)
     @Query("update Agent a set a.isDeleted = true where a.id = ?1")

@@ -107,7 +107,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public boolean isEnableAgent(String userName) {
-        return agentRepository.findByUsernameAndIsDeletedFalse(userName) == null;
+        return agentRepository.findByUsername(userName) == null;
     }
 
     @Override

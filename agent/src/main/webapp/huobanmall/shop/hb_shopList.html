@@ -218,7 +218,7 @@
         $("#audit_dialog").html($("#audit_template").html());
         var auditComment = $(obj).attr("audit");
         $("#auditComment").text(auditComment);
-        J.ShowDialog("audit_dialog", "审核", function () {
+        J.ShowDialog("audit_dialog", "门店审核", function () {
             var requestData = checkAudit(obj);
             if (requestData != null) {
                 $.jBox.tip("正在审核...", "loading");
@@ -467,7 +467,7 @@
                                             <input style="display: none" th:value="${shop.auditComment}"/>
                                             <div>
                                                 <a href="javascript:void(0)" onclick="showDetail(this)"
-                                                   th:attr="shopid=${shop.id}">详细信息</a> &nbsp;|
+                                                   th:attr="shopid=${shop.id}">查看</a> &nbsp;|
                                                 <a href="javascript:void(0)" onclick="resetPassword(this)"
                                                    th:attr="shopid=${shop.id}">重置密码</a>&nbsp;|
                                                 <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
@@ -511,9 +511,9 @@
     <div class="cnt form" style="padding: 10px; width: 300px; height: 160px;">
         <div>
             <input id="audit_pass" type="radio" name="audit_radio" value="CHECKED" checked="checked"/>
-            <label for="audit_pass">通过</label>
+            <label for="audit_pass">审核通过</label>
             <input id="audit_nopass" type="radio" name="audit_radio" value="RETURNED"/>
-            <label for="audit_nopass">不通过</label>
+            <label for="audit_nopass">审核不通过</label>
         </div>
         <br/>
         <span scope="row">备注：</span>

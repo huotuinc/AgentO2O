@@ -205,7 +205,7 @@
                             </td>
                             <td class="txt80 c">
                                 <a href="javascript:void(0)" th:attr="settlementNo=${settlement.settlementNo}" onclick="showSettlementDetail(this)"
-                                   title="查看明细">查看明细</a>
+                                   title="查看">查看</a>
                                 <a href="javascript:void(0)" th:if="${settlement.customerCheckable() and settlement.checkAble()}" th:attr="settlementNo=${settlement.settlementNo}" onclick="showUpdateStatus(this)">审核</a>
                                 <!--<a th:if="${settlement.customerStatus}!=0" th:attr="settlementNo=${settlement.settlementNo}" onclick="updateStatusById(0,this)">取消审核</a>-->
                             </td>

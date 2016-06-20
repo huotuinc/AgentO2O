@@ -162,7 +162,7 @@
                            cellspacing="0"
                            cellpadding="0">
                         <tr>
-                            <th scope="col"></th>
+                            <th scope="col">序号</th>
                             <th scope="col">采购单号
                             </th>
                             <th scope="col">货品名称
@@ -190,7 +190,7 @@
                             <td class="txt20 c" th:text="${pOrderStat.count}">
                                 1
                             </td>
-                            <td class="txt100" style="width:11%">
+                            <td class="txt100">
                                 <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.POrderId}"></a>
                                 <span style="color: red" th:if="${pOrder.disabled}">（已取消）</span>
                             </td>

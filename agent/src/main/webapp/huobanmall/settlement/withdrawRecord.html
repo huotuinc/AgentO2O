@@ -209,7 +209,7 @@
                             <td class="txt80 c">
                                 <a href="javascript:void(0)" th:if="${withdrawRecord.status.code}==0" th:attr="id=${withdrawRecord.id}"  onclick="showUpdateStatus(this)">打款</a>
                                 <!--<a href="javascript:void(0)" th:if="${withdrawRecord.status.code}==0" th:attr="id=${withdrawRecord.id}" onclick="unpassStatus(this)">申请不通过</a>-->
-                                <a href="javascript:void(0)" th:if="${withdrawRecord.status.code}!=0" th:attr="id=${withdrawRecord.id}" onclick="showUpdateStatus(this)">查看详细</a>
+                                <a href="javascript:void(0)" th:if="${withdrawRecord.status.code}!=0" th:attr="id=${withdrawRecord.id}" onclick="showUpdateStatus(this)">查看</a>
                             </td>
 
                         </tr>

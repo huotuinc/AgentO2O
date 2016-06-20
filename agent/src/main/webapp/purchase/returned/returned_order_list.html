@@ -198,7 +198,7 @@
                             付款状态
                         </td>
                         <td class="txt100 c">
-                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="查看详细">查看详细</a>
+                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="查看">查看</a>
                             <span th:if="${agentReturnOrder.deletable()}"> | </span>
                             <a th:if="${agentReturnOrder.deletable()}" href="javascript:void(0)"  th:onclick="|cancelReturnedOrder('${agentReturnOrder.rOrderId}')|" onclick="cancelReturnedOrder()" title="取消退货">删除</a>
                             <span th:if="${agentReturnOrder.deliverable()}"> | </span>

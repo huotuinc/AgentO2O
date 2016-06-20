@@ -385,7 +385,7 @@
                                            cellspacing="0"
                                            cellpadding="0">
                                         <tr>
-                                            <th scope="col"></th>
+                                            <th scope="col">序号</th>
                                             <th scope="col">订单号
                                             </th>
                                             <th scope="col">商品
@@ -427,7 +427,7 @@
                                                 <label>
                                                     <img th:if="${orders.agentMarkType != null}" th:src="@{'/resource/images/remark_icons/'+${orders.agentMarkType}+'.gif'}" width="20" height="20"/>
                                                 </label>
-                                                <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="查看详细" th:text="${orders.orderId}"></a>
+                                                <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="查看" th:text="${orders.orderId}"></a>
                                             </td>
                                             <td class="txt120">
                                                 <span style="width: 20%;    float: left;"><img
@@ -474,7 +474,7 @@
                                                             <a href="javascript:submitShip();" title="平台代发">发货</a> |
                                                         </span>
                                                     </span>*/-->
-                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看详细">查看详细</a>
+                                                    <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看">查看</a>
                                                     <span th:if="${!author.isAgent()}">
                                                         |<a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
                                                     </span>
