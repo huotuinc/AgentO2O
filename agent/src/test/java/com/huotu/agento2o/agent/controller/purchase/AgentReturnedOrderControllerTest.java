@@ -88,6 +88,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
      */
 
     @Before
+    @SuppressWarnings("Duplicates")
     public void init(){
         //模拟数据
         //用户相关
@@ -142,7 +143,12 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
 
         // 一级代理商退货单明细,每条退货单模拟了一个退货货品
         for(int i=0;i<mockFirstLevelAgentReturnOrderList.size();i++){
-            mockFirstLevelAgentReturnOrderItemList.add(mockAgentReturnOrderItem(mockFirstLevelAgentReturnOrderList.get(i),mockGoodsWith1ProductList.get(0).getProducts().get(0)));
+            AgentReturnedOrderItem agentReturnedOrderItem = mockAgentReturnOrderItem(mockFirstLevelAgentReturnOrderList.get(i),mockGoodsWith1ProductList.get(0).getProducts().get(0));
+            List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
+            agentReturnedOrderItems.add(agentReturnedOrderItem);
+            mockFirstLevelAgentReturnOrderList.get(i).setOrderItemList(agentReturnedOrderItems);
+            mockFirstLevelAgentReturnOrderList.set(i,mockAgentReturnOrder(mockFirstLevelAgentReturnOrderList.get(i)));
+            mockFirstLevelAgentReturnOrderItemList.add(agentReturnedOrderItem);
         }
 
         //一级代理商下级门店退货单
@@ -152,7 +158,12 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
 
         // 一级代理商下级门店退货单明细，每条退货单模拟了一个退货货品
         for(int i=0;i<mockFirstLevelShopReturnOrderList.size();i++){
-            mockFirstLevelShopReturnOrderItemList.add(mockAgentReturnOrderItem(mockFirstLevelShopReturnOrderList.get(i),mockGoodsWith1ProductList.get(0).getProducts().get(0)));
+            AgentReturnedOrderItem agentReturnedOrderItem = mockAgentReturnOrderItem(mockFirstLevelShopReturnOrderList.get(i),mockGoodsWith1ProductList.get(0).getProducts().get(0));
+            List<AgentReturnedOrderItem> agentReturnedOrderItems = new ArrayList<>();
+            agentReturnedOrderItems.add(agentReturnedOrderItem);
+            mockFirstLevelShopReturnOrderList.get(i).setOrderItemList(agentReturnedOrderItems);
+            mockFirstLevelShopReturnOrderList.set(i,mockAgentReturnOrder(mockFirstLevelShopReturnOrderList.get(i)));
+            mockFirstLevelShopReturnOrderItemList.add(agentReturnedOrderItem);
         }
 
         // 二级代理商退货单
@@ -270,7 +281,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
         Assert.assertEquals("200",jsonObject.getString("code"));
         Assert.assertEquals("请求成功",jsonObject.getString("msg"));
 
-        rOrderId = null;
+        rOrderId = "";
         result = mockMvc.perform(post(controllerUrl)
                 .session(session)
                 .param("rOrderId",rOrderId))
@@ -301,6 +312,8 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
 
         // 获取一级代理商下级门店信息退货发货详情
         Integer subAuthorId = mockFirstLevelShop.getId();
+
+        rOrderId = mockFirstLevelShopReturnOrderList.get(0).getROrderId();
         result = mockMvc.perform(post(controllerUrl)
                 .session(session)
                 .param("rOrderId",rOrderId)
@@ -310,7 +323,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
         modelAndView = result.getModelAndView();
         agentReturnedOrderItems = (List<AgentReturnedOrderItem>) modelAndView.getModel().get("agentReturnedOrderItems");
         Assert.assertTrue(agentReturnedOrderItems.size() == 1);
-        Assert.assertEquals(agentReturnedOrderItems.get(0).getId(),mockFirstLevelShopReturnOrderItemList.get(0).getId());
+        Assert.assertEquals(mockFirstLevelShopReturnOrderItemList.get(0).getId(),agentReturnedOrderItems.get(0).getId());
 
     }
 

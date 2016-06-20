@@ -736,6 +736,10 @@ public abstract class CommonTestBase extends SpringWebTest {
         return agentReturnedOrderRepository.saveAndFlush(agentReturnedOrder);
     }
 
+    protected AgentReturnedOrder mockAgentReturnOrder(AgentReturnedOrder agentReturnedOrder) {
+        return agentReturnedOrderRepository.saveAndFlush(agentReturnedOrder);
+    }
+
     protected AgentReturnedOrderItem mockAgentReturnOrderItem(AgentReturnedOrder agentReturnedOrder, MallProduct mallProduct) {
         AgentReturnedOrderItem agentReturnedOrderItem = new AgentReturnedOrderItem();
         agentReturnedOrderItem.setReturnedOrder(agentReturnedOrder);
