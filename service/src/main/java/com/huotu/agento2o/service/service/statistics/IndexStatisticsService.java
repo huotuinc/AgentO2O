@@ -123,5 +123,12 @@ public interface IndexStatisticsService {
      */
     int toReceiveReturnedOrderCount(int authorId);
 
+    /**
+     * 待审核结算单(门店)
+     * @param authorId
+     * @return
+     */
+    int toCheckSettlementCount(int authorId);
+
     IndexStatistics orderStatistics(Author author);
 }

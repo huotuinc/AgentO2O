@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.statistics.impl;
 
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -20,6 +21,7 @@ import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
+import com.huotu.agento2o.service.repository.settlement.SettlementRepository;
 import com.huotu.agento2o.service.service.statistics.IndexStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.Jsr310Converters;
@@ -42,6 +44,8 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
     private AgentReturnOrderRepository returnOrderRepository;
     @Autowired
     private AgentProductRepository agentProductRepository;
+    @Autowired
+    private SettlementRepository settlementRepository;
 
     @Override
     public int orderCountByDate(Author author, Date start, Date end) {
@@ -107,6 +111,11 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.DELIVERED);
     }
 
+    @Override
+    public int toCheckSettlementCount(int authorId) {
+        return settlementRepository.countByShop_IdAndAuthorStatusAndCustomerStatusNot(authorId, SettlementEnum.SettlementCheckStatus.NOT_CHECK, SettlementEnum.SettlementCheckStatus.RETURNED);
+    }
+
     public IndexStatistics orderStatistics(Author author) {
         IndexStatistics indexStatistics = new IndexStatistics();
         //今日
@@ -137,6 +146,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
             indexStatistics.setToReceiveReturnedOrderCount(toReceiveReturnedOrderCount(author.getId()));
         } else if (author instanceof Shop) {
             indexStatistics.setAgent(false);
+            indexStatistics.setToCheckSettlementCount(toCheckSettlementCount(author.getId()));
         }
         //订单相关
         //今日订单数，昨日订单数

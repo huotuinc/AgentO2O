@@ -118,28 +118,34 @@
                 <ul>
                     <p style="clear: both;padding-top: 10px;"></p>
                     <th:block th:if="*{agent==false}">
-                        <li th:if="*{toDeliveryOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('01','010101')">待发货订单<span
+                        <li th:if="*{toDeliveryOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('01','010101')">待发货订单数<span
                                 th:text="*{toDeliveryOrderCount}">2个</span></li>
                     </th:block>
                     <th:block th:if="*{agent}">
-                        <li th:if="*{toCheckPurchaseOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020401')">待审核采购单<span
+                        <li th:if="*{toCheckPurchaseOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020401')">待审核采购单数<span
                                 th:text="*{toCheckPurchaseOrderCount}">2个</span></li>
-                        <li th:if="*{toDeliveryPurchaseOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020401')">待发货采购单<span
+                        <li th:if="*{toDeliveryPurchaseOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020401')">待发货采购单数<span
                                 th:text="*{toDeliveryPurchaseOrderCount}">2个</span></li>
                     </th:block>
                     <p style="clear: both;padding-top: 10px;"></p>
                     <li th:if="*{toReceivePurchaseOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020201')">待确认收货采购单数<span
                             th:text="*{toReceivePurchaseOrderCount}">2个</span></li>
+                    <p style="clear: both;padding-top: 10px;"></p>
                     <th:block th:if="*{agent}">
-                        <p style="clear: both;padding-top: 10px;"></p>
-                        <li th:if="*{toCheckReturnedOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020402')">待审核退货单<span
+                        <li th:if="*{toCheckReturnedOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020402')">待审核退货单数<span
                                 th:text="*{toCheckReturnedOrderCount}">2个</span></li>
-                        <li th:if="*{toReceiveReturnedOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020402')">待确认收货退货单<span
+                        <li th:if="*{toReceiveReturnedOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020402')">待确认收货退货单数<span
                                 th:text="*{toReceiveReturnedOrderCount}">2个</span></li>
                     </th:block>
                     <p style="clear: both;padding-top: 10px;"></p>
-                    <li th:if="*{toDeliveryReturnedOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020203')">待退货退货单<span
+                    <li th:if="*{toDeliveryReturnedOrderCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('02','020203')">待退货退货单数<span
                             th:text="*{toDeliveryReturnedOrderCount}">2个</span></li>
+                    <p style="clear: both;padding-top: 10px;"></p>
+                    <th:block th:if="*{agent == false}">
+                        <li th:if="*{toCheckSettlementCount!=null}" style="cursor: pointer" onclick="top.mallMenuManager.active('05','050101')">待审核结算单数<span
+                                th:text="*{toCheckSettlementCount}">2个</span></li>
+
+                    </th:block>
                 </ul>
             </div>
 

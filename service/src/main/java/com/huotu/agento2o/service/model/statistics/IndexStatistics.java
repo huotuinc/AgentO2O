@@ -55,6 +55,9 @@ public class IndexStatistics {
     //待确认收货退货单(代理商)
     private Integer toReceiveReturnedOrderCount;
 
+    //待审核结算单
+    private Integer toCheckSettlementCount;
+
     //库存预警
     private Integer productNotifyCount;
 }
