@@ -104,6 +104,7 @@
     </style>
 </head>
 <body>
+<!--/*@thymesVar id="agentReturnOrder" type="com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder"*/-->
 <form method="post" action="/purchaseOrder/showReturnOrderDetail" data-th-action="@{/purchaseOrder/showReturnOrderDetail}" id="form1"
       data-th-object="${agentReturnOrder}">
     <div class="container">
@@ -163,6 +164,7 @@
                                 </tr>
                                 </thead>
                                 <tbody data-th-remove="all-but-first">
+                                <!--/*@thymesVar id="agentReturnedOrderItems" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem>"*/-->
                                 <tr data-th-each="agentReturnedOrderItem,agentReturnedOrderItemStat:${agentReturnedOrderItems}">
                                     <td class="txt20 c" data-th-text="${agentReturnedOrderItemStat.count}">1</td>
                                     <td style="padding: 10px" class="txt120 c">

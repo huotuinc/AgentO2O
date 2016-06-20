@@ -185,11 +185,10 @@
                             <td class="txt80">
                                 <a href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="查看详细" th:text="${pOrder.POrderId}"></a>
                             </td>
-                            <td class="txt120">
+                            <td class="txt120" style="padding: 10px 0px;">
                                 <span style="width: 20%;float: left;"><img
                                         th:src="${pOrder.orderItemList.size() >0 and pOrder.orderItemList[0].picUri !=null ? pOrder.orderItemList[0].picUri : ''}"
-                                        style="width:50px;height:50px;float:left;"
-                                        th:styleappend="${pOrder.orderItemList.size() >0 and pOrder.orderItemList[0].picUri !=null ? 'margin-left: 5px;' :''}"/>
+                                        style="width:50px;height:50px;float:left;margin-left: 5px;"/>
                                 </span>
                                 <span style="overflow: hidden;text-align: left; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1;
                                 -webkit-box-orient: vertical; width:60%; float:left;margin-top:10px;"
