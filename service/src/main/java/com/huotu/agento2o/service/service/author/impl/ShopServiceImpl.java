@@ -301,9 +301,6 @@ public class ShopServiceImpl implements ShopService {
         if (shop == null) {
             throw new UsernameNotFoundException("没有该门店");
         }
-        if (shop.getStatus().getCode() != 2) {
-            throw new DisabledException("没有该门店");
-        }
         return shop;
     }
 

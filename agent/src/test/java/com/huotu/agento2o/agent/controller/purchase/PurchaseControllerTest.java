@@ -140,7 +140,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     public void testShowGoodsListByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/showGoodsList";
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         //1.显示平台方商品(不带搜索条件)
         MvcResult resultWithNoSearch = mockMvc.perform(get(controllerUrl).session(session))
@@ -284,7 +284,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     public void testShowGoodsListByFirstLevelShop() throws Exception {
         String controllerUrl = BASE_URL + "/showGoodsList";
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
 
         //1.显示上级代理商商品
         MvcResult resultWithNoSearch = mockMvc.perform(get(controllerUrl).session(session))
@@ -321,7 +321,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     public void testShowGoodsListBySecondLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/showGoodsList";
         //一级代理商下级代理商登录
-        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord);
 
         //1.显示上级代理商商品
         MvcResult resultWithNoSearch = mockMvc.perform(get(controllerUrl).session(session))
@@ -357,7 +357,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testAddShoppingByFirstLevelAgent() throws Exception {
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         //1.数量为0 校验
         MvcResult resultWithNum0 = mockMvc.perform(
@@ -502,7 +502,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testAddShoppingByFirstLevelShop() throws Exception {
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
         testAddShopping(session);
     }
 
@@ -514,7 +514,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testAddShoppingBySecondLevelAgent() throws Exception {
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord);
         testAddShopping(session);
     }
 
@@ -661,7 +661,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testShowProductListByFirstLevelAgent() throws Exception {
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         //1.goodsId不传
         MvcResult resultWithNoGoodsId = mockMvc.perform(
@@ -703,7 +703,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testShowProductListByFirstLevelShop() throws Exception {
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
         testShowProductList(session);
     }
 
@@ -715,7 +715,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testShowProductListBySecondLevelAgent() throws Exception {
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord);
         testShowProductList(session);
     }
 
@@ -761,7 +761,7 @@ public class PurchaseControllerTest extends CommonTestBase {
     @Test
     public void testGetStandardType() throws Exception {
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         String controllerUrl = "/purchase/getType";
         //1.不传standardTypeId
         MvcResult resultWithNoParam = mockMvc.perform(post(controllerUrl).session(session))

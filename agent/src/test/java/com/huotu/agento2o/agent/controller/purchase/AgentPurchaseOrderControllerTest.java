@@ -296,7 +296,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @Test
     public void testAddPurchaseByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         // 1.不传参数 校验
         // 1-1.不传 shoppingCartIds
         MvcResult resultWithNoId = mockMvc.perform(
@@ -464,7 +464,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @SuppressWarnings("Duplicates")
     public void testAddPurchaseOneIdByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         // 4.新增采购单成功
         List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
         MvcResult result = mockMvc.perform(
@@ -493,9 +493,10 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("Duplicates")
     public void testAddPurchaseOneIdByFirstLevelShop() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
         // 4.新增采购单成功
         List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelShop);
         MvcResult result = mockMvc.perform(
@@ -527,7 +528,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @SuppressWarnings("Duplicates")
     public void testAddPurchaseOneIdBySecondLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord);
         // 4.新增采购单成功
         List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockSecondLevelAgent);
         MvcResult result = mockMvc.perform(
@@ -558,7 +559,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @Test
     public void testAddPurchaseTwoIdByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         //多个id
         List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
         int beforeFreez0 = mockFirstLevelAgentShoppingCartList.get(0).getProduct().getFreez();
@@ -596,9 +597,10 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("Duplicates")
     public void testAddPurchaseByFirstLevelShop() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
 
         // 库存不足
         ShoppingCart mockShoppingCart = mockFirstLevelShopShoppingCartList.get(0);
@@ -627,9 +629,10 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("Duplicates")
     public void testAddPurchaseBySecondLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
-        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord);
 
         // 库存不足
         ShoppingCart mockShoppingCart = mockSecondLevelAgentShoppingCartList.get(0);
@@ -661,7 +664,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     public void testShowPurchaseOrderListByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/showPurchaseOrderList";
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         // 1.没有搜索条件
         MvcResult resultWithNoSearch = mockMvc.perform(post(controllerUrl)
@@ -830,7 +833,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @Test
     public void testShowPurchaseOrderDetailByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/showPurchaseOrderDetail";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         //1.不传参数
         MvcResult resultWithNoParam = mockMvc.perform(get(controllerUrl).session(session))
                 .andExpect(status().isOk())
@@ -870,7 +873,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @Test
     public void testDeletePurchaseOrderByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/deletePurchaseOrder";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         //获取一个不可取消的采购单
         AgentPurchaseOrder cannotDeletePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> !p.deletable()).findAny().get();
         //获取一个可取消的采购单
@@ -923,7 +926,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @Test
     public void testPayPurchaseOrderByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/payPurchaseOrder";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         //获取一个可支付的采购单
         AgentPurchaseOrder payablePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> p.payabled()).findAny().get();
         //获取一个不可支付的采购单
@@ -971,7 +974,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     @Test
     public void testReceivePurchaseOrderByFirstLevelAgent() throws Exception{
         String controllerUrl = BASE_URL + "/receive";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         //获取一个可支付的采购单
         AgentPurchaseOrder receivablePurchaseOrder = mockFirstLevelAgentPurchaseOrderList.stream().filter(p -> p.receivable()).findAny().get();
         //获取一个不可支付的采购单
@@ -1024,7 +1027,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/showAgentPurchaseOrderList";
 
         //1.门店登录（预期没有权限）
-        MockHttpSession shopSession = loginAs(mockFirstLevelShop.getUsername(),passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession shopSession = loginAs(mockFirstLevelShop.getUsername(),passWord);
         MvcResult resultWithErrorRole = mockMvc.perform(get(controllerUrl)
                 .session(shopSession))
                 .andExpect(status().isOk())
@@ -1034,7 +1037,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Assert.assertEquals("没有权限",objWithErrorRole.getString("msg"));
 
         //2.无搜索条件
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(),passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(),passWord);
         MvcResult resultWithNoSearch = mockMvc.perform(get(controllerUrl)
                 .session(session))
                 .andExpect(status().isOk())

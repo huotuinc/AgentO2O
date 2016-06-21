@@ -210,8 +210,6 @@
                             <td class="txt80 c">
                                 <a href="javascript:void(0)" th:attr="settlementNo=${settlement.settlementNo}" onclick="showSettlementDetail(this)"
                                    title="查看">查看</a>
-                                <a href="javascript:void(0)" th:if="${settlement.shopCheckable() and settlement.checkAble()}" th:attr="settlementNo=${settlement.settlementNo}" onclick="showUpdateStatus(this)">审核</a>
-                                   title="查看明细">查看明细</a>
                                 <th:block th:if="${settlement.shopCheckable() and settlement.checkAble()}">
                                     <span> | </span>
                                     <a href="javascript:void(0)" th:attr="settlementNo=${settlement.settlementNo}" onclick="showUpdateStatus(this)">审核</a>

@@ -161,7 +161,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     public void testShowShoppingCartByFirstLevelAgent() throws Exception {
         //一级代理商登录
         //1.购物车列表
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         MvcResult result = mockMvc.perform(
                 post(BASE_URL + "/showShoppingCart")
@@ -180,7 +180,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     @Test
     public void testShowShoppingCartByFirstLevelShop() throws Exception {
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
         MvcResult result = mockMvc.perform(
                 post("/shoppingCart/showShoppingCart")
                         .session(session))
@@ -199,7 +199,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     @Test
     public void testShowShoppingCartBySecondLevelAgent() throws Exception {
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord);
         MvcResult result = mockMvc.perform(
                 post("/shoppingCart/showShoppingCart")
                         .session(session))
@@ -219,7 +219,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/delete";
 
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         // 1.不传参数
         MvcResult resultWithNoData = mockMvc.perform(
                 post(controllerUrl)
@@ -293,7 +293,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     public void testEditNumByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/editNum";
         //一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         // 1.不传参数
         MvcResult resultWithNoData = mockMvc.perform(
@@ -378,7 +378,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     public void testEditNumByFirstLevelShop() throws Exception {
         String controllerUrl = BASE_URL + "/editNum";
         //一级代理商下级门店登录
-        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord);
 
         // 1.不传参数
         MvcResult resultWithNoData = mockMvc.perform(
@@ -461,7 +461,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     @Test
     public void testDeleteAllByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/deleteAll";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         MvcResult result = mockMvc.perform(
                 post(controllerUrl)
@@ -490,7 +490,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     public void testAddPurchaseByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/addPurchase";
         // 一级代理商登录
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         // 1.不传参数
         MvcResult resultWithNoData = mockMvc.perform(
                 post(controllerUrl)

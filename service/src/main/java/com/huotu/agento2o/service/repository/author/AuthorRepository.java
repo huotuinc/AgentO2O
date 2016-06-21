@@ -17,4 +17,6 @@ public interface AuthorRepository extends JpaRepository<Author, Integer>, JpaSpe
     List<Author> findByCustomer_CustomerId(Integer customerId);
 
     List<Author> findByParentAuthor(Agent agent);
+
+    Author findByUsername(String userName);
 }

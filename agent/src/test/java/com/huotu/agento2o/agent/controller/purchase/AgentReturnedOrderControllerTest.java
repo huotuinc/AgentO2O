@@ -176,7 +176,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
     @Test
     public void testShowPurchasedProductList() throws Exception {
         String controllerUrl = BASE_URL + "/showPurchasedProductList";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         MvcResult result = mockMvc.perform(
                 post(controllerUrl)
                         .session(session))
@@ -200,7 +200,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
 
 
         String controllerUrl = BASE_URL + "/addReturnOrder";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         MvcResult result = mockMvc.perform(post(controllerUrl)
                 .session(session)
                 .param("productIds",productId+",")
@@ -216,7 +216,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
     @Test
     public void testShowReturnedOrderList() throws Exception {
         String controllerUrl = BASE_URL + "/showReturnedOrderList";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
 
         //1. 没有搜索条件
         MvcResult resultWithNoSearch = mockMvc.perform(post(controllerUrl)
@@ -270,7 +270,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
     public void testCancelReturnOrder() throws Exception {
         String controllerUrl = BASE_URL + "/cancelReturnOrder";
         String rOrderId = mockFirstLevelAgentReturnOrderList.get(0).getROrderId();
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         MvcResult result = mockMvc.perform(post(controllerUrl)
                                     .session(session)
                                     .param("rOrderId",rOrderId))
@@ -297,7 +297,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
     public void testShowReturnedOrderDetail() throws Exception {
         String controllerUrl = BASE_URL + "/showReturnedOrderDetail";
         String rOrderId = mockFirstLevelAgentReturnOrderList.get(0).getROrderId();
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         //获取一级代理商采购退货发货详情
         MvcResult result = mockMvc.perform(post(controllerUrl)
                 .session(session)
@@ -330,7 +330,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
     @Test
     public void testEditReturnNum() throws Exception {
         String controllerUrl = BASE_URL + "/editReturnNum";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         MvcResult result = mockMvc.perform(post(controllerUrl)
                 .session(session)
                 .param("productId","")
@@ -397,7 +397,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
 
         // 一级代理商审核
         String controllerUrl = BASE_URL + "/checkAgentReturnOrder";
-        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
+        MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord);
         MvcResult result = mockMvc.perform(post(controllerUrl)
                 .session(session)
                 .param("rOrderId",String.valueOf(agentReturnedOrder.getROrderId()))

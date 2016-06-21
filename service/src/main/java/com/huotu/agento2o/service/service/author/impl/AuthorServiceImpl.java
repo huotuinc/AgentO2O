@@ -5,6 +5,8 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.repository.author.AuthorRepository;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +63,14 @@ public class AuthorServiceImpl implements AuthorService {
         }else{
             return false;
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Author author = authorRepository.findByUsername(username);
+        if(author == null){
+            throw  new UsernameNotFoundException("用户名不存在！");
+        }
+        return author;
     }
 }
