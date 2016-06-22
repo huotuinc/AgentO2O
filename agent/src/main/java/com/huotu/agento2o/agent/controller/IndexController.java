@@ -44,9 +44,7 @@ public class IndexController {
     }
 
     @RequestMapping(value = "loginFailed")
-    public String loginFailed(HttpServletRequest request, RedirectAttributes attributes) {
-        attributes.addFlashAttribute("errMsg", request.getSession().getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        attributes.addFlashAttribute("loginFailed", true);
+    public String loginFailed() {
         return "redirect:login";
     }
 

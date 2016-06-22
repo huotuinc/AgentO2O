@@ -40,10 +40,14 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
             password = "";
         }
         username = username.trim();
-        if(username == ""){
-            throw new UserNameAndPasswordNullException("账号不能为空");
-        }else if(password == ""){
-            throw new UserNameAndPasswordNullException("密码不能为空");
+        if (username == "") {
+            throw new UserNameAndPasswordNullException(messages.getMessage(
+                    "AbstractUserDetailsAuthenticationProvider.nullUsername",
+                    "username can't be null"));
+        } else if (password == "") {
+            throw new UserNameAndPasswordNullException(messages.getMessage(
+                    "AbstractUserDetailsAuthenticationProvider.nullPassword",
+                    "password can't be null"));
         }
         AuthenticationToken supAuthenticationToken = new AuthenticationToken(username, password, roleType);
 

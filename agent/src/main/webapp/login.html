@@ -40,9 +40,9 @@
                     <input id="mallBtn" type="submit"  class="buttons3" value="登&nbsp;&nbsp;录"/>
                 </p>
             </div>
-            <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;">
+            <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;" th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
                 <p style="width: 50%;margin: auto">
-                    <span id="errorInfo" style="color: red" th:text="${errMsg}"></span>
+                    <span id="errorInfo" style="color: red" th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></span>
                 </p>
             </div>
         </form>

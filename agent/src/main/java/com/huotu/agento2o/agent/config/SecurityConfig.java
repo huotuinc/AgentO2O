@@ -1,19 +1,17 @@
 package com.huotu.agento2o.agent.config;
 
 import com.huotu.agento2o.agent.config.security.AuthenticationProvider;
-import com.huotu.agento2o.agent.config.security.SecurityFailureHandler;
 import com.huotu.agento2o.agent.config.security.filter.AuthenticationProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -52,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         AuthenticationProcessingFilter authenticationProcessingFilter = new AuthenticationProcessingFilter();
         authenticationProcessingFilter.setAuthenticationManager(authenticationManager);
         authenticationProcessingFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler(LOGIN_SUCCESS_URL));
-        authenticationProcessingFilter.setAuthenticationFailureHandler(new SecurityFailureHandler(LOGIN_ERROR_URL));
+        authenticationProcessingFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(LOGIN_ERROR_URL));
         return authenticationProcessingFilter;
     }
 
