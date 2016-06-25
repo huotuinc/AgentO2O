@@ -281,6 +281,7 @@ public class PurchaseControllerTest extends CommonTestBase {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("Duplicates")
     public void testShowGoodsListByFirstLevelShop() throws Exception {
         String controllerUrl = BASE_URL + "/showGoodsList";
         //一级代理商下级门店登录
@@ -318,6 +319,7 @@ public class PurchaseControllerTest extends CommonTestBase {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("Duplicates")
     public void testShowGoodsListBySecondLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/showGoodsList";
         //一级代理商下级代理商登录

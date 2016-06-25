@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.annotation.Resource;
 
 /**
+ *
  * Created by helloztt on 2016/5/9.
  */
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider implements AuthenticationManager {
@@ -33,15 +34,23 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     private PasswordEncoder passwordEncoder;
     @Resource(name = "authorService")
     private UserDetailsService authorService;
+
+    /**
+     * 校验密码存在
+     * @param userDetails
+     * @param authentication
+     * @throws AuthenticationException
+     */
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        if (authentication.getCredentials() == null) {
+        //在filter中已经校验密码为空的情况，此处可省略
+        /*if (authentication.getCredentials() == null) {
             logger.debug("Authentication failed: no credentials provided");
 
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials",
                     "Bad credentials"));
-        }
+        }*/
         String presentedPassword = authentication.getCredentials().toString();
 
         if (!passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
@@ -51,6 +60,13 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
         }
     }
 
+    /**
+     * 校验用户名存在
+     * @param username
+     * @param authentication
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         UserDetails loadedUser;

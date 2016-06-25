@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -29,6 +30,11 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
         if (!request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException(
                     "Authentication method not supported: " + request.getMethod());
+        }
+        //charsetEncodingFilter在此之后，所以此时还没转码
+        try {
+            request.setCharacterEncoding("UTF-8");
+        } catch (UnsupportedEncodingException e) {
         }
         String username = obtainUsername(request);
         String password = obtainPassword(request);
