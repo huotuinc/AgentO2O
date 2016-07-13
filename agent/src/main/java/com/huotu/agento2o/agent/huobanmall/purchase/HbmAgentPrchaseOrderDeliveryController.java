@@ -46,7 +46,7 @@ public class HbmAgentPrchaseOrderDeliveryController {
             @RequestParam(required = true) String pOrderId) throws Exception{
         ModelAndView model = new ModelAndView();
         AgentPurchaseOrder purchaseOrder = agentPurchaseOrderService.findByPOrderId(pOrderId);
-        if(purchaseOrder.getAuthor().getParentAuthor() == null && purchaseOrder.getAuthor().getCustomer().getCustomerId().equals(customerId)){
+        if(purchaseOrder.getParentAgent() == null && purchaseOrder.getMallCustomer().getCustomerId().equals(customerId)){
             model.addObject("purchaseOrder",purchaseOrder);
         }else{
             throw  new Exception("没有权限！");

@@ -13,6 +13,10 @@ public class ReturnedOrderSearch {
      *  代理商id
      */
     private Integer agentId;
+    /**
+     * 门店id
+     */
+    private Integer shopId;
 
     /**
      *  上级代理商id

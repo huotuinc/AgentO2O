@@ -18,16 +18,15 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.order.*;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.Settlement;
 import com.huotu.agento2o.service.entity.settlement.SettlementOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.order.*;
-import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
+import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.settlement.SettlementOrderRepository;
 import com.huotu.agento2o.service.repository.settlement.SettlementRepository;
 import com.huotu.agento2o.service.searchable.SettlementSearcher;
@@ -72,9 +71,10 @@ public class SettlementServiceImpl implements SettlementService {
     @Autowired
     private MallCustomerRepository customerRepository;
     @Autowired
-    private AuthorAccountRepository accountRepository;
+    private AccountRepository accountRepository;
     @Autowired
     private InvoiceConfigRepository invoiceConfigRepository;
+
     /**
      * 得到结算单
      *
@@ -86,12 +86,12 @@ public class SettlementServiceImpl implements SettlementService {
     @Transactional
     public void settle(Shop shop, Date settleTime) throws Exception {
         List<SettlementOrder> settlementOrders = settlementRepository.findSettlementOrder(shop.getId(), shop.getCustomer().getCustomerId(), settleTime);
-        if(settlementOrders == null || settlementOrders.size() == 0){
-            return ;
+        if (settlementOrders == null || settlementOrders.size() == 0) {
+            return;
         }
         //即使结算金额为0也结算
-        double finalAmount = settlementOrders.stream().mapToDouble(p->p.getFinalAmount()).sum();
-        double freight = settlementOrders.stream().mapToDouble(p->p.getFreight()).sum();
+        double finalAmount = settlementOrders.stream().mapToDouble(p -> p.getFinalAmount()).sum();
+        double freight = settlementOrders.stream().mapToDouble(p -> p.getFreight()).sum();
         Settlement settlement = new Settlement();
         settlement.setSettlementNo(SerialNo.create());
         settlement.setShop(shop);
@@ -104,12 +104,12 @@ public class SettlementServiceImpl implements SettlementService {
         settlement.setSettlementOrders(settlementOrders);
         // TODO: 2016/6/8 test
         settlement = settlementRepository.save(settlement);
-        for(SettlementOrder settlementOrder : settlementOrders){
+        for (SettlementOrder settlementOrder : settlementOrders) {
             settlementOrder.setSettlement(settlement);
         }
         settlementOrderRepository.save(settlementOrders);
         log.info("shopId:" + shop.getId() + ",customerId:" + shop.getCustomer().getCustomerId() + "settlementNo:" + settlement.getSettlementNo() + ",finalAmount:" + finalAmount + ",freight:" + freight);
-        orderRepository.updateSettle(shop.getId(),shop.getCustomer().getCustomerId(),settleTime, OrderEnum.PayStatus.REFUNDING);
+        orderRepository.updateSettle(shop.getId(), shop.getCustomer().getCustomerId(), settleTime, OrderEnum.PayStatus.REFUNDING);
     }
 
     @Override
@@ -128,10 +128,14 @@ public class SettlementServiceImpl implements SettlementService {
     }
 
     @Override
-    public Page<Settlement> getPage(Integer shopId, SettlementSearcher settlementSearcher) {
+    public Page<Settlement> getPage(SettlementSearcher settlementSearcher) {
         Specification<Settlement> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), shopId));
+            if (settlementSearcher.getShopId() != null && settlementSearcher.getShopId() != 0) {
+                predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), settlementSearcher.getShopId()));
+            } else if (settlementSearcher.getAgentId() != null && settlementSearcher.getAgentId() != 0) {
+                predicates.add(criteriaBuilder.equal(root.get("agent").get("id").as(Integer.class), settlementSearcher.getShopId()));
+            }
             if (settlementSearcher != null && !StringUtils.isEmpty(settlementSearcher.getSettlementNo())) {
                 predicates.add(criteriaBuilder.like(root.get("settlementNo").as(String.class), "%" + settlementSearcher.getSettlementNo() + "%"));
             }
@@ -223,7 +227,7 @@ public class SettlementServiceImpl implements SettlementService {
         if (refundsMoneyList != null && refundsMoneyList.size() > 0) {
             orderDetailModel.setRefundsMoneyList(refundsMoneyList);
         }
-        if(paymentsList != null && paymentsList.size() > 0){
+        if (paymentsList != null && paymentsList.size() > 0) {
             orderDetailModel.setPaymentsList(paymentsList);
         }
         orderDetailModel.setShipName(orders.getShipName());
@@ -293,13 +297,13 @@ public class SettlementServiceImpl implements SettlementService {
         //分销商和门店均审核通过
         Shop shop = settlement.getShop();
         if (customerSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED && authorSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED) {
-            AuthorAccount shopAccount = accountRepository.findByAuthor(shop);
+            Account shopAccount = accountRepository.findByAuthor(shop);
             //审核通过，待提货款增加
             shopAccount.setBalance((double) Math.round((shopAccount.getBalance() + settlement.getFinalAmount()) * 100) / 100);
             accountRepository.save(shopAccount);
             settlement.setSettlementDate(new Date());
             orderRepository.updateSettle(settlement.getShop().getId(), settlement.getCustomerId(),
-                     settlement.getCreateDateTime(),OrderEnum.PayStatus.REFUNDING);
+                    settlement.getCreateDateTime(), OrderEnum.PayStatus.REFUNDING);
             log.info("shopId:" + settlement.getShop().getId() + ",customerId:" + settlement.getCustomerId() + "date:" +
                     settlement.getCreateDateTime());
         }

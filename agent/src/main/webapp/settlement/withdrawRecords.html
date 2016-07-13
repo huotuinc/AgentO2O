@@ -44,7 +44,7 @@
 </head>
 <body>
 <!--/*@thymesVar id="withdrawRecordSearcher" type="com.huotu.agento2o.service.searchable.WithdrawRecordSearcher"*/-->
-<!--/*@thymesVar id="authorAccount" type="com.huotu.agento2o.service.entity.settlement.AuthorAccount"*/-->
+<!--/*@thymesVar id="account" type="com.huotu.agento2o.service.entity.settlement.Account"*/-->
 <!--/*@thymesVar id="withdrawRecordPage" type="java.util.List<com.huotu.agento2o.service.entity.settlement.WithdrawRecord>"*/-->
 <form method="get" action="/withdraw/withdrawRecords" th:action="@{/withdraw/withdrawRecords}" id="form1" th:object="${withdrawRecordSearcher}">
     <div class="container">
@@ -53,29 +53,29 @@
         <div class="search block">
             <div class="h">
                 <span class="icon-sprite icon-magnifier"></span>
-                <input type="hidden" th:value="${authorAccount.author.customer.customerId}" id="customerNo" name="customerNo"/>
-                <input type="hidden" th:value="${authorAccount.withdrawCount}" id="withdrawCount" name="withdrawCount"/>
-                <input type="hidden" th:value="${authorAccount.id}" id="supplierAccountId" name="supplierAccountId"/>
+                <input type="hidden" th:value="${account.author.customer.customerId}" id="customerNo" name="customerNo"/>
+                <input type="hidden" th:value="${account.withdrawCount}" id="withdrawCount" name="withdrawCount"/>
+                <input type="hidden" th:value="${account.id}" id="supplierAccountId" name="supplierAccountId"/>
             </div>
             <div class="cnt-wp">
                 <div class="cnt">
                     <div class="search-bar" style="position:relative;font-size:16px;">
                         <label class="first">
-                            <div th:if="${authorAccount}!=null">
-                                待提货款：<span style="color:red;" th:text="${authorAccount.balance}">1000.00</span>元&nbsp;&nbsp;&nbsp;
-                                申请中货款：<span style="color:red;" th:text="${authorAccount.applyingMoney}">1000.00</span>元&nbsp;&nbsp;&nbsp;
-                                已提货款：<span style="color:red;" th:text="${authorAccount.withdrew}">1000.00</span>元&nbsp;&nbsp;&nbsp;
-                                总货款：<span style="color:red;" th:text="${#numbers.formatDecimal(authorAccount.balance+authorAccount.withdrew+authorAccount.applyingMoney,1,2)}">10000.00</span>元
+                            <div th:if="${account}!=null">
+                                待提货款：<span style="color:red;" th:text="${account.balance}">1000.00</span>元&nbsp;&nbsp;&nbsp;
+                                申请中货款：<span style="color:red;" th:text="${account.applyingMoney}">1000.00</span>元&nbsp;&nbsp;&nbsp;
+                                已提货款：<span style="color:red;" th:text="${account.withdrew}">1000.00</span>元&nbsp;&nbsp;&nbsp;
+                                总货款：<span style="color:red;" th:text="${#numbers.formatDecimal(account.balance+account.withdrew+account.applyingMoney,1,2)}">10000.00</span>元
                             </div>
-                            <div th:if="${authorAccount.author.hasAccountInfo() == false}">
+                            <div th:if="${account.author.hasAccountInfo() == false}">
                                 <span style="color:red;">您还没有提现账户，请点击右边按钮设置！</span>
                             </div>
                         </label>
                         <div style="position:absolute;top: 0px;right: 10px;text-align: right;padding-top: 10px;" >
-                            <a th:if="${authorAccount.author.hasAccountInfo() == true}" class="btn-lit aucontrol" href="javascript:withdrawDialog();" >
+                            <a th:if="${account.author.hasAccountInfo() == true}" class="btn-lit aucontrol" href="javascript:withdrawDialog();" >
                                 <span >申请提现</span>
                             </a>
-                            <a th:if="${authorAccount.author.hasAccountInfo() == false}" class="btn-lit aucontrol" href="javascript:infoDialog();" >
+                            <a th:if="${account.author.hasAccountInfo() == false}" class="btn-lit aucontrol" href="javascript:infoDialog();" >
                                 <span>设置提现账户</span>
                             </a>
                         </div>
@@ -258,7 +258,7 @@
                                 <span>提现金额:</span>
                                 <div class="text-oper">
                                     <em class="fontredstar">*</em>
-                                    <input id="balance" readonly="readonly" name="balance" type="text" class="input input1" th:value="${authorAccount.balance}"/>
+                                    <input id="balance" readonly="readonly" name="balance" type="text" class="input input1" th:value="${account.balance}"/>
                                 </div>
                             </li>
                             <li class="account">
@@ -266,19 +266,19 @@
 
                                 <div class="text-oper">
                                     <em class="fontredstar">*</em>
-                                    <input id="bankName1" name="bankName1" th:value="${authorAccount.author.bankName}" type="text" value="" class="input input1" readonly="readonly"/>
+                                    <input id="bankName1" name="bankName1" th:value="${account.author.bankName}" type="text" value="" class="input input1" readonly="readonly"/>
                                 </div>
                             </li>
                             <li class="account"><span>账户名：</span>
 
                                 <div class="text-oper"><em class="fontredstar">*</em>
-                                    <input maxlength="30" th:value="${authorAccount.author.accountName}" class="input input1" id="accountName1" name="accountName1" readonly="readonly"/>
+                                    <input maxlength="30" th:value="${account.author.accountName}" class="input input1" id="accountName1" name="accountName1" readonly="readonly"/>
                                 </div>
                             </li>
                             <li class="account"><span>银行账号：</span>
 
                                 <div class="text-oper"><em class="fontredstar">*</em>
-                                    <input class="input input1" id="accountNo1" th:value="${authorAccount.author.accountNo}" name="accountNo1" readonly="readonly"/>
+                                    <input class="input input1" id="accountNo1" th:value="${account.author.accountNo}" name="accountNo1" readonly="readonly"/>
                                 </div>
                             </li>
                         </ul>

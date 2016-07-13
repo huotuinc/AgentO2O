@@ -59,6 +59,10 @@ public class SettlementSearcher {
      * 门店Id 用于分销商结算查询
      */
     private Integer shopId;
+    /**
+     * 代理商Id
+     */
+    private Integer agentId;
 
     /**
      * 页码

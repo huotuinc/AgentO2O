@@ -12,37 +12,34 @@ package com.huotu.agento2o.service.service.settlement;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
-import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Created by helloztt on 2016/6/14.
  */
-public interface AuthorAccountService {
+public interface AccountService {
 
-    AuthorAccount findByAuthor(Author author);
+    Account findByAuthor(Author author);
 
-    AuthorAccount findById(Integer id);
+    Account findById(Integer id);
 
-    AuthorAccount findByAuthorAndCustomer(Integer authorId, Integer customerId);
+    Account findByAuthorAndCustomer(Integer authorId, Integer customerId);
 
-    AuthorAccount save(AuthorAccount authorAccount);
+    Account save(Account account);
 
     /**
      * 申请提现
      * 修改供应商账户余额，同时生成一条提现记录
      *
-     * @param authorAccountId
+     * @param accountId
      * @param withdrawApplyInfo
      * @return
      * @throws Exception
      */
-    ApiResult applyWithdraw(Integer authorAccountId, WithdrawApplyInfo withdrawApplyInfo) throws Exception;
+    ApiResult applyWithdraw(Integer accountId, WithdrawApplyInfo withdrawApplyInfo) throws Exception;
 
     /**
      * 审核提现，并打款
@@ -54,5 +51,5 @@ public interface AuthorAccountService {
      */
     ApiResult changeWithdraw(Integer withdrawId, int status) throws Exception;
 
-    long getRecords(AuthorAccount authorAccount, LocalDateTime firstDayOfMonth, LocalDateTime lastDayOfMonth) throws Exception;
+    long getRecords(Account account, LocalDateTime firstDayOfMonth, LocalDateTime lastDayOfMonth) throws Exception;
 }

@@ -21,11 +21,11 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
-import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
+import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,7 +60,7 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     private MallCustomerRepository mallCustomerRepository;
     @Autowired
-    private AuthorAccountRepository authorAccountRepository;
+    private AccountRepository accountRepository;
 
     @Override
     public Shop findByUserName(String userName) {
@@ -155,11 +154,11 @@ public class ShopServiceImpl implements ShopService {
         }
         shop = shopRepository.save(shop);
         //如果结算账户不存在，则新建结算账户
-        AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(shop.getId());
-        if (authorAccount == null) {
-            authorAccount = new AuthorAccount();
-            authorAccount.setShop(shop);
-            authorAccountRepository.save(authorAccount);
+        Account account = accountRepository.findByAuthor_Id(shop.getId());
+        if (account == null) {
+            account = new Account();
+            account.setShop(shop);
+            accountRepository.save(account);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }

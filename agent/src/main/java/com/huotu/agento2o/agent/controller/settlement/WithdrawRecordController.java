@@ -14,12 +14,12 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 import com.huotu.agento2o.service.searchable.WithdrawRecordSearcher;
 import com.huotu.agento2o.service.service.author.ShopService;
-import com.huotu.agento2o.service.service.settlement.AuthorAccountService;
+import com.huotu.agento2o.service.service.settlement.AccountService;
 import com.huotu.agento2o.service.service.settlement.WithdrawRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,7 +34,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
 
 /**
  * Created by helloztt on 2016/6/14.
@@ -46,17 +45,17 @@ public class WithdrawRecordController {
     @Autowired
     private WithdrawRecordService withdrawRecordService;
     @Autowired
-    private AuthorAccountService authorAccountService;
+    private AccountService accountService;
     @Autowired
     private ShopService shopService;
 
     @RequestMapping("withdrawRecords")
     public ModelAndView showWithdrawRecords(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop, WithdrawRecordSearcher withdrawRecordSearcher) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
-        AuthorAccount authorAccount = authorAccountService.findByAuthor(shop);
-        Page<WithdrawRecord> withdrawRecordPage = withdrawRecordService.getPage(authorAccount, withdrawRecordSearcher);
+        Account account = accountService.findByAuthor(shop);
+        Page<WithdrawRecord> withdrawRecordPage = withdrawRecordService.getPage(account, withdrawRecordSearcher);
         modelAndView.setViewName("settlement/withdrawRecords");
-        modelAndView.addObject("authorAccount", authorAccount);
+        modelAndView.addObject("authorAccount", account);
         modelAndView.addObject("withdrawRecordPage", withdrawRecordPage);
         modelAndView.addObject("totalRecords", withdrawRecordPage.getTotalElements());
         modelAndView.addObject("totalPages", withdrawRecordPage.getTotalPages());
@@ -89,13 +88,13 @@ public class WithdrawRecordController {
         if(!shop.getCustomer().getCustomerId().equals(customerId)){
             return new ApiResult("没有权限！");
         }
-        AuthorAccount supplierAccount = authorAccountService.findByAuthor(shop);
+        Account supplierAccount = accountService.findByAuthor(shop);
         LocalDateTime now = LocalDateTime.now();
         //获取申请日期当月的第一天
         LocalDateTime firstDayOfMonth  = now.with(TemporalAdjusters.firstDayOfMonth()).toLocalDate().atStartOfDay();
         //获取申请日期当月最后一天
         LocalDateTime lastDayOfMonth = now.with(TemporalAdjusters.lastDayOfMonth()).toLocalDate().atTime(23,59,59);
-        long withdrawRecordCount = authorAccountService.getRecords(supplierAccount, firstDayOfMonth, lastDayOfMonth);
+        long withdrawRecordCount = accountService.getRecords(supplierAccount, firstDayOfMonth, lastDayOfMonth);
         if( withdrawRecordCount >= supplierAccount.getWithdrawCount()) {
             return new ApiResult("提现次数已用完，无法提现！");
         }
@@ -122,7 +121,7 @@ public class WithdrawRecordController {
             apiResult.setMsg("银行账号不能为空");
             return apiResult;
         }
-        apiResult = authorAccountService.applyWithdraw(supplierAccountId, withdrawApplyInfo);
+        apiResult = accountService.applyWithdraw(supplierAccountId, withdrawApplyInfo);
         return apiResult;
     }
 }

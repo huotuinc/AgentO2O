@@ -123,9 +123,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCart findById(Integer id, Author author) {
         if (author.getType() == Agent.class) {
-            return shoppingCartRepository.findByIdAndAgent(id, (Agent) author);
+            return shoppingCartRepository.findByIdAndAgent(id, author.getAuthorAgent());
         } else if (author.getType() == Shop.class) {
-            return shoppingCartRepository.findByIdAndShop(id, (Shop) author);
+            return shoppingCartRepository.findByIdAndShop(id, author.getAuthorShop());
         }
         return null;
     }

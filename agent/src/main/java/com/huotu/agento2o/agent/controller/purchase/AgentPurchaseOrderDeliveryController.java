@@ -61,7 +61,7 @@ public class AgentPurchaseOrderDeliveryController {
         ModelAndView model = new ModelAndView();
         AgentPurchaseOrder purchaseOrder = agentPurchaseOrderService.findByPOrderId(pOrderId);
         //判断采购单是否是所属 agent
-        if(purchaseOrder.getAuthor().getParentAgent() != null && purchaseOrder.getAuthor().getParentAgent().getId().equals(author.getId())){
+        if(purchaseOrder.getParentAgent() != null && purchaseOrder.getParentAgent().getId().equals(author.getId())){
             model.addObject("purchaseOrder",purchaseOrder);
         }else{
             throw new Exception("没有权限！");

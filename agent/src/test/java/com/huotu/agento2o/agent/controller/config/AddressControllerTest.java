@@ -39,7 +39,7 @@ public class AddressControllerTest extends CommonTestBase {
     //平台
     private MallCustomer mockCustomer;
     //代理商
-    private Agent mockAgent;
+    private MallCustomer mockAgent;
     //门店
     private Shop mockShop;
     //代理商的收货地址
@@ -52,7 +52,7 @@ public class AddressControllerTest extends CommonTestBase {
         //初始化模拟数据
         mockCustomer = mockMallCustomer();
         mockAgent = mockAgent(mockCustomer, null);
-        mockShop = mockShop(mockCustomer, mockAgent);
+        mockShop = mockShop(mockCustomer, mockAgent.getAgent());
         for (int i = 0; i <= random.nextInt(5); i++) {
             Address mockAddress = mockAddress(mockAgent);
             agentAddress.add(mockAddress);

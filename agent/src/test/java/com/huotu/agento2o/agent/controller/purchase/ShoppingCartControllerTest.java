@@ -51,9 +51,9 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     //平台方
     private MallCustomer mockCustomer;
     //一级代理商
-    private Agent mockFirstLevelAgent;
+    private MallCustomer mockFirstLevelAgent;
     //二级代理商
-    private Agent mockSecondLevelAgent;
+    private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
     private Shop mockFirstLevelShop;
     //二级代理商下级门店
@@ -84,9 +84,9 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         //用户相关
         mockCustomer = mockMallCustomer();
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent);
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
 
         //平台商品相关
         for (int i = 0; i <= random.nextInt(10); i++) {
@@ -404,7 +404,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         // 3.num为0
 
         ShoppingCart mockShoppingCart = mockFirstLevelShopShoppingCartList.get(0);
-        AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(mockFirstLevelAgent, mockShoppingCart.getProduct());
+        AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(mockFirstLevelAgent.getAgent(), mockShoppingCart.getProduct());
         MvcResult resultWithNum0 = mockMvc.perform(
                 post(controllerUrl)
                         .session(session)
@@ -472,7 +472,7 @@ public class ShoppingCartControllerTest extends CommonTestBase {
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
 
-        List<ShoppingCart> shoppingCartList = shoppingCartRepository.findByAuthor_IdOrderByCreateTimeDesc(mockFirstLevelAgent.getId());
+        List<ShoppingCart> shoppingCartList = shoppingCartRepository.findByAgent_IdOrderByCreateTimeDesc(mockFirstLevelAgent.getId());
         Assert.assertEquals(0, shoppingCartList.size());
     }
 

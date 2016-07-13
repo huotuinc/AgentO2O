@@ -10,8 +10,10 @@
 
 package com.huotu.agento2o.service.repository.settlement;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +21,13 @@ import org.springframework.stereotype.Repository;
  * Created by helloztt on 2016/6/8.
  */
 @Repository
-public interface AuthorAccountRepository extends JpaRepository<AuthorAccount, Integer> {
+public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-    AuthorAccount findByAuthor(Author author);
+//    Account findByAuthor(Author author);
+    Account findByAgent(Agent agent);
+    Account findByShop(Shop shop);
 
-    AuthorAccount findByAuthor_Id(Integer authorId);
+//    Account findByAuthor_Id(Integer authorId);
+    Account findByAgent_Id(Integer agentId);
+    Account findByShop_Id(Integer shopId);
 }

@@ -157,9 +157,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         for (String shoppingCartId : shoppingCartIds) {
             ShoppingCart shoppingCart = null;
             if (author.getType() == Agent.class) {
-                shoppingCart = shoppingCartRepository.findByIdAndAgent(Integer.valueOf(shoppingCartId), (Agent) author);
+                shoppingCart = shoppingCartRepository.findByIdAndAgent(Integer.valueOf(shoppingCartId), author.getAuthorAgent());
             } else if (author.getType() == Shop.class) {
-                shoppingCart = shoppingCartRepository.findByIdAndShop(Integer.valueOf(shoppingCartId), (Shop) author);
+                shoppingCart = shoppingCartRepository.findByIdAndShop(Integer.valueOf(shoppingCartId), author.getAuthorShop());
             }
             if (shoppingCart == null) {
                 continue;
@@ -311,9 +311,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         for (AgentPurchaseOrderItem item : agentPurchaseOrder.getOrderItemList()) {
             AgentProduct agentProduct = null;
             if(author.getType() == Agent.class){
-                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse((Agent)author,item.getProduct());
+                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(),item.getProduct());
             }else if(author.getType() == Shop.class){
-                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse((Shop)author,item.getProduct());
+                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),item.getProduct());
             }
             MallProduct product = item.getProduct();
             //判断AgentProduct是否有该货品信息，若没有则新增

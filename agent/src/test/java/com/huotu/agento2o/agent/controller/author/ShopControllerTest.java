@@ -28,7 +28,7 @@ public class ShopControllerTest extends CommonTestBase {
     private static String BASE_URL = "/shop";
 
     private MallCustomer mockCustomer;
-    private Agent mockAgent;
+    private MallCustomer mockAgent;
     private Shop mockShop;
 
     @Autowired
@@ -39,7 +39,7 @@ public class ShopControllerTest extends CommonTestBase {
     public void init() {
         mockCustomer = mockMallCustomer();
         mockAgent = mockAgent(mockCustomer, null);
-        mockShop = mockShop(mockCustomer, mockAgent);
+        mockShop = mockShop(mockCustomer, mockAgent.getAgent());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ShopControllerTest extends CommonTestBase {
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
-        shop.setParentAuthor(mockAgent);
+        shop.setAgent(mockAgent.getAgent());
         shop.setUsername(userName);
         shop.setPassword(password);
         shop.setDeleted(false);
@@ -121,7 +121,7 @@ public class ShopControllerTest extends CommonTestBase {
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
-        shop.setParentAuthor(mockAgent);
+        shop.setAgent(mockAgent.getAgent());
         shop.setUsername(userName);
         shop.setPassword(password);
         shop.setDeleted(false);
@@ -140,7 +140,7 @@ public class ShopControllerTest extends CommonTestBase {
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
-        shop.setParentAuthor(mockAgent);
+        shop.setAgent(mockAgent.getAgent());
         shop.setUsername(userName);
         shop.setPassword(password);
         shop.setDeleted(false);

@@ -14,10 +14,10 @@ import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.WithdrawEnum;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
-import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
+import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.settlement.WithdrawRecordRepository;
 import com.huotu.agento2o.service.searchable.WithdrawRecordSearcher;
 import com.huotu.agento2o.service.service.settlement.WithdrawRecordService;
@@ -44,14 +44,14 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
     @Autowired
     private WithdrawRecordRepository withdrawRecordRepository;
     @Autowired
-    private AuthorAccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
 
     @Override
-    public Page<WithdrawRecord> getPage(AuthorAccount authorAccount, WithdrawRecordSearcher withdrawRecordSearcher) {
+    public Page<WithdrawRecord> getPage(Account account, WithdrawRecordSearcher withdrawRecordSearcher) {
         Specification<WithdrawRecord> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("shopAccount").as(AuthorAccount.class), authorAccount));
+            predicates.add(cb.equal(root.get("account").as(Account.class), account));
             if(withdrawRecordSearcher.getStatus()!= -1) {
                 predicates.add(cb.equal(root.get("status").as(WithdrawEnum.WithdrawEnumStatus.class), EnumHelper.getEnumType(WithdrawEnum.WithdrawEnumStatus.class,withdrawRecordSearcher.getStatus())));
             }
@@ -80,8 +80,8 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
     @Override
     @Transactional
     public void save(Integer authorAccountId, WithdrawApplyInfo withdrawApplyInfo) {
-        AuthorAccount shopAccount = accountRepository.findOne(authorAccountId);
-        if(shopAccount == null){
+        Account account = accountRepository.findOne(authorAccountId);
+        if(account == null){
             return;
         }
         WithdrawRecord withdrawRecord = new WithdrawRecord();
@@ -89,15 +89,18 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
         withdrawRecord.setWithdrawNo(SerialNo.create());
         withdrawRecord.setApplyTime(new Date());
         withdrawRecord.setStatus(WithdrawEnum.WithdrawEnumStatus.APPLYING);
-        withdrawRecord.setShopAccount(shopAccount);
+        withdrawRecord.setAccount(account);
         withdrawRecordRepository.save(withdrawRecord);
     }
 
     @Override
-    public Page<WithdrawRecord> getPageByCustomerId(Integer CustomerId, WithdrawRecordSearcher withdrawRecordSearcher) {
+    public Page<WithdrawRecord> getPageByCustomerId(Integer customerId, WithdrawRecordSearcher withdrawRecordSearcher) {
         Specification<WithdrawRecord> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("shopAccount").get("author").get("customer").get("customerId").as(Integer.class), CustomerId));
+            predicates.add(cb.or(
+                    cb.equal(root.get("account").get("agent").get("customer").get("customerId").as(Integer.class),customerId),
+                    cb.equal(root.get("account").get("shop").get("customer").get("customerId").as(Integer.class),customerId)
+            ));
             if(withdrawRecordSearcher.getStatus()!= -1) {
                 predicates.add(cb.equal(root.get("status").as(WithdrawEnum.WithdrawEnumStatus.class),
                         EnumHelper.getEnumType(WithdrawEnum.WithdrawEnumStatus.class,withdrawRecordSearcher.getStatus())));
@@ -119,7 +122,9 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
                         StringUtil.DateFormat(withdrawRecordSearcher.getRemitEndTime(),StringUtil.TIME_PATTERN)));
             }
             if( withdrawRecordSearcher.getShopId() != 0 ) {
-                predicates.add(cb.equal(root.get("supplierAccount").get("author").get("id").as(Integer.class), withdrawRecordSearcher.getShopId()));
+                predicates.add(cb.equal(root.get("account").get("shop").get("id").as(Integer.class), withdrawRecordSearcher.getShopId()));
+            }else if(withdrawRecordSearcher.getAgentId() != 0){
+                predicates.add(cb.equal(root.get("account").get("agent").get("id").as(Integer.class), withdrawRecordSearcher.getShopId()));
             }
             if(!StringUtils.isEmpty(withdrawRecordSearcher.getWithdrawNo())) {
                 predicates.add(cb.like(root.get("withdrawNo").as(String.class),"%" + withdrawRecordSearcher.getWithdrawNo() + "%"));
@@ -146,7 +151,7 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
             withdrawApplyInfo.setBankName(withdrawRecord.getBankName());
             withdrawApplyInfo.setAccountName(withdrawRecord.getAccountName());
             withdrawApplyInfo.setAccountNo(withdrawRecord.getAccountNo());
-            withdrawApplyInfo.setShopName(withdrawRecord.getShopAccount().getAuthor().getName());
+            withdrawApplyInfo.setShopName(withdrawRecord.getAccount().getAuthorName());
             withdrawApplyInfo.setStatus(withdrawRecord.getStatus());
         }
         return withdrawApplyInfo;

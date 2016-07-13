@@ -88,7 +88,11 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
+    protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
+        MallCustomer customer = new MallCustomer();
+        customer.setNickName(UUID.randomUUID().toString());
+        customer.setUsername(UUID.randomUUID().toString());
+        customer.setPassword(UUID.randomUUID().toString());
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
@@ -102,11 +106,13 @@ public abstract class CommonTestBase {
         agent.setDisabled(false);
         agent.setDeleted(false);
         if (parentAgent != null) {
-            agent.setParentAuthor(parentAgent);
+            agent.setParentAgent(parentAgent);
         }
-        agent = agentService.addAgent(agent);
-        agentService.flush();
-        return agent;
+        customer.setAgent(agent);
+//        agent = agentService.addAgent(agent);
+//        agentService.flush();
+//        return agent;
+        return customerService.newCustomer(customer);
     }
 
     @SuppressWarnings("Duplicates")
@@ -122,7 +128,7 @@ public abstract class CommonTestBase {
         shop.setDisabled(false);
         shop.setDeleted(false);
         if (parentAgent != null) {
-            shop.setParentAuthor(parentAgent);
+            shop.setAgent(parentAgent);
         }
         shop = shopService.addShop(shop);
         agentService.flush();
@@ -170,7 +176,7 @@ public abstract class CommonTestBase {
     @SuppressWarnings("Duplicates")
     protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Agent mockAgent) {
         AgentProduct agentProduct = new AgentProduct();
-        agentProduct.setAuthor(mockAgent);
+        agentProduct.setAgent(mockAgent);
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
         agentProduct.setStore(random.nextInt());

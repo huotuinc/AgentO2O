@@ -7,6 +7,7 @@ import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
@@ -132,17 +133,25 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         Specification<AgentReturnedOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (returnedOrderSearch.getAgentId() != null && returnedOrderSearch.getAgentId() != 0) {
-                predicates.add(cb.equal(root.get("author").get("id").as(Integer.class), returnedOrderSearch.getAgentId()));
+                predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), returnedOrderSearch.getAgentId()));
+            } else if (returnedOrderSearch.getShopId() != null && returnedOrderSearch.getShopId() != 0) {
+                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), returnedOrderSearch.getShopId()));
             }
             if (returnedOrderSearch.getParentAgentId() != null) {
                 if (returnedOrderSearch.getParentAgentId() == 0) {
-                    predicates.add(cb.isNull(root.get("author").get("parentAuthor").as(Author.class)));
+                    predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
                 } else {
-                    predicates.add(cb.equal(root.get("author").get("parentAuthor").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId()));
+                    predicates.add(cb.or(
+                            cb.equal(root.get("agent").get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId()),
+                            cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId())
+                    ));
                 }
             }
             if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
-                predicates.add(cb.equal(root.get("author").get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId()));
+                predicates.add(cb.or(
+                        cb.equal(root.get("agent").get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId()),
+                        cb.equal(root.get("shop").get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId())
+                ));
             }
             if (!StringUtils.isEmpty(returnedOrderSearch.getROrderId())) {
                 predicates.add(cb.like(root.get("rOrderId").as(String.class), "%" + returnedOrderSearch.getROrderId() + "%"));
@@ -183,7 +192,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             if (agentReturnedOrder.getStatus().equals(PurchaseEnum.OrderStatus.CHECKING)) {// 待审核状态才可以退货
                 agentReturnedOrder.setDisabled(true);
                 agentReturnOrderRepository.save(agentReturnedOrder);
-                resetPreStore(agentReturnedOrder.getAuthor(), rOrderId);
+                resetPreStore(author, rOrderId);
                 return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
             } else {
                 return ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST, "该退货单不可取消退货", null);
@@ -199,12 +208,16 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
      */
     private List<AgentProduct> resetPreStore(Author author, String rOrderId) {
         List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(rOrderId);
-        Agent agent = (Agent) author;
         List<AgentProduct> agentProducts = new ArrayList<>();
         agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
             MallProduct product = agentReturnedOrderItem.getProduct();
             Integer num = agentReturnedOrderItem.getNum();
-            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agent, product);
+            AgentProduct agentProduct = null;
+            if(author.getType() == Agent.class){
+                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
+            }else if(author.getType() == Shop.class){
+                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),product);
+            }
             agentProduct.setFreez(agentProduct.getFreez() - num);
             agentProducts.add(agentProduct);
         });
@@ -220,9 +233,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         }
         //若上级代理商为平台，判断平台是否有修改该采购单的权限
         //判断该平台是否有修改该采购单的权限
-        if (customerId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() == null && agentReturnedOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+        if (customerId != null && !(agentReturnedOrder.getParentAgent() == null && agentReturnedOrder.getMallCustomer().getCustomerId().equals(customerId))) {
             return new ApiResult("对不起，您没有操作权限！");
-        } else if (authorId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() != null && agentReturnedOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+        } else if (authorId != null && !(agentReturnedOrder.getParentAgent() != null && agentReturnedOrder.getParentAgent().getId().equals(authorId))) {
             //判断该代理商是否有修改该采购单的权限
             return new ApiResult("对不起，您没有操作权限！");
         }
@@ -238,16 +251,20 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             agentReturnOrderRepository.save(agentReturnedOrder);
 
             // 释放预占库存
-            Author author = agentReturnedOrder.getAuthor();
             List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(rOrderId);
             System.out.println(agentReturnedOrderItems);
 
             agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
-                System.out.println(author);
-                agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, agentReturnedOrderItem.getProduct());
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, agentReturnedOrderItem.getProduct());
-                agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
-                agentProductRepository.save(agentProduct);
+                AgentProduct agentProduct = null;
+                if(agentReturnedOrder.getAgent()!= null){
+                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentReturnedOrder.getAgent(), agentReturnedOrderItem.getProduct());
+                }else if(agentReturnedOrder.getShop() != null){
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(agentReturnedOrder.getShop(),agentReturnedOrderItem.getProduct());
+                }
+                if(agentProduct != null){
+                    agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
+                    agentProductRepository.save(agentProduct);
+                }
             });
         } else {
             agentReturnedOrder.setLastUpdateTime(new Date());
@@ -269,8 +286,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDelivery.setDeliveryId(SerialNo.create());
         agentDelivery.setPurchaseOrder(null);
         agentDelivery.setAgentReturnedOrder(agentReturnedOrder);
-        agentDelivery.setAgentId(agentReturnedOrder.getAuthor().getId());
-        agentDelivery.setCustomerId(agentReturnedOrder.getAuthor().getCustomer().getCustomerId());
+        agentDelivery.setAgentId(agentReturnedOrder.getAgent()!=null?agentReturnedOrder.getAgent().getId():null);
+        agentDelivery.setShopId(agentReturnedOrder.getShop()!=null?agentReturnedOrder.getShop().getId():null);
+        agentDelivery.setCustomerId(agentReturnedOrder.getMallCustomer().getCustomerId());
         agentDelivery.setType(OrderEnum.DeliveryType.RETURN.getCode());
         agentDelivery.setLogisticsName(deliveryInfo.getLogiName());
         agentDelivery.setLogisticsNo(deliveryInfo.getLogiNo());
@@ -281,15 +299,20 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDelivery.setShipMobile(deliveryInfo.getShipMobile());
         agentDelivery.setShipTel(deliveryInfo.getShipTel());
         agentDelivery.setMemo(deliveryInfo.getRemark());
-        agentDelivery.setCustomerId(agentReturnedOrder.getAuthor().getCustomer().getCustomerId());
-        if (agentReturnedOrder.getAuthor().getParentAuthor() != null) {
-            agentDelivery.setParentAgentId(agentReturnedOrder.getAuthor().getParentAuthor().getId());
+        agentDelivery.setCustomerId(agentReturnedOrder.getMallCustomer().getCustomerId());
+        if (agentReturnedOrder.getParentAgent() != null) {
+            agentDelivery.setParentAgentId(agentReturnedOrder.getParentAgent().getId());
         }
         List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(deliveryInfo.getOrderId());
         List<AgentDeliveryItem> agentDeliveryItems = new ArrayList<>();
         for (AgentReturnedOrderItem agentReturnedOrderItem : agentReturnedOrderItems) {
             AgentDeliveryItem deliveryItem = new AgentDeliveryItem();
-            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentReturnedOrder.getAuthor(), agentReturnedOrderItem.getProduct());
+            AgentProduct agentProduct = null;
+            if(agentReturnedOrder.getAgent() != null){
+                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentReturnedOrder.getAgent(), agentReturnedOrderItem.getProduct());
+            }else if(agentReturnedOrder.getShop() != null){
+                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(agentReturnedOrder.getShop(),agentReturnedOrderItem.getProduct());
+            }
             deliveryItem.setAgentProductId(agentProduct.getId());
             deliveryItem.setDelivery(agentDelivery);
             deliveryItem.setNum(agentReturnedOrderItem.getNum());
@@ -318,9 +341,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
         //若上级代理商为平台，判断平台是否有修改该采购单的权限
         //判断该平台是否有修改该采购单的权限
-        if (customerId != null && !(subAgentReturnedOrder.getAuthor().getParentAuthor() == null && subAgentReturnedOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+        if (customerId != null && !(subAgentReturnedOrder.getParentAgent() == null && subAgentReturnedOrder.getMallCustomer().getCustomerId().equals(customerId))) {
             return new ApiResult("对不起，您没有操作权限！");
-        } else if (authorId != null && !(subAgentReturnedOrder.getAuthor().getParentAuthor() != null && subAgentReturnedOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+        } else if (authorId != null && !(subAgentReturnedOrder.getParentAgent() != null && subAgentReturnedOrder.getMallCustomer().getId().equals(authorId))) {
             //判断该代理商是否有修改该采购单的权限
             return new ApiResult("对不起，您没有操作权限！");
         }
@@ -332,31 +355,43 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         // 更新库存
         // 增加平台方库存，减少一级代理商库存，释放预占库存
         List<AgentReturnedOrderItem> agentReturnedOrderItems = agentReturnOrderItemRepository.findByReturnedOrder_rOrderId(rOrderId);
-        if (subAgentReturnedOrder.getAuthor().getParentAuthor() == null) {
+        if (subAgentReturnedOrder.getParentAgent() == null) {
 
             agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
                 MallProduct mallProduct = agentReturnedOrderItem.getProduct();
                 mallProduct.setFreez(mallProduct.getFreez() - agentReturnedOrderItem.getNum());
                 mallProduct.setStore(mallProduct.getStore() + agentReturnedOrderItem.getNum());
                 mallProductRepository.save(mallProduct);
-
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgentReturnedOrder.getAuthor(), mallProduct);
-                agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
-                agentProduct.setStore(agentProduct.getStore() - agentReturnedOrderItem.getNum());
-                agentProductRepository.save(agentProduct);
+                AgentProduct agentProduct = null;
+                if(subAgentReturnedOrder.getAgent() != null){
+                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getAgent(),mallProduct);
+                }else if(subAgentReturnedOrder.getShop() != null){
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(subAgentReturnedOrder.getShop(),mallProduct);
+                }
+                if(agentProduct != null){
+                    agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
+                    agentProduct.setStore(agentProduct.getStore() - agentReturnedOrderItem.getNum());
+                    agentProductRepository.save(agentProduct);
+                }
             });
 
         } else {// 更新上级代理商库存，上级代理商增加库存，下级代理商减少库存，释放预占库存
             agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
                 MallProduct mallProduct = agentReturnedOrderItem.getProduct();
-                AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgentReturnedOrder.getAuthor().getParentAuthor(), mallProduct);
+                AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getParentAgent(), mallProduct);
                 parentAgentProduct.setStore(parentAgentProduct.getStore() + agentReturnedOrderItem.getNum());
                 agentProductRepository.save(parentAgentProduct);
-
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgentReturnedOrder.getAuthor(), mallProduct);
-                agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
-                agentProduct.setStore(agentProduct.getStore() - agentReturnedOrderItem.getNum());
-                agentProductRepository.save(agentProduct);
+                AgentProduct agentProduct = null;
+                if(subAgentReturnedOrder.getAgent() != null){
+                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getAgent(),mallProduct);
+                }else if(subAgentReturnedOrder.getShop() != null){
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(subAgentReturnedOrder.getShop(),mallProduct);
+                }
+                if(agentProduct != null){
+                    agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
+                    agentProduct.setStore(agentProduct.getStore() - agentReturnedOrderItem.getNum());
+                    agentProductRepository.save(agentProduct);
+                }
             });
 
         }
@@ -374,9 +409,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
         //若上级代理商为平台，判断平台是否有修改该采购单的权限
         //判断该平台是否有修改该采购单的权限
-        if (customerId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() == null && agentReturnedOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
+        if (customerId != null && !(agentReturnedOrder.getParentAgent() == null && agentReturnedOrder.getMallCustomer().getCustomerId().equals(customerId))) {
             return new ApiResult("对不起，您没有操作权限！");
-        } else if (authorId != null && !(agentReturnedOrder.getAuthor().getParentAuthor() != null && agentReturnedOrder.getAuthor().getParentAuthor().getId().equals(authorId))) {
+        } else if (authorId != null && !(agentReturnedOrder.getParentAgent() != null && agentReturnedOrder.getMallCustomer().getId().equals(authorId))) {
             //判断该代理商是否有修改该采购单的权限
             return new ApiResult("对不起，您没有操作权限！");
         }
@@ -395,7 +430,15 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     public ApiResult editReturnNum(Author author, Integer productId, Integer num) {
         MallProduct mallProduct = new MallProduct();
         mallProduct.setProductId(productId);
-        AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, mallProduct);
+        AgentProduct agentProduct = null;
+        if(agentProduct.getAgent() != null){
+            agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), mallProduct);
+        }else if(agentProduct.getShop() != null){
+            agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),mallProduct);
+        }
+        if(agentProduct == null){
+            return new ApiResult("货品不存在");
+        }
         if (agentProduct.getStore() - agentProduct.getFreez() < num) {
             return new ApiResult("库存不足");
         }
@@ -416,11 +459,11 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
             cellDescList.add(ExcelHelper.asCell(order.getROrderId()));
             cellDescList.add(ExcelHelper.asCell(sb.toString()));
-            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getName())));
-            if (order.getAuthor().getParentAuthor() != null) {
-                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getParentAuthor().getName())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthorName())));
+            if (order.getParentAgent() != null) {
+                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getParentAgent().getName())));
             } else {
-                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getAuthor().getCustomer().getNickName())));
+                cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getMallCustomer().getNickName())));
             }
             cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getCreateTime(), StringUtil.TIME_PATTERN)));
             cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getPayTime(), StringUtil.TIME_PATTERN)));

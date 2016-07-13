@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.entity.purchase;
 
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -154,6 +155,45 @@ public class AgentReturnedOrder {
     public void setAuthor(Author author){
         this.setAgent(author.getAuthorAgent());
         this.setShop(author.getAuthorShop());
+    }
+
+    /**
+     * 获取代理商或者门店的名字
+     * @return
+     */
+    public String getAuthorName(){
+        if(this.agent != null){
+            return this.agent.getName();
+        }else if(this.shop != null){
+            return this.shop.getName();
+        }
+        return null;
+    }
+
+    /**
+     * 获取代理商或者门店的上级代理商
+     * @return
+     */
+    public Agent getParentAgent(){
+        if(this.agent != null){
+            return this.agent.getParentAgent();
+        }else if(this.shop != null){
+            return this.shop.getAgent();
+        }
+        return null;
+    }
+
+    /**
+     * 获取代理商或者门店的平台方
+     * @return
+     */
+    public MallCustomer getMallCustomer(){
+        if(this.agent != null){
+            return this.agent.getCustomer();
+        }else if(this.shop != null){
+            return this.shop.getCustomer();
+        }
+        return null;
     }
 
 

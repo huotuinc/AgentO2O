@@ -12,17 +12,16 @@ package com.huotu.agento2o.agent.huobanmall.settlement;
 
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.WithdrawEnum;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 import com.huotu.agento2o.service.searchable.WithdrawRecordSearcher;
 import com.huotu.agento2o.service.service.author.ShopService;
-import com.huotu.agento2o.service.service.settlement.AuthorAccountService;
+import com.huotu.agento2o.service.service.settlement.AccountService;
 import com.huotu.agento2o.service.service.settlement.WithdrawRecordService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +52,7 @@ public class HbmWithdrawController {
     @Autowired
     private ShopService shopService;
     @Autowired
-    private AuthorAccountService authorAccountService;
+    private AccountService accountService;
 
     /**
      * 平台方显示需要审核（打款）的提现申请
@@ -112,8 +111,8 @@ public class HbmWithdrawController {
                 return new ApiResult("存在已审核或审核不通过的记录，请按审核状态查询后进行批量操作", 500);
             }
             if (authorId == 0) {
-                authorId = withdrawRecord.getShopAccount().getAuthor().getId();
-            } else if (!authorId.equals(withdrawRecord.getShopAccount().getAuthor().getId())) {
+                authorId = withdrawRecord.getAccount().getAuthorId();
+            } else if (!authorId.equals(withdrawRecord.getAccount().getId())) {
                 return new ApiResult("存在不同供应商的记录，请按供应商查询后进行批量操作", 500);
             }
         }
@@ -148,7 +147,7 @@ public class HbmWithdrawController {
             return new ApiResult("该提现已处理，请勿重复操作！");
         }
         try {
-            apiResult = authorAccountService.changeWithdraw(id, status);
+            apiResult = accountService.changeWithdraw(id, status);
         } catch (Exception e) {
             log.error("提现打款失败", e);
             apiResult.setCode(500);
@@ -185,7 +184,7 @@ public class HbmWithdrawController {
                 apiResult.setMsg("批量请求失败，有已处理的提现记录！");
             }
             try {
-                apiResult = authorAccountService.changeWithdraw(Integer.parseInt(str_id), status);
+                apiResult = accountService.changeWithdraw(Integer.parseInt(str_id), status);
             } catch (Exception e) {
                 log.error("提现打款失败", e);
                 apiResult.setCode(500);
@@ -218,7 +217,7 @@ public class HbmWithdrawController {
         String excelName = customerIdStr;
         if (withdrawRecordPage != null && withdrawRecordPage.getContent().size() > 0) {
             //分销商昵称
-            excelName = withdrawRecordPage.getContent().get(0).getShopAccount().getAuthor().getCustomer().getNickName();
+            excelName = withdrawRecordPage.getContent().get(0).getAccount().getAuthorCustomer().getNickName();
         }
         excelName = URLEncoder.encode(excelName + "提现记录", "UTF-8");
         List<WithdrawRecord> withdrawRecords = withdrawRecordPage.getContent();
@@ -282,11 +281,11 @@ public class HbmWithdrawController {
             row = sheet.createRow(i + 1);
             WithdrawRecord withdrawRecord = withdrawRecords.get(i);
             row.createCell(0).setCellValue(withdrawRecord.getWithdrawNo());
-            row.createCell(1).setCellValue(withdrawRecord.getShopAccount().getAuthor().getCustomer().getNickName());
+            row.createCell(1).setCellValue(withdrawRecord.getAccount().getAuthorCustomer().getNickName());
             row.createCell(2).setCellValue(withdrawRecord.getAmount());
-            row.createCell(3).setCellValue(withdrawRecord.getShopAccount().getAuthor().getBankName());
-            row.createCell(4).setCellValue(withdrawRecord.getShopAccount().getAuthor().getAccountName());
-            row.createCell(5).setCellValue(withdrawRecord.getShopAccount().getAuthor().getAccountNo());
+            row.createCell(3).setCellValue(withdrawRecord.getAccount().getAuthorBankName());
+            row.createCell(4).setCellValue(withdrawRecord.getAccount().getAuthorAccountName());
+            row.createCell(5).setCellValue(withdrawRecord.getAccount().getAuthorAccountNo());
             switch (withdrawRecord.getStatus()) {
                 case APPLYING:
                     row.createCell(6).setCellValue("申请中");
@@ -319,9 +318,9 @@ public class HbmWithdrawController {
     @ResponseBody
     public ApiResult showWithdrawCount(@RequestAttribute(value = "customerId") Integer customerId,
                                        @RequestParam(name = "authorId", required = true) Integer authorId) throws Exception {
-        AuthorAccount authorAccount = authorAccountService.findByAuthorAndCustomer(authorId, customerId);
-        if (authorAccount != null) {
-            return ApiResult.resultWith(ResultCodeEnum.SUCCESS, authorAccount.getWithdrawCount());
+        Account account = accountService.findByAuthorAndCustomer(authorId, customerId);
+        if (account != null) {
+            return ApiResult.resultWith(ResultCodeEnum.SUCCESS, account.getWithdrawCount());
         } else {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -330,13 +329,13 @@ public class HbmWithdrawController {
     @RequestMapping(value = "/updateWithdrawCount", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult updateWithdrawCount(@RequestAttribute(value = "customerId") Integer customerId, Integer authorId, Integer withdrawCount) throws Exception {
-        AuthorAccount authorAccount = null;
-        authorAccount = authorAccountService.findByAuthorAndCustomer(authorId, customerId);
-        if (authorAccount == null) {
+        Account account = null;
+        account = accountService.findByAuthorAndCustomer(authorId, customerId);
+        if (account == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        authorAccount.setWithdrawCount(withdrawCount);
-        authorAccountService.save(authorAccount);
+        account.setWithdrawCount(withdrawCount);
+        accountService.save(account);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 }

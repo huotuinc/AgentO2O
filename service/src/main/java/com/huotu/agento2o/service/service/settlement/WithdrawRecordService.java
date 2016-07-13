@@ -10,7 +10,7 @@
 
 package com.huotu.agento2o.service.service.settlement;
 
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 import com.huotu.agento2o.service.searchable.WithdrawRecordSearcher;
@@ -20,11 +20,11 @@ import org.springframework.data.domain.Page;
  * Created by helloztt on 2016/6/14.
  */
 public interface WithdrawRecordService {
-    Page<WithdrawRecord> getPage(AuthorAccount authorAccount, WithdrawRecordSearcher withdrawRecordSearcher);
+    Page<WithdrawRecord> getPage(Account account, WithdrawRecordSearcher withdrawRecordSearcher);
 
     void save(Integer authorAccountId, WithdrawApplyInfo withdrawApplyInfo);
 
-    Page<WithdrawRecord> getPageByCustomerId(Integer CustomerId, WithdrawRecordSearcher withdrawRecordSearcher);
+    Page<WithdrawRecord> getPageByCustomerId(Integer customerId, WithdrawRecordSearcher withdrawRecordSearcher);
 
     WithdrawRecord findById(Integer id);
 

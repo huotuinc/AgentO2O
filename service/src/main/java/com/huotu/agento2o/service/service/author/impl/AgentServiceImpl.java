@@ -1,6 +1,5 @@
 package com.huotu.agento2o.service.service.author.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
@@ -10,12 +9,10 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
-import com.huotu.agento2o.service.entity.settlement.AuthorAccount;
+import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
-import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
-import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
-import com.huotu.agento2o.service.repository.settlement.AuthorAccountRepository;
+import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
@@ -26,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +54,7 @@ public class AgentServiceImpl implements AgentService {
     private UserBaseInfoRepository userBaseInfoRepository;
 
     @Autowired
-    private AuthorAccountRepository authorAccountRepository;
+    private AccountRepository accountRepository;
 
 
     @Override
@@ -232,11 +227,11 @@ public class AgentServiceImpl implements AgentService {
         agent.setTelephone(requestAgent.getTelephone());
         agent.setEmail(requestAgent.getEmail());
         agent = agentRepository.save(agent);
-        AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(agent.getId());
-        if(authorAccount == null){
-            authorAccount = new AuthorAccount();
-            authorAccount.setAgent(agent);
-            authorAccountRepository.save(authorAccount);
+        Account account = accountRepository.findByAuthor_Id(agent.getId());
+        if(account == null){
+            account = new Account();
+            account.setAgent(agent);
+            accountRepository.save(account);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
@@ -312,11 +307,11 @@ public class AgentServiceImpl implements AgentService {
         agent.setAccountNo(requestAgent.getAccountNo());
         agent.setBankName(requestAgent.getBankName());
         agent.setEmail(requestAgent.getEmail());
-        AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(agent.getId());
-        if(authorAccount == null){
-            authorAccount = new AuthorAccount();
-            authorAccount.setAgent(agent);
-            authorAccountRepository.save(authorAccount);
+        Account account = accountRepository.findByAuthor_Id(agent.getId());
+        if(account == null){
+            account = new Account();
+            account.setAgent(agent);
+            accountRepository.save(account);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
 

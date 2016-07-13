@@ -51,7 +51,7 @@ public class AgentController {
     @RequestMapping("/baseConfig")
     public String baseConfig(@AgtAuthenticationPrincipal Author author, Model model) throws Exception {
         //获取最新数据
-        author = authorService.findById(author.getId());
+        author = authorService.findById(author);
         if(author == null){
             throw new Exception("没有权限");
         }

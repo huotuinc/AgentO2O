@@ -49,6 +49,20 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
     @Autowired
     private AgentProductRepository agentProductRepository;
 
+    /**
+     * 校验采购单权限
+     *
+     * @param customerId
+     * @param purchaseOrder
+     */
+    public void checkPurchaseOrder(Integer customerId, Integer agentId, AgentPurchaseOrder purchaseOrder) throws Exception {
+        if (customerId != null && !(purchaseOrder.getParentAgent() == null && purchaseOrder.getMallCustomer().getCustomerId().equals(customerId))) {
+            throw new Exception("没有权限");
+        } else if (agentId != null && !(purchaseOrder.getParentAgent() != null && purchaseOrder.getParentAgent().getId().equals(agentId))) {
+            throw new Exception("没有权限");
+        }
+
+    }
 
     @Override
     @Transactional
@@ -58,19 +72,16 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
         if (purchaseOrder == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if (customerId != null && !(purchaseOrder.getAuthor().getParentAuthor() == null && purchaseOrder.getAuthor().getCustomer().getCustomerId().equals(customerId))) {
-            return new ApiResult("没有权限");
-        } else if (agentId != null && !(purchaseOrder.getAuthor().getParentAuthor() != null && purchaseOrder.getAuthor().getParentAuthor().getId().equals(agentId))) {
-            return new ApiResult("没有权限");
-        }
+        checkPurchaseOrder(customerId, agentId, purchaseOrder);
         //判断是否可发货
         if (purchaseOrder.deliverable()) {
             AgentDelivery agentDelivery = new AgentDelivery();
             agentDelivery.setDeliveryId(SerialNo.create());
             agentDelivery.setPurchaseOrder(purchaseOrder);
-            agentDelivery.setAgentId(purchaseOrder.getAuthor().getId());
-            if(purchaseOrder.getAuthor().getParentAuthor()!=null){
-                agentDelivery.setParentAgentId(purchaseOrder.getAuthor().getParentAuthor().getId());
+            agentDelivery.setAgentId(purchaseOrder.getAgent() != null ? purchaseOrder.getAgent().getId() : null);
+            agentDelivery.setShopId(purchaseOrder.getShop() != null ? purchaseOrder.getShop().getId() : null);
+            if (purchaseOrder.getParentAgent() != null) {
+                agentDelivery.setParentAgentId(purchaseOrder.getParentAgent().getId());
             }
             agentDelivery.setCustomerId(customerId);
             agentDelivery.setType(OrderEnum.DeliveryType.DEVERY.getCode());
@@ -85,7 +96,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             String[] itemIds = deliveryInfo.getSendItems().split("\\|");
             List<AgentDeliveryItem> deliveryItemList = new ArrayList<>();
             for (String itemId : itemIds) {
-                if(StringUtil.isEmptyStr(itemId)){
+                if (StringUtil.isEmptyStr(itemId)) {
                     continue;
                 }
                 AgentPurchaseOrderItem orderItem = purchaseOrderItemRepository.findOne(Integer.parseInt(itemId));
@@ -100,7 +111,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
                 deliveryItem.setDelivery(agentDelivery);
                 if (agentId != null) {
                     //代理商货品
-                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(purchaseOrder.getAuthor().getParentAuthor(), orderItem.getProduct());
+                    AgentProduct agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(purchaseOrder.getParentAgent(), orderItem.getProduct());
                     deliveryItem.setAgentProductId(agentProduct.getId());
                 }
                 //平台货品
@@ -129,18 +140,18 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
             }
-            if(deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() !=0){
-                predicates.add(cb.equal(root.get("parentAgentId").as(Integer.class),deliverySearcher.getParentAgentId()));
-            } else if(deliverySearcher.getCustomerId() != null && deliverySearcher.getCustomerId() !=0){
-                predicates.add(cb.equal(root.get("customerId").as(Integer.class),deliverySearcher.getCustomerId()));
+            if (deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() != 0) {
+                predicates.add(cb.equal(root.get("parentAgentId").as(Integer.class), deliverySearcher.getParentAgentId()));
+            } else if (deliverySearcher.getCustomerId() != null && deliverySearcher.getCustomerId() != 0) {
+                predicates.add(cb.equal(root.get("customerId").as(Integer.class), deliverySearcher.getCustomerId()));
                 predicates.add(cb.isNull(root.get("parentAgentId").as(Integer.class)));
             }
             if (!StringUtils.isEmpty(deliverySearcher.getDeliveryId())) {
-                predicates.add(cb.like(root.get("deliveryId").as(String.class), "%"+deliverySearcher.getDeliveryId()+"%"));
+                predicates.add(cb.like(root.get("deliveryId").as(String.class), "%" + deliverySearcher.getDeliveryId() + "%"));
             }
 
             if (!StringUtils.isEmpty(deliverySearcher.getLogiNo())) {
-                predicates.add(cb.like(root.get("logisticsNo").as(String.class), "%"+deliverySearcher.getLogiNo()+"%"));
+                predicates.add(cb.like(root.get("logisticsNo").as(String.class), "%" + deliverySearcher.getLogiNo() + "%"));
             }
 
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
@@ -163,7 +174,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
         };
         //排序
 
-        return agentDeliveryRepository.findAll(specification, new PageRequest(deliverySearcher.getPageIndex() - 1, Constant.PAGESIZE,new Sort(Sort.Direction.DESC, "createTime")));
+        return agentDeliveryRepository.findAll(specification, new PageRequest(deliverySearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
     }
 
     @Override
@@ -173,18 +184,18 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
             }
-            if(deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() !=0){
-                predicates.add(cb.equal(root.get("parentAgentId").as(Integer.class),deliverySearcher.getParentAgentId()));
-            } else if(deliverySearcher.getCustomerId() != null && deliverySearcher.getCustomerId() !=0){
-                predicates.add(cb.equal(root.get("customerId").as(Integer.class),deliverySearcher.getCustomerId()));
+            if (deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() != 0) {
+                predicates.add(cb.equal(root.get("parentAgentId").as(Integer.class), deliverySearcher.getParentAgentId()));
+            } else if (deliverySearcher.getCustomerId() != null && deliverySearcher.getCustomerId() != 0) {
+                predicates.add(cb.equal(root.get("customerId").as(Integer.class), deliverySearcher.getCustomerId()));
                 predicates.add(cb.isNull(root.get("parentAgentId").as(Integer.class)));
             }
             if (!StringUtils.isEmpty(deliverySearcher.getDeliveryId())) {
-                predicates.add(cb.like(root.get("deliveryId").as(String.class), "%"+deliverySearcher.getDeliveryId()+"%"));
+                predicates.add(cb.like(root.get("deliveryId").as(String.class), "%" + deliverySearcher.getDeliveryId() + "%"));
             }
 
             if (!StringUtils.isEmpty(deliverySearcher.getLogiNo())) {
-                predicates.add(cb.like(root.get("logisticsNo").as(String.class), "%"+deliverySearcher.getLogiNo()+"%"));
+                predicates.add(cb.like(root.get("logisticsNo").as(String.class), "%" + deliverySearcher.getLogiNo() + "%"));
             }
 
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
@@ -207,6 +218,6 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
         };
         //排序
 
-        return agentDeliveryRepository.findAll(specification, new PageRequest(deliverySearcher.getPageIndex() - 1, Constant.PAGESIZE,new Sort(Sort.Direction.DESC, "createTime")));
+        return agentDeliveryRepository.findAll(specification, new PageRequest(deliverySearcher.getPageIndex() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "createTime")));
     }
 }

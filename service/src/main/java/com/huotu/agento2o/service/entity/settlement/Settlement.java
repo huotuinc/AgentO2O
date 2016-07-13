@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.entity.settlement;
 
 import com.huotu.agento2o.service.common.SettlementEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
@@ -40,11 +41,15 @@ public class Settlement {
     @Column(name = "SettlementNo")
     private String settlementNo;
 
+    @OneToOne
+    @JoinColumn(name = "Agent_Id")
+    private Agent agent;
+
     /**
      * 门店
      */
     @OneToOne
-    @JoinColumn(name = "Agent_Id" )
+    @JoinColumn(name = "Shop_Id" )
     private Shop shop;
 
     /**

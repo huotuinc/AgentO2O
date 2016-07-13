@@ -65,7 +65,8 @@ public class WithdrawRecord {
     private WithdrawEnum.WithdrawEnumStatus status;
 
     @ManyToOne
-    private AuthorAccount shopAccount;
+    @JoinColumn(name = "Account_ID")
+    private Account account;
 
     /**
      * 开户银行名称

@@ -157,7 +157,11 @@ public abstract class CommonTestBase extends SpringWebTest {
     }
 
     @SuppressWarnings("Duplicates")
-    protected Agent mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
+    protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
+        MallCustomer customer = new MallCustomer();
+        customer.setNickName(UUID.randomUUID().toString());
+        customer.setUsername(UUID.randomUUID().toString());
+        customer.setPassword(passWord);
         Agent agent = new Agent();
         agent.setCustomer(mockCustomer);
         agent.setUsername(UUID.randomUUID().toString());
@@ -170,13 +174,14 @@ public abstract class CommonTestBase extends SpringWebTest {
         agent.setDisabled(false);
         agent.setDeleted(false);
         if (parentAgent != null) {
-            agent.setParentAuthor(parentAgent);
+            agent.setParentAgent(parentAgent);
         }
         agent.setAgentLevel(mockAgentLevel(mockCustomer));
         agent.setStatus(AgentStatusEnum.CHECKED);
-        agent = agentService.addAgent(agent);
-        agentService.flush();
-        return agent;
+        customer.setAgent(agent);
+//        agent = agentService.addAgent(agent);
+//        agentService.flush();
+        return customerService.newCustomer(customer);
     }
 
     protected Shop mockShop(MallCustomer mockCustomer, Agent parentAgent) {
@@ -193,7 +198,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
         if (parentAgent != null) {
-            shop.setParentAuthor(parentAgent);
+            shop.setAgent(parentAgent);
         }
         //密码进行加密保存
         shop.setPassword(passwordEncoder.encode(shop.getPassword()));
@@ -276,7 +281,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     @SuppressWarnings("Duplicates")
     protected AgentProduct mockAgentProduct(MallProduct mockMallProduct, Author mockAuthor) {
         AgentProduct agentProduct = new AgentProduct();
-        agentProduct.setAuthor(mockAuthor);
+        agentProduct.setAgent(mockAuthor.getAuthorAgent());
+        agentProduct.setShop(mockAuthor.getAuthorShop());
         agentProduct.setProduct(mockMallProduct);
         agentProduct.setGoodsId(mockMallProduct.getGoods().getGoodsId());
         agentProduct.setStore(20);
@@ -288,7 +294,8 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     protected ShoppingCart mockShoppingCart(MallProduct mockMallProduct, Author author) {
         ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setAuthor(author);
+        shoppingCart.setAgent(author.getAuthorAgent());
+        shoppingCart.setShop(author.getAuthorShop());
         shoppingCart.setProduct(mockMallProduct);
         shoppingCart.setNum(random.nextInt(mockMallProduct.getStore() - mockMallProduct.getFreez() - 1) + 1);
         shoppingCart.setCreateTime(new Date());
@@ -297,7 +304,8 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     protected ShoppingCart mockShoppingCart(AgentProduct agentProduct, Author author) {
         ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setAuthor(author);
+        shoppingCart.setAgent(author.getAuthorAgent());
+        shoppingCart.setShop(author.getAuthorShop());
         shoppingCart.setProduct(agentProduct.getProduct());
         if (agentProduct.getStore() - agentProduct.getFreez() == 0) {
             shoppingCart.setNum(0);
@@ -341,7 +349,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrder mockAgentPurchaseOrder(Author author) {
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
-        purchaseOrder.setAuthor(author);
+        purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -403,7 +412,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrder mockDisablePurchaseOrder(Author author){
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
-        purchaseOrder.setAuthor(author);
+        purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -446,7 +456,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrder mockCheckablePurchaseOrder(Author author){
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
-        purchaseOrder.setAuthor(author);
+        purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -481,7 +492,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrder mockPayablePurchaseOrder(Author author){
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
-        purchaseOrder.setAuthor(author);
+        purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -517,7 +529,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrder mockDeliverablePurchaseOrder(Author author){
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
-        purchaseOrder.setAuthor(author);
+        purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -554,7 +567,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected AgentPurchaseOrder mockReceivablePurchaseOrder(Author author){
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
-        purchaseOrder.setAuthor(author);
+        purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -589,10 +603,10 @@ public abstract class CommonTestBase extends SpringWebTest {
         AgentPurchaseOrderItem orderItem = new AgentPurchaseOrderItem();
         orderItem.setPurchaseOrder(agentPurchaseOrder);
         //保证单个采购单数量大于0且不超过预占库存
-        if (agentPurchaseOrder.getAuthor().getParentAuthor() == null) {
+        if (agentPurchaseOrder.getParentAgent() == null) {
             orderItem.setNum(random.nextInt(mallProduct.getFreez() - 1) + 1);
         } else {
-            AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agentPurchaseOrder.getAuthor().getParentAuthor(), mallProduct);
+            AgentProduct agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentPurchaseOrder.getParentAgent(), mallProduct);
             orderItem.setNum(random.nextInt(agentProduct.getFreez() - 1) + 1);
         }
         orderItem.setProduct(mallProduct);
@@ -716,7 +730,8 @@ public abstract class CommonTestBase extends SpringWebTest {
         address.setAddress(UUID.randomUUID().toString());
         address.setDefault(false);
         address.setDistrict(UUID.randomUUID().toString());
-        address.setAuthor(author);
+        address.setAgent(author.getAuthorAgent());
+        address.setShop(author.getAuthorShop());
         address.setCity(UUID.randomUUID().toString());
         address.setTelephone(UUID.randomUUID().toString());
         address.setProvince(UUID.randomUUID().toString());

@@ -39,9 +39,9 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
     //平台方
     private MallCustomer mockCustomer;
     //一级代理商
-    private Agent mockFirstLevelAgent;
+    private MallCustomer mockFirstLevelAgent;
     //二级代理商
-    private Agent mockSecondLevelAgent;
+    private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
     private Shop mockFirstLevelShop;
     //二级代理商下级门店
@@ -94,9 +94,9 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
         //用户相关
         mockCustomer = mockMallCustomer();
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent);
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
 
         //平台商品相关
         for (int i = 0; i < random.nextInt(10) + 10; i++) {

@@ -40,9 +40,9 @@ public class OrderControllerTest extends CommonTestBase {
     //平台方
     private MallCustomer mockCustomer;
     //一级代理商
-    private Agent mockFirstLevelAgent;
+    private MallCustomer mockFirstLevelAgent;
     //二级代理商
-    private Agent mockSecondLevelAgent;
+    private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
     private Shop mockFirstLevelShop;
     //二级代理商下级门店1,门店2
@@ -64,10 +64,10 @@ public class OrderControllerTest extends CommonTestBase {
         System.out.println(passWord+"____");
         mockCustomer = mockMallCustomer();
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelShopOne = mockShop(mockCustomer, mockSecondLevelAgent);
-        mockSecondLevelShopTwo = mockShop(mockCustomer, mockSecondLevelAgent);
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelShopOne = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
+        mockSecondLevelShopTwo = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
 
         //二级代理商下级门店1的订单
         for (int i = 0; i <= random.nextInt(10) + 1; i++) {

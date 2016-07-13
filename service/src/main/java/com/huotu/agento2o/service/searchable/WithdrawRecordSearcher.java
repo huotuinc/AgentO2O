@@ -31,7 +31,8 @@ public class WithdrawRecordSearcher {
     private int pageNo = 1;
     private int pageSize = Constant.PAGESIZE;
     private int status = -1;
-    private int shopId;
+    private int shopId = 0;
+    private int agentId = 0;
     private String withdrawNo;
 
 

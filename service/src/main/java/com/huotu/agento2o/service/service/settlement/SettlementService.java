@@ -39,7 +39,7 @@ public interface SettlementService {
 
     int unhandledSettlementCount(Integer shopId);
 
-    Page<Settlement> getPage(Integer shopId, SettlementSearcher settlementSearcher);
+    Page<Settlement> getPage(SettlementSearcher settlementSearcher);
 
     Page<Settlement> getCustomerPage(Integer customerId, SettlementSearcher settlementSearcher);
 

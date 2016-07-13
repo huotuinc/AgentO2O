@@ -46,6 +46,8 @@ public class AgentDelivery {
 //    private Author author;
     @Column(name = "Agent_Id")
     private Integer agentId;
+    @Column(name = "Shop_Id")
+    private Integer shopId;
 //    @ManyToOne
 //    @JoinColumn(name = "Parent_Agent_Id")
 //    private Agent parentAgentId;
