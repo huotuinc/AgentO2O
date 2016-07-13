@@ -155,7 +155,7 @@ public class ShopServiceImpl implements ShopService {
         }
         shop = shopRepository.save(shop);
         //如果结算账户不存在，则新建结算账户
-        Account account = accountRepository.findByAuthor_Id(shop.getId());
+        Account account = accountRepository.findByShop_Id(shop.getId());
         if (account == null) {
             account = new Account();
             account.setShop(shop);

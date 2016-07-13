@@ -96,10 +96,10 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         int recordNum = 3;
         MallCustomer mallCustomer = mockMallCustomer();
 
-        Agent parentAgent1 = mockAgent(mallCustomer,null);
-        Agent parentAgent2 = mockAgent(mallCustomer,null);
-        Agent agent1 = mockAgent(mallCustomer,parentAgent1);
-        Agent agent2 = mockAgent(mallCustomer,parentAgent1);
+        MallCustomer parentAgent1 = mockAgent(mallCustomer,null);
+        MallCustomer parentAgent2 = mockAgent(mallCustomer,null);
+        MallCustomer agent1 = mockAgent(mallCustomer,parentAgent1.getAgent());
+        MallCustomer agent2 = mockAgent(mallCustomer,parentAgent1.getAgent());
 
         List<AgentReturnedOrder> parentAgentROrders1 = new ArrayList<>();
         List<AgentReturnedOrder> parentAgentROrders2 = new ArrayList<>();
@@ -169,10 +169,10 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Integer returnNum = 5;
 
         MallCustomer mallCustomer = mockMallCustomer();
-        Agent agent = mockAgent(mallCustomer,null);
+        MallCustomer agent = mockAgent(mallCustomer,null);
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),agent.getId());
         MallProduct mallProduct = mockMallProduct(mallGoods);
-        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent);
+        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent.getAgent());
         Integer rawFreez = agentProduct.getFreez();
 
         AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
@@ -199,7 +199,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Assert.assertNull(testAgentRturnOrder);
 
         // 判断预占库存被释放
-        AgentProduct testAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(agent,mallProduct);
+        AgentProduct testAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agent.getAgent(),mallProduct);
         Assert.assertEquals(rawFreez,testAgentProduct.getFreez());
 
         rOrderId = "";
@@ -210,12 +210,12 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
     @Test
     public void testCheckReturnOrder(){
         MallCustomer mallCustomer = mockMallCustomer();
-        Agent parentAgent = mockAgent(mallCustomer,null);
-        Agent subAgent = mockAgent(mallCustomer,parentAgent);
+        MallCustomer parentAgent = mockAgent(mallCustomer,null);
+        MallCustomer subAgent = mockAgent(mallCustomer,parentAgent.getAgent());
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(), parentAgent.getId());
         MallProduct mallProduct = mockMallProduct(mallGoods);
-        AgentProduct parentAgentProduct = mockAgentProduct(mallProduct,parentAgent);
-        AgentProduct subAgentProduct = mockAgentProduct(mallProduct,subAgent);
+        AgentProduct parentAgentProduct = mockAgentProduct(mallProduct,parentAgent.getAgent());
+        AgentProduct subAgentProduct = mockAgentProduct(mallProduct,subAgent.getAgent());
         Integer parentRawFreez = parentAgentProduct.getFreez();
         Integer subRawFreez = subAgentProduct.getFreez();
 
@@ -247,7 +247,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(parentAgent,parentROrderId);
         Assert.assertNull(testAgentRturnOrder);
         // 判断预占库存被释放
-        AgentProduct testAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(parentAgent,mallProduct);
+        AgentProduct testAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(parentAgent.getAgent(),mallProduct);
         Assert.assertEquals(parentRawFreez,testAgentProduct.getFreez());
 
 
@@ -283,7 +283,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         AgentReturnedOrder testSubAgentRturnOrder = agentReturnOrderRepository.findOne(subROrderId);
         Assert.assertTrue(testSubAgentRturnOrder.isDisabled()==true);
         // 判断预占库存被释放
-        AgentProduct testSubAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(subAgent,mallProduct);
+        AgentProduct testSubAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgent.getAgent(),mallProduct);
         Assert.assertEquals(subRawFreez,testSubAgentProduct.getFreez());
 
         //通过
@@ -299,10 +299,10 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
     public void testPushReturnOrderDelivery(){
         MallCustomer mallCustomer = mockMallCustomer();
 
-        Agent agent = mockAgent(mallCustomer,null);
+        MallCustomer agent = mockAgent(mallCustomer,null);
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(), agent.getId());
         MallProduct mallProduct = mockMallProduct(mallGoods);
-        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent);
+        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent.getAgent());
 
         AgentReturnedOrder agentReturnedOrder = new AgentReturnedOrder();
         String rOrderId = SerialNo.create();
@@ -340,20 +340,20 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Integer subReturnNum = 10;
 
         MallCustomer mallCustomer = mockMallCustomer();
-        Agent parentAgent = mockAgent(mallCustomer,null);
-        Agent subAgent = mockAgent(mallCustomer,parentAgent);
+        MallCustomer parentAgent = mockAgent(mallCustomer,null);
+        MallCustomer subAgent = mockAgent(mallCustomer,parentAgent.getAgent());
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),null);
         MallProduct mallProduct = mockMallProduct(mallGoods);
         mallProduct.setStore(mallProductNum);
         productRepository.saveAndFlush(mallProduct);
 
 
-        AgentProduct parentAgentProduct = mockAgentProduct(mallProduct,parentAgent);
+        AgentProduct parentAgentProduct = mockAgentProduct(mallProduct,parentAgent.getAgent());
         parentAgentProduct.setStore(parentAgentProductNum);
         parentAgentProduct.setFreez(parentAgentFreez);
         parentAgentProduct = agentProductRepository.saveAndFlush(parentAgentProduct);
 
-        AgentProduct subAgentProduct = mockAgentProduct(mallProduct,subAgent);
+        AgentProduct subAgentProduct = mockAgentProduct(mallProduct,subAgent.getAgent());
         subAgentProduct.setStore(subAgentProductNum);
         subAgentProduct.setFreez(subAgentFreez);
         subAgentProduct = agentProductRepository.saveAndFlush(subAgentProduct);
@@ -413,8 +413,8 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         String subROrderId = SerialNo.create();
 
         MallCustomer mallCustomer = mockMallCustomer();
-        Agent parentAgent = mockAgent(mallCustomer,null);
-        Agent subAgent = mockAgent(mallCustomer,parentAgent);
+        MallCustomer parentAgent = mockAgent(mallCustomer,null);
+        MallCustomer subAgent = mockAgent(mallCustomer,parentAgent.getAgent());
 
         //平台方支付退款给关联的一级代理商
         AgentReturnedOrder parentAgentReturnedOrder = new AgentReturnedOrder();
@@ -453,10 +453,10 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Integer agentProductFreez = 900;
 
         MallCustomer mallCustomer = mockMallCustomer();
-        Agent agent = mockAgent(mallCustomer,null);
+        MallCustomer agent = mockAgent(mallCustomer,null);
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),agent.getId());
         MallProduct mallProduct = mockMallProduct(mallGoods);
-        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent);
+        AgentProduct agentProduct = mockAgentProduct(mallProduct,agent.getAgent());
         agentProduct.setStore(agentProductStore);
         agentProduct.setFreez(agentProductFreez);
         agentProductRepository.save(agentProduct);

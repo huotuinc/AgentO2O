@@ -229,7 +229,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setTelephone(requestAgent.getTelephone());
         agent.setEmail(requestAgent.getEmail());
         agent = agentRepository.save(agent);
-        Account account = accountRepository.findByAuthor_Id(agent.getId());
+        Account account = accountRepository.findByAgent_Id(agent.getId());
         if(account == null){
             account = new Account();
             account.setAgent(agent);
@@ -320,7 +320,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setAccountNo(requestAgent.getAccountNo());
         agent.setBankName(requestAgent.getBankName());
         agent.setEmail(requestAgent.getEmail());
-        Account account = accountRepository.findByAuthor_Id(agent.getId());
+        Account account = accountRepository.findByAgent_Id(agent.getId());
         if(account == null){
             account = new Account();
             account.setAgent(agent);
