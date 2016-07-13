@@ -109,7 +109,7 @@ public class DeliveryControllerTest extends CommonTestBase {
      */
     @Test
         public void testJudgeStock() throws Exception {
-        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord);
+        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop1 = mockMvc.perform(
                 get(BASE_URL + "/judgeStock")
                         .session(sessionShop1).param("orderId", mockSecondLevelShopOneList.get(0).getOrderId()))

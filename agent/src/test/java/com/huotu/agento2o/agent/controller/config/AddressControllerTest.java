@@ -67,7 +67,7 @@ public class AddressControllerTest extends CommonTestBase {
     public void testShowAddressList() throws Exception {
         String controllerUrl = BASE_URL + "/addressList";
         //代理商登录
-        MockHttpSession agentSession = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession agentSession = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult agentResult = mockMvc.perform(get(controllerUrl).session(agentSession))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("addressList"))
@@ -80,7 +80,7 @@ public class AddressControllerTest extends CommonTestBase {
             Assert.assertEquals(agentAddress.get(i).getId(), addressList.get(i).getId());
         }
         //门店登录
-        MockHttpSession shopSession = loginAs(mockShop.getUsername(), passWord);
+        MockHttpSession shopSession = loginAs(mockShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult shopResult = mockMvc.perform(get(controllerUrl).session(shopSession))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("addressList"))
@@ -97,7 +97,7 @@ public class AddressControllerTest extends CommonTestBase {
     public void testShowAddress() throws Exception {
         String controllerUrl = BASE_URL + "/showAddress";
         Address expectAddress = agentAddress.get(0);
-        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult agentResult = mockMvc.perform(post(controllerUrl).session(session))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -118,7 +118,7 @@ public class AddressControllerTest extends CommonTestBase {
     public void testConfigDefault() throws Exception {
         String controllerUrl = BASE_URL + "/configDefault";
         Address expectAddress = agentAddress.get(0);
-        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult agentResult = mockMvc.perform(post(controllerUrl).session(session))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -139,7 +139,7 @@ public class AddressControllerTest extends CommonTestBase {
     public void testDeleteAddress() throws Exception {
         String controllerUrl = BASE_URL + "/deleteAddress";
         Address expectAddress = agentAddress.get(0);
-        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult agentResult = mockMvc.perform(post(controllerUrl).session(session))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -166,7 +166,7 @@ public class AddressControllerTest extends CommonTestBase {
     public void testAddOrSaveAddress() throws Exception {
         String controllerUrl = BASE_URL + "/saveAddress";
         Address expectAddress = agentAddress.get(0);
-        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession session = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult agentResult = mockMvc.perform(post(controllerUrl).session(session))
                 .andExpect(status().isOk())
                 .andReturn();

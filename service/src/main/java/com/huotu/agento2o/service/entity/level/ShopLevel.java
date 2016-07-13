@@ -20,5 +20,5 @@ import javax.persistence.Entity;
  */
 @Entity
 @Data
-public class ShopLevel extends Shop{
+public class ShopLevel extends Level{
 }

@@ -20,34 +20,25 @@ import java.util.List;
 /**
  * Created by helloztt on 2016/5/9.
  */
-public interface AuthorService extends UserDetailsService{
+public interface AuthorService {
     /**
-     * 根据ID查找 代理商
-     * @param id
+     * 查找代理商或门店
+     * @param requestAuthor
      * @return
      */
-    Author findById(Integer id);
+    Author findById(Author requestAuthor);
 
-    /**
-     * 根据平台方ID 查找代理商列表
-     */
-    List<Author> findByCustomerId(Integer customerId);
     /**
      * 查找下级代理商/门店
      */
     List<Author> findByParentAgentId(Agent agent);
 
     /**
-     * 新建代理商
-     */
-    Author addAuthor(Author author);
-
-    /**
      * 修改密码
      */
-    boolean updatePwd(Integer id,String password);
+    boolean updatePwd(Author requestAuthor,String password);
     /**
      * 校验密码是否正确
      */
-    boolean checkPwd(Integer id,String password);
+    boolean checkPwd(Author requestAuthor,String password);
 }

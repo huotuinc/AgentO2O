@@ -235,7 +235,7 @@ public class AgentServiceImpl implements AgentService {
         AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(agent.getId());
         if(authorAccount == null){
             authorAccount = new AuthorAccount();
-            authorAccount.setAuthor(agent);
+            authorAccount.setAgent(agent);
             authorAccountRepository.save(authorAccount);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -315,7 +315,7 @@ public class AgentServiceImpl implements AgentService {
         AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(agent.getId());
         if(authorAccount == null){
             authorAccount = new AuthorAccount();
-            authorAccount.setAuthor(agent);
+            authorAccount.setAgent(agent);
             authorAccountRepository.save(authorAccount);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -327,14 +327,5 @@ public class AgentServiceImpl implements AgentService {
         List<String> names = new ArrayList<>();
         names = userBaseInfoRepository.findByLoginNameLikeAndMallCustomer_customerId("%" + name + "%", customerId);
         return names;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Agent agent = findByUserName(username);
-        if (agent == null) {
-            throw new UsernameNotFoundException("没有该代理商");
-        }
-        return agent;
     }
 }

@@ -1,10 +1,17 @@
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.repository.MallCustomerRepository;
+import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.AuthorRepository;
+import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.Repository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,16 +26,22 @@ import java.util.List;
 @Service("authorService")
 public class AuthorServiceImpl implements AuthorService {
     @Autowired
-    private AuthorRepository authorRepository;
+    private AgentRepository agentRepository;
+    @Autowired
+    private ShopRepository shopRepository;
+    @Autowired
+    private MallCustomerRepository mallCustomerRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Author findById(Integer id) {
-        return id == null ? null : authorRepository.findOne(id);
-    }
-
-    public List<Author> findByCustomerId(Integer customerId) {
-        return authorRepository.findByCustomer_CustomerId(customerId);
+    public Author findById(Author requestAuthor) {
+        if(MallCustomer.class == requestAuthor.getType()){
+            return mallCustomerRepository.findOne(requestAuthor.getId());
+        }else if(Shop.class == requestAuthor.getType()){
+            return shopRepository.findOne(requestAuthor.getId());
+        }else{
+            return null;
+        }
     }
 
     @Override
@@ -36,25 +49,36 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findByParentAuthor(agent);
     }
 
-    public Author addAuthor(Author author) {
-        return authorRepository.save(author);
-    }
-
     @Override
     @Transactional
-    public boolean updatePwd(Integer id, String password) {
-        Author author = authorRepository.findOne(id);
-        if(author == null){
-            return false;
+    public boolean updatePwd(Author requestAuthor, String password) {
+        if(MallCustomer.class == requestAuthor.getType()){
+            MallCustomer author = mallCustomerRepository.findOne(requestAuthor.getId());
+            if(author == null){
+                return false;
+            }
+            author.setPassword(passwordEncoder.encode(password));
+            mallCustomerRepository.save(author);
+        }else if(Shop.class == requestAuthor.getType()){
+            Shop author = shopRepository.findOne(requestAuthor.getId());
+            if(author == null){
+                return false;
+            }
+            author.setPassword(passwordEncoder.encode(password));
+            shopRepository.save(author);
+            return true;
         }
-        author.setPassword(passwordEncoder.encode(password));
-        authorRepository.save(author);
-        return true;
+        return false;
     }
 
     @Override
-    public boolean checkPwd(Integer id, String password) {
-        Author author = authorRepository.findOne(id);
+    public boolean checkPwd(Author requestAuthor, String password) {
+        Author author = null;
+        if(MallCustomer.class == requestAuthor.getType()){
+            author = mallCustomerRepository.findOne(requestAuthor.getId());
+        }else if(Shop.class == requestAuthor.getType()){
+            author = shopRepository.findOne(requestAuthor.getId());
+        }
         if(author == null){
             return false;
         }
@@ -63,14 +87,5 @@ public class AuthorServiceImpl implements AuthorService {
         }else{
             return false;
         }
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Author author = authorRepository.findByUsername(username);
-        if(author == null){
-            throw  new UsernameNotFoundException("用户名不存在！");
-        }
-        return author;
     }
 }

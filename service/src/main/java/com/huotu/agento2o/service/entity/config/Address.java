@@ -9,7 +9,9 @@
 
 package com.huotu.agento2o.service.entity.config;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -77,6 +79,10 @@ public class Address {
     private boolean isDefault;
 
     @ManyToOne
-    @JoinColumn(name = "Author_Id")
-    private Author author;
+    @JoinColumn(name = "Agent_Id")
+    private Agent agent;
+
+    @ManyToOne
+    @JoinColumn(name = "Shop_Id")
+    private Shop shop;
 }

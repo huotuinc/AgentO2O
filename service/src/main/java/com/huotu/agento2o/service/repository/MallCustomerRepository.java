@@ -19,4 +19,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MallCustomerRepository extends JpaRepository<MallCustomer,Integer> {
+
+    MallCustomer findByUsername(String username);
 }

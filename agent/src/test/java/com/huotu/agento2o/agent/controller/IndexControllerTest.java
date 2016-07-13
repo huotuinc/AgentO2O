@@ -61,7 +61,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
@@ -87,7 +87,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.BAD_CREDENTIALS_MSG);
@@ -112,7 +112,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.LOCKED_MSG);
@@ -137,7 +137,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.EXPIRED_MSG);
@@ -163,7 +163,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
@@ -189,7 +189,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.BAD_CREDENTIALS_MSG);
@@ -214,7 +214,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.LOCKED_MSG);
@@ -239,7 +239,7 @@ public class IndexControllerTest extends CommonTestBase {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
+                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.EXPIRED_MSG);

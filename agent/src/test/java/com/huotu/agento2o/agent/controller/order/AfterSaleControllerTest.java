@@ -78,7 +78,7 @@ public class AfterSaleControllerTest extends CommonTestBase {
 
     @Test
     public void testAfterSaleList() throws Exception {
-        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord);
+        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop1 = mockMvc.perform(
                 get(BASE_URL + "/afterSaleList")
                         .session(sessionShop1))
@@ -87,7 +87,7 @@ public class AfterSaleControllerTest extends CommonTestBase {
         List<MallAfterSales> mallAfterSales1 = (List<MallAfterSales>) resultShop1.getModelAndView().getModel().get("afterSales");
         Assert.assertEquals(mockSecondLevelShopOneList.size(), mallAfterSales1.size());
 
-        MockHttpSession sessionShop2 = loginAs(mockSecondLevelShopTwo.getUsername(), passWord);
+        MockHttpSession sessionShop2 = loginAs(mockSecondLevelShopTwo.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop2 = mockMvc.perform(
                 get(BASE_URL + "/afterSaleList")
                         .session(sessionShop2))
@@ -96,7 +96,7 @@ public class AfterSaleControllerTest extends CommonTestBase {
         List<MallAfterSales> mallAfterSales2 = (List<MallAfterSales>) resultShop2.getModelAndView().getModel().get("afterSales");
         Assert.assertEquals(mockSecondLevelShopTwoList.size(), mallAfterSales2.size());
 
-        MockHttpSession sessionAgent = loginAs(mockSecondLevelAgent.getUsername(),passWord);
+        MockHttpSession sessionAgent = loginAs(mockSecondLevelAgent.getUsername(),passWord,String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult resultAgent = mockMvc.perform(get(BASE_URL + "/afterSaleList")
                 .session(sessionAgent))
                 .andExpect(status().isOk())

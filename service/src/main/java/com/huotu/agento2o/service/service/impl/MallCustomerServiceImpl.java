@@ -14,6 +14,8 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Created by helloztt on 2016/5/14.
  */
-@Service
+@Service("mallCustomerService")
 public class MallCustomerServiceImpl implements MallCustomerService {
     @Autowired
     private MallCustomerRepository customerRepository;
@@ -45,5 +47,14 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     @Override
     public MallCustomer findByCustomerId(Integer customerId) {
         return customerId == null ? null : customerRepository.findOne(customerId);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        MallCustomer mallCustomer = customerRepository.findByUsername(userName);
+        if(mallCustomer == null){
+            throw  new UsernameNotFoundException("没有该代理商");
+        }
+        return mallCustomer;
     }
 }

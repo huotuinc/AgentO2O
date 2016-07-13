@@ -89,7 +89,7 @@ public class OrderControllerTest extends CommonTestBase {
     @Test
     public void testGetOrdersAll() throws Exception {
         //二级代理商下级门店1订单列表
-        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord);
+        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop1 = mockMvc.perform(
                 get(BASE_URL + "/getOrdersPage")
                         .session(sessionShop1))
@@ -99,14 +99,14 @@ public class OrderControllerTest extends CommonTestBase {
         Assert.assertEquals(mockSecondLevelShopOneList.size(), mallOrderList1.size());
 
         //二级代理商下级门店2订单列表
-        MockHttpSession sessionShop2 = loginAs(mockSecondLevelShopTwo.getUsername(), passWord);
+        MockHttpSession sessionShop2 = loginAs(mockSecondLevelShopTwo.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop2 = mockMvc.perform(
                 get(BASE_URL + "/getOrdersPage").session(sessionShop2)).andExpect(status().isOk()).andReturn();
         List<MallOrder> mallOrderList2 = (List<MallOrder>) resultShop2.getModelAndView().getModel().get("ordersList");
         Assert.assertEquals(mockSecondLevelShopTwoList.size(), mallOrderList2.size());
 
         //二级代理商所显示的所有下属门店的订单
-        MockHttpSession sessionAgent = loginAs(mockSecondLevelAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult resultAgent = mockMvc.perform(
                 get(BASE_URL + "/getOrdersPage").session(sessionAgent)).andExpect(status().isOk()).andReturn();
         List<MallOrder> mallOrderAgentList = (List<MallOrder>) resultAgent.getModelAndView().getModel().get("ordersList");
@@ -116,7 +116,7 @@ public class OrderControllerTest extends CommonTestBase {
     @Test
     public void testEditRemark() throws Exception {
 
-        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord);
+        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop1 = mockMvc.perform(
                 post(BASE_URL + "/remark")
                         .session(sessionShop1).param("orderId", mockSecondLevelShopOneList.get(0).getOrderId()).
@@ -131,7 +131,7 @@ public class OrderControllerTest extends CommonTestBase {
 
     @Test
     public void testShowOrderDetail() throws Exception{
-        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord);
+        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult resultShop1 = mockMvc.perform(
                 get(BASE_URL + "/showOrderDetail")
                         .session(sessionShop1).param("orderId", mockSecondLevelShopOneList.get(0).getOrderId()))

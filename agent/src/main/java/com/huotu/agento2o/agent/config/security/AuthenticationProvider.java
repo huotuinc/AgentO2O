@@ -32,8 +32,10 @@ import javax.annotation.Resource;
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider implements AuthenticationManager {
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Resource(name = "authorService")
-    private UserDetailsService authorService;
+    @Resource(name = "mallCustomerService")
+    private UserDetailsService mallCustomerService;
+    @Resource(name = "shopService")
+    private UserDetailsService shopService;
 
     /**
      * 校验密码存在
@@ -90,8 +92,10 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
         AuthenticationToken authenticationToken = (AuthenticationToken) authentication;
         UserDetailsService currentService = null;
 
-        if (authenticationToken.getRoleType() == RoleTypeEnum.AUTHOR.getCode()) {
-            currentService = authorService;
+        if (authenticationToken.getRoleType() == RoleTypeEnum.AGENT.getCode()) {
+            currentService = mallCustomerService;
+        } else if(authenticationToken.getRoleType() == RoleTypeEnum.SHOP.getCode()){
+            currentService = shopService;
         }
         return currentService;
     }

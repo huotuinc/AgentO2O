@@ -23,10 +23,16 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
 
-    List<Address> findByAuthor_id(Integer authorId);
+    List<Address> findByShop_id(Integer shopId);
 
-    Address findByIdAndAuthor_id(Integer addressId,Integer authorId);
+    Address findByIdAndShop_id(Integer addressId,Integer shopId);
 
-    Address findByAuthor_IdAndIsDefaultTrue(Integer authorId);
+    Address findByShop_idAndIsDefaultTrue(Integer Shop_id);
+
+    List<Address> findByAgent_id(Integer agentId);
+
+    Address findByIdAndAgent_id(Integer addressId,Integer agentId);
+
+    Address findByAgent_idAndIsDefaultTrue(Integer agentId);
 
 }

@@ -136,21 +136,7 @@ public abstract class CommonTestBase extends SpringWebTest {
     @Autowired
     protected MallOrderRepository orderRepository;
 
-    protected MockHttpSession loginAs(String userName, String password) throws Exception {
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
-        session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType", String.valueOf(RoleTypeEnum.AUTHOR.getCode())))
-                .andReturn().getRequest().getSession();
-        Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        saveAuthedSession(session);
-        return session;
-    }
-
     protected MockHttpSession loginAs(String userName, String password, String roleType) throws Exception {
-        if(StringUtil.isEmptyStr(roleType)){
-            roleType = String.valueOf(RoleTypeEnum.AUTHOR.getCode());
-        }
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)

@@ -158,7 +158,7 @@ public class ShopServiceImpl implements ShopService {
         AuthorAccount authorAccount = authorAccountRepository.findByAuthor_Id(shop.getId());
         if (authorAccount == null) {
             authorAccount = new AuthorAccount();
-            authorAccount.setAuthor(shop);
+            authorAccount.setShop(shop);
             authorAccountRepository.save(authorAccount);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);

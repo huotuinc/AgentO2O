@@ -118,14 +118,14 @@ public class IndexController {
         }
         //校验旧密码
         if (user instanceof Author) {
-            if (!authorService.checkPwd(((Author) user).getId(), oldPwd)) {
+            if (!authorService.checkPwd((Author) user, oldPwd)) {
                 return new ApiResult("原始密码错误!");
             }
         }
         //修改新密码
         if (user instanceof Author) {
             //修改代理商/门店密码
-            authorService.updatePwd(((Author) user).getId(), password);
+            authorService.updatePwd((Author) user, password);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }

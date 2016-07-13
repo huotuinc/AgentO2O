@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Created by helloztt on 2016/5/9.
  */
-public interface AgentService extends UserDetailsService {
+public interface AgentService {
 
     /**
      * 根据唯一id和平台方id获取某个代理商

@@ -11,7 +11,9 @@ package com.huotu.agento2o.service.service.config.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.AuthorRepository;
@@ -37,40 +39,63 @@ public class AddressServiceImpl implements AddressService {
     private AuthorService authorService;
 
     @Override
-    public List<Address> findAddressByAuthorId(Integer authorId) {
-        return addressRepository.findByAuthor_id(authorId);
+    public List<Address> findAddressByAuthorId(Author author) {
+        if(MallCustomer.class == author.getType()){
+            return addressRepository.findByAgent_id(author.getId());
+        }else if(Shop.class == author.getType()){
+           return addressRepository.findByShop_id(author.getId());
+        }
+        return null;
     }
 
     @Override
-    public Address findById(Integer addressId,Integer authorId) {
-        return addressId == null || authorId == null ? null : addressRepository.findByIdAndAuthor_id(addressId,authorId);
+    public Address findById(Integer addressId,Author requestAuthor) {
+        if(addressId != null && requestAuthor != null && requestAuthor.getId() != null){
+            if(MallCustomer.class == requestAuthor.getType()){
+                return addressRepository.findByIdAndAgent_id(addressId,requestAuthor.getId());
+            }else if(Shop.class == requestAuthor.getType()){
+                return addressRepository.findByIdAndShop_id(addressId,requestAuthor.getId());
+            }
+        }
+        return null;
     }
 
     @Override
-    public Address findDefaultByAuthorId(Integer authorId) {
-        return addressRepository.findByAuthor_IdAndIsDefaultTrue(authorId);
+    public Address findDefaultByAuthorId(Author requestAuthor) {
+        if(MallCustomer.class == requestAuthor.getType()){
+            return addressRepository.findByAgent_idAndIsDefaultTrue(requestAuthor.getId());
+        }else if(Shop.class == requestAuthor.getType()){
+            return addressRepository.findByShop_idAndIsDefaultTrue(requestAuthor.getId());
+        }
+        return null;
     }
 
     @Override
     @Transactional
-    public ApiResult addOrUpdate(Integer addressId, Integer authorId, Address requestAddress) {
-        if(addressId == null || authorId == null || requestAddress == null){
+    public ApiResult addOrUpdate(Integer addressId, Author requestAuthor, Address requestAddress) {
+        if(addressId == null || requestAuthor == null || requestAddress == null){
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         Address address;
-        Author author = authorService.findById(authorId);
-        if (author == null || author.isDeleted() || author.isDisabled()) {
+        Author author = authorService.findById(requestAuthor);
+        if (author == null || !author.isAccountNonLocked() || !author.isEnabled()) {
             return new ApiResult("该账号已失效");
         }
         //addressId>0代表是修改地址，否则是增加
         if (addressId > 0) {
-            address = findById(addressId,authorId);
+            address = findById(addressId,requestAuthor);
             if (address == null) {
                 return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
             }
         } else {
             address = new Address();
-            address.setAuthor(author);
+            if(MallCustomer.class == requestAuthor.getType()){
+                address.setAgent(((MallCustomer)author).getAgent());
+            }else if(Shop.class == requestAuthor.getType()){
+                address.setShop((Shop)author);
+            }else{
+                return new ApiResult("错误参数");
+            }
         }
         address.setReceiver(requestAddress.getReceiver());
         address.setTelephone(requestAddress.getTelephone());
@@ -79,7 +104,7 @@ public class AddressServiceImpl implements AddressService {
         address.setDistrict(requestAddress.getDistrict());
         address.setAddress(requestAddress.getAddress());
         address.setComment(requestAddress.getComment());
-        List<Address> addressList = addressRepository.findByAuthor_id(authorId);
+        List<Address> addressList = findAddressByAuthorId(requestAuthor);
         //当增加第一个收货地址时设为默认
         if (addressList.size() < 1) {
             address.setDefault(true);
@@ -111,15 +136,15 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public ApiResult deleteAddress(Integer addressId, Integer authorId) {
-        Address address = findById(addressId,authorId);
+    public ApiResult deleteAddress(Integer addressId, Author requestAuthor) {
+        Address address = findById(addressId,requestAuthor);
         if (address == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         addressRepository.delete(address);
         //假如删除的地址为默认地址，需要重新设置一个默认地址
         if (address.isDefault()) {
-            List<Address> addressList = addressRepository.findByAuthor_id(authorId);
+            List<Address> addressList = findAddressByAuthorId(requestAuthor);
             if (addressList.size() > 0) {
                 Address defaultAddress = addressList.get(addressList.size() - 1);
                 defaultAddress.setDefault(true);
@@ -130,14 +155,14 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public ApiResult configDefault(Integer addressId, Integer authorId) {
-        Address address = findById(addressId,authorId);
+    public ApiResult configDefault(Integer addressId, Author requestAuthor) {
+        Address address = findById(addressId,requestAuthor);
         if (address == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         //当该地址已经是默认时不需要任何操作
         if (!address.isDefault()) {
-            List<Address> addressList = addressRepository.findByAuthor_id(authorId);
+            List<Address> addressList = findAddressByAuthorId(requestAuthor);
             clearDefaultAddress(addressList);
             address.setDefault(true);
             addressRepository.save(address);

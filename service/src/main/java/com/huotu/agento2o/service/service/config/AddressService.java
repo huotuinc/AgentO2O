@@ -10,6 +10,7 @@
 package com.huotu.agento2o.service.service.config;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.config.Address;
 
 import java.util.List;
@@ -20,49 +21,49 @@ import java.util.List;
 public interface AddressService {
 
     /**
-     * 根据代理商或门店id获取收货地址
+     * 根据代理商或门店获取收货地址
      *
-     * @param authorId
+     * @param author
      * @return
      */
-    List<Address> findAddressByAuthorId(Integer authorId);
+    List<Address> findAddressByAuthorId(Author author);
 
     /**
-     * 根据唯一id和AuthorId获取某地址
+     * 根据唯一id和Author获取某地址
      *
      * @param addressId
-     * @param authorId
+     * @param requestAuthor
      * @return
      */
-    Address findById(Integer addressId, Integer authorId);
+    Address findById(Integer addressId, Author requestAuthor);
 
-    Address findDefaultByAuthorId(Integer authorId);
+    Address findDefaultByAuthorId(Author requestAuthor);
 
     /**
      * 根据addressId增加或修改收货地址
      *
      * @param addressId      >0时为修改
-     * @param authorId
+     * @param requestAuthor
      * @param requestAddress
      * @return
      */
-    ApiResult addOrUpdate(Integer addressId, Integer authorId, Address requestAddress);
+    ApiResult addOrUpdate(Integer addressId, Author requestAuthor, Address requestAddress);
 
     /**
      * 删除收货地址
      *
      * @param addressId
-     * @param authorId
+     * @param requestAuthor
      * @return
      */
-    ApiResult deleteAddress(Integer addressId, Integer authorId);
+    ApiResult deleteAddress(Integer addressId, Author requestAuthor);
 
     /**
      * 设置默认地址
      *
      * @param addressId
-     * @param authorId
+     * @param requestAuthor
      * @return
      */
-    ApiResult configDefault(Integer addressId, Integer authorId);
+    ApiResult configDefault(Integer addressId, Author requestAuthor);
 }

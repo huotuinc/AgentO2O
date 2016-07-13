@@ -44,14 +44,14 @@ public class ShopControllerTest extends CommonTestBase {
 
     @Test
     public void testAddShopPage() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult result = mockMvc.perform(get(BASE_URL + "/addShopPage").session(sessionAgent)).andExpect(status().isOk()).andReturn();
         Assert.assertTrue(result.getModelAndView().getViewName().equals("shop/addShop"));
     }
 
     @Test
     public void testSaveShop() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
@@ -71,14 +71,14 @@ public class ShopControllerTest extends CommonTestBase {
 
     @Test
     public void testBaseConfig() throws Exception {
-        MockHttpSession sessionShop = loginAs(mockShop.getUsername(), passWord);
+        MockHttpSession sessionShop = loginAs(mockShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         MvcResult result = mockMvc.perform(get(BASE_URL + "/baseConfig").session(sessionShop)).andExpect(status().isOk()).andReturn();
         Assert.assertTrue(result.getModelAndView().getViewName().equals("shop/BaseConfigShop"));
     }
 
     @Test
     public void testUpdateShop() throws Exception {
-        MockHttpSession sessionShop = loginAs(mockShop.getUsername(), passWord);
+        MockHttpSession sessionShop = loginAs(mockShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         mockShop.setAfterSalQQ("12345678911");
         mockShop.setComment("更新");
         MvcResult result = mockMvc.perform(post(BASE_URL + "/updateShop").session(sessionShop)
@@ -90,14 +90,14 @@ public class ShopControllerTest extends CommonTestBase {
 
     @Test
     public void testShowShopList() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult result = mockMvc.perform(get(BASE_URL + "/shopList").session(sessionAgent)).andExpect(status().isOk()).andReturn();
         Assert.assertTrue(result.getModelAndView().getViewName().equals("shop/shopList"));
     }
 
     @Test
     public void testChangeStatus() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
 
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
@@ -117,7 +117,7 @@ public class ShopControllerTest extends CommonTestBase {
 
     @Test
     public void testDeleteById() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
@@ -136,7 +136,7 @@ public class ShopControllerTest extends CommonTestBase {
 
     @Test
     public void testResetPassword() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
@@ -157,7 +157,7 @@ public class ShopControllerTest extends CommonTestBase {
 
     @Test
     public void testGetUserNames() throws Exception {
-        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord);
+        MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         MvcResult result = mockMvc.perform(post(BASE_URL + "/getUserNames").session(sessionAgent).param("hotUserName", "a")).andExpect(status().isOk()).andReturn();
 
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");

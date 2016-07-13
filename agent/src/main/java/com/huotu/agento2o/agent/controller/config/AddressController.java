@@ -82,7 +82,7 @@ public class AddressController {
         if(StringUtil.isEmptyStr(requestAddress.getAddress())){
             return new ApiResult("请输入详细地址");
         }
-        return addressService.addOrUpdate(requestAddress.getId(), author.getId(), requestAddress);
+        return addressService.addOrUpdate(requestAddress.getId(), author, requestAddress);
     }
 
     /**
