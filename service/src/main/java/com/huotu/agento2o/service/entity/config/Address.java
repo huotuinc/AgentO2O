@@ -85,4 +85,9 @@ public class Address {
     @ManyToOne
     @JoinColumn(name = "Shop_Id")
     private Shop shop;
+
+    public void setAuthor(Author author){
+        this.setAgent(author.getAuthorAgent());
+        this.setShop(author.getAuthorShop());
+    }
 }

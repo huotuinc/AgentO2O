@@ -170,7 +170,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         agent.setDisabled(false);
         agent.setDeleted(false);
         if (parentAgent != null) {
-            agent.setParentAuthor(parentAgent);
+            agent.setParentAgent(parentAgent);
         }
         agent.setAgentLevel(mockAgentLevel(mockCustomer));
         agent.setStatus(AgentStatusEnum.CHECKED);
@@ -193,7 +193,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
         if (parentAgent != null) {
-            shop.setParentAuthor(parentAgent);
+            shop.setAgent(parentAgent);
         }
         //密码进行加密保存
         shop.setPassword(passwordEncoder.encode(shop.getPassword()));

@@ -10,14 +10,49 @@
 
 package com.huotu.agento2o.service.entity.level;
 
+import com.huotu.agento2o.service.entity.MallCustomer;
 import lombok.Data;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by helloztt on 2016/5/11.
  */
 @Entity
+@Table(name = "Agt_AgentLevel")
+@Cacheable(value = false)
 @Data
-public class AgentLevel extends Level{
+public class AgentLevel implements Serializable {
+
+    private static final long serialVersionUID = -8727350412495721099L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Level_Id")
+    private Integer levelId;
+
+    /**
+     * 等级名称
+     */
+    @Column(name = "Level_Name")
+    private String levelName;
+
+    /**
+     * 等级
+     */
+    @Column(name = "Level")
+    private Integer level;
+
+    /**
+     * 备注
+     */
+    @Column(name = "Comment")
+    private String comment;
+
+    /**
+     * 平台方
+     */
+    @ManyToOne
+    @JoinColumn(name = "Customer_Id")
+    private MallCustomer customer;
 }

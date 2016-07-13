@@ -148,15 +148,6 @@ public interface AgentService {
     Agent findByUserBaseInfoId(Integer userId);
 
     /**
-     * 根据代理商id重置代理商密码
-     *
-     * @param agentId
-     * @param password
-     * @return
-     */
-    int resetPassword(Integer agentId, String password);
-
-    /**
      * 保存代理商基本信息
      *
      * @param agentId

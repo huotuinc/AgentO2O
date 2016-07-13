@@ -68,4 +68,9 @@ public class AuthorAccount {
     @Column(name = "WithdrawCount")
     private int withdrawCount = Constant.WITHDRAWCOUNT;
 
+    public void setAuthor(Author author){
+        this.setAgent(author.getAuthorAgent());
+        this.setShop(author.getAuthorShop());
+    }
+
 }

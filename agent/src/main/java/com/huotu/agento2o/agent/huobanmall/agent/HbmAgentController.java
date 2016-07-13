@@ -17,6 +17,7 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentActiveEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.impl.AgentServiceImpl;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
@@ -51,6 +52,9 @@ public class HbmAgentController {
 
     @Autowired
     private AgentLevelService agentLevelService;
+
+    @Autowired
+    private MallCustomerService mallCustomerService;
 
     /**
      * 代理商列表
@@ -129,8 +133,8 @@ public class HbmAgentController {
         if (agentId > 0) {
             Agent oldAgent = agentService.findById(agentId, customerId);
             //获取上级代理商的代理商等级
-            if (oldAgent.getParentAuthor() != null && (oldAgent.getParentAuthor()).getAgentLevel() != null) {
-                parentAgentLevelId = oldAgent.getParentAuthor().getAgentLevel().getLevelId();
+            if (oldAgent.getParentAgent() != null && (oldAgent.getParentAgent()).getAgentLevel() != null) {
+                parentAgentLevelId = oldAgent.getParentAgent().getAgentLevel().getLevelId();
             }
             model.addAttribute("agent", oldAgent);
         }
@@ -171,7 +175,7 @@ public class HbmAgentController {
         if ( requestAgent.getId() != null && requestAgent.getId() == 0 && StringUtil.isEmptyStr(requestAgent.getPassword())) {
             return new ApiResult("请输入密码");
         }
-        if (StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())) {
+        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getDistrictCode())) {
             return new ApiResult("请选择区域");
         }
         if (agentLevelId == null || agentLevelId == -1) {
@@ -254,7 +258,7 @@ public class HbmAgentController {
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(Integer agentId, String password) {
-        int result = agentService.resetPassword(agentId, password);
+        int result = mallCustomerService.resetPassword(agentId, password);
         return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 

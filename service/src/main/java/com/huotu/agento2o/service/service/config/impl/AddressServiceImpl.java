@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.config.impl;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
@@ -40,10 +41,10 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<Address> findAddressByAuthorId(Author author) {
-        if(MallCustomer.class == author.getType()){
-            return addressRepository.findByAgent_id(author.getId());
+        if(Agent.class == author.getType()){
+            return addressRepository.findByAgent_Id(author.getId());
         }else if(Shop.class == author.getType()){
-           return addressRepository.findByShop_id(author.getId());
+           return addressRepository.findByShop_Id(author.getId());
         }
         return null;
     }
@@ -51,10 +52,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address findById(Integer addressId,Author requestAuthor) {
         if(addressId != null && requestAuthor != null && requestAuthor.getId() != null){
-            if(MallCustomer.class == requestAuthor.getType()){
-                return addressRepository.findByIdAndAgent_id(addressId,requestAuthor.getId());
+            if(Agent.class == requestAuthor.getType()){
+                return addressRepository.findByIdAndAgent_Id(addressId,requestAuthor.getId());
             }else if(Shop.class == requestAuthor.getType()){
-                return addressRepository.findByIdAndShop_id(addressId,requestAuthor.getId());
+                return addressRepository.findByIdAndShop_Id(addressId,requestAuthor.getId());
             }
         }
         return null;
@@ -62,10 +63,10 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address findDefaultByAuthorId(Author requestAuthor) {
-        if(MallCustomer.class == requestAuthor.getType()){
-            return addressRepository.findByAgent_idAndIsDefaultTrue(requestAuthor.getId());
+        if(Agent.class == requestAuthor.getType()){
+            return addressRepository.findByAgent_IdAndIsDefaultTrue(requestAuthor.getId());
         }else if(Shop.class == requestAuthor.getType()){
-            return addressRepository.findByShop_idAndIsDefaultTrue(requestAuthor.getId());
+            return addressRepository.findByShop_IdAndIsDefaultTrue(requestAuthor.getId());
         }
         return null;
     }
@@ -89,13 +90,7 @@ public class AddressServiceImpl implements AddressService {
             }
         } else {
             address = new Address();
-            if(MallCustomer.class == requestAuthor.getType()){
-                address.setAgent(((MallCustomer)author).getAgent());
-            }else if(Shop.class == requestAuthor.getType()){
-                address.setShop((Shop)author);
-            }else{
-                return new ApiResult("错误参数");
-            }
+            address.setAuthor(requestAuthor);
         }
         address.setReceiver(requestAddress.getReceiver());
         address.setTelephone(requestAddress.getTelephone());

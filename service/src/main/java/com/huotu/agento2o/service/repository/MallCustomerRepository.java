@@ -12,6 +12,8 @@ package com.huotu.agento2o.service.repository;
 
 import com.huotu.agento2o.service.entity.MallCustomer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,4 +23,10 @@ import org.springframework.stereotype.Repository;
 public interface MallCustomerRepository extends JpaRepository<MallCustomer,Integer> {
 
     MallCustomer findByUsername(String username);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update MallCustomer a set a.password = ?2 where a.id = ?1")
+    int resetPassword(Integer customerId, String password);
+
+    
 }

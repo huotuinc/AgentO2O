@@ -35,9 +35,4 @@ public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpeci
     List<Agent> findByParentAuthor_id(Integer authorId);
 
     Agent findByUserBaseInfo_userId(Integer userId);
-
-    @Modifying(clearAutomatically = true)
-    @Query("update Agent a set a.password = ?2 where a.id = ?1")
-    int resetPassword(Integer agentId, String password);
-
 }

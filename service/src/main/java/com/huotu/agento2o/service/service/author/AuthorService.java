@@ -29,11 +29,6 @@ public interface AuthorService {
     Author findById(Author requestAuthor);
 
     /**
-     * 查找下级代理商/门店
-     */
-    List<Author> findByParentAgentId(Agent agent);
-
-    /**
      * 修改密码
      */
     boolean updatePwd(Author requestAuthor,String password);
