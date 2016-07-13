@@ -12,7 +12,9 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
@@ -32,28 +34,14 @@ public class AgentProductServiceImpl implements AgentProductService {
     @Autowired
     AgentProductRepository agentProductRepository;
 
-
     @Override
-    public List<AgentProduct> findByParentAgentProduct(Author author) {
+    public List<AgentProduct> findByAgentId(Author author) {
+        if (author.getType() == Agent.class) {
+            return agentProductRepository.findByAgent_IdAndDisabledFalse(author.getId());
+        } else if (author.getType() == Shop.class) {
+            return agentProductRepository.findByShop_IdAndDisabledFalse(author.getId());
+        }
         return null;
-    }
-
-   /* @Override
-    public Page<AgentProduct> findByAgentId(int pageIndex, int pageSize,Integer agentId) {
-        Specification<AgentProduct> specification = new Specification<AgentProduct>() {
-            @Override
-            public Predicate toPredicate(Root<AgentProduct> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
-                predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), agentId));
-                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
-        };
-        return agentProductRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
-    }*/
-
-    @Override
-    public List<AgentProduct> findByAgentId(Integer agentId) {
-        return agentProductRepository.findByAuthor_IdAndDisabledFalse(agentId);
     }
 
     @Override
@@ -63,7 +51,8 @@ public class AgentProductServiceImpl implements AgentProductService {
         if (agentProduct == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if (author.getId().equals(agentProduct.getAuthor().getId())) {
+        if ((author.getType() == Agent.class && author.getId().equals(agentProduct.getAgent().getId()))
+                || (author.getType() == Shop.class && author.getId().equals(agentProduct.getShop().getId()))) {
             agentProduct.setWarning(warning);
             agentProductRepository.save(agentProduct);
             return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -73,18 +62,38 @@ public class AgentProductServiceImpl implements AgentProductService {
     }
 
     @Override
-    public List<Object> findNeedWaringAgent() {
+    public List<Object> findNeedWarningAgent() {
         return agentProductRepository.findNeedWaringAgent();
     }
 
     @Override
-    public List<AgentProduct> findWaringAgentInfo(Integer autorId) {
-        return agentProductRepository.findWaringAgentInfo(autorId);
+    public List<Object> findNeedWarningShop() {
+        return agentProductRepository.findNeedWaringShop();
+    }
+
+    @Override
+    public List<AgentProduct> findWarningAgentInfo(Integer agentId) {
+        return agentProductRepository.findWarningAgentInfo(agentId);
+    }
+
+    @Override
+    public List<AgentProduct> findWarningShopInfo(Integer shopId) {
+        return agentProductRepository.findWarningShopInfo(shopId);
+    }
+
+    @Override
+    public AgentProduct findAgentProduct(Agent agent, MallProduct product) {
+        return agentProductRepository.findByAgentAndProductAndDisabledFalse(agent, product);
     }
 
     @Override
     public AgentProduct findAgentProduct(Author author, MallProduct product) {
-        return agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
+        if (author.getType() == Agent.class) {
+            return agentProductRepository.findByAgentAndProductAndDisabledFalse((Agent) author, product);
+        } else if (author.getType() == Shop.class) {
+            return agentProductRepository.findByShopAndProductAndDisabledFalse((Shop) author, product);
+        }
+        return null;
     }
 
     @Override

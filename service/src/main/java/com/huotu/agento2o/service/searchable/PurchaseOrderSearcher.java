@@ -20,6 +20,8 @@ import lombok.Data;
 public class PurchaseOrderSearcher {
     Integer agentId;
 
+    Integer shopId;
+
     Integer parentAgentId;
 
     Integer customerId;

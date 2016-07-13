@@ -20,6 +20,25 @@ public interface Author extends Serializable, UserDetails {
 
     Integer getId();
 
+    /**
+     * 如果为Agent类型，获取当前agent；否则返回null
+     * 不取名为getAgent因为shop里面有agent的get方法
+     * @return
+     */
+    Agent getAuthorAgent();
+
+    /**
+     * 如果为Shop类型，返回当前实体；否则返回null
+     * @return
+     */
+    Shop getAuthorShop();
+
+    Agent getParentAgent();
+
+    MallCustomer getCustomer();
+
+    String getName();
+
     Class getType();
 
 }

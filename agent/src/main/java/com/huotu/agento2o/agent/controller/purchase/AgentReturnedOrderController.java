@@ -76,7 +76,7 @@ public class AgentReturnedOrderController {
             @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/returned/purchased_product_list");
-        List<AgentProduct> agentProductList = agentProductService.findByAgentId(author.getId());
+        List<AgentProduct> agentProductList = agentProductService.findByAgentId(author);
         setPicUri(agentProductList);
         model.addObject("agentProductList", agentProductList);
         return model;

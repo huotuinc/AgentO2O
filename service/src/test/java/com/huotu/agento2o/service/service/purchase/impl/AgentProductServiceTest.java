@@ -59,7 +59,7 @@ public class AgentProductServiceTest {
 
     @Test
     public void testGetNeedWaring(){
-        List<Object> agents = agentProductService.findNeedWaringAgent();
+//        List<Object> agents = agentProductService.findNeedWaringAgent();
        /* for(int i=0;i<agents.size();i++){
             System.out.println(agents.get(i).toString());
         }*/

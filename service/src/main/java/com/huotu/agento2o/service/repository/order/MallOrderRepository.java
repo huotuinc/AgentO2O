@@ -53,7 +53,7 @@ public interface MallOrderRepository extends JpaRepository<MallOrder, String>, J
      * @param end
      * @return
      */
-    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.shop.parentAuthor.id = ?1 or a.beneficiaryShop.parentAuthor.id = ?2) and a.createTime between ?3 and ?4")
+    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.shop.agent.id = ?1 or a.beneficiaryShop.agent.id = ?2) and a.createTime between ?3 and ?4")
     int countByShop_ParentAuthor_IdAndBeneficiaryShop_ParentAuthor_IdAndCreateTimeBetween(Integer agentId, Integer beneficialShopAgentId, Date start, Date end);
 
     /**

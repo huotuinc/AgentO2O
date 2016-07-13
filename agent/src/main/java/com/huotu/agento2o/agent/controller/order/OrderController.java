@@ -64,9 +64,6 @@ public class OrderController {
 
     @Autowired
     private MallOrderItemService orderItemService;
-
-    @Autowired
-    private AgentProductService agentProductService;
     @Autowired
     private StaticResourceService resourceService;
     /**

@@ -12,9 +12,13 @@ package com.huotu.agento2o.agent.service.product.impl;
 
 import com.huotu.agento2o.agent.service.product.ProductScheduleService;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.AuthorService;
+import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.product.SendEmailService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.commons.logging.Log;
@@ -36,7 +40,9 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
     @Autowired
     private SendEmailService sendEmailService;
     @Autowired
-    private AuthorService authorService;
+    private AgentService agentService;
+    @Autowired
+    private ShopService shopService;
 
 
     @Override
@@ -45,26 +51,40 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
 //    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
     public void productSchedule() {
         //查询出需要提醒的库存信息
-        List<Object> agents = agentProductService.findNeedWaringAgent();
+        List<Object> agents = agentProductService.findNeedWarningAgent();
+        List<Object> shops = agentProductService.findNeedWarningShop();
         for (int i = 0; i < agents.size(); i++) {
             Integer agentId = Integer.parseInt(agents.get(i).toString());
-            Author author = authorService.findById(agentId);
-            if (author.getEmail() == null && StringUtil.isEmptyStr(author.getEmail())) {
+            Agent agent = agentService.findByAgentId(agentId);
+            if(agent == null || StringUtil.isEmptyStr(agent.getEmail())){
                 continue;
             }
-            List<AgentProduct> agentProducts = agentProductService.findWaringAgentInfo(agentId);
-            int num = 3;
-            while (num > 0) {
+            List<AgentProduct> agentProducts = agentProductService.findWarningAgentInfo(agentId);
+            sendEmail(agentProducts,agent.getEmail());
+        }
+        for(int i = 0 ; i < shops.size() ; i++){
+            Integer shopId = Integer.parseInt(shops.get(i).toString());
+            Shop shop = shopService.findById(shopId);
+            if(shop == null || StringUtil.isEmptyStr(shop.getEmail())){
+                continue;
+            }
+            List<AgentProduct> agentProducts = agentProductService.findWarningShopInfo(shopId);
+            sendEmail(agentProducts,shop.getEmail());
+        }
+    }
+
+    private void sendEmail(List<AgentProduct> productList,String email){
+        int num = 3;
+        while (num > 0) {
+            try {
+                sendEmailService.sendCloudEmail(productList, email);
+                break;
+            } catch (Exception e) {
+                log.error("发送邮件预警失败" + (4 - num), e);
+                num--;
                 try {
-                    sendEmailService.sendCloudEmail(agentProducts, author.getEmail());
-                    break;
-                } catch (Exception e) {
-                    log.error("发送邮件预警失败" + (4 - num), e);
-                    num--;
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e1) {
-                    }
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
                 }
             }
         }

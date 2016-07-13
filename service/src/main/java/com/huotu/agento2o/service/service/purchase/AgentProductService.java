@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.service.purchase;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
@@ -22,23 +23,7 @@ import java.util.List;
  */
 public interface AgentProductService {
 
-    /**
-     * 查找上级代理商（除平台）商品
-     *
-     * @param author
-     * @return
-     */
-    List<AgentProduct> findByParentAgentProduct(Author author);
-
-    /**
-     * 查找指定代理商的库存信息
-     *
-     * @param agentId
-     * @return
-     */
-    /*Page<AgentProduct> findByAuthor_IdAndDisabledFalse(int pageIndex, int pageSize,Integer agentId);*/
-
-    List<AgentProduct> findByAgentId(Integer agentId);
+    List<AgentProduct> findByAgentId(Author author);
 
     ApiResult updateWarning(Author author, Integer agentProductId, Integer warning);
 
@@ -48,10 +33,13 @@ public interface AgentProductService {
      * @return
      */
 
-    List<Object> findNeedWaringAgent();
+    List<Object> findNeedWarningAgent();
+    List<Object> findNeedWarningShop();
 
-    List<AgentProduct> findWaringAgentInfo(Integer agentId);
+    List<AgentProduct> findWarningAgentInfo(Integer agentId);
+    List<AgentProduct> findWarningShopInfo(Integer shopId);
 
+    AgentProduct findAgentProduct(Agent agent,MallProduct product);
     AgentProduct findAgentProduct(Author author, MallProduct product);
 
     AgentProduct findByAgentProductId(Integer agentProductId);

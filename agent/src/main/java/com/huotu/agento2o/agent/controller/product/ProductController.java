@@ -36,7 +36,7 @@ public class ProductController {
             @AgtAuthenticationPrincipal Author author) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName(PRODUCT_MANAGER_URL);
-        List<AgentProduct> agentProduct = agentProductService.findByAgentId(author.getId());
+        List<AgentProduct> agentProduct = agentProductService.findByAgentId(author);
         model.addObject("agentProduct", agentProduct);
         return model;
     }

@@ -14,8 +14,10 @@ import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
@@ -78,8 +80,8 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
-                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
-                    ShoppingCart shoppingCart = shoppingCartRepository.findByAuthorAndProduct(author,product);
+                    AgentProduct agentProduct = getAgentProduct(author,product);
+                    ShoppingCart shoppingCart = getShoppingCart(author,product);
                     if (agentProduct != null) {
                         product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
                     }
@@ -93,8 +95,28 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         return goodsPage;
     }
 
+    public AgentProduct getAgentProduct(Author author, MallProduct product){
+        AgentProduct agentProduct = null;
+        if(author.getType() == Agent.class){
+            agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse((Agent) author,product);
+        }else if(author.getType() == Shop.class){
+            agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse((Shop) author,product);
+        }
+        return agentProduct;
+    }
+
+    public ShoppingCart getShoppingCart(Author author,MallProduct product){
+        ShoppingCart shoppingCart  = null;
+        if(author.getType() == Agent.class){
+            shoppingCart = shoppingCartRepository.findByAgentAndProduct((Agent) author,product);
+        }else if(author.getType() == Shop.class){
+            shoppingCart = shoppingCartRepository.findByShopAndProduct((Shop) author,product);
+        }
+        return shoppingCart;
+    }
+
     /**
-     * 根据 AgentId 查找指定代理商商品
+     * 根据 AgentId 查找上级代理商商品
      *
      * @param author 代理商/门店
      * @return
@@ -116,7 +138,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             //子查询 goodsId in (select distinct goodsId from AgentProduct where author.id= ?1)
             Subquery subQuery = query.subquery(AgentProduct.class).distinct(true);
             Root agentProductRoot = subQuery.from(AgentProduct.class);
-            subQuery.where(cb.equal(agentProductRoot.get("author").get("id").as(Integer.class), author.getParentAuthor().getId()));
+            subQuery.where(cb.equal(agentProductRoot.get("agent").get("id").as(Integer.class), author.getParentAgent().getId()));
             subQuery.select(agentProductRoot.get("goodsId"));
             predicates.add(root.get("goodsId").in(cb.any(subQuery)));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -126,9 +148,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
-                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
-                    ShoppingCart shoppingCart = shoppingCartRepository.findByAuthorAndProduct(author,product);
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(),product);
+                    AgentProduct agentProduct = getAgentProduct(author,product);
+                    ShoppingCart shoppingCart = getShoppingCart(author,product);
                     if (agentProduct != null) {
                         product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
                     }

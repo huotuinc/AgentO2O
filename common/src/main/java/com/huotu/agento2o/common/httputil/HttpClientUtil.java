@@ -103,6 +103,7 @@ public class HttpClientUtil {
                     } else {
                         finalUrl.append("&").append(entry.getKey()).append("=").append(URLEncoder.encode(String.valueOf(entry.getValue()), StringUtil.UTF8));
                     }
+                    index++;
                 }
             }
             HttpGet httpGet = new HttpGet(finalUrl.toString());

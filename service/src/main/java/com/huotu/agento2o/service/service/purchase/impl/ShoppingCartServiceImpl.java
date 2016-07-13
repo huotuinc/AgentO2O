@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
@@ -46,7 +47,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCart createShoppingCart(ShoppingCart shoppingCart) {
         //根据货品IP查找购物车
-        ShoppingCart old = shoppingCartRepository.findByAuthorAndProduct(shoppingCart.getAuthor(), shoppingCart.getProduct());
+        ShoppingCart old = null;
+        if (shoppingCart.getAgent() != null) {
+            old = shoppingCartRepository.findByAgentAndProduct(shoppingCart.getAgent(), shoppingCart.getProduct());
+        } else if (shoppingCart.getShop() != null) {
+            old = shoppingCartRepository.findByShopAndProduct(shoppingCart.getShop(), shoppingCart.getProduct());
+        }
         if (old == null) {
             shoppingCart = shoppingCartRepository.save(shoppingCart);
         } else {
@@ -63,13 +69,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (shoppingCart == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
+        Agent parentAgent = shoppingCart.getParentAgent();
         //判断上级库存是否充足
-        if (author.getParentAuthor() == null) {
+        if (parentAgent == null) {
             if (shoppingCart.getProduct().getStore() - shoppingCart.getProduct().getFreez() < num) {
                 return new ApiResult("库存不足");
             }
         } else {
-            AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), shoppingCart.getProduct());
+            AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), shoppingCart.getProduct());
             if (parentAgentProduct.getStore() - parentAgentProduct.getFreez() < num) {
                 return new ApiResult("库存不足");
             }
@@ -81,20 +88,30 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public List<ShoppingCart> findByAgentId(Author author) {
-        List<ShoppingCart> shoppingCartList = shoppingCartRepository.findByAuthor_IdOrderByCreateTimeDesc(author.getId());
+        List<ShoppingCart> shoppingCartList = null;
+        if (author.getType() == Agent.class) {
+            shoppingCartList = shoppingCartRepository.findByAgent_IdOrderByCreateTimeDesc(author.getId());
+        } else if (author.getType() == Shop.class) {
+            shoppingCartList = shoppingCartRepository.findByShop_IdOrderByCreateTimeDesc(author.getId());
+        }
         //设置可用库存和当前库存
         if (shoppingCartList != null && shoppingCartList.size() > 0) {
             shoppingCartList.forEach(p -> {
                 if (p.getProduct() != null) {
-                    AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, p.getProduct());
+                    AgentProduct agentProduct = null;
+                    if (author.getType() == Agent.class) {
+                        agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(p.getAgent(), p.getProduct());
+                    } else if (author.getType() == Shop.class) {
+                        agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(p.getShop(), p.getProduct());
+                    }
                     if (agentProduct != null) {
                         p.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
                     }
-                    if (author.getParentAuthor() == null) {
+                    if (author.getParentAgent() == null) {
                         //上级为 平台方
                         p.getProduct().setUsableStore(p.getProduct().getStore() - p.getProduct().getFreez());
                     } else {
-                        AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), p.getProduct());
+                        AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), p.getProduct());
                         p.getProduct().setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
                     }
                 }
@@ -105,7 +122,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCart findById(Integer id, Author author) {
-        return shoppingCartRepository.findByIdAndAuthor(id, author);
+        if (author.getType() == Agent.class) {
+            return shoppingCartRepository.findByIdAndAgent(id, (Agent) author);
+        } else if (author.getType() == Shop.class) {
+            return shoppingCartRepository.findByIdAndShop(id, (Shop) author);
+        }
+        return null;
     }
 
     @Override
@@ -114,17 +136,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ids.forEach(p -> {
             ShoppingCart cart = findById(p, author);
             if (cart != null) {
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, cart.getProduct());
+                AgentProduct agentProduct = null;
+                if(author.getType() == Agent.class){
+                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(cart.getAgent(),cart.getProduct());
+                }else if(author.getType() == Shop.class){
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(cart.getShop(),cart.getProduct());
+                }
                 if (agentProduct != null) {
                     cart.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
                 }
                 //上级为平台方，判断商品可用库存
-                if (author.getParentAuthor() == null) {
+                if (author.getParentAgent() == null) {
                     if (cart.getProduct().getStore() - cart.getProduct().getFreez() >= cart.getNum()) {
                         shoppingCartList.add(cart);
                     }
                 } else {
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), cart.getProduct());
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), cart.getProduct());
                     if (parentAgentProduct != null && parentAgentProduct.getStore() - parentAgentProduct.getFreez() >= cart.getNum()) {
                         shoppingCartList.add(cart);
                     }

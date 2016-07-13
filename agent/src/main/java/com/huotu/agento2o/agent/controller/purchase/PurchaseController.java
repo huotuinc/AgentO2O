@@ -15,7 +15,10 @@ import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -26,7 +29,6 @@ import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.goods.MallGoodsTypeService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
-import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,10 +39,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
@@ -60,8 +58,6 @@ public class PurchaseController {
     private ShoppingCartService shoppingCartService;
     @Autowired
     private StaticResourceService resourceService;
-    @Autowired
-    private AgentPurchaseOrderService purchaseOrderService;
     @Autowired
     private MallGoodsTypeService goodsTypeService;
     @Autowired
@@ -85,7 +81,7 @@ public class PurchaseController {
         Page<MallGoods> goodsPage;
         //如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
         // TODO: 2016/5/17 代理商/门店进货价读取
-        if (author.getParentAuthor() == null) {
+        if (author.getType() == Agent.class && author.getParentAgent() == null) {
             goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), author, goodsSearcher);
         } else {
             goodsPage = goodsService.findByAgentId(author, goodsSearcher);
@@ -156,13 +152,13 @@ public class PurchaseController {
             return new ApiResult("请选择要订购的商品！");
         }
         //校验库存
-        if(author.getParentAuthor() == null){
+        if(author.getParentAgent() == null){
             //上级为平台方
             if (num > product.getStore() - product.getFreez()) {
                 return new ApiResult("库存不足！");
             }
         }else{
-            AgentProduct agentProduct = agentProductService.findAgentProduct(author.getParentAuthor(),product);
+            AgentProduct agentProduct = agentProductService.findAgentProduct(author.getParentAgent(),product);
             if(agentProduct != null && num > agentProduct.getStore() - agentProduct.getFreez()){
                 return new ApiResult("库存不足！");
             }
@@ -170,7 +166,13 @@ public class PurchaseController {
 
         //增加购物车记录
         ShoppingCart cart = new ShoppingCart();
-        cart.setAuthor(author);
+        if(author.getType() == Agent.class){
+            cart.setAgent(((MallCustomer)author).getAgent());
+            cart.setShop(null);
+        }else if(author.getType() == Shop.class){
+            cart.setAgent(null);
+            cart.setShop((Shop)author);
+        }
         cart.setProduct(product);
         cart.setNum(num);
         cart.setCreateTime(new Date());

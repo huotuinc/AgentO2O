@@ -3,6 +3,7 @@ package com.huotu.agento2o.service.entity;
 import com.huotu.agento2o.service.common.AuthorityEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,7 +41,7 @@ public class MallCustomer implements Author{
     private String password;
 
     @OneToOne
-    @PrimaryKeyJoinColumn(referencedColumnName = "ID")
+    @PrimaryKeyJoinColumn(referencedColumnName = "Agent_ID")
     private Agent agent;
 
     @Override
@@ -76,7 +77,44 @@ public class MallCustomer implements Author{
     }
 
     @Override
+    public Agent getAuthorAgent() {
+        return agent;
+    }
+
+    @Override
+    public Shop getAuthorShop() {
+        return null;
+    }
+
+    @Override
+    public Agent getParentAgent() {
+        if(agent == null){
+            return null;
+        }
+        return agent.getParentAgent();
+    }
+
+    @Override
+    public MallCustomer getCustomer() {
+        if(agent == null){
+            return null;
+        }
+        return agent.getCustomer();
+    }
+
+    @Override
+    public String getName() {
+        if(agent == null){
+            return null;
+        }
+        return agent.getName();
+    }
+
+    @Override
     public Class getType() {
-        return MallCustomer.class;
+        if(agent == null){
+            return null;
+        }
+        return Agent.class;
     }
 }

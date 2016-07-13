@@ -4,7 +4,6 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.AuthorityEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.level.ShopLevel;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import lombok.Getter;
@@ -96,13 +95,13 @@ public class Shop implements Author{
     private boolean isDeleted;
 
     /**
-     * 上级代理商
+     * 所属代理商
      *
      * @return
      */
     @JoinColumn(name = "Agent_Id")
     @ManyToOne
-    private Agent parentAuthor;
+    private Agent agent;
 
     /**
      * 小伙伴
@@ -246,6 +245,21 @@ public class Shop implements Author{
         //增加角色
         authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
         return authorityList;
+    }
+
+    @Override
+    public Agent getAuthorAgent() {
+        return null;
+    }
+
+    @Override
+    public Shop getAuthorShop() {
+        return this;
+    }
+
+    @Override
+    public Agent getParentAgent() {
+        return agent;
     }
 
     @Override

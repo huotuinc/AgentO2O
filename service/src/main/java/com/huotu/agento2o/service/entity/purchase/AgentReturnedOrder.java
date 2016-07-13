@@ -11,7 +11,9 @@
 package com.huotu.agento2o.service.entity.purchase;
 
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,11 +36,18 @@ public class AgentReturnedOrder {
     private String rOrderId;
 
     /**
-     * 代理商/门店
+     * 代理商
      */
     @JoinColumn(name = "Agent_Id")
     @ManyToOne
-    private Author author;
+    private Agent agent;
+
+    /**
+     * 门店
+     */
+    @JoinColumn(name = "Shop_Id")
+    @ManyToOne
+    private Shop shop;
 
     /**
      * 总金额
@@ -142,6 +151,11 @@ public class AgentReturnedOrder {
     @OneToMany(mappedBy = "returnedOrder", cascade = CascadeType.ALL)
     private List<AgentReturnedOrderItem> orderItemList;
 
+    public void setAuthor(Author author){
+        this.setAgent(author.getAuthorAgent());
+        this.setShop(author.getAuthorShop());
+    }
+
 
 
     //退货状态为 待审核 或 审核不通过
@@ -194,5 +208,4 @@ public class AgentReturnedOrder {
                 && receivedTime != null
                 && disabled == false;
     }
-
 }

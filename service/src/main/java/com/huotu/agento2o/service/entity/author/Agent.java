@@ -102,7 +102,7 @@ public class Agent{
      */
     @JoinColumn(name = "Parent_Agent_Id")
     @ManyToOne
-    private Agent parentAuthor;
+    private Agent parentAgent;
 
     /**
      * 小伙伴

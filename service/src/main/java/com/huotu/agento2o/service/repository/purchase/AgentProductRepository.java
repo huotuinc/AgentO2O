@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.repository.purchase;
 
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,34 +32,53 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
 //    @Query("SELECT DISTINCT product.product.goods.goodsId FROM AgentProduct product WHERE product.author.id = ?1 AND product.disabled = false ")
 //    List<Integer> findGoodsListByAgentId(Integer agentId);
 
-    List<AgentProduct> findByAuthor_IdAndDisabledFalse(Integer agentId);
+//    List<AgentProduct> findByAuthor_IdAndDisabledFalse(Integer agentId);
 
-    @Query("update AgentProduct  set warning=?3 where author.id=?1 and product.productId=?2")
+    List<AgentProduct> findByAgent_IdAndDisabledFalse(Integer agentId);
+
+    List<AgentProduct> findByShop_IdAndDisabledFalse(Integer shopId);
+
+
+    @Query("update AgentProduct  set warning=?3 where agent.id=?1 and product.productId=?2")
     @Modifying
-    int updateWaring(Integer agentId, Integer productId, Integer warning);
+    int updateAgentWaring(Integer agentId, Integer productId, Integer warning);
 
-    AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
+    @Query("update AgentProduct  set warning=?3 where shop.id = ?1 and product.productId = ?2")
+    @Modifying
+    int updateShopWaring(Integer shopId, Integer productId, Integer warning);
+
+
+//    AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
+    AgentProduct findByAgentAndProductAndDisabledFalse(Agent agent,MallProduct product);
+    AgentProduct findByShopAndProductAndDisabledFalse(Shop shop,MallProduct product);
 
     /**
      * 查询出需要提醒的用户
      *
      * @return 用户ID
      */
-    @Query("select DISTINCT product.author.id from AgentProduct product where  product.warning>=product.store-product.freez")
+    @Query("select DISTINCT product.agent.id from AgentProduct product where  product.agent is not null and product.warning>=product.store-product.freez")
     @Modifying
     List<Object> findNeedWaringAgent();
+    @Query("select DISTINCT product.shop.id from AgentProduct product where  product.shop is not null and product.warning>=product.store-product.freez")
+    @Modifying
+    List<Object> findNeedWaringShop();
 
     /**
      * 查出需要提醒用户对应的所有需要提醒的商品信息
      *
-     * @param authorId
+     * @param agentId
      * @return
      */
-    @Query("select a from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez  and a.author.id =?1")
-    List<AgentProduct> findWaringAgentInfo(Integer authorId);
+    @Query("select a from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez  and a.agent.id =?1")
+    List<AgentProduct> findWarningAgentInfo(Integer agentId);
+    @Query("select a from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez  and a.shop.id =?1")
+    List<AgentProduct> findWarningShopInfo(Integer shopId);
 
-    @Query("select count(a) from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez and a.author.id =?1")
-    int countByWaringAgentInfo(Integer authorId);
+    @Query("select count(a) from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez and a.agent.id =?1")
+    int countByWarningAgentInfo(Integer authorId);
+    @Query("select count(a) from AgentProduct a where a.warning is not null and a.warning>0 and a.warning>=a.store-a.freez and a.shop.id =?1")
+    int countByWarningShopInfo(Integer authorId);
 
    /* List<AgentProduct> findAgentProductByAuthor_IdAndStoreLessThanWarning(Integer authorId);*/
 

@@ -10,7 +10,9 @@
 
 package com.huotu.agento2o.service.entity.purchase;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,11 +36,18 @@ public class ShoppingCart {
     private Integer id;
 
     /**
-     * 代理商/门店
+     * 代理商
      */
     @JoinColumn(name = "Agent_Id")
     @ManyToOne
-    private Author author;
+    private Agent agent;
+
+    /**
+     * 门店
+     */
+    @JoinColumn(name = "Shop_Id")
+    @ManyToOne
+    private Shop shop;
 
     @JoinColumn(name = "Product_Id")
     @ManyToOne
@@ -49,4 +58,13 @@ public class ShoppingCart {
 
     @Column(name = "Createtime")
     private Date createTime;
+
+    public Agent getParentAgent(){
+        if(agent != null){
+            return agent.getParentAgent();
+        }else if(shop != null){
+            return shop.getParentAgent();
+        }
+        return null;
+    }
 }

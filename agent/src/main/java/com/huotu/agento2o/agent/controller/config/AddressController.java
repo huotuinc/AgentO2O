@@ -50,7 +50,7 @@ public class AddressController {
      */
     @RequestMapping("/addressList")
     public String showAddressList(@AgtAuthenticationPrincipal Author author, Model model,String target) {
-        List<Address> addressList = addressService.findAddressByAuthorId(author.getId());
+        List<Address> addressList = addressService.findAddressByAuthorId(author);
         model.addAttribute("addressList", addressList);
         if(target != null && "choice".equals(target)){
             return "config/addressChoice";
@@ -96,7 +96,7 @@ public class AddressController {
     @RequestMapping(value = "/deleteAddress", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteAddress(@AgtAuthenticationPrincipal Author author, Model model, Integer addressId) {
-        return addressService.deleteAddress(addressId, author.getId());
+        return addressService.deleteAddress(addressId, author);
     }
 
     /**
@@ -110,7 +110,7 @@ public class AddressController {
     @RequestMapping(value = "/configDefault", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult configDefault(@AgtAuthenticationPrincipal Author author, Model model, Integer addressId) {
-        return addressService.configDefault(addressId, author.getId());
+        return addressService.configDefault(addressId, author);
     }
 
     /**
@@ -122,7 +122,7 @@ public class AddressController {
     @RequestMapping(value = "/showAddress", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult showAddress(@AgtAuthenticationPrincipal Author author,Integer addressId) {
-        Address address = addressService.findById(addressId,author.getId());
+        Address address = addressService.findById(addressId,author);
         if (address == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
