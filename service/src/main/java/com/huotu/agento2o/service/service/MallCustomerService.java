@@ -20,4 +20,8 @@ public interface MallCustomerService extends UserDetailsService {
     MallCustomer newCustomer(MallCustomer customer);
 
     MallCustomer findByCustomerId(Integer customerId);
+
+    int resetPassword(Integer customerId, String password);
+
+    MallCustomer findByUserName(String userName);
 }

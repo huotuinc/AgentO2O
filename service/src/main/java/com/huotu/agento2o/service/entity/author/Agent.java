@@ -112,12 +112,28 @@ public class Agent{
     private UserBaseInfo userBaseInfo;
 
     /**
-     * 省市区code
+     * 省code
      *
      * @return
      */
-    @Column(name = "Address_AreaCode")
-    private String address_AreaCode;
+    @Column(name = "ProvinceCode")
+    private String provinceCode;
+
+    /**
+     * 市code
+     *
+     * @return
+     */
+    @Column(name = "CityCode")
+    private String cityCode;
+
+    /**
+     * 区code
+     *
+     * @return
+     */
+    @Column(name = "DistrictCode")
+    private String districtCode;
 
     /**
      * 省市区
@@ -172,6 +188,12 @@ public class Agent{
      */
     @Column(name = "Email")
     private String email;
+
+    /**
+     * 图标
+     */
+    @Column(name = "Logo")
+    private String logo;
 
     /**
      * 代理商等级

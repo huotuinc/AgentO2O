@@ -11,6 +11,7 @@
 package com.huotu.agento2o.agent.config.resolver;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -41,7 +42,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         if (userDetails instanceof Author) {
             if (authenticationPrincipal.type() == Shop.class && userDetails instanceof Shop) {
                 return userDetails;
-            } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof Agent) {
+            } else if (authenticationPrincipal.type() == MallCustomer.class && userDetails instanceof MallCustomer) {
                 return userDetails;
             } else if (authenticationPrincipal.type() == null || authenticationPrincipal.type() == Author.class) {
                 return userDetails;

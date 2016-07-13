@@ -35,7 +35,7 @@ public class AuthorServiceImpl implements AuthorService {
     private PasswordEncoder passwordEncoder;
 
     public Author findById(Author requestAuthor) {
-        if(MallCustomer.class == requestAuthor.getType()){
+        if(Agent.class == requestAuthor.getType()){
             return mallCustomerRepository.findOne(requestAuthor.getId());
         }else if(Shop.class == requestAuthor.getType()){
             return shopRepository.findOne(requestAuthor.getId());
@@ -45,14 +45,9 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public List<Author> findByParentAgentId(Agent agent) {
-        return authorRepository.findByParentAuthor(agent);
-    }
-
-    @Override
     @Transactional
     public boolean updatePwd(Author requestAuthor, String password) {
-        if(MallCustomer.class == requestAuthor.getType()){
+        if(Agent.class == requestAuthor.getType()){
             MallCustomer author = mallCustomerRepository.findOne(requestAuthor.getId());
             if(author == null){
                 return false;
@@ -74,7 +69,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public boolean checkPwd(Author requestAuthor, String password) {
         Author author = null;
-        if(MallCustomer.class == requestAuthor.getType()){
+        if(Agent.class == requestAuthor.getType()){
             author = mallCustomerRepository.findOne(requestAuthor.getId());
         }else if(Shop.class == requestAuthor.getType()){
             author = shopRepository.findOne(requestAuthor.getId());

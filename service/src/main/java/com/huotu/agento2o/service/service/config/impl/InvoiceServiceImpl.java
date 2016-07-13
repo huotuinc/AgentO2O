@@ -10,7 +10,10 @@
 package com.huotu.agento2o.service.service.config.impl;
 
 import com.huotu.agento2o.service.common.InvoiceEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.service.config.InvoiceService;
@@ -30,7 +33,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public List<InvoiceConfig> findByAuthor(Author author) {
-        return invoiceConfigRepository.findByAuthor(author);
+        if(Agent.class == author.getType()){
+            return invoiceConfigRepository.findByAgent(author.getAuthorAgent());
+        }else if(Shop.class == author.getType()){
+            return invoiceConfigRepository.findByShop(author.getAuthorShop());
+        }
+        return null;
     }
 
     @Override
@@ -40,8 +48,15 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (invoiceConfig == null || invoiceConfig.getType() == null) {
             return false;
         }
-        InvoiceConfig oldInvoiceConfig = invoiceConfigRepository.findByAuthorAndType(author, invoiceConfig.getType());
-        InvoiceConfig defaultInvoiceConfig = invoiceConfigRepository.findByAuthorAndDefaultType(author, 1);
+        InvoiceConfig oldInvoiceConfig = null;
+        InvoiceConfig defaultInvoiceConfig = null;
+        if(Agent.class == author.getType()){
+            oldInvoiceConfig = invoiceConfigRepository.findByAgentAndType(author.getAuthorAgent(), invoiceConfig.getType());
+            defaultInvoiceConfig = invoiceConfigRepository.findByAgentAndDefaultType(author.getAuthorAgent(),1);
+        }else if(Shop.class == author.getType()){
+            oldInvoiceConfig = invoiceConfigRepository.findByShopAndType(author.getAuthorShop(), invoiceConfig.getType());
+            defaultInvoiceConfig = invoiceConfigRepository.findByShopAndDefaultType(author.getAuthorShop(),1);
+        }
         if (oldInvoiceConfig == null){
             oldInvoiceConfig = new InvoiceConfig();
             oldInvoiceConfig.setAuthor(author);
@@ -66,6 +81,11 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceConfig findDefaultByAuthor(Author author) {
-        return invoiceConfigRepository.findByAuthorAndDefaultType(author, 1);
+        if(Agent.class == author.getType()){
+            return invoiceConfigRepository.findByAgentAndDefaultType(author.getAuthorAgent(),1);
+        }else if(Shop.class == author.getType()){
+            return invoiceConfigRepository.findByShopAndDefaultType(author.getAuthorShop(),1);
+        }
+        return null;
     }
 }

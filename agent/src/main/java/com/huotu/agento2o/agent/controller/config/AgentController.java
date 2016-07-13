@@ -14,6 +14,7 @@ import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -55,13 +56,13 @@ public class AgentController {
         if(author == null){
             throw new Exception("没有权限");
         }
-        if(author instanceof Agent){
+        if(Agent.class == author.getType()){
             //代理商
-            model.addAttribute("agent",author);
+            model.addAttribute("agent",author.getAuthorAgent());
             return "config/agentConfig";
-        }else if(author instanceof Shop){
+        }else if(Shop.class == author.getType()){
             //门店
-            model.addAttribute("shop",author);
+            model.addAttribute("shop",author.getAuthorShop());
             return "config/shopConfig";
         }
         throw new Exception("没有权限");
@@ -70,18 +71,19 @@ public class AgentController {
     /**
      * 保存代理商基本信息
      *
-     * @param agent
+     * @param mallCustomer
      * @param requestAgent
+     * @param hotUserName
      * @return
      */
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent,String hotUserName) {
-        if (!agent.getId().equals(requestAgent.getId())) {
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, Agent requestAgent,String hotUserName) {
+        if (!mallCustomer.getId().equals(requestAgent.getId())) {
             return new ApiResult("没有权限");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getProvince()) || StringUtil.isEmptyStr(requestAgent.getCity()) || StringUtil.isEmptyStr(requestAgent.getDistrict())){
+        if(StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getDistrictCode())){
             return new ApiResult("请选择区域");
         }
         if(StringUtil.isEmptyStr(requestAgent.getName())){
@@ -108,21 +110,21 @@ public class AgentController {
         if(StringUtil.isEmptyStr(requestAgent.getAccountNo())){
             return new ApiResult("请输入银行卡号");
         }
-        return agentService.saveAgentConfig(agent.getId(), requestAgent,hotUserName);
+        return agentService.saveAgentConfig(mallCustomer.getId(), requestAgent,hotUserName);
     }
 
     /**
      * 代理商获取可绑定的小伙伴用户名集合
      *
-     * @param agent
+     * @param mallCustomer
      * @param hotUserName
      * @return
      */
     @RequestMapping(value = "/getAgentUserNames", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, String hotUserName) {
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(agent.getCustomer().getCustomerId(), hotUserName));
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, String hotUserName) {
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(mallCustomer.getAgent().getCustomer().getCustomerId(), hotUserName));
     }
 
     /**
@@ -153,7 +155,7 @@ public class AgentController {
         if (!curShop.getId().equals(shop.getId())) {
             return new ApiResult("没有权限");
         }
-        if(StringUtil.isEmptyStr(shop.getProvince()) || StringUtil.isEmptyStr(shop.getCity()) || StringUtil.isEmptyStr(shop.getDistrict())){
+        if(StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getDistrictCode())){
             return new ApiResult("请选择区域");
         }
         if(StringUtil.isEmptyStr(shop.getName())){

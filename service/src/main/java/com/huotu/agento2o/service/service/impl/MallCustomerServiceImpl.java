@@ -57,4 +57,15 @@ public class MallCustomerServiceImpl implements MallCustomerService {
         }
         return mallCustomer;
     }
+
+    @Override
+    @Transactional
+    public int resetPassword(Integer customerId, String password) {
+        return customerRepository.resetPassword(customerId, passwordEncoder.encode((password)));
+    }
+
+    @Override
+    public MallCustomer findByUserName(String userName) {
+        return customerRepository.findByUsername(userName);
+    }
 }

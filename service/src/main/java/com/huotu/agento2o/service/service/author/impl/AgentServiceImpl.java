@@ -102,7 +102,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public boolean isEnableAgent(String userName) {
-        return agentRepository.findByUsername(userName) == null;
+        return mallCustomerService.findByUserName(userName) == null;
     }
 
     @Override
@@ -124,13 +124,13 @@ public class AgentServiceImpl implements AgentService {
                 predicates.add(criteriaBuilder.equal(root.get("agentLevel").get("levelId").as(Integer.class), agentSearcher.getLevelId()));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getProvince())) {
-                predicates.add(criteriaBuilder.equal(root.get("province").as(String.class), agentSearcher.getProvince()));
+                predicates.add(criteriaBuilder.equal(root.get("provinceCode").as(String.class), agentSearcher.getProvince()));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getCity())) {
-                predicates.add(criteriaBuilder.equal(root.get("city").as(String.class), agentSearcher.getCity()));
+                predicates.add(criteriaBuilder.equal(root.get("cityCode").as(String.class), agentSearcher.getCity()));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getDistrict())) {
-                predicates.add(criteriaBuilder.equal(root.get("district").as(String.class), agentSearcher.getDistrict()));
+                predicates.add(criteriaBuilder.equal(root.get("districtCode").as(String.class), agentSearcher.getDistrict()));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getBeginTime())) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class), StringUtil.DateFormat(agentSearcher.getBeginTime(), StringUtil.TIME_PATTERN)));
@@ -212,18 +212,20 @@ public class AgentServiceImpl implements AgentService {
             agent.setStatus(AgentStatusEnum.CHECKED);
             agent.setDisabled(false);
             agent.setDeleted(false);
+            saveMallCustomer(agent);
         }
         agent.setAgentLevel(agentLevel);
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
         agent.setAddress(requestAgent.getAddress());
-        agent.setCity(requestAgent.getCity());
         agent.setContact(requestAgent.getContact());
-        agent.setDistrict(requestAgent.getDistrict());
         agent.setMobile(requestAgent.getMobile());
-        agent.setParentAuthor(parentAgent);
+        agent.setParentAgent(parentAgent);
         agent.setUserBaseInfo(userBaseInfo);
-        agent.setProvince(requestAgent.getProvince());
+        agent.setProvinceCode(requestAgent.getProvinceCode());
+        agent.setCityCode(requestAgent.getCityCode());
+        agent.setDistrictCode(requestAgent.getDistrictCode());
+        agent.setAddress_Area(requestAgent.getAddress_Area());
         agent.setTelephone(requestAgent.getTelephone());
         agent.setEmail(requestAgent.getEmail());
         agent = agentRepository.save(agent);
@@ -234,6 +236,22 @@ public class AgentServiceImpl implements AgentService {
             accountRepository.save(account);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+    }
+
+    private MallCustomer saveMallCustomer(Agent agent) {
+        MallCustomer customer = new MallCustomer();
+        customer.setAgent(agent);
+        customer.setUsername(agent.getUsername());
+        customer.setPassword(passwordEncoder.encode(agent.getPassword()));
+        customer.setNickName(agent.getName());
+        customer.setIndustryType(0);
+        customer.setUserActivate(1);
+        customer.setRoleID(-2);
+        customer.setBelongManagerID(3);
+        customer.setCityID(0);
+        // TODO: 2016/7/13
+        return customer;
+
     }
 
     @Override
@@ -247,7 +265,7 @@ public class AgentServiceImpl implements AgentService {
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getMobile())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getTelephone())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getEmail())));
-            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getProvince()) + ' ' + StringUtil.getNullStr(agent.getCity()) + ' ' + StringUtil.getNullStr(agent.getDistrict())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress_Area())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress())));
             cellDescList.add(ExcelHelper.asCell(agent.getAgentLevel() == null ? "" : agent.getAgentLevel().getLevelName()));
             cellDescList.add(ExcelHelper.asCell(agent.isDisabled() ? "冻结" : "激活"));
@@ -262,12 +280,6 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public Agent findByUserBaseInfoId(Integer userId) {
         return agentRepository.findByUserBaseInfo_userId(userId);
-    }
-
-    @Override
-    @Transactional
-    public int resetPassword(Integer agentId, String password) {
-        return agentRepository.resetPassword(agentId, passwordEncoder.encode((password)));
     }
 
     @Override
@@ -297,11 +309,12 @@ public class AgentServiceImpl implements AgentService {
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
         agent.setAddress(requestAgent.getAddress());
-        agent.setCity(requestAgent.getCity());
         agent.setContact(requestAgent.getContact());
-        agent.setDistrict(requestAgent.getDistrict());
         agent.setMobile(requestAgent.getMobile());
-        agent.setProvince(requestAgent.getProvince());
+        agent.setProvinceCode(requestAgent.getProvinceCode());
+        agent.setCityCode(requestAgent.getCityCode());
+        agent.setDistrictCode(requestAgent.getDistrictCode());
+        agent.setAddress_Area(requestAgent.getAddress_Area());
         agent.setTelephone(requestAgent.getTelephone());
         agent.setAccountName(requestAgent.getAccountName());
         agent.setAccountNo(requestAgent.getAccountNo());

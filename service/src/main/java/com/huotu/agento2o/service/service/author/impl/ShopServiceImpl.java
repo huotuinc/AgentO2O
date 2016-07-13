@@ -119,7 +119,7 @@ public class ShopServiceImpl implements ShopService {
             }
             shop.setCreateTime(new Date());
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
-            shop.setParentAuthor(agent);
+            shop.setAgent(agent);
             shop.setCustomer(agent.getCustomer());
         } else {  //编辑
             Shop oldShop = shopRepository.findOne(shop.getId());
@@ -137,9 +137,10 @@ public class ShopServiceImpl implements ShopService {
                 oldShop.setStatus(shop.getStatus());
             }
             oldShop.setUsername(shop.getUsername());
-            oldShop.setProvince(shop.getProvince());
-            oldShop.setCity(shop.getCity());
-            oldShop.setDistrict(shop.getDistrict());
+            oldShop.setAddress_Area(shop.getAddress_Area());
+            oldShop.setProvinceCode(shop.getProvinceCode());
+            oldShop.setCityCode(shop.getCityCode());
+            oldShop.setDistrictCode(shop.getDistrictCode());
             oldShop.setName(shop.getName());
             oldShop.setContact(shop.getContact());
             oldShop.setMobile(shop.getMobile());
@@ -192,9 +193,10 @@ public class ShopServiceImpl implements ShopService {
             }
         }
         oldShop.setUsername(shop.getUsername());
-        oldShop.setProvince(shop.getProvince());
-        oldShop.setCity(shop.getCity());
-        oldShop.setDistrict(shop.getDistrict());
+        oldShop.setAddress_Area(shop.getAddress_Area());
+        oldShop.setProvinceCode(shop.getProvinceCode());
+        oldShop.setCityCode(shop.getCityCode());
+        oldShop.setDistrictCode(shop.getDistrictCode());
         oldShop.setName(shop.getName());
         oldShop.setContact(shop.getContact());
         oldShop.setMobile(shop.getMobile());
@@ -387,7 +389,7 @@ public class ShopServiceImpl implements ShopService {
             List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
             cellDescList.add(ExcelHelper.asCell(shop.getUsername()));
             cellDescList.add(ExcelHelper.asCell(shop.getName()));
-            cellDescList.add(ExcelHelper.asCell(shop.getProvince() + '—' + shop.getCity() + '—' + shop.getDistrict()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAddress_Area()));
             cellDescList.add(ExcelHelper.asCell(shop.getAddress()));
             cellDescList.add(ExcelHelper.asCell(shop.getLan()));
             cellDescList.add(ExcelHelper.asCell(shop.getLat()));
@@ -395,7 +397,7 @@ public class ShopServiceImpl implements ShopService {
             cellDescList.add(ExcelHelper.asCell(shop.getMobile()));
             cellDescList.add(ExcelHelper.asCell(shop.getTelephone()));
             cellDescList.add(ExcelHelper.asCell(shop.getEmail()));
-            cellDescList.add(ExcelHelper.asCell(shop.getParentAuthor().getUsername()));
+            cellDescList.add(ExcelHelper.asCell(shop.getParentAgent().getUsername()));
 //            cellDescList.add(ExcelHelper.asCell(shop.getServeiceTel()));
 //            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalTel()));
 //            cellDescList.add(ExcelHelper.asCell(shop.getAfterSalQQ()));
