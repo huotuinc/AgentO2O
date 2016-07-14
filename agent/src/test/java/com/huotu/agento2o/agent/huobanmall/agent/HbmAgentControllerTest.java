@@ -46,7 +46,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
     private Cookie cookie;
 
     //平台下的代理商
-    List<Agent> agents = new ArrayList<>();
+    List<MallCustomer> agents = new ArrayList<>();
 
     @Before
     public void init() {
@@ -54,7 +54,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         mockCustomer = mockMallCustomer();
         cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
         for (int i = 0; i <= random.nextInt(5) + 1; i++) {
-            Agent mockAgent = mockAgent(mockCustomer, null);
+            MallCustomer mockAgent = mockAgent(mockCustomer, null);
             agents.add(mockAgent);
         }
     }
@@ -77,7 +77,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
             Assert.assertEquals(agents.get(i).getId(), agentList.get(i).getId());
         }
         //根据代理商账号查询
-        Agent expectAgent = agents.get(0);
+        Agent expectAgent = agents.get(0).getAgent();
         result = mockMvc.perform(get(controllerUrl).cookie(cookie)
                 .param("agentLoginName", expectAgent.getUsername()))
                 .andExpect(status().isOk())
@@ -108,7 +108,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         resultString = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(resultString);
         Assert.assertEquals("系统请求失败", obResult.getString("msg"));
-        Agent expectAgent = agents.get(0);
+        Agent expectAgent = agents.get(0).getAgent();
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("agentId", String.valueOf(expectAgent.getId())))
                 .andExpect(status().isOk())
@@ -116,8 +116,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         resultString = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(resultString);
         Assert.assertEquals("请求成功", obResult.getString("msg"));
-        expectAgent = agents.get(0);
-        Agent newAgent = mockAgent(mockCustomer, expectAgent);
+        expectAgent = agents.get(0).getAgent();
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("agentId", String.valueOf(expectAgent.getId())))
                 .andExpect(status().isOk())
@@ -136,7 +135,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         String resultString = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obResult = JSONObject.parseObject(resultString);
         Assert.assertEquals("没有传输数据", obResult.getString("msg"));
-        Agent expectAgent = agents.get(0);
+        Agent expectAgent = agents.get(0).getAgent();
         //冻结
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("status", "0")
@@ -169,7 +168,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
     @Test
     public void testShowAgent() throws Exception {
         String controllerUrl = BASE_URL + "/showAgent";
-        Agent parentAgent = agents.get(0);
+        Agent parentAgent = agents.get(0).getAgent();
         //显示增加页面
         MvcResult result = mockMvc.perform(get(controllerUrl).cookie(cookie))
                 .andExpect(status().isOk())
@@ -184,7 +183,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         Assert.assertTrue(parentAgentLevelId == -1);
         //显示修改页面
         AgentLevel agentLevel = parentAgent.getAgentLevel();
-        Agent agent = mockAgent(mockCustomer, parentAgent);
+        MallCustomer agent = mockAgent(mockCustomer, parentAgent);
         result = mockMvc.perform(get(controllerUrl).cookie(cookie)
                 .param("id", String.valueOf(agent.getId())))
                 .andExpect(status().isOk())
@@ -215,7 +214,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/getParentAgents";
         AgentLevel agentLevel = mockAgentLevel(mockCustomer);
         agents.forEach(agent -> {
-            agent.setAgentLevel(agentLevel);
+            agent.getAgent().setAgentLevel(agentLevel);
         });
         MvcResult result = mockMvc.perform(get(controllerUrl).cookie(cookie))
                 .andExpect(status().isOk())
@@ -311,7 +310,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
     @Test
     public void testResetPassword() throws Exception {
         String controllerUrl = BASE_URL + "/reset";
-        Agent expectAgent = agents.get(0);
+        Agent expectAgent = agents.get(0).getAgent();
         MvcResult result = mockMvc.perform(post(controllerUrl).cookie(cookie))
                 .andExpect(status().isOk())
                 .andReturn();

@@ -85,7 +85,7 @@ public class PurchaseControllerTest extends CommonTestBase {
         }
         //平台商品相关(保证至少有10个商品)
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), null);
+            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), false);
             int randomGoodsType = random.nextInt(2);
             if (randomGoodsType == 0) {
                 //标准分类
@@ -104,7 +104,7 @@ public class PurchaseControllerTest extends CommonTestBase {
         }
 
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), null);
+            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), false);
             List<MallProduct> productList = new ArrayList<>();
             for (int j = 0; j < random.nextInt(10) + 2; j++) {
                 productList.add(mockMallProduct(mockGoodsWithNProducts));

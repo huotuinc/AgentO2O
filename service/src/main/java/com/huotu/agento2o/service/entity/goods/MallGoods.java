@@ -52,10 +52,10 @@ public class MallGoods {
     private Integer customerId;
 
     /**
-     * 代理商ID，值为0表示平台方代理商品
+     * 代理商ID，值为0表示平台方1代理商品
      */
-    @Column(name = "Agent_Id")
-    private Integer agentId;
+    @Column(name = "Is_Agent")
+    private boolean isAgent;
 
     @Column(name = "Name")
     private String name;

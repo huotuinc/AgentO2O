@@ -95,7 +95,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
 
         //平台商品相关
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), null);
+            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), false);
             List<MallProduct> mockGoodsWith1ProductsList = new ArrayList<>();
             mockGoodsWith1ProductsList.add(mockMallProduct(mockGoodsWith1Products));
             mockGoodsWith1Products.setProducts(mockGoodsWith1ProductsList);
@@ -105,7 +105,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         }
 
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), null);
+            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), false);
             List<MallProduct> productList = new ArrayList<>();
             for (int j = 0; j < random.nextInt(10) + 2; j++) {
                 productList.add(mockMallProduct(mockGoodsWithNProducts));

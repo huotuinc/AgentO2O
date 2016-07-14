@@ -124,8 +124,8 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
         obResult = JSONObject.parseObject(result);
         Assert.assertEquals("请求成功",obResult.getString("msg"));
         expectAgentLevel = agentLevels.get(1);
-        Agent mockAgent = mockAgent(mockCustomer,null);
-        mockAgent.setAgentLevel(expectAgentLevel);
+        MallCustomer mockAgent = mockAgent(mockCustomer,null);
+        mockAgent.getAgent().setAgentLevel(expectAgentLevel);
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("levelId",String.valueOf(expectAgentLevel.getLevelId())))
                 .andExpect(status().isOk())
