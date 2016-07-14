@@ -26,7 +26,7 @@ public interface AccountService {
 
     Account findById(Integer id);
 
-    Account findByAuthorAndCustomer(Integer authorId, Integer customerId);
+    Account findByAuthorAndCustomer(Integer agentId,Integer shopId, Integer customerId);
 
     Account save(Account account);
 

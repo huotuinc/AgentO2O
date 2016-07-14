@@ -11,7 +11,6 @@ package com.huotu.agento2o.service.repository.config;
 
 import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import org.springframework.data.jpa.repository.JpaRepository;

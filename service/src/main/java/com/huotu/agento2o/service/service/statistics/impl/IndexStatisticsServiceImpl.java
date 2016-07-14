@@ -25,7 +25,6 @@ import com.huotu.agento2o.service.repository.settlement.SettlementRepository;
 import com.huotu.agento2o.service.service.statistics.IndexStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.Jsr310Converters;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -62,23 +61,23 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
     }
 
     @Override
-    public int purchaseOrderCountByDate(int authorId, Date start, Date end) {
-        return purchaseOrderRepository.countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(authorId, start, end);
+    public int purchaseOrderCountByDate(Author author, Date start, Date end) {
+        return purchaseOrderRepository.countByAgentAndShopAndCreateTimeBetweenAndDisabledFalse(author.getAuthorAgent(),author.getAuthorShop(), start, end);
     }
 
     @Override
-    public int subPurchaseOrderCountByDate(int agentId, Date start, Date end) {
-        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(agentId, start, end);
+    public int subPurchaseOrderCountByDate(Author author, Date start, Date end) {
+        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
     }
 
     @Override
-    public int returnedOrderCountByDate(int authorId, Date start, Date end) {
-        return returnOrderRepository.countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(authorId, start, end);
+    public int returnedOrderCountByDate(Author author,Date start, Date end) {
+        return returnOrderRepository.countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
     }
 
     @Override
-    public int subReturnedOrderCountByDate(int agentId, Date start, Date end) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(agentId, start, end);
+    public int subReturnedOrderCountByDate(Author author, Date start, Date end) {
+        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
     }
 
     @Override
@@ -134,12 +133,12 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         if (author != null && author.getType() == Agent.class) {
             indexStatistics.setAgent(true);
             //今日下级采购单数，昨日下级采购单数
-            indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
-            indexStatistics.setYesterdaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
+            indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author, todayStart, todayEnd));
+            indexStatistics.setYesterdaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author, yesterdayStart, yesterdayEnd));
 
             //今日退货单数，昨日退货单数
-            indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(), todayStart, todayEnd));
-            indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
+            indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author, todayStart, todayEnd));
+            indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author, yesterdayStart, yesterdayEnd));
 
             //待审核采购单数
             indexStatistics.setToCheckPurchaseOrderCount(checkingPurchaseOrderCount(author.getId()));
@@ -161,12 +160,12 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         indexStatistics.setYesterdayOrderCount(orderCountByDate(author, yesterdayStart, yesterdayEnd));
 
         //今日我的采购单数，昨日我的采购单数
-        indexStatistics.setTodayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
-        indexStatistics.setYesterdayPurchaseOrderCount(purchaseOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
+        indexStatistics.setTodayPurchaseOrderCount(purchaseOrderCountByDate(author, todayStart, todayEnd));
+        indexStatistics.setYesterdayPurchaseOrderCount(purchaseOrderCountByDate(author, yesterdayStart, yesterdayEnd));
 
         //今日我的退货单数，昨日我的退货单数
-        indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author.getId(), todayStart, todayEnd));
-        indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author.getId(), yesterdayStart, yesterdayEnd));
+        indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author, todayStart, todayEnd));
+        indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author, yesterdayStart, yesterdayEnd));
 
         //待发货订单数
         indexStatistics.setToDeliveryOrderCount(unDeliveryOrderCount(author.getId()));

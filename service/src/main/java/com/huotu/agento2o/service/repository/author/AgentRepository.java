@@ -18,11 +18,9 @@ public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpeci
 
     Agent findByIdAndCustomer_customerId(Integer agentId, Integer customerId);
 
-    Agent findByUsernameAndStatus(String userName, AgentStatusEnum status);
+    Agent findByCustomer_UsernameAndStatus(String userName, AgentStatusEnum status);
 
     List<Agent> findByAgentLevel_levelIdAndIsDeletedFalse(Integer levelId);
-
-    Agent findByUsername(String userName);
 
     @Modifying(clearAutomatically = true)
     @Query("update Agent a set a.isDeleted = true where a.id = ?1")

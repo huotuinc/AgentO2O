@@ -35,39 +35,39 @@ public interface IndexStatisticsService {
     /**
      * 按日期统计采购单数量（代理商/门店）
      *
-     * @param authorId
+     * @param author
      * @param start
      * @param end
      * @return
      */
-    int purchaseOrderCountByDate(int authorId, Date start, Date end);
+    int purchaseOrderCountByDate(Author author, Date start, Date end);
 
     /**
      * 按日期统计下级采购单数量(代理商)
-     * @param agentId
+     * @param author
      * @param start
      * @param end
      * @return
      */
-    int subPurchaseOrderCountByDate(int agentId,Date start,Date end);
+    int subPurchaseOrderCountByDate(Author author,Date start,Date end);
 
     /**
      * 按日期统计退货单数（代理商/门店）
-     * @param authorId
+     * @param author
      * @param start
      * @param end
      * @return
      */
-    int returnedOrderCountByDate(int authorId,Date start,Date end);
+    int returnedOrderCountByDate(Author author,Date start,Date end);
 
     /**
      * 按日期统计下级退货单数（代理商）
-     * @param agentId
+     * @param author
      * @param start
      * @param end
      * @return
      */
-    int subReturnedOrderCountByDate(int agentId,Date start,Date end);
+    int subReturnedOrderCountByDate(Author author,Date start,Date end);
 
 
     /**

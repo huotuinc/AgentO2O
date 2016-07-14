@@ -23,7 +23,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-//    Account findByAuthor(Author author);
+//    Account findByAgentAndShop(Author author);
     Account findByAgent(Agent agent);
     Account findByShop(Shop shop);
 

@@ -317,8 +317,12 @@ public class HbmWithdrawController {
     @RequestMapping(value = "/showWithdrawCount", method = RequestMethod.GET)
     @ResponseBody
     public ApiResult showWithdrawCount(@RequestAttribute(value = "customerId") Integer customerId,
-                                       @RequestParam(name = "authorId", required = true) Integer authorId) throws Exception {
-        Account account = accountService.findByAuthorAndCustomer(authorId, customerId);
+                                       @RequestParam(name = "agentId", required = true) Integer agentId,
+                                       @RequestParam(name = "shopId",required = true) Integer shopId) throws Exception {
+        if(agentId == null && shopId == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        Account account = accountService.findByAuthorAndCustomer(agentId,shopId, customerId);
         if (account != null) {
             return ApiResult.resultWith(ResultCodeEnum.SUCCESS, account.getWithdrawCount());
         } else {
@@ -328,9 +332,12 @@ public class HbmWithdrawController {
 
     @RequestMapping(value = "/updateWithdrawCount", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult updateWithdrawCount(@RequestAttribute(value = "customerId") Integer customerId, Integer authorId, Integer withdrawCount) throws Exception {
+    public ApiResult updateWithdrawCount(@RequestAttribute(value = "customerId") Integer customerId, Integer agentId,Integer shopId, Integer withdrawCount) throws Exception {
         Account account = null;
-        account = accountService.findByAuthorAndCustomer(authorId, customerId);
+        if(agentId == null && shopId == null){
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        account = accountService.findByAuthorAndCustomer(agentId,shopId, customerId);
         if (account == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }

@@ -186,7 +186,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
     @Override
     public ApiResult cancelReturnOrder(Author author, String rOrderId) {
-        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(author, rOrderId);
+        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByAgentAndShopAndROrderIdAndDisabledFalse(author.getAuthorAgent(),author.getAuthorShop(), rOrderId);
 
         if (agentReturnedOrder != null) {
             if (agentReturnedOrder.getStatus().equals(PurchaseEnum.OrderStatus.CHECKING)) {// 待审核状态才可以退货

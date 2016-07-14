@@ -73,7 +73,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop findByIdAndParentAuthor(Integer shopId, Agent agent) {
-        return shopId == null || agent == null ? null : shopRepository.findByIdAndParentAuthor(shopId, agent);
+        return shopId == null || agent == null ? null : shopRepository.findByIdAndAgent(shopId, agent);
     }
 
     @Override

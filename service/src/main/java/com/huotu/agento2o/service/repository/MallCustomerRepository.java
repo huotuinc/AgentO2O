@@ -25,7 +25,7 @@ public interface MallCustomerRepository extends JpaRepository<MallCustomer,Integ
     MallCustomer findByUsername(String username);
 
     @Modifying(clearAutomatically = true)
-    @Query("update MallCustomer a set a.password = ?2 where a.id = ?1")
+    @Query("update MallCustomer a set a.password = ?2 where a.customerId = ?1")
     int resetPassword(Integer customerId, String password);
 
     

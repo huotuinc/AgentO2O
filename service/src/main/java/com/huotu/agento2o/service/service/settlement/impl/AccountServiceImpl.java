@@ -21,9 +21,11 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
-import com.huotu.agento2o.service.repository.author.AuthorRepository;
+import com.huotu.agento2o.service.repository.MallCustomerRepository;
+import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.settlement.WithdrawRecordRepository;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.settlement.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.Jsr310Converters;
@@ -44,11 +46,13 @@ import java.util.List;
 @Service
 public class AccountServiceImpl implements AccountService {
     @Autowired
+    private MallCustomerRepository customerRepository;
+    @Autowired
+    private ShopRepository shopRepository;
+    @Autowired
     private AccountRepository accountRepository;
     @Autowired
     private WithdrawRecordRepository withdrawRecordRepository;
-    @Autowired
-    private AuthorRepository authorRepository;
 
     @Override
     public Account findByAuthor(Author author) {
@@ -72,8 +76,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account findByAuthorAndCustomer(Integer authorId, Integer customerId) {
-        Author author = authorRepository.findOne(authorId);
+    public Account findByAuthorAndCustomer(Integer agentId,Integer shopId, Integer customerId) {
+        Author author = null;
+        if(agentId != null && agentId != 0){
+            author = customerRepository.findOne(agentId);
+        }else if(shopId != null && shopId != 0){
+            author = shopRepository.findOne(shopId);
+        }
         if (author == null || !author.getCustomer().getCustomerId().equals(customerId)) {
             return null;
         }

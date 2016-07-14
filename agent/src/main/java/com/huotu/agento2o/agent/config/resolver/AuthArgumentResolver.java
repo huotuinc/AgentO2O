@@ -45,7 +45,11 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             } else if (authenticationPrincipal.type() == MallCustomer.class && userDetails instanceof MallCustomer) {
                 return userDetails;
             } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof MallCustomer) {
-                return ((MallCustomer) userDetails).getAuthorAgent();
+                Agent agent = ((MallCustomer) userDetails).getAuthorAgent();
+                if(agent == null){
+                    throw new Exception("没有权限");
+                }
+                return agent;
             } else if (authenticationPrincipal.type() == null || authenticationPrincipal.type() == Author.class) {
                 return userDetails;
             }

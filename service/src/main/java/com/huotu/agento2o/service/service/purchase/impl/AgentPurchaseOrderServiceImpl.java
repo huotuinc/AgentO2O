@@ -217,7 +217,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
 
     @Override
     public AgentPurchaseOrder findByPOrderIdAndAuthor(String pOrderId, Author author) {
-        return purchaseOrderRepository.findByPOrderIdAndAuthor(pOrderId, author);
+        return purchaseOrderRepository.findByPOrderIdAndAgentAndShop(pOrderId, author.getAuthorAgent(),author.getAuthorShop());
     }
 
     /**

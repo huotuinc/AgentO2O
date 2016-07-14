@@ -6,7 +6,6 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
@@ -195,7 +194,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         agentReturnedOrderService.cancelReturnOrder(agent,rOrderId);
 
         // 设置disabled为true
-        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(agent,rOrderId);
+        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAgentAndShopAndROrderIdAndDisabledFalse(agent.getAuthorAgent(),agent.getAuthorShop(),rOrderId);
         Assert.assertNull(testAgentRturnOrder);
 
         // 判断预占库存被释放
@@ -244,7 +243,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         // 平台审核一级代理商退货单 不通过
         agentReturnedOrderService.checkReturnOrder(customerId,null,parentROrderId,EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(2)), "test");
         // 设置disabled为true
-        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAuthorAndROrderIdAndDisabledFalse(parentAgent,parentROrderId);
+        AgentReturnedOrder testAgentRturnOrder = agentReturnOrderRepository.findByAgentAndShopAndROrderIdAndDisabledFalse(parentAgent.getAuthorAgent(),parentAgent.getAuthorShop(),parentROrderId);
         Assert.assertNull(testAgentRturnOrder);
         // 判断预占库存被释放
         AgentProduct testAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(parentAgent.getAgent(),mallProduct);

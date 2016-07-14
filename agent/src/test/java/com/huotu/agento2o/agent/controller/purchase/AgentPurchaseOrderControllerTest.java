@@ -16,7 +16,6 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -32,7 +31,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -431,7 +429,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Assert.assertEquals("没有传输数据", objWithErrorId.getString("msg"));
 
         // 3.库存不足
-//        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
+//        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelAgent);
         ShoppingCart mockShoppingCart = mockFirstLevelAgentShoppingCartList.get(0);
         mockShoppingCart.setNum(mockShoppingCart.getProduct().getStore() - mockShoppingCart.getProduct().getFreez() + 1);
         mockShoppingCart = shoppingCartRepository.saveAndFlush(mockShoppingCart);
@@ -450,7 +448,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         JSONObject objWithNumTooMuchId = JSONObject.parseObject(contentWithNumTooMuchId);
         Assert.assertEquals("库存不足，下单失败！", objWithNumTooMuchId.getString("msg"));
         /*agentPurchaseOrderRepository.flush();
-        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
+        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelAgent);
         assertEquals(0,afterOrderList.size() - beforeOrderList.size());*/
 
     }
@@ -466,7 +464,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/addPurchase";
         MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         // 4.新增采购单成功
-        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
+        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelAgent.getAuthorAgent(),mockFirstLevelAgent.getAuthorShop());
         MvcResult result = mockMvc.perform(
                 post(controllerUrl)
                         .session(session)
@@ -481,7 +479,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
-        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
+        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelAgent.getAuthorAgent(),mockFirstLevelAgent.getAuthorShop());
         Assert.assertEquals(1, afterOrderList.size() - beforeOrderList.size());
         ShoppingCart deleteShoppingCart = shoppingCartRepository.findOne(mockFirstLevelAgentShoppingCartList.get(0).getId());
         Assert.assertNull(deleteShoppingCart);
@@ -497,7 +495,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/addPurchase";
         MockHttpSession session = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         // 4.新增采购单成功
-        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelShop);
+        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelShop.getAuthorAgent(),mockFirstLevelShop.getAuthorShop());
         MvcResult result = mockMvc.perform(
                 post(controllerUrl)
                         .session(session)
@@ -512,7 +510,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
-        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelShop);
+        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelShop.getAuthorAgent(),mockFirstLevelShop.getAuthorShop());
         Assert.assertEquals(1, afterOrderList.size() - beforeOrderList.size());
         ShoppingCart deleteShoppingCart = shoppingCartRepository.findOne(mockFirstLevelShopShoppingCartList.get(0).getId());
         Assert.assertNull(deleteShoppingCart);
@@ -529,7 +527,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/addPurchase";
         MockHttpSession session = loginAs(mockSecondLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         // 4.新增采购单成功
-        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockSecondLevelAgent);
+        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockSecondLevelAgent.getAuthorAgent(),mockFirstLevelShop.getAuthorShop());
         MvcResult result = mockMvc.perform(
                 post(controllerUrl)
                         .session(session)
@@ -544,7 +542,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
-        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAuthor(mockSecondLevelAgent);
+        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockSecondLevelAgent.getAuthorAgent(),mockSecondLevelAgent.getAuthorShop());
         Assert.assertEquals(1, afterOrderList.size() - beforeOrderList.size());
         ShoppingCart deleteShoppingCart = shoppingCartRepository.findOne(mockSecondLevelAgentShoppingCartList.get(0).getId());
         Assert.assertNull(deleteShoppingCart);
@@ -560,7 +558,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         String controllerUrl = BASE_URL + "/addPurchase";
         MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         //多个id
-        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
+        List<AgentPurchaseOrder> beforeOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelAgent.getAuthorAgent(),mockFirstLevelAgent.getAuthorShop());
         int beforeFreez0 = mockFirstLevelAgentShoppingCartList.get(0).getProduct().getFreez();
         int beforeFreez1 = mockFirstLevelAgentShoppingCartList.get(1).getProduct().getFreez();
         MvcResult resultWithIds = mockMvc.perform(
@@ -580,7 +578,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         Assert.assertEquals("200", objWithIds.getString("code"));
         ShoppingCart deleteShoppingCart = shoppingCartRepository.findOne(mockFirstLevelAgentShoppingCartList.get(0).getId());
         Assert.assertNull(deleteShoppingCart);
-        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAuthor(mockFirstLevelAgent);
+        List<AgentPurchaseOrder> afterOrderList = agentPurchaseOrderRepository.findByAgentAndShop(mockFirstLevelAgent.getAuthorAgent(),mockFirstLevelAgent.getAuthorShop());
         Assert.assertEquals(1, afterOrderList.size() - beforeOrderList.size());
         MallProduct afterProduct0 = productRepository.findOne(mockFirstLevelAgentShoppingCartList.get(0).getProduct().getProductId());
         MallProduct afterProduct1 = productRepository.findOne(mockFirstLevelAgentShoppingCartList.get(1).getProduct().getProductId());

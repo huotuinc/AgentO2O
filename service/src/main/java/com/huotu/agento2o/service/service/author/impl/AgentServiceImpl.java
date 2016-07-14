@@ -72,7 +72,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Agent findByUserName(String userName) {
-        return agentRepository.findByUsernameAndStatus(userName, AgentStatusEnum.CHECKED);
+        return agentRepository.findByCustomer_UsernameAndStatus(userName, AgentStatusEnum.CHECKED);
     }
 
     /**
