@@ -15,11 +15,13 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private MallGoodsRepository goodsRepository;
     @Autowired
     private AgentProductRepository agentProductRepository;
+    @Autowired
+    private AgentProductService agentProductService;
 
 
     @Override

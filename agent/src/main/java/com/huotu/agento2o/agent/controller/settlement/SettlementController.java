@@ -74,7 +74,8 @@ public class SettlementController {
     public ModelAndView showSettlementList(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop, SettlementSearcher settlementSearcher) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("settlement/settlements");
-        Page<Settlement> settlementPage = settlementService.getPage(shop.getId(), settlementSearcher);
+        settlementSearcher.setShopId(shop.getId());
+        Page<Settlement> settlementPage = settlementService.getPage(settlementSearcher);
         modelAndView.addObject("settlements", settlementPage.getContent());
         modelAndView.addObject("totalRecords", settlementPage.getTotalElements());
         modelAndView.addObject("totalPages", settlementPage.getTotalPages());
