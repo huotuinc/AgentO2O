@@ -91,18 +91,23 @@ public class MallOrderServiceImpl implements MallOrderService {
     public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition) {
         Specification<MallOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (author != null && author instanceof Shop) {
-                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
-                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
-                judgeShipMode(searchCondition, cb, predicates, p1, p2);
-            } else if (author != null && author instanceof Agent) {
-                Join<MallOrder, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
-                Join<MallOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
-                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
-                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
-                judgeShipMode(searchCondition, cb, predicates, p1, p2);
-
+            if (author != null && author.getType() == Shop.class) {
+//                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
+//                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
+//                judgeShipMode(searchCondition, cb, predicates, p1, p2);
+                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId()));
+            } else if (author != null && author.getType() == Agent.class) {
+//                Join<MallOrder, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+//                Join<MallOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
+//                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
+//                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
+//                judgeShipMode(searchCondition, cb, predicates, p1, p2);
+                predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), searchCondition.getAgentId()));
             }
+            CriteriaBuilder.In in = cb.in(root.get("agentShopType"));
+            in.value(OrderEnum.ShipMode.SHOP_DELIVERY);
+            in.value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+            predicates.add(cb.in(in));
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
 //            Predicate p1 = cb.isNull(join.get("id").as(Integer.class));
@@ -167,9 +172,9 @@ public class MallOrderServiceImpl implements MallOrderService {
     }
 
 
-
     /**
      * 用于分页查询时判断订单发货的方式
+     *
      * @param searchCondition
      * @param cb
      * @param predicates

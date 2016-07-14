@@ -107,7 +107,7 @@ public class SendEmailServiceImpl implements SendEmailService {
     public void sendCloudEmail(List<AgentProduct> agentProducts, String emailStr) throws Exception {
         StringBuffer sb = new StringBuffer("");
         if (agentProducts != null && agentProducts.size() > 0) {
-            String authorName = agentProducts.get(0).getAuthor().getName();
+            String authorName = agentProducts.get(0).getAuthorName();
             agentProducts.forEach(product -> {
                 sb.append("货品名称：" + product.getProduct().getName());
                 sb.append("，规格：" + product.getProduct().getStandard());

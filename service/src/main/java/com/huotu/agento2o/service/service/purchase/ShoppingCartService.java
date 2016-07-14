@@ -13,6 +13,7 @@ package com.huotu.agento2o.service.service.purchase;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 
 import java.util.List;
@@ -54,6 +55,8 @@ public interface ShoppingCartService {
      * @return
      */
     ShoppingCart findById(Integer id, Author author);
+
+    ShoppingCart findByAuthorAndProduct(Author author, MallProduct product);
 
     /**
      * 根据 ID列表 和 当前登录用户 查找勾选的购物车货品信息

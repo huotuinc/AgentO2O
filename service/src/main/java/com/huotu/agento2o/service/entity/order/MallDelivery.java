@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.entity.order;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
@@ -54,12 +55,17 @@ public class MallDelivery {
     private double freight;//物流费用
     //    private String remark;//备注
     @ManyToOne
-    @JoinColumn(name = "Agent_Id")
+    @JoinColumn(name = "Agent_Shop_Id")
     private Shop shop;
+    /**
+     * 代理商发货类型，默认为0或者空，
+     */
+    @Column(name = "Agent_Shop_Type")
+    private OrderEnum.ShipMode agentShopType;
 
-    @ManyToOne
-    @JoinColumn(name = "Beneficiary_Agent_id")
-    private Shop beneficiaryShop;
+//    @ManyToOne
+//    @JoinColumn(name = "Beneficiary_Agent_id")
+//    private Shop beneficiaryShop;
 
     //    private String dicDeliverItemsStr;//发货数量序列化字段（货品id,发货数量|货品id,发货数量）
     @Column(name = "T_Begin")

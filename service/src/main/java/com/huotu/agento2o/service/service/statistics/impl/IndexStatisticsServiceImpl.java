@@ -29,7 +29,9 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/10.
@@ -49,10 +51,13 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int orderCountByDate(Author author, Date start, Date end) {
+        List<OrderEnum.ShipMode> agentShopTypeList = new ArrayList<>();
+        agentShopTypeList.add(OrderEnum.ShipMode.SHOP_DELIVERY);
+        agentShopTypeList.add(OrderEnum.ShipMode.PLATFORM_DELIVERY);
         if (author instanceof Shop) {
-            return orderRepository.countByShop_IdOrBeneficiaryShop_IdAndCreateTimeBetween(author.getId(), author.getId(), start, end);
+            return orderRepository.countByShop_IdAndAgentShopTypeInAndShop_IdAndCreateTimeBetween(author.getId(), agentShopTypeList, start, end);
         } else {
-            return orderRepository.countByShop_ParentAuthor_IdAndBeneficiaryShop_ParentAuthor_IdAndCreateTimeBetween(author.getId(), author.getId(), start, end);
+            return orderRepository.countByShop_ParentAuthor_IdAndAgentShopTypeInAndCreateTimeBetween(author.getId(), agentShopTypeList, start, end);
         }
     }
 
@@ -126,7 +131,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         Date yesterdayStart = Jsr310Converters.LocalDateTimeToDateConverter.INSTANCE.convert(nowDate.minusDays(1).atStartOfDay());
         Date yesterdayEnd = todayStart;
         //代理商显示采购单信息
-        if (author instanceof Agent) {
+        if (author != null && author.getType() == Agent.class) {
             indexStatistics.setAgent(true);
             //今日下级采购单数，昨日下级采购单数
             indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author.getId(), todayStart, todayEnd));
@@ -144,9 +149,11 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
             //待审核退货单
             indexStatistics.setToCheckReturnedOrderCount(checkingReturnedOrderCount(author.getId()));
             indexStatistics.setToReceiveReturnedOrderCount(toReceiveReturnedOrderCount(author.getId()));
-        } else if (author instanceof Shop) {
+            indexStatistics.setProductNotifyCount(agentProductRepository.countByWarningAgentInfo(author.getId()));
+        } else if (author != null && author.getType() ==  Shop.class) {
             indexStatistics.setAgent(false);
             indexStatistics.setToCheckSettlementCount(toCheckSettlementCount(author.getId()));
+            indexStatistics.setProductNotifyCount(agentProductRepository.countByWarningShopInfo(author.getId()));
         }
         //订单相关
         //今日订单数，昨日订单数
@@ -166,7 +173,6 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         //待确认收货采购单数
         indexStatistics.setToReceivePurchaseOrderCount(toReceivePurchaseOrderCount(author.getId()));
         indexStatistics.setToDeliveryReturnedOrderCount(unDeliveryReturnedOrderCount(author.getId()));
-        indexStatistics.setProductNotifyCount(agentProductRepository.countByWaringAgentInfo(author.getId()));
         return indexStatistics;
     }
 }

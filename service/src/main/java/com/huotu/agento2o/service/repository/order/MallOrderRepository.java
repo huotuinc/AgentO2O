@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by allan on 12/31/15.
@@ -36,25 +37,25 @@ public interface MallOrderRepository extends JpaRepository<MallOrder, String>, J
      * 按日期统计由门店发货或受益方为门店的订单数
      *
      * @param shopId
-     * @param beneficialShopId
+     * @param agentShopTypeList
      * @param start
      * @param end
      * @return
      */
-    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.shop.id = ?1 or a.beneficiaryShop.id = ?2) and a.createTime between ?3 and ?4")
-    int countByShop_IdOrBeneficiaryShop_IdAndCreateTimeBetween(Integer shopId, Integer beneficialShopId, Date start, Date end);
+    @Query("SELECT COUNT(a) FROM MallOrder a WHERE a.shop.id = ?1 and a.agentShopType in ?2 and a.createTime between ?3 and ?4")
+    int countByShop_IdAndAgentShopTypeInAndShop_IdAndCreateTimeBetween(Integer shopId, List<OrderEnum.ShipMode> agentShopTypeList, Date start, Date end);
 
     /**
      * 按日期统计由下级门店发货或受益方为下级门店的订单数
      *
      * @param agentId
-     * @param beneficialShopAgentId
+     * @param agentShopTypeList
      * @param start
      * @param end
      * @return
      */
-    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.shop.agent.id = ?1 or a.beneficiaryShop.agent.id = ?2) and a.createTime between ?3 and ?4")
-    int countByShop_ParentAuthor_IdAndBeneficiaryShop_ParentAuthor_IdAndCreateTimeBetween(Integer agentId, Integer beneficialShopAgentId, Date start, Date end);
+    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.shop.agent.id = ?1 or a.agentShopType in ?2) and a.createTime between ?3 and ?4")
+    int countByShop_ParentAuthor_IdAndAgentShopTypeInAndCreateTimeBetween(Integer agentId, List<OrderEnum.ShipMode> agentShopTypeList, Date start, Date end);
 
     /**
      * 按日期统计门店待发货订单数

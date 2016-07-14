@@ -56,9 +56,18 @@ public class MallAfterSales {
     private String productImg;
     @Column(name = "Pay_Status")
     private OrderEnum.PayStatus payStatus;
-    @JoinColumn(name = "Agent_Id")
+    /**
+     * 发货代理商或收益代理商
+     */
+    @JoinColumn(name = "Agent_Shop_Id")
     @ManyToOne
     private Shop shop;
+    /**
+     * 代理商发货类型，默认为0或者空，
+     */
+    @Column(name = "Agent_Shop_Type")
+    private OrderEnum.ShipMode agentShopType;
+
     @Column(name = "Apply_Type")
     private AfterSaleEnum.AfterSaleType afterSaleType;
     @Column(name = "Apply_Reason")
@@ -73,13 +82,9 @@ public class MallAfterSales {
     private double cptCold;
     @Column(name = "Apply_Mobile")
     private String applyMobile;
-
-    /**
-     *拆单时的受益方
-     */
-    @JoinColumn(name = "Beneficiary_Agent_id")
-    @ManyToOne
-    private Shop beneficiaryShop;
+//    @JoinColumn(name = "Beneficiary_Agent_id")
+//    @ManyToOne
+//    private Shop beneficiaryShop;
 
     public boolean refundable() {
         if (afterSaleType == AfterSaleEnum.AfterSaleType.REFUND) {

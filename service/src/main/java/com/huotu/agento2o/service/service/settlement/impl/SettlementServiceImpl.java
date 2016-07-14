@@ -297,7 +297,7 @@ public class SettlementServiceImpl implements SettlementService {
         //分销商和门店均审核通过
         Shop shop = settlement.getShop();
         if (customerSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED && authorSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED) {
-            Account shopAccount = accountRepository.findByAuthor(shop);
+            Account shopAccount = accountRepository.findByShop(shop);
             //审核通过，待提货款增加
             shopAccount.setBalance((double) Math.round((shopAccount.getBalance() + settlement.getFinalAmount()) * 100) / 100);
             accountRepository.save(shopAccount);

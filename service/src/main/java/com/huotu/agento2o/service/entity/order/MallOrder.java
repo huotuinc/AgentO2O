@@ -109,7 +109,7 @@ public class MallOrder {
     /**
      * 代理商id
      */
-    @JoinColumn(name = "Agent_Id")
+    @JoinColumn(name = "Agent_Shop_Id")
     @ManyToOne
     private Shop shop;
     /**
@@ -156,11 +156,13 @@ public class MallOrder {
     private List<MallOrderItem> orderItems;
 
     /**
-     *拆单时的受益方
+     * 代理商发货类型，默认为0或者空，
      */
-    @JoinColumn(name = "Beneficiary_Agent_id")
-    @ManyToOne
-    private Shop beneficiaryShop;
+    @Column(name = "Agent_Shop_Type")
+    private OrderEnum.ShipMode agentShopType;
+//    @JoinColumn(name = "Beneficiary_Agent_id")
+//    @ManyToOne
+//    private Shop beneficiaryShop;
 
     /**
      * Is_Tax  Is_Protect
@@ -196,7 +198,7 @@ public class MallOrder {
     //支付状态为 已支付，部分退款
     //为可发货
     public boolean deliveryable() {
-        return shop!=null&&beneficiaryShop==null&&(shipStatus == OrderEnum.ShipStatus.NOT_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_RETURN) &&
+        return shop != null && OrderEnum.ShipMode.SHOP_DELIVERY.equals(agentShopType) && (shipStatus == OrderEnum.ShipStatus.NOT_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_RETURN) &&
                 (payStatus == OrderEnum.PayStatus.PAYED || payStatus == OrderEnum.PayStatus.PARTY_REFUND);
     }
 

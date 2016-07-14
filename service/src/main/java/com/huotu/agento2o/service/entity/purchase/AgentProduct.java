@@ -90,4 +90,13 @@ public class AgentProduct {
     @Transient
     private Integer returnedNum;
 
+    public String getAuthorName(){
+        if(this.getAgent() != null){
+            return agent.getName();
+        }else if(this.getShop() != null){
+            return shop.getName();
+        }
+        return null;
+    }
+
 }

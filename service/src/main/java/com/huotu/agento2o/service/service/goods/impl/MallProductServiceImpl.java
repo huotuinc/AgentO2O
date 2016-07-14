@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.goods.impl;
 
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
@@ -18,6 +19,8 @@ import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
+import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +37,11 @@ public class MallProductServiceImpl implements MallProductService {
     @Autowired
     private AgentProductRepository agentProductRepository;
     @Autowired
+    private AgentProductService agentProductService;
+    @Autowired
     private ShoppingCartRepository shoppingCartRepository;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 
 
     @Override
@@ -49,8 +56,8 @@ public class MallProductServiceImpl implements MallProductService {
         if (productList != null && productList.size() > 0) {
             productList.forEach(product -> {
                 //当前库存
-                AgentProduct agentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author, product);
-                ShoppingCart shoppingCart = shoppingCartRepository.findByAuthorAndProduct(author,product);
+                AgentProduct agentProduct = agentProductService.findAgentProduct(author,product);
+                ShoppingCart shoppingCart = shoppingCartService.findByAuthorAndProduct(author,product);
                 if (agentProduct != null) {
                     product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
                 }
@@ -58,12 +65,12 @@ public class MallProductServiceImpl implements MallProductService {
                     product.setShoppingStore(Math.max(0,shoppingCart.getNum()));
                 }
                 //上级可用库存
-                if(author.getParentAuthor() == null){
+                if(author.getParentAgent() == null){
                     //平台方商品
                     product.setUsableStore(product.getStore() - product.getFreez());
                     agentProductList.add(product);
                 }else{
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAuthorAndProductAndDisabledFalse(author.getParentAuthor(), product);
+                    AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), product);
                     if (parentAgentProduct != null) {
                         product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
                         agentProductList.add(product);
