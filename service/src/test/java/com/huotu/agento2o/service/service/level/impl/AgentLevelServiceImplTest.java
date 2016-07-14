@@ -104,9 +104,10 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         result = agentLevelService.deleteAgentLevel(-1, mockCustomer.getCustomerId());
         Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultMsg(), result.getMsg());
         mockAgentLevel = mockAgentLevel(mockCustomer);
-        Agent agent = mockAgent(mockCustomer, null);
-        agent.setAgentLevel(mockAgentLevel);
-        agentService.addAgent(agent);
+        MallCustomer agent = mockAgent(mockCustomer, null);
+        agent.getAgent().setAgentLevel(mockAgentLevel);
+        customerService.newCustomer(agent);
+//        agentService.addAgent(agent);
         result = agentLevelService.deleteAgentLevel(mockAgentLevel.getLevelId(), mockCustomer.getCustomerId());
         Assert.assertEquals("等级已被绑定", result.getMsg());
     }

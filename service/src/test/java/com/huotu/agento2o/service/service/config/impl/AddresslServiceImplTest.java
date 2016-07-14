@@ -37,7 +37,7 @@ public class AddresslServiceImplTest extends CommonTestBase {
 
     private Address mockAddress;
 
-    private Agent mockAgent;
+    private MallCustomer mockAgent;
 
     @Before
     public void init() {
@@ -48,25 +48,23 @@ public class AddresslServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindById() throws Exception {
-        Address address = addressService.findById(mockAddress.getId(), mockAgent.getId());
+        Address address = addressService.findById(mockAddress.getId(), mockAgent);
         Assert.assertNotNull(address);
-        address = addressService.findById(null, mockAgent.getId());
+        address = addressService.findById(null, mockAgent);
         Assert.assertNull(address);
         address = addressService.findById(mockAddress.getId(), null);
         Assert.assertNull(address);
         address = addressService.findById(null, null);
         Assert.assertNull(address);
-        address = addressService.findById(-1, -1);
+        address = addressService.findById(-1, null);
         Assert.assertNull(address);
     }
 
     @Test
     public void testFindAddressByAuthorId() throws Exception {
-        List<Address> addressList = addressService.findAddressByAuthorId(mockAgent.getId());
+        List<Address> addressList = addressService.findAddressByAuthorId(mockAgent);
         Assert.assertTrue(addressList.size() > 0);
         addressList = addressService.findAddressByAuthorId(null);
-        Assert.assertTrue(addressList.size() == 0);
-        addressList = addressService.findAddressByAuthorId(-1);
         Assert.assertTrue(addressList.size() == 0);
     }
 
@@ -74,28 +72,26 @@ public class AddresslServiceImplTest extends CommonTestBase {
     public void testAddOrUpdate() throws Exception {
         Address requestAddress = new Address();
         requestAddress.setReceiver(UUID.randomUUID().toString());
-        ApiResult result = addressService.addOrUpdate(mockAddress.getId(), mockAgent.getId(), requestAddress);
+        ApiResult result = addressService.addOrUpdate(mockAddress.getId(), mockAgent, requestAddress);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.SUCCESS.getResultMsg()));
-        Assert.assertEquals(requestAddress.getReceiver(), addressService.findById(mockAddress.getId(), mockAgent.getId()).getReceiver());
-        result = addressService.addOrUpdate(mockAddress.getId(), -1, requestAddress);
+        Assert.assertEquals(requestAddress.getReceiver(), addressService.findById(mockAddress.getId(), mockAgent).getReceiver());
+        result = addressService.addOrUpdate(mockAddress.getId(), null, requestAddress);
         Assert.assertTrue(result.getMsg().equals("该账号已失效"));
-        result = addressService.addOrUpdate(null, -1, requestAddress);
+        result = addressService.addOrUpdate(null, null, requestAddress);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
-        result = addressService.addOrUpdate(mockAddress.getId()+1, mockAgent.getId(), requestAddress);
+        result = addressService.addOrUpdate(mockAddress.getId()+1, mockAgent, requestAddress);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
     }
 
     @Test
     public void testDeleteAddress() throws Exception {
-        ApiResult result = addressService.deleteAddress(mockAddress.getId(),mockAgent.getId());
+        ApiResult result = addressService.deleteAddress(mockAddress.getId(),mockAgent);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.SUCCESS.getResultMsg()));
-        Address address = addressService.findById(mockAddress.getId(), mockAgent.getId());
+        Address address = addressService.findById(mockAddress.getId(), mockAgent);
         Assert.assertNull(address);
-        result = addressService.deleteAddress(null,mockAgent.getId());
+        result = addressService.deleteAddress(null,mockAgent);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
-        result = addressService.deleteAddress(-1,mockAgent.getId());
-        Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
-        result = addressService.deleteAddress(mockAddress.getId(),-1);
+        result = addressService.deleteAddress(-1,mockAgent);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
         result = addressService.deleteAddress(mockAddress.getId(),null);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
@@ -103,17 +99,15 @@ public class AddresslServiceImplTest extends CommonTestBase {
 
     @Test
     public void testConfigDefault() throws Exception {
-        Address address = addressService.findById(mockAddress.getId(), mockAgent.getId());
+        Address address = addressService.findById(mockAddress.getId(), mockAgent);
         Assert.assertTrue(!address.isDefault());
-        ApiResult result = addressService.configDefault(mockAddress.getId(), mockAgent.getId());
+        ApiResult result = addressService.configDefault(mockAddress.getId(), mockAgent);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.SUCCESS.getResultMsg()));
-        address = addressService.findById(mockAddress.getId(), mockAgent.getId());
+        address = addressService.findById(mockAddress.getId(), mockAgent);
         Assert.assertTrue(address.isDefault());
-        result = addressService.configDefault(null, mockAgent.getId());
+        result = addressService.configDefault(null, mockAgent);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
-        result = addressService.configDefault(-1, mockAgent.getId());
-        Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
-        result = addressService.configDefault(mockAddress.getId(), -1);
+        result = addressService.configDefault(-1, mockAgent);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
         result = addressService.configDefault(mockAddress.getId(), null);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));

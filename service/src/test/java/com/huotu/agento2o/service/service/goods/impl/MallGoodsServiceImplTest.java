@@ -41,7 +41,7 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
         //平台方
         MallCustomer mockCustomer = mockMallCustomer();
         //代理商
-        Agent mockAgent = mockAgent(mockCustomer,null);
+        MallCustomer mockAgent = mockAgent(mockCustomer,null);
         MallGoods goods = mockMallGoods(mockCustomer.getCustomerId(),null);
         GoodsSearcher searcher = new GoodsSearcher();
         searcher.setPageNo(1);
@@ -56,14 +56,14 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
         //平台方
         MallCustomer mockCustomer = mockMallCustomer();
         //代理商
-        Agent parentMockAgent = mockAgent(mockCustomer,null);
-        Agent mockAgent = mockAgent(mockCustomer,parentMockAgent);
+        MallCustomer parentMockAgent = mockAgent(mockCustomer,null);
+        MallCustomer mockAgent = mockAgent(mockCustomer,parentMockAgent.getAgent());
         //平台方商品
         MallGoods mockGoods = mockMallGoods(mockCustomer.getCustomerId(),null);
         //平台方货品
         MallProduct mockProduct = mockMallProduct(mockGoods);
         //代理商货品
-        AgentProduct mockAgentProduct = mockAgentProduct(mockProduct,parentMockAgent);
+        AgentProduct mockAgentProduct = mockAgentProduct(mockProduct,parentMockAgent.getAgent());
         GoodsSearcher searcher = new GoodsSearcher();
         searcher.setPageNo(1);
         Page<MallGoods> agentGoodsList = mallGoodsService.findByAgentId(mockAgent,searcher);

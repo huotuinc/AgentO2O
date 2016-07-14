@@ -221,10 +221,11 @@ public abstract class CommonTestBase {
         mallOrder.setIsTax(0);
         mallOrder.setIsProtect(0);
         mallOrder.setCreateTime(new Date());
+        mallOrder.setShop(shop);
         if (random.nextInt() % 2 == 0)
-            mallOrder.setShop(shop);
+            mallOrder.setAgentShopType(OrderEnum.ShipMode.SHOP_DELIVERY);
         else
-            mallOrder.setBeneficiaryShop(shop);
+            mallOrder.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);
         return orderRepository.saveAndFlush(mallOrder);
 
     }
@@ -236,10 +237,11 @@ public abstract class CommonTestBase {
         MallAfterSales mallAfterSales = new MallAfterSales();
         mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setCreateTime(new Date());
+        mallAfterSales.setShop(shop);
         if (random.nextInt() % 2 == 0)
-            mallAfterSales.setShop(shop);
+            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.SHOP_DELIVERY);
         else
-            mallAfterSales.setBeneficiaryShop(shop);
+            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);
         mallAfterSales.setAfterSaleStatus(AfterSaleEnum.AfterSaleStatus.APPLYING);
         mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
         mallAfterSales.setAfterSaleType(AfterSaleEnum.AfterSaleType.REFUND);

@@ -35,9 +35,9 @@ public class MallAfterSalesServiceImplTest extends CommonTestBase {
     //平台方
     private MallCustomer mockCustomer;
     //一级代理商
-    private Agent mockFirstLevelAgent;
+    private MallCustomer mockFirstLevelAgent;
     //二级代理商
-    private Agent mockSecondLevelAgent;
+    private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
     private Shop mockFirstLevelShop;
     //二级代理商下级门店1,门店2
@@ -58,10 +58,10 @@ public class MallAfterSalesServiceImplTest extends CommonTestBase {
         //用户相关
         mockCustomer = mockMallCustomer();
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockFirstLevelAgent);
-        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent);
-        mockSecondLevelShopOne = mockShop(mockSecondLevelAgent);
-        mockSecondLevelShopTwo = mockShop(mockSecondLevelAgent);
+        mockFirstLevelShop = mockShop(mockFirstLevelAgent.getAgent());
+        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockSecondLevelShopOne = mockShop(mockSecondLevelAgent.getAgent());
+        mockSecondLevelShopTwo = mockShop(mockSecondLevelAgent.getAgent());
 
         //二级代理商下级门店1的售后单
         for (int i = 0; i <= random.nextInt(10) + 1; i++) {
