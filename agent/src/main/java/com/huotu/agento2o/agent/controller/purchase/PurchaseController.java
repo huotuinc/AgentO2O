@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import java.util.Date;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class PurchaseController {
         Page<MallGoods> goodsPage;
         //如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
         // TODO: 2016/5/17 代理商/门店进货价读取
-        if (author.getType() == Agent.class && author.getParentAgent() == null) {
+        if (author != null && author.getType() == Agent.class && author.getParentAgent() == null) {
             goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), author, goodsSearcher);
         } else {
             goodsPage = goodsService.findByAgentId(author, goodsSearcher);
@@ -166,10 +167,10 @@ public class PurchaseController {
 
         //增加购物车记录
         ShoppingCart cart = new ShoppingCart();
-        if(author.getType() == Agent.class){
+        if (author != null && author.getType() == Agent.class) {
             cart.setAgent(((MallCustomer)author).getAgent());
             cart.setShop(null);
-        }else if(author.getType() == Shop.class){
+        } else if (author != null && author.getType() == Shop.class) {
             cart.setAgent(null);
             cart.setShop((Shop)author);
         }

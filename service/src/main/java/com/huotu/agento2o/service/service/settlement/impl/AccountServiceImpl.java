@@ -15,7 +15,6 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.WithdrawEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -54,9 +53,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account findByAuthor(Author author) {
         Account account = null;
-        if(author.getType() == Agent.class){
+        if (author != null && author.getType() == Agent.class) {
             account = accountRepository.findByAgent(author.getAuthorAgent());
-        }else if(author.getType() == Shop.class){
+        } else if (author != null && author.getType() == Shop.class) {
             account = accountRepository.findByShop(author.getAuthorShop());
         }
         if (account == null) {

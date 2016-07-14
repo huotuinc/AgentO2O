@@ -5,15 +5,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.util.*;
+import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.purchase.*;
+import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
+import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
-import com.huotu.agento2o.service.service.author.AuthorService;
+import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
@@ -58,7 +66,9 @@ public class AgentReturnedOrderController {
     @Autowired
     private MallProductService mallProductService;
     @Autowired
-    private AuthorService authorService;
+    private AgentService agentService;
+    @Autowired
+    private ShopService shopService;
 
     @Autowired
     private AgentDeliveryService agentDeliveryService;
@@ -313,7 +323,8 @@ public class AgentReturnedOrderController {
         searchCondition.setParentAgentId(agent.getId());
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
 
-        List<Author> authorList = authorService.findByParentAgentId(agent);
+        List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
+        List<Shop> shopList = shopService.findByAgentId(agent.getId());
 
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/returned/agent_return_order_list");
@@ -330,7 +341,8 @@ public class AgentReturnedOrderController {
         model.addObject("searchCondition", searchCondition);
         model.addObject("pageIndex", searchCondition.getPageIndex());
         model.addObject("authorType", agent.getClass().getSimpleName());
-        model.addObject("authorList",authorList);
+        model.addObject("agentList", agentList);
+        model.addObject("shopList", shopList);
         return model;
     }
 

@@ -1,8 +1,7 @@
 package com.huotu.agento2o.service.searchable;
 
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Agent;
 import lombok.Data;
 
 /**
@@ -23,7 +22,7 @@ public class ShopSearchCondition {
     private String city;
     private String district;
     private int status = -1;
-    private Author parentAuthor;
+    private Agent parentAuthor;
 
     /**
      * list 平台门店管理列表

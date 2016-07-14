@@ -33,7 +33,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,9 +99,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
 
     public AgentProduct getAgentProduct(Author author, MallProduct product){
         AgentProduct agentProduct = null;
-        if(author.getType() == Agent.class){
+        if (author != null && author.getType() == Agent.class) {
             agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse((Agent) author,product);
-        }else if(author.getType() == Shop.class){
+        } else if (author != null && author.getType() == Shop.class) {
             agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse((Shop) author,product);
         }
         return agentProduct;
@@ -107,9 +109,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
 
     public ShoppingCart getShoppingCart(Author author,MallProduct product){
         ShoppingCart shoppingCart  = null;
-        if(author.getType() == Agent.class){
+        if (author != null && author.getType() == Agent.class) {
             shoppingCart = shoppingCartRepository.findByAgentAndProduct((Agent) author,product);
-        }else if(author.getType() == Shop.class){
+        } else if (author != null && author.getType() == Shop.class) {
             shoppingCart = shoppingCartRepository.findByShopAndProduct((Shop) author,product);
         }
         return shoppingCart;

@@ -11,13 +11,10 @@ package com.huotu.agento2o.service.service.config.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
-import com.huotu.agento2o.service.repository.author.AgentRepository;
-import com.huotu.agento2o.service.repository.author.AuthorRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.config.AddressService;
@@ -41,9 +38,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<Address> findAddressByAuthorId(Author author) {
-        if(Agent.class == author.getType()){
+        if (author != null && Agent.class == author.getType()) {
             return addressRepository.findByAgent_Id(author.getId());
-        }else if(Shop.class == author.getType()){
+        } else if (author != null && Shop.class == author.getType()) {
            return addressRepository.findByShop_Id(author.getId());
         }
         return null;
@@ -63,9 +60,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address findDefaultByAuthorId(Author requestAuthor) {
-        if(Agent.class == requestAuthor.getType()){
+        if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
             return addressRepository.findByAgent_IdAndIsDefaultTrue(requestAuthor.getId());
-        }else if(Shop.class == requestAuthor.getType()){
+        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
             return addressRepository.findByShop_IdAndIsDefaultTrue(requestAuthor.getId());
         }
         return null;

@@ -14,7 +14,6 @@ import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.SerialNo;
-import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.*;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -80,10 +79,6 @@ public abstract class CommonTestBase extends SpringWebTest {
     @Autowired
     protected MallCustomerService customerService;
     @Autowired
-    private AgentService agentService;
-    @Autowired
-    private ShopService shopService;
-    @Autowired
     protected ShoppingCartRepository shoppingCartRepository;
     @Autowired
     protected MallGoodsRepository goodsRepository;
@@ -99,7 +94,14 @@ public abstract class CommonTestBase extends SpringWebTest {
     protected InvoiceConfigRepository invoiceConfigRepository;
     @Autowired
     protected MallGoodsTypeRepository goodsTypeRepository;
-
+    //标准类目 羽绒服
+    protected MallGoodsType standardGoodsType;
+    @Autowired
+    protected MallOrderRepository orderRepository;
+    @Autowired
+    private AgentService agentService;
+    @Autowired
+    private ShopService shopService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -108,21 +110,14 @@ public abstract class CommonTestBase extends SpringWebTest {
     private MallAfterSalesRepository mallAfterSalesRepository;
     @Autowired
     private AgentLevelService agentLevelService;
-    //标准类目 羽绒服
-    protected MallGoodsType standardGoodsType;
-
     @Autowired
     private AddressRepository addressRepository;
-
     @Autowired
     private AgentReturnOrderRepository agentReturnedOrderRepository;
-
     @Autowired
     private AgentReturnOrderItemRepository agentReturnedOrderItemRepository;
-
     @Autowired
     private MallOrderItemRepository mallOrderItemRepository;
-
     @Autowired
     private MallProductRepository mallProductRepository;
     @Autowired
@@ -132,9 +127,6 @@ public abstract class CommonTestBase extends SpringWebTest {
     public void initBase() {
         standardGoodsType = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId("50011167", -1);
     }
-
-    @Autowired
-    protected MallOrderRepository orderRepository;
 
     protected MockHttpSession loginAs(String userName, String password, String roleType) throws Exception {
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
@@ -337,7 +329,12 @@ public abstract class CommonTestBase extends SpringWebTest {
             invoiceConfig.setBankName(UUID.randomUUID().toString());
         }
         invoiceConfig.setDefaultType(1);
-        InvoiceConfig otherInvoiceConfig = invoiceConfigRepository.findByAuthorAndDefaultType(author, 1);
+        InvoiceConfig otherInvoiceConfig = null;
+        if (author != null && Agent.class == author.getType()) {
+            otherInvoiceConfig = invoiceConfigRepository.findByAgentAndDefaultType(author.getAuthorAgent(), 1);
+        } else if (author != null && Shop.class == author.getType()) {
+            otherInvoiceConfig = invoiceConfigRepository.findByShopAndDefaultType(author.getAuthorShop(), 1);
+        }
         if (otherInvoiceConfig != null) {
             otherInvoiceConfig.setDefaultType(0);
             invoiceConfigRepository.save(otherInvoiceConfig);

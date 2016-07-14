@@ -61,6 +61,9 @@ public class MallCustomer implements Author{
     @Column(name = "SC_DeveloperUrl")
     private String developerUrl;
 
+    @Column(name = "SC_developerToken")
+    private String developerToken;
+
     @Column(name = "SC_TYPE")
     private Integer type;
 

@@ -12,12 +12,9 @@ package com.huotu.agento2o.service.service.config.impl;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.config.Address;
-import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.config.AddressService;
-import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +34,7 @@ public class AddresslServiceImplTest extends CommonTestBase {
 
     private Address mockAddress;
 
-    private Agent mockAgent;
+    private MallCustomer mockAgent;
 
     @Before
     public void init() {
@@ -48,21 +45,21 @@ public class AddresslServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindById() throws Exception {
-        Address address = addressService.findById(mockAddress.getId(), mockAgent.getId());
+        Address address = addressService.findById(mockAddress.getId(), mockAgent);
         Assert.assertNotNull(address);
-        address = addressService.findById(null, mockAgent.getId());
+        address = addressService.findById(null, mockAgent);
         Assert.assertNull(address);
         address = addressService.findById(mockAddress.getId(), null);
         Assert.assertNull(address);
         address = addressService.findById(null, null);
         Assert.assertNull(address);
-        address = addressService.findById(-1, -1);
+        address = addressService.findById(-1, null);
         Assert.assertNull(address);
     }
 
     @Test
     public void testFindAddressByAuthorId() throws Exception {
-        List<Address> addressList = addressService.findAddressByAuthorId(mockAgent.getId());
+        List<Address> addressList = addressService.findAddressByAuthorId(mockAgent);
         Assert.assertTrue(addressList.size() > 0);
         addressList = addressService.findAddressByAuthorId(null);
         Assert.assertTrue(addressList.size() == 0);
