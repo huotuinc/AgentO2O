@@ -213,9 +213,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             MallProduct product = agentReturnedOrderItem.getProduct();
             Integer num = agentReturnedOrderItem.getNum();
             AgentProduct agentProduct = null;
-            if(author.getType() == Agent.class){
+            if (author != null && author.getType() == Agent.class) {
                 agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
-            }else if(author.getType() == Shop.class){
+            } else if (author != null && author.getType() == Shop.class) {
                 agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),product);
             }
             agentProduct.setFreez(agentProduct.getFreez() - num);

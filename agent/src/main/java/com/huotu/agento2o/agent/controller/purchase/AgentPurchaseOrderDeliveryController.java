@@ -14,10 +14,12 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
-import com.huotu.agento2o.service.service.author.AuthorService;
+import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,9 @@ public class AgentPurchaseOrderDeliveryController {
     @Autowired
     private AgentDeliveryService agentDeliveryService;
     @Autowired
-    private AuthorService authorService;
+    private AgentService agentService;
+    @Autowired
+    private ShopService shopService;
 
     /**
      * 显示发货单
@@ -100,8 +104,8 @@ public class AgentPurchaseOrderDeliveryController {
         deliverySearcher.setParentAgentId(agent.getId());
         Page page = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher);
         int totalPages = page.getTotalPages();
-        List<Author> authorList = authorService.findByParentAgentId(agent);
-
+        List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
+        List<Shop> shopList = shopService.findByAgentId(agent.getId());
         modelAndView.addObject("purchaseDeliveryList",page.getContent());
         modelAndView.addObject("totalPages",totalPages);
         modelAndView.addObject("totalRecords",page.getTotalElements());
@@ -109,7 +113,8 @@ public class AgentPurchaseOrderDeliveryController {
         modelAndView.addObject("deliverySearcher",deliverySearcher);
         modelAndView.addObject("pageIndex",deliverySearcher.getPageIndex());
         modelAndView.addObject("authorType", agent.getClass().getSimpleName());
-        modelAndView.addObject("authorList",authorList);
+        modelAndView.addObject("agentList", agentList);
+        modelAndView.addObject("shopList", shopList);
 
         return modelAndView;
     }
@@ -129,8 +134,8 @@ public class AgentPurchaseOrderDeliveryController {
         deliverySearcher.setParentAgentId(agent.getId());
         Page page = agentDeliveryService.showReturnDeliveryList(deliverySearcher);
         int totalPages = page.getTotalPages();
-        List<Author> authorList = authorService.findByParentAgentId(agent);
-
+        List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
+        List<Shop> shopList = shopService.findByAgentId(agent.getId());
         modelAndView.addObject("purchaseDeliveryList",page.getContent());
         modelAndView.addObject("totalPages",totalPages);
         modelAndView.addObject("totalRecords",page.getTotalElements());
@@ -138,7 +143,8 @@ public class AgentPurchaseOrderDeliveryController {
         modelAndView.addObject("deliverySearcher",deliverySearcher);
         modelAndView.addObject("pageIndex",deliverySearcher.getPageIndex());
         modelAndView.addObject("authorType", agent.getClass().getSimpleName());
-        modelAndView.addObject("authorList",authorList);
+        modelAndView.addObject("agentList", agentList);
+        modelAndView.addObject("shopList", shopList);
 
         return modelAndView;
     }

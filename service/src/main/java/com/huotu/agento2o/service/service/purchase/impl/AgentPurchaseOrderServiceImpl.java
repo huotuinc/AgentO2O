@@ -10,7 +10,6 @@
 
 package com.huotu.agento2o.service.service.purchase.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
@@ -24,7 +23,6 @@ import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
-import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
@@ -42,8 +40,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -156,9 +152,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         List<ShoppingCart> shoppingCartList = new ArrayList<>();
         for (String shoppingCartId : shoppingCartIds) {
             ShoppingCart shoppingCart = null;
-            if (author.getType() == Agent.class) {
+            if (author != null && author.getType() == Agent.class) {
                 shoppingCart = shoppingCartRepository.findByIdAndAgent(Integer.valueOf(shoppingCartId), author.getAuthorAgent());
-            } else if (author.getType() == Shop.class) {
+            } else if (author != null && author.getType() == Shop.class) {
                 shoppingCart = shoppingCartRepository.findByIdAndShop(Integer.valueOf(shoppingCartId), author.getAuthorShop());
             }
             if (shoppingCart == null) {
@@ -310,9 +306,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         }
         for (AgentPurchaseOrderItem item : agentPurchaseOrder.getOrderItemList()) {
             AgentProduct agentProduct = null;
-            if(author.getType() == Agent.class){
+            if (author != null && author.getType() == Agent.class) {
                 agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(),item.getProduct());
-            }else if(author.getType() == Shop.class){
+            } else if (author != null && author.getType() == Shop.class) {
                 agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),item.getProduct());
             }
             MallProduct product = item.getProduct();

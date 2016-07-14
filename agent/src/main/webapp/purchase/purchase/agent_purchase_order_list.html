@@ -74,8 +74,14 @@
                         <label class="first ">下级代理商/门店：</label>
                         <select name="agentId" id="agentId">
                             <option selected="selected"  value="0"  th:selected="*{agentId == 0}">==所有==</option>
-                            <!--/*@thymesVar id="authorList" type="java.util.List<com.huotu.agento2o.service.entity.author.Author>"*/-->
-                            <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == purchaseOrderSearcher.agentId}">代理商/门店</option>
+                            <!--/*@thymesVar id="agentList" type="java.util.List<com.huotu.agento2o.service.entity.author.Agent>"*/-->
+                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
+                            <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}"
+                                    th:selected="${agent.id == purchaseOrderSearcher.agentId}">代理商
+                            </option>
+                            <option th:each="shop:${shopList}" th:value="${shop.id}" th:text="${shop.name}"
+                                    th:selected="${shop.id == purchaseOrderSearcher.agentId}">门店
+                            </option>
                         </select>
                         <br/>
                         <br/>

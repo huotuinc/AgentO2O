@@ -24,4 +24,6 @@ public interface MallCustomerService extends UserDetailsService {
     int resetPassword(Integer customerId, String password);
 
     MallCustomer findByUserName(String userName);
+
+    MallCustomer save(MallCustomer mallCustomer);
 }

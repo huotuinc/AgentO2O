@@ -19,7 +19,6 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
@@ -75,6 +74,11 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public Shop findByIdAndParentAuthor(Integer shopId, Agent agent) {
         return shopId == null || agent == null ? null : shopRepository.findByIdAndParentAuthor(shopId, agent);
+    }
+
+    @Override
+    public List<Shop> findByAgentId(Integer agentId) {
+        return shopRepository.findByAgent_Id(agentId);
     }
 
     @Override
@@ -320,13 +324,13 @@ public class ShopServiceImpl implements ShopService {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + searchCondition.getName() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getProvince())) {
-                predicates.add(cb.like(root.get("province").as(String.class), "%" + searchCondition.getProvince() + "%"));
+                predicates.add(cb.like(root.get("provinceCode").as(String.class), "%" + searchCondition.getProvince() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getCity())) {
-                predicates.add(cb.like(root.get("city").as(String.class), "%" + searchCondition.getCity() + "%"));
+                predicates.add(cb.like(root.get("cityCode").as(String.class), "%" + searchCondition.getCity() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getDistrict())) {
-                predicates.add(cb.like(root.get("district").as(String.class), "%" + searchCondition.getDistrict() + "%"));
+                predicates.add(cb.like(root.get("districtCode").as(String.class), "%" + searchCondition.getDistrict() + "%"));
             }
             if (searchCondition.getStatus() != -1) {
                 predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, searchCondition.getStatus())));
@@ -335,27 +339,27 @@ public class ShopServiceImpl implements ShopService {
 
             //上级代理商过滤条件
             if (searchCondition.getParentAuthor() != null) {
-                predicates.add(cb.equal(root.get("parentAuthor").as(Author.class), searchCondition.getParentAuthor()));
+                predicates.add(cb.equal(root.get("agent").as(Agent.class), searchCondition.getParentAuthor()));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_name())) {
-                predicates.add(cb.like(root.get("parentAuthor").get("name").as(String.class), "%" + searchCondition.getParent_name() + "%"));
+                predicates.add(cb.like(root.get("agent").get("name").as(String.class), "%" + searchCondition.getParent_name() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_username())) {
-                predicates.add(cb.like(root.get("parentAuthor").get("username").as(String.class), "%" + searchCondition.getParent_username() + "%"));
+                predicates.add(cb.like(root.get("agent").get("username").as(String.class), "%" + searchCondition.getParent_username() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_province())) {
-                predicates.add(cb.like(root.get("parentAuthor").get("province").as(String.class), "%" + searchCondition.getParent_province() + "%"));
+                predicates.add(cb.like(root.get("agent").get("provinceCode").as(String.class), "%" + searchCondition.getParent_province() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_city())) {
-                predicates.add(cb.like(root.get("parentAuthor").get("city").as(String.class), "%" + searchCondition.getParent_city() + "%"));
+                predicates.add(cb.like(root.get("agent").get("cityCode").as(String.class), "%" + searchCondition.getParent_city() + "%"));
             }
             if (!StringUtil.isEmptyStr(searchCondition.getParent_district())) {
-                predicates.add(cb.like(root.get("parentAuthor").get("district").as(String.class), "%" + searchCondition.getParent_district() + "%"));
+                predicates.add(cb.like(root.get("agent").get("districtCode").as(String.class), "%" + searchCondition.getParent_district() + "%"));
             }
 
             //等级过滤
             if (searchCondition.getParent_agentLevel() != -1) {
-                predicates.add(cb.equal(root.get("parentAuthor").get("agentLevel").get("levelId").as(Integer.class), searchCondition.getParent_agentLevel()));
+                predicates.add(cb.equal(root.get("agent").get("agentLevel").get("levelId").as(Integer.class), searchCondition.getParent_agentLevel()));
             }
 
             //平台显示列表

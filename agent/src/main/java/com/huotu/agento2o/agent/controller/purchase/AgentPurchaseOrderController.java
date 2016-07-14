@@ -20,11 +20,13 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
-import com.huotu.agento2o.service.service.author.AuthorService;
+import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -58,7 +60,9 @@ public class AgentPurchaseOrderController {
     @Autowired
     private StaticResourceService resourceService;
     @Autowired
-    private AuthorService authorService;
+    private AgentService agentService;
+    @Autowired
+    private ShopService shopService;
     @Autowired
     private AgentDeliveryService agentDeliveryService;
 
@@ -249,7 +253,8 @@ public class AgentPurchaseOrderController {
         purchaseOrderSearcher.setParentAgentId(agent.getId());
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         setPicUri(purchaseOrderPage.getContent());
-        List<Author> authorList = authorService.findByParentAgentId(agent);
+        List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
+        List<Shop> shopList = shopService.findByAgentId(agent.getId());
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", purchaseOrderSearcher.getPageIndex());
@@ -258,7 +263,8 @@ public class AgentPurchaseOrderController {
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
         model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
-        model.addObject("authorList", authorList);
+        model.addObject("agentList", agentList);
+        model.addObject("shopList", shopList);
         return model;
     }
 

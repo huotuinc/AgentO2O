@@ -31,6 +31,7 @@ import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -55,6 +56,8 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    private Random random = new Random();
 
 
     @Override
@@ -163,7 +166,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public List<Agent> findByParentAgentId(Integer agentId) {
-        return agentRepository.findByParentAuthor_id(agentId);
+        return agentRepository.findByParentAgent_Id(agentId);
     }
 
     @Override
@@ -239,6 +242,9 @@ public class AgentServiceImpl implements AgentService {
     }
 
     private MallCustomer saveMallCustomer(Agent agent) {
+        String key = StringUtil.createRandomStr(6);
+        Integer token = random.nextInt(900000) + 100000;
+        String url = String.format("http://distribute.{0}/index.aspx?key={1}&t=huotu", "", key);// TODO: 2016/7/13
         MallCustomer customer = new MallCustomer();
         customer.setAgent(agent);
         customer.setUsername(agent.getUsername());
@@ -248,9 +254,14 @@ public class AgentServiceImpl implements AgentService {
         customer.setUserActivate(1);
         customer.setRoleID(-2);
         customer.setBelongManagerID(3);
+        customer.setEmail("");
+        customer.setIsOld(1);
+        customer.setDeveloperUrl(url);
+        customer.setDeveloperToken(String.valueOf(token));
+        customer.setType(1);
+        customer.setScore(0.0);
         customer.setCityID(0);
-        // TODO: 2016/7/13
-        return customer;
+        return mallCustomerService.save(customer);
 
     }
 

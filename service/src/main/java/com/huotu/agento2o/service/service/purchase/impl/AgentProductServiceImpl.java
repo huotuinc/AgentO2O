@@ -36,9 +36,9 @@ public class AgentProductServiceImpl implements AgentProductService {
 
     @Override
     public List<AgentProduct> findByAgentId(Author author) {
-        if (author.getType() == Agent.class) {
+        if (author != null && author.getType() == Agent.class) {
             return agentProductRepository.findByAgent_IdAndDisabledFalse(author.getId());
-        } else if (author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == Shop.class) {
             return agentProductRepository.findByShop_IdAndDisabledFalse(author.getId());
         }
         return null;
@@ -51,8 +51,8 @@ public class AgentProductServiceImpl implements AgentProductService {
         if (agentProduct == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        if ((author.getType() == Agent.class && author.getId().equals(agentProduct.getAgent().getId()))
-                || (author.getType() == Shop.class && author.getId().equals(agentProduct.getShop().getId()))) {
+        if ((author != null && author.getType() == Agent.class && author.getId().equals(agentProduct.getAgent().getId()))
+                || (author != null && author.getType() == Shop.class && author.getId().equals(agentProduct.getShop().getId()))) {
             agentProduct.setWarning(warning);
             agentProductRepository.save(agentProduct);
             return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -88,9 +88,9 @@ public class AgentProductServiceImpl implements AgentProductService {
 
     @Override
     public AgentProduct findAgentProduct(Author author, MallProduct product) {
-        if (author.getType() == Agent.class) {
+        if (author != null && author.getType() == Agent.class) {
             return agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
-        } else if (author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == Shop.class) {
             return agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
         }
         return null;

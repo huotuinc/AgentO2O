@@ -32,7 +32,7 @@ public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpeci
     @Query("update Agent a set a.isDisabled = ?2 where a.id = ?1")
     int updateDisabledStatus(Integer agentId, boolean status);
 
-    List<Agent> findByParentAuthor_id(Integer authorId);
+    List<Agent> findByParentAgent_Id(Integer agentId);
 
     Agent findByUserBaseInfo_userId(Integer userId);
 }

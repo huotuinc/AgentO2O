@@ -15,20 +15,16 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.goods.MallGoods;
-import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
-import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +39,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private MallGoodsRepository goodsRepository;
     @Autowired
     private AgentProductRepository agentProductRepository;
-    @Autowired
-    private AgentProductService agentProductService;
 
 
     @Override
@@ -93,9 +87,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public List<ShoppingCart> findByAgentId(Author author) {
         List<ShoppingCart> shoppingCartList = null;
-        if (author.getType() == Agent.class) {
+        if (author != null && author.getType() == Agent.class) {
             shoppingCartList = shoppingCartRepository.findByAgent_IdOrderByCreateTimeDesc(author.getId());
-        } else if (author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == Shop.class) {
             shoppingCartList = shoppingCartRepository.findByShop_IdOrderByCreateTimeDesc(author.getId());
         }
         //设置可用库存和当前库存
@@ -121,9 +115,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCart findById(Integer id, Author author) {
-        if (author.getType() == Agent.class) {
+        if (author != null && author.getType() == Agent.class) {
             return shoppingCartRepository.findByIdAndAgent(id, author.getAuthorAgent());
-        } else if (author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == Shop.class) {
             return shoppingCartRepository.findByIdAndShop(id, author.getAuthorShop());
         }
         return null;
@@ -131,9 +125,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCart findByAuthorAndProduct(Author author, MallProduct product) {
-        if(author.getType() == Agent.class){
+        if (author != null && author.getType() == Agent.class) {
             return shoppingCartRepository.findByAgentAndProduct(author.getAuthorAgent(),product);
-        }else if(author.getType() == Shop.class){
+        } else if (author != null && author.getType() == Shop.class) {
             return shoppingCartRepository.findByShopAndProduct(author.getAuthorShop(),product);
         }
         return null;
@@ -146,9 +140,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             ShoppingCart cart = findById(p, author);
             if (cart != null) {
                 AgentProduct agentProduct = null;
-                if(author.getType() == Agent.class){
+                if (author != null && author.getType() == Agent.class) {
                     agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(cart.getAgent(),cart.getProduct());
-                }else if(author.getType() == Shop.class){
+                } else if (author != null && author.getType() == Shop.class) {
                     agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(cart.getShop(),cart.getProduct());
                 }
                 if (agentProduct != null) {

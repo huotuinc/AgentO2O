@@ -68,4 +68,9 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     public MallCustomer findByUserName(String userName) {
         return customerRepository.findByUsername(userName);
     }
+
+    @Override
+    public MallCustomer save(MallCustomer mallCustomer) {
+        return customerRepository.save(mallCustomer);
+    }
 }

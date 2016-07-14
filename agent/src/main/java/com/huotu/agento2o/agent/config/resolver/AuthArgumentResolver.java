@@ -44,6 +44,8 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 return userDetails;
             } else if (authenticationPrincipal.type() == MallCustomer.class && userDetails instanceof MallCustomer) {
                 return userDetails;
+            } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof MallCustomer) {
+                return ((MallCustomer) userDetails).getAuthorAgent();
             } else if (authenticationPrincipal.type() == null || authenticationPrincipal.type() == Author.class) {
                 return userDetails;
             }

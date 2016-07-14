@@ -9,7 +9,7 @@
   ~ 2013-2016. All rights reserved.
   ~
   -->
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8"/>
     <title>发货单列表</title>
@@ -77,7 +77,12 @@
                         <label class="first ">下级代理商/门店：</label>
                         <select name="agentId" id="agentId">
                             <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
-                            <option th:each="author:${authorList}" th:value="${author.id}" th:text="${author.name}" th:selected="${author.id == deliverySearcher.agentId}">代理商/门店</option>
+                            <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}"
+                                    th:selected="${agent.id == deliverySearcher.agentId}">代理商
+                            </option>
+                            <option th:each="shop:${shopList}" th:value="${shop.id}" th:text="${shop.name}"
+                                    th:selected="${agent.id == deliverySearcher.agentId}">门店
+                            </option>
                         </select>
 
                         <br />
