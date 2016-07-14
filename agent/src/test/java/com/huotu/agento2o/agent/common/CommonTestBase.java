@@ -15,6 +15,7 @@ import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.*;
+import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -30,6 +31,8 @@ import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.*;
+import com.huotu.agento2o.service.repository.MallCustomerRepository;
+import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
@@ -49,7 +52,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -79,6 +81,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     @Autowired
     protected MallCustomerService customerService;
     @Autowired
+    protected MallCustomerRepository customerRepository;
+    @Autowired
     protected ShoppingCartRepository shoppingCartRepository;
     @Autowired
     protected MallGoodsRepository goodsRepository;
@@ -103,7 +107,7 @@ public abstract class CommonTestBase extends SpringWebTest {
     @Autowired
     private ShopService shopService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    protected MallPasswordEncoder passwordEncoder;
     @Autowired
     private ShopRepository shopRepository;
     @Autowired
@@ -150,14 +154,10 @@ public abstract class CommonTestBase extends SpringWebTest {
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
-        MallCustomer customer = new MallCustomer();
-        customer.setNickName(UUID.randomUUID().toString());
-        customer.setUsername(UUID.randomUUID().toString());
-        customer.setPassword(passWord);
+        MallCustomer customer = mockMallCustomer();
         Agent agent = new Agent();
+        agent.setId(customer.getId());
         agent.setCustomer(mockCustomer);
-        agent.setUsername(UUID.randomUUID().toString());
-        agent.setPassword(passWord);
         agent.setName(UUID.randomUUID().toString());
         agent.setContact(UUID.randomUUID().toString());
         agent.setMobile(UUID.randomUUID().toString());
@@ -173,7 +173,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         customer.setAgent(agent);
 //        agent = agentService.addAgent(agent);
 //        agentService.flush();
-        return customerService.newCustomer(customer);
+        return customerRepository.saveAndFlush(customer);
     }
 
     protected Shop mockShop(MallCustomer mockCustomer, Agent parentAgent) {
@@ -194,8 +194,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         }
         //密码进行加密保存
         shop.setPassword(passwordEncoder.encode(shop.getPassword()));
-        shopRepository.save(shop);
-        shopRepository.flush();
+        shopRepository.saveAndFlush(shop);
         return shop;
     }
 

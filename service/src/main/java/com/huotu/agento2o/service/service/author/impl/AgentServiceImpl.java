@@ -6,6 +6,7 @@ import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +43,7 @@ public class AgentServiceImpl implements AgentService {
     private AgentRepository agentRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MallPasswordEncoder passwordEncoder;
 
     @Autowired
     private AgentLevelService agentLevelService;

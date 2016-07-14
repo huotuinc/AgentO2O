@@ -14,13 +14,18 @@ import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.repository.MallCustomerRepository;
+import com.huotu.agento2o.service.repository.author.AgentRepository;
+import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,24 +44,39 @@ public class IndexControllerTest extends CommonTestBase {
     private AgentService agentService;
     @Autowired
     private ShopService shopService;
+    @Autowired
+    private AgentRepository agentRepository;
+    @Autowired
+    private ShopRepository shopRepository;
 
     /**
-     * 用代理商账号以代理商角色登录
+     * 用代理商账号
      * @throws Exception
      */
     @Test
     public void agentLoginAsAgentTest() throws Exception{
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
+        //平台方
+        MallCustomer customer = mockMallCustomer();
+        //一级代理商
+        MallCustomer agentCustomer = new MallCustomer();
+        agentCustomer.setNickName(UUID.randomUUID().toString());
+        agentCustomer.setUsername(userName);
+        agentCustomer.setPassword(passwordEncoder.encode(password));
+        agentCustomer = customerRepository.saveAndFlush(agentCustomer);
         Agent agent = new Agent();
-        agent.setUsername(userName);
-        agent.setPassword(password);
+        agent.setId(agentCustomer.getId());
+        agent.setCustomer(customer);
         agent.setDisabled(false);
         agent.setDeleted(false);
         agent.setStatus(AgentStatusEnum.CHECKED);
-        agentService.addAgent(agent);
-        agentService.flush();
+        agentCustomer.setAgent(agent);
+        customerRepository.saveAndFlush(agentCustomer);
+//        agentService.addAgent(agent);
+//        agentService.flush();
 
+        //以代理商角色登录
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
@@ -65,88 +85,36 @@ public class IndexControllerTest extends CommonTestBase {
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
 
-    }
-
-    /**
-     * 用代理商账号以门店角色登录,返回 用户名或者密码错误
-     */
-    @Test
-    public void agentLoginAsShopTest() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Agent agent = new Agent();
-        agent.setUsername(userName);
-        agent.setPassword(password);
-        agent.setDisabled(false);
-        agent.setDeleted(false);
-        agent.setStatus(AgentStatusEnum.CHECKED);
-        agentService.addAgent(agent);
-        agentService.flush();
-
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
+        //以门店角色登录,返回 用户名或者密码错误
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        // TODO: 2016/7/13  
-//        Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString());
-    }
+        Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("用户名或密码错误") > -1);
 
-    /**
-     * 用已冻结的代理商账号以代理商角色登录，返回 该账户已被冻结
-     */
-    @Test
-    public void disabledAgentLoginAsAgentTest() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Agent agent = new Agent();
-        agent.setUsername(userName);
-        agent.setPassword(password);
+        //用已冻结的代理商账号以代理商角色登录
         agent.setDisabled(true);
-        agent.setDeleted(false);
-        agent.setStatus(AgentStatusEnum.CHECKED);
-        agentService.addAgent(agent);
-        agentService.flush();
+        agentRepository.saveAndFlush(agent);
 
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        // TODO: 2016/7/13  
-//        Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.LOCKED_MSG);
-    }
+        Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已冻结") > -1);
 
-    /**
-     * 用已删除的代理商账号以代理商角色登录，返回 该账户已被冻结
-     */
-    @Test
-    public void deletedAgentLoginAsAgentTest() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Agent agent = new Agent();
-        agent.setUsername(userName);
-        agent.setPassword(password);
+        //用已删除的代理商账号以代理商角色登录
         agent.setDisabled(false);
         agent.setDeleted(true);
-        agent.setStatus(AgentStatusEnum.CHECKED);
-        agentService.addAgent(agent);
-        agentService.flush();
-
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
+        agentRepository.saveAndFlush(agent);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        // TODO: 2016/7/13  
-//        Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.EXPIRED_MSG);
+        Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已失效") > -1);
     }
 
     /**
-     * 用门店账号以门店角色登录
+     * 用门店账号登录
      * @throws Exception
      */
     @Test
@@ -155,7 +123,7 @@ public class IndexControllerTest extends CommonTestBase {
         String password = UUID.randomUUID().toString();
         Shop shop = new Shop();
         shop.setUsername(userName);
-        shop.setPassword(password);
+        shop.setPassword(passwordEncoder.encode(password));
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
@@ -164,90 +132,35 @@ public class IndexControllerTest extends CommonTestBase {
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);
+        //以门店角色登录
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
-
-    }
-
-    /**
-     * 用门店账号以代理商角色登录,返回 用户名或者密码错误
-     */
-    @Test
-    public void shopLoginAsAgentTest() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
-        shop.setUsername(userName);
-        shop.setPassword(password);
-        shop.setDeleted(false);
-        shop.setDisabled(false);
-        shop.setStatus(AgentStatusEnum.CHECKED);
-        shopService.addShop(shop);
-        shopService.flush();
-
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
+        //以代理商角色登录
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        // TODO: 2016/7/13  
-//        Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.BAD_CREDENTIALS_MSG);
-    }
 
-    /**
-     * 用已冻结的门店账号以门店角色登录，返回 该账户已被冻结
-     */
-    @Test
-    public void disabledShopLoginAsShopTest() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
-        shop.setUsername(userName);
-        shop.setPassword(password);
-        shop.setDeleted(false);
+
         shop.setDisabled(true);
-        shop.setStatus(AgentStatusEnum.CHECKED);
-        shopService.addShop(shop);
-        shopService.flush();
-
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
+        shopRepository.save(shop);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        // TODO: 2016/7/13  
-//        Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.LOCKED_MSG);
-    }
+        Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已冻结") > -1);
 
-    /**
-     * 用已删除的门店账号以门店角色登录，返回 该账户已被冻结
-     */
-    @Test
-    public void deletedShopLoginAsShopTest() throws Exception{
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
-        shop.setUsername(userName);
-        shop.setPassword(password);
-        shop.setDeleted(true);
         shop.setDisabled(false);
-        shop.setStatus(AgentStatusEnum.CHECKED);
-        shopService.addShop(shop);
-        shopService.flush();
-
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
-                .andReturn().getRequest().getSession(true);
+        shop.setDeleted(true);
+        shopRepository.save(shop);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
                 .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
-        // TODO: 2016/7/13
-//        Assert.assertEquals(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString(), ExceptionHandler.EXPIRED_MSG);
+        Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已失效") > -1);
     }
 
 }

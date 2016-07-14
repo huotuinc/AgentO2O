@@ -73,7 +73,7 @@ public class MallCustomer implements Author{
     @Column(name = "SC_CityID")
     private Integer cityID;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(referencedColumnName = "Agent_ID")
     private Agent agent;
 

@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -132,6 +134,8 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
         Specification<AgentReturnedOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+            Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
             if (returnedOrderSearch.getAgentId() != null && returnedOrderSearch.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), returnedOrderSearch.getAgentId()));
             } else if (returnedOrderSearch.getShopId() != null && returnedOrderSearch.getShopId() != 0) {
@@ -141,17 +145,15 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 if (returnedOrderSearch.getParentAgentId() == 0) {
                     predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
                 } else {
-                    predicates.add(cb.or(
-                            cb.equal(root.get("agent").get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId()),
-                            cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId())
-                    ));
+                    Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
+                    Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
+                    predicates.add(cb.or(p1,p2));
                 }
             }
             if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
-                predicates.add(cb.or(
-                        cb.equal(root.get("agent").get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId()),
-                        cb.equal(root.get("shop").get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId())
-                ));
+                Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
+                Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
+                predicates.add(cb.or(p1,p2));
             }
             if (!StringUtils.isEmpty(returnedOrderSearch.getROrderId())) {
                 predicates.add(cb.like(root.get("rOrderId").as(String.class), "%" + returnedOrderSearch.getROrderId() + "%"));
@@ -343,7 +345,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         //判断该平台是否有修改该采购单的权限
         if (customerId != null && !(subAgentReturnedOrder.getParentAgent() == null && subAgentReturnedOrder.getMallCustomer().getCustomerId().equals(customerId))) {
             return new ApiResult("对不起，您没有操作权限！");
-        } else if (authorId != null && !(subAgentReturnedOrder.getParentAgent() != null && subAgentReturnedOrder.getMallCustomer().getId().equals(authorId))) {
+        } else if (authorId != null && !(subAgentReturnedOrder.getParentAgent() != null && subAgentReturnedOrder.getParentAgent().getId().equals(authorId))) {
             //判断该代理商是否有修改该采购单的权限
             return new ApiResult("对不起，您没有操作权限！");
         }
@@ -411,7 +413,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         //判断该平台是否有修改该采购单的权限
         if (customerId != null && !(agentReturnedOrder.getParentAgent() == null && agentReturnedOrder.getMallCustomer().getCustomerId().equals(customerId))) {
             return new ApiResult("对不起，您没有操作权限！");
-        } else if (authorId != null && !(agentReturnedOrder.getParentAgent() != null && agentReturnedOrder.getMallCustomer().getId().equals(authorId))) {
+        } else if (authorId != null && !(agentReturnedOrder.getParentAgent() != null && agentReturnedOrder.getParentAgent().getId().equals(authorId))) {
             //判断该代理商是否有修改该采购单的权限
             return new ApiResult("对不起，您没有操作权限！");
         }
@@ -431,9 +433,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         MallProduct mallProduct = new MallProduct();
         mallProduct.setProductId(productId);
         AgentProduct agentProduct = null;
-        if(agentProduct.getAgent() != null){
+        if(author.getType() == Agent.class){
             agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), mallProduct);
-        }else if(agentProduct.getShop() != null){
+        }else if(author.getType() == Shop.class){
             agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),mallProduct);
         }
         if(agentProduct == null){

@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -22,7 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.UUID;
 
 
 /**
@@ -34,7 +36,20 @@ public class ShopServiceImplTest extends CommonTestBase {
     @Autowired
     private ShopService shopService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MallPasswordEncoder passwordEncoder;
+
+
+//    @Test
+//    @Rollback(false)
+    public void testMockShop(){
+        Agent agent = agentService.findByAgentId(29756);
+        mockShop(agent,115.893528,28.689578);
+        mockShop(agent,120.189014,30.249473);
+        mockShop(agent,120.152929,30.189956);
+        mockShop(agent,120.19237,30.187588);
+    }
+
+
 
     @Test
     public void testFindByUserName() {

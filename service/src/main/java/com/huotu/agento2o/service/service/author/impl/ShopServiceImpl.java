@@ -17,6 +17,7 @@ import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -53,7 +54,7 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     private ShopRepository shopRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MallPasswordEncoder passwordEncoder;
     @Autowired
     private UserBaseInfoRepository userBaseInfoRepository;
     @Autowired

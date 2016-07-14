@@ -357,8 +357,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
         responseData = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         jsonObject = JSON.parseObject(responseData);
         msg = jsonObject.getString("msg");
-        code = jsonObject.getInteger("code");
-        Assert.assertTrue(code==200);
+        Assert.assertEquals("200",jsonObject.getString("code"));
         Assert.assertEquals(ResultCodeEnum.SUCCESS.getResultMsg(),msg);
 
         // 可用库存不足

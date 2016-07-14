@@ -79,21 +79,27 @@ public class PurchaseControllerTest extends CommonTestBase {
         mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
 
         //平台自定义商品
-        for (int i = 0; i < random.nextInt(10) + 1; i++) {
-            MallGoodsType customerGoodsType = mockMallGoodsType(mockCustomer.getCustomerId());
-            mockCustomerGoodsTypeList.add(customerGoodsType);
-        }
+        MallGoodsType customerGoodsType = mockMallGoodsType(mockCustomer.getCustomerId());
+        mockCustomerGoodsTypeList.add(customerGoodsType);
         //平台商品相关(保证至少有10个商品)
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
             MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), false);
-            int randomGoodsType = random.nextInt(2);
-            if (randomGoodsType == 0) {
-                //标准分类
+            if(i == 0){
                 mockGoodsWith1Products.setTypeId(standardGoodsType.getTypeId());
-            } else {
-                //自定义分类
+            }else if(i == 1){
                 int randomCustomerGoodsType = random.nextInt(mockCustomerGoodsTypeList.size());
                 mockGoodsWith1Products.setTypeId(mockCustomerGoodsTypeList.get(randomCustomerGoodsType).getTypeId());
+            }else{
+                int randomGoodsType = random.nextInt(2);
+                if (randomGoodsType == 0) {
+                    //标准分类
+                    mockGoodsWith1Products.setTypeId(standardGoodsType.getTypeId());
+                } else {
+                    //自定义分类
+                    int randomCustomerGoodsType = random.nextInt(mockCustomerGoodsTypeList.size());
+                    mockGoodsWith1Products.setTypeId(mockCustomerGoodsTypeList.get(randomCustomerGoodsType).getTypeId());
+                }
+
             }
             List<MallProduct> mockGoodsWith1ProductsList = new ArrayList<>();
             mockGoodsWith1ProductsList.add(mockMallProduct(mockGoodsWith1Products));
@@ -290,6 +296,7 @@ public class PurchaseControllerTest extends CommonTestBase {
         //1.显示上级代理商商品
         MvcResult resultWithNoSearch = mockMvc.perform(get(controllerUrl).session(session))
                 .andExpect(status().isOk())
+                .andExpect(model().attributeExists("totalRecords"))
                 .andReturn();
         //总记录数
         long totalRecords = (Long) resultWithNoSearch.getModelAndView().getModel().get("totalRecords");

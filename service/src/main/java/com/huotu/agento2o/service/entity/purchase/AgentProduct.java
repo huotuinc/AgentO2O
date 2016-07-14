@@ -31,7 +31,7 @@ import javax.persistence.*;
 public class AgentProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Agent_Product_Id")
+    @Column(name = "Agt_Product_Id")
     private Integer id;
 
     /**

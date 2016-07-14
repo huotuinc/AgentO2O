@@ -41,6 +41,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,6 +76,8 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     public Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher) {
         Specification<AgentPurchaseOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            Join<AgentPurchaseOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+            Join<AgentPurchaseOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
             if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getAgentId()));
             }
@@ -83,19 +87,22 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (purchaseOrderSearcher.getParentAgentId() != null) {
                 if (purchaseOrderSearcher.getParentAgentId() == 0) {
                     //只有代理商的上级代理才可能为平台方
-                    predicates.add(cb.isNull(root.get("agent").get("parentAuthor").as(Author.class)));
+                    predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
+                    predicates.add(cb.isNull(root.get("shop").as(Shop.class)));
                 } else {
-                    predicates.add(cb.or(
+                    Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId());
+                    Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId());
+                    predicates.add(cb.or(p1,p2));
+                    /*predicates.add(cb.or(
                             cb.equal(root.get("agent").get("parentAgent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()),
                             cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId())
-                    ));
+                    ));*/
                 }
             }
             if (purchaseOrderSearcher.getCustomerId() != null && purchaseOrderSearcher.getCustomerId() != 0) {
-                predicates.add(cb.or(
-                        cb.equal(root.get("agent").get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId()),
-                        cb.equal(root.get("shop").get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId())
-                ));
+                Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId());
+                Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId());
+                predicates.add(cb.or(p1,p2));
             }
             if (purchaseOrderSearcher.getStatusCode() != -1) {
                 predicates.add(cb.equal(root.get("status").as(PurchaseEnum.OrderStatus.class),
@@ -217,7 +224,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
 
     @Override
     public AgentPurchaseOrder findByPOrderIdAndAuthor(String pOrderId, Author author) {
-        return purchaseOrderRepository.findByPOrderIdAndAgentAndShop(pOrderId, author.getAuthorAgent(),author.getAuthorShop());
+        return purchaseOrderRepository.findByPOrderIdAndAgentAndShop(pOrderId, author.getAuthorAgent(), author.getAuthorShop());
     }
 
     /**
@@ -307,9 +314,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         for (AgentPurchaseOrderItem item : agentPurchaseOrder.getOrderItemList()) {
             AgentProduct agentProduct = null;
             if (author != null && author.getType() == Agent.class) {
-                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(),item.getProduct());
+                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), item.getProduct());
             } else if (author != null && author.getType() == Shop.class) {
-                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),item.getProduct());
+                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), item.getProduct());
             }
             MallProduct product = item.getProduct();
             //判断AgentProduct是否有该货品信息，若没有则新增

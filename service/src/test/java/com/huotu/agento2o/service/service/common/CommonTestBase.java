@@ -26,6 +26,7 @@ import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
@@ -77,6 +78,8 @@ public abstract class CommonTestBase {
     private MallAfterSalesRepository afterSalesRepository;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    protected MallCustomerRepository customerRepository;
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockMallCustomer() {
@@ -89,14 +92,10 @@ public abstract class CommonTestBase {
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
-        MallCustomer customer = new MallCustomer();
-        customer.setNickName(UUID.randomUUID().toString());
-        customer.setUsername(UUID.randomUUID().toString());
-        customer.setPassword(UUID.randomUUID().toString());
+        MallCustomer customer = mockMallCustomer();
         Agent agent = new Agent();
+        agent.setId(customer.getId());
         agent.setCustomer(mockCustomer);
-        agent.setUsername(UUID.randomUUID().toString());
-        agent.setPassword(UUID.randomUUID().toString());
         agent.setName(UUID.randomUUID().toString());
         agent.setContact(UUID.randomUUID().toString());
         agent.setMobile(UUID.randomUUID().toString());
@@ -112,7 +111,7 @@ public abstract class CommonTestBase {
 //        agent = agentService.addAgent(agent);
 //        agentService.flush();
 //        return agent;
-        return customerService.newCustomer(customer);
+        return customerRepository.saveAndFlush(customer);
     }
 
     @SuppressWarnings("Duplicates")
@@ -125,8 +124,34 @@ public abstract class CommonTestBase {
         shop.setMobile(UUID.randomUUID().toString());
         shop.setTelephone(UUID.randomUUID().toString());
         shop.setAddress(UUID.randomUUID().toString());
+        shop.setLan(115.893528);
+        shop.setLat(28.689578);
         shop.setDisabled(false);
         shop.setDeleted(false);
+        if (parentAgent != null) {
+            shop.setAgent(parentAgent);
+        }
+        shop = shopService.addShop(shop);
+        agentService.flush();
+        return shop;
+    }
+
+    protected Shop mockShop(Agent parentAgent,double lan,double lat) {
+        Shop shop = new Shop();
+        // TODO: 2016/7/14 城市code 
+        shop.setUsername(UUID.randomUUID().toString());
+        shop.setPassword(UUID.randomUUID().toString());
+        shop.setName(UUID.randomUUID().toString());
+        shop.setContact(UUID.randomUUID().toString());
+        shop.setMobile(UUID.randomUUID().toString());
+        shop.setTelephone(UUID.randomUUID().toString());
+        shop.setAddress(UUID.randomUUID().toString());
+        shop.setLan(lan);
+        shop.setLat(lat);
+        shop.setDisabled(false);
+        shop.setDeleted(false);
+        shop.setStatus(AgentStatusEnum.CHECKED);
+        shop.setCustomer(parentAgent.getCustomer());
         if (parentAgent != null) {
             shop.setAgent(parentAgent);
         }

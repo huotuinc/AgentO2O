@@ -1,5 +1,6 @@
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
@@ -9,7 +10,6 @@ import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +25,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Autowired
     private MallCustomerRepository mallCustomerRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MallPasswordEncoder passwordEncoder;
 
     public Author findById(Author requestAuthor) {
         if (requestAuthor != null && Agent.class == requestAuthor.getType()) {

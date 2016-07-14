@@ -211,8 +211,8 @@
                                 <a style="margin-top:10px;margin-right: 5px;float:right;" th:if="${pOrder.orderItemList.size() > 1}" href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
                             <td class="txt100" >
-                                <span th:text="${pOrder.author.name}"></span>
-                                <span style="color: red" th:text="${pOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
+                                <span th:text="${pOrder.getAuthorName()}"></span>
+                                <span style="color: red" th:text="${pOrder.getAgent() != null ?'（代理商）':'（门店）'}"></span>
                             </td>
                             <td class="txt60 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                 2015/9/21 20:18:01

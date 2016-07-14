@@ -3,6 +3,7 @@ package com.huotu.agento2o.service.service.author.impl;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
@@ -33,7 +34,7 @@ public class AgentServiceImplTest extends CommonTestBase {
     private AgentService agentService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MallPasswordEncoder passwordEncoder;
 
     private MallCustomer mockCustomer;
 
@@ -43,6 +44,52 @@ public class AgentServiceImplTest extends CommonTestBase {
     public void init() {
         mockCustomer = mockMallCustomer();
         mockAgent = mockAgent(mockCustomer, null);
+    }
+
+//    @Test
+//    @Rollback(false)
+    public void mockTopAgent(){
+        MallCustomer customer = customerService.findByCustomerId(4886);
+        MallCustomer agentCustomer = new MallCustomer();
+        agentCustomer.setNickName("代理商1");
+        agentCustomer.setUsername("agent");
+        agentCustomer.setPassword("123456");
+        agentCustomer = customerRepository.save(agentCustomer);
+        customerRepository.flush();
+        Agent agent = new Agent();
+        agent.setId(agentCustomer.getId());
+        agent.setStatus(AgentStatusEnum.CHECKED);
+        agent.setName("代理商1");
+        agent.setContact("联系人");
+        agent.setMobile("123");
+        agent.setTelephone("123");
+        agent.setAddress("地址");
+        agent.setDisabled(false);
+        agent.setDeleted(false);
+        agent.setCustomer(customer);
+        agentCustomer.setAgent(agent);
+        customerService.newCustomer(agentCustomer);
+    }
+
+//    @Test
+//    @Rollback(false)
+    public void testMockAgent(){
+        MallCustomer customer = customerService.findByCustomerId(4471);
+        MallCustomer agentCustomer = mockMallCustomer();
+        Agent agent = new Agent();
+        agent.setId(agentCustomer.getId());
+        agent.setStatus(AgentStatusEnum.CHECKED);
+        agent.setName(UUID.randomUUID().toString());
+        agent.setContact(UUID.randomUUID().toString());
+        agent.setMobile(UUID.randomUUID().toString());
+        agent.setTelephone(UUID.randomUUID().toString());
+        agent.setAddress(UUID.randomUUID().toString());
+        agent.setStatus(AgentStatusEnum.CHECKED);
+        agent.setDisabled(false);
+        agent.setDeleted(false);
+        agent.setCustomer(customer);
+        agentCustomer.setAgent(agent);
+        customerService.newCustomer(customer);
     }
 
 

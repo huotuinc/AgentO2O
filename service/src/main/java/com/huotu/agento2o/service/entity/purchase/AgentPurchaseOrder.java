@@ -49,6 +49,7 @@ public class AgentPurchaseOrder {
      */
     @JoinColumn(name = "Shop_Id")
     @ManyToOne
+
     private Shop shop;
 
     /**
