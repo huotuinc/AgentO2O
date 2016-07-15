@@ -170,7 +170,8 @@ public class ShoppingCartController {
         // TODO: 2016/7/13
         Address defaultAddress = addressService.findDefaultByAuthorId(author);
         if(defaultAddress != null){
-            agentPurchaseOrder.setShipAddr(defaultAddress.getProvince() + defaultAddress.getCity() + defaultAddress.getDistrict() + defaultAddress.getAddress());
+//            agentPurchaseOrder.setShipAddr(defaultAddress.getProvince() + defaultAddress.getCity() + defaultAddress.getDistrict() + defaultAddress.getAddress());
+            agentPurchaseOrder.setShipAddr(defaultAddress.getAddress());
             agentPurchaseOrder.setShipMobile(defaultAddress.getTelephone());
             agentPurchaseOrder.setShipName(defaultAddress.getReceiver());
         }

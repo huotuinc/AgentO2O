@@ -18,6 +18,8 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.annotations.JoinFetchType;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -41,7 +43,7 @@ public class AgentPurchaseOrder {
      * 代理商
      */
     @JoinColumn(name = "Agent_Id")
-    @ManyToOne
+    @ManyToOne(optional = true)
     private Agent agent;
 
     /**
@@ -49,7 +51,6 @@ public class AgentPurchaseOrder {
      */
     @JoinColumn(name = "Shop_Id")
     @ManyToOne
-
     private Shop shop;
 
     /**

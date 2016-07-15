@@ -134,8 +134,6 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
         Specification<AgentReturnedOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
-            Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
             if (returnedOrderSearch.getAgentId() != null && returnedOrderSearch.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), returnedOrderSearch.getAgentId()));
             } else if (returnedOrderSearch.getShopId() != null && returnedOrderSearch.getShopId() != 0) {
@@ -145,12 +143,16 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 if (returnedOrderSearch.getParentAgentId() == 0) {
                     predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
                 } else {
+                    Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+                    Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
                     Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     predicates.add(cb.or(p1,p2));
                 }
             }
             if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
+                Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+                Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
                 Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
                 Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
                 predicates.add(cb.or(p1,p2));

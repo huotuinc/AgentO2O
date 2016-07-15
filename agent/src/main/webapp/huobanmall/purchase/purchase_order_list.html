@@ -197,7 +197,7 @@
                                 <a style="margin-top:10px;margin-right: 5px;float:right;" th:if="${pOrder.orderItemList.size() > 1}"
                                    href="javascript:void(0)" th:attr="pOrderId=${pOrder.POrderId}" onclick="showDetail(this)" title="更多"> 更多...</a>
                             </td>
-                            <td class="txt80" th:text="${pOrder.author.name}"></td>
+                            <td class="txt80" th:text="${pOrder.getAuthorName()}"></td>
                             <td class="txt80" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                 2015/9/21 20:18:01
                             </td>

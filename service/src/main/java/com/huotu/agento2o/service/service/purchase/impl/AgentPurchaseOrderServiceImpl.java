@@ -76,8 +76,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     public Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher) {
         Specification<AgentPurchaseOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            Join<AgentPurchaseOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
-            Join<AgentPurchaseOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
             if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getAgentId()));
             }
@@ -90,9 +88,11 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                     predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
                     predicates.add(cb.isNull(root.get("shop").as(Shop.class)));
                 } else {
+                    Join<AgentPurchaseOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+                    Join<AgentPurchaseOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
                     Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId());
                     Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId());
-                    predicates.add(cb.or(p1,p2));
+                    predicates.add(cb.or(p1, p2));
                     /*predicates.add(cb.or(
                             cb.equal(root.get("agent").get("parentAgent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()),
                             cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId())
@@ -100,9 +100,14 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 }
             }
             if (purchaseOrderSearcher.getCustomerId() != null && purchaseOrderSearcher.getCustomerId() != 0) {
+                Join<AgentPurchaseOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+                Join<AgentPurchaseOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
                 Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId());
                 Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId());
-                predicates.add(cb.or(p1,p2));
+                predicates.add(cb.or(p1, p2));
+                /*predicates.add(cb.or(
+                        cb.equal(root.get("agent").get("customer").get("customerId").as(Integer.class),purchaseOrderSearcher.getCustomerId()),
+                        cb.equal(root.get("shop").get("customer").get("customerId").as(Integer.class),purchaseOrderSearcher.getCustomerId())));*/
             }
             if (purchaseOrderSearcher.getStatusCode() != -1) {
                 predicates.add(cb.equal(root.get("status").as(PurchaseEnum.OrderStatus.class),
