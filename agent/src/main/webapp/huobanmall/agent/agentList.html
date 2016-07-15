@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -108,29 +108,29 @@
                 jBox.tip(chkResult.msg, 'info');
                 return;
             }
-            var province = $("#province").val();
-            var city = $("#city").val();
-            var district = $("#district").val();
+            var provinceCode = $("#provinceCode").val();
+            var cityCode = $("#cityCode").val();
+            var districtCode = $("#districtCode").val();
             var levelId = $("#levelId").val();
             var agentName = $("#agentName").val();
             var agentLoginName = $("#agentLoginName").val();
             var agentStatus = $("#agentStatus").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
-            if (province == null) {
-                province = "";
+            if (provinceCode == null) {
+                provinceCode = "";
             }
-            if (city == null) {
-                city = "";
+            if (cityCode == null) {
+                cityCode = "";
             }
-            if (district == null) {
-                district = "";
+            if (districtCode == null) {
+                districtCode = "";
             }
             var url = ajaxUrl + "exportExcel";
             url += '?rnd=' + Math.random()
-            + '&province=' + province
-            + '&city=' + city
-            + '&district=' + district
+                    + '&provinceCode=' + provinceCode
+                    + '&cityCode=' + cityCode
+                    + '&districtCode=' + districtCode
             + '&levelId=' + levelId
             + '&agentName=' + agentName
             + '&agentLoginName=' + agentLoginName
@@ -204,12 +204,14 @@
                         </select>
                         <label class="first ">所在区域:</label>
                         <span id="citys">
-                            <select class="prov" id="province" th:value="${agentSearcher.province}"
-                                    name="province"></select>
-                            <select class="city" id="city" disabled="disabled" th:value="${agentSearcher.city}"
-                                    name="city"></select>
-                            <select class="dist" id="district" disabled="disabled" th:value="${agentSearcher.district}"
-                                    name="district"></select>
+                            <select class="prov" id="provinceCode" th:value="${agentSearcher.provinceCode}"
+                                    name="provinceCode"></select>
+                            <select class="cityCode" id="cityCode" disabled="disabled"
+                                    th:value="${agentSearcher.cityCode}"
+                                    name="cityCode"></select>
+                            <select class="dist" id="districtCode" disabled="disabled"
+                                    th:value="${agentSearcher.districtCode}"
+                                    name="districtCode"></select>
                         </span>
 
                         <style type="text/css">
@@ -310,13 +312,13 @@
                                 13888888000
                             </td>
                             <td class="txt40 c"
-                                th:text="${#strings.defaultString(agent.province,'')}+' '+${#strings.defaultString(agent.city,'')}+' '+${#strings.defaultString(agent.district,'')}">
+                                th:text="${#strings.defaultString(agent.provinceCode,'')}+' '+${#strings.defaultString(agent.cityCode,'')}+' '+${#strings.defaultString(agent.districtCode,'')}">
                                 浙江杭州西湖区
                             </td>
                             <td class="txt40 c" th:text="${agent.agentLevel}==null?'':${agent.agentLevel.levelName}">
                                 省级代理商
                             </td>
-                            <td class="txt40 c" style="color:red;" th:text="${agent.isAccountNonLocked()}?'激活':'冻结'">
+                            <td class="txt40 c" style="color:red;" th:text="${agent.isDisabled()}?'冻结':'激活'">
                                 激活
                             </td>
 
@@ -328,10 +330,10 @@
                                        th:href="|javascript:passwordlHandler.reset(${agent.id})|">重置密码</a> |
                                     <a href="javascript:void(0)"
                                        th:href="@{/huobanmall/agent/showAgent(id=${agent.id})}">编辑</a> |
-                                    <a th:if="${!agent.isAccountNonLocked()}"
+                                    <a th:if="${agent.isDisabled()}"
                                        href="javascript:agentHandler.updateStatus(1,1)"
                                        th:href="|javascript:agentHandler.updateStatus(1,${agent.id})|">解冻</a>
-                                    <a th:if="${agent.isAccountNonLocked()}"
+                                    <a th:if="${!agent.isDisabled()}"
                                        href="javascript:agentHandler.updateStatus(0,1)"
                                        th:href="|javascript:agentHandler.updateStatus(0,${agent.id})|">冻结</a> |
                                     <a href="javascript:agentHandler.deleteAgent(1)"
@@ -419,15 +421,15 @@
     /*]]>*/
 </script>
 <script th:inline="javascript">
-    var pro = /*[[${agentSearcher.province==null?'':agentSearcher.province}]]*/ "";
-    var city = /*[[${agentSearcher.city}]]*/ "";
-    var dist = /*[[${agentSearcher.district}]]*/ "";
+    var pro = /*[[${agentSearcher.provinceCode==null?'':agentSearcher.provinceCode}]]*/ "";
+    var cityCode = /*[[${agentSearcher.cityCode}]]*/ "";
+    var dist = /*[[${agentSearcher.districtCode}]]*/ "";
     $(function () {
         if (pro.length != 0) {
             $("#citys").citySelect({
                 url: "/resource/3rdParty/js/jquery.cityselect.js",
                 prov: pro,
-                city: city,
+                city: cityCode,
                 dist: dist,
                 nodata: null,
                 required: false

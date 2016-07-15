@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -167,9 +167,9 @@
                                     <th>门店所在区域<span class="must">*</span>:</th>
                                     <td>
                                         <div id="citys">
-                                            <select class="prov" id="province"></select>
-                                            <select class="city" id="city" disabled="disabled"></select>
-                                            <select class="dist" id="district" disabled="disabled"></select>
+                                            <select class="prov" id="provinceCode"></select>
+                                            <select class="cityCode" id="cityCode" disabled="disabled"></select>
+                                            <select class="dist" id="districtCode" disabled="disabled"></select>
                                         </div>
                                     </td>
                                 </tr>
@@ -266,9 +266,9 @@
     function saveShopConfig() {
         var username = $.trim($("#username").val());
         var password = $.trim($("#password").val());
-        var province = $.trim($("#province").val());
-        var city = $.trim($("#city").val());
-        var district = $.trim($("#district").val());
+        var provinceCode = $.trim($("#provinceCode").val());
+        var cityCode = $.trim($("#cityCode").val());
+        var districtCode = $.trim($("#districtCode").val());
         var name = $.trim($("#name").val());
         var contact = $.trim($("#contact").val());
         var mobile = $.trim($("#mobile").val());
@@ -291,7 +291,7 @@
             $.jBox.tip("请输入密码");
             return;
         }
-        if (province.length == 0 || city.length == 0 || district.length == 0) {
+        if (provinceCode.length == 0 || cityCode.length == 0 || districtCode.length == 0) {
             $.jBox.tip("请选择区域");
             return;
         }
@@ -348,9 +348,9 @@
                     id: id,
                     username: username,
                     password: password,
-                    province: province,
-                    city: city,
-                    district: district,
+                    provinceCode: provinceCode,
+                    cityCode: cityCode,
+                    districtCode: districtCode,
                     name: name,
                     contact: contact,
                     mobile: mobile,
@@ -406,15 +406,15 @@
             }
         })
 
-        var pro = /*[[${shop.province}]]*/"";
-        var city = /*[[${shop.city}]]*/"";
-        var dist = /*[[${shop.district}]]*/"";
+        var pro = /*[[${shop.provinceCode}]]*/"";
+        var cityCode = /*[[${shop.cityCode}]]*/"";
+        var dist = /*[[${shop.districtCode}]]*/"";
         var id = /*[[${shop.id}]]*/"";
         if (id != null) {
             $("#citys").citySelect({
                 url: "/resource/3rdParty/js/jquery.cityselect.js",
                 prov: pro,
-                city: city,
+                cityCode: cityCode,
                 dist: dist,
                 nodata: null,
                 required: false
@@ -473,7 +473,7 @@
             setmarker(pt.lng, pt.lat);
             geoc.getLocation(pt, function (rs) {
                 var addComp = rs.addressComponents;
-                $("#address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                $("#address").val(addComp.provinceCode + addComp.cityCode + addComp.districtCode + addComp.street + addComp.streetNumber);
             });
 
         });

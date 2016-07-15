@@ -46,13 +46,13 @@
 </head>
 <script th:inline="javascript">
     function init() {
-        var shopPro = /*[[${searchCondition.province}]]*/"";
-        var shopCity = /*[[${searchCondition.city}]]*/"";
-        var shopDist = /*[[${searchCondition.district}]]*/"";
+        var shopPro = /*[[${searchCondition.provinceCode}]]*/"";
+        var shopCity = /*[[${searchCondition.cityCode}]]*/"";
+        var shopDist = /*[[${searchCondition.districtCode}]]*/"";
         $("#citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
             prov: shopPro != null ? shopPro : '',
-            city: shopCity != null ? shopCity : '',
+            cityCode: shopCity != null ? shopCity : '',
             dist: shopDist != null ? shopDist : '',
             nodata: null,
             required: false
@@ -64,7 +64,7 @@
         $("#agent_citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
             prov: par_pro != null ? par_pro : '',
-            city: par_city != null ? par_city : '',
+            cityCode: par_city != null ? par_city : '',
             dist: par_dist != null ? par_dist : '',
             nodata: null,
             required: false
@@ -152,9 +152,9 @@
             return;
         }
         var name = $("#name").val();
-        var province = $("#province").val();
-        var city = $("#city").val();
-        var district = $("#district").val();
+        var provinceCode = $("#provinceCode").val();
+        var cityCode = $("#cityCode").val();
+        var districtCode = $("#districtCode").val();
         var status = $("#status").val();
         var type = $("#type").val();
         var parent_name = $("#parent_name").val();
@@ -165,14 +165,14 @@
         var parent_district = $("#parent_district").val();
 
         var url = /*[[@{/huobanmall/shop/exportExcel}]]*/"";
-        if (province == null) {
-            province = '';
+        if (provinceCode == null) {
+            provinceCode = '';
         }
-        if (city == null) {
-            city = '';
+        if (cityCode == null) {
+            cityCode = '';
         }
-        if (district == null) {
-            district = '';
+        if (districtCode == null) {
+            districtCode = '';
         }
         if (parent_province == null) {
             parent_province = '';
@@ -186,9 +186,9 @@
 
         url += '?rnd=' + Math.random()
                 + '&name=' + name
-                + '&province=' + province
-                + '&city=' + city
-                + '&district=' + district
+                + '&provinceCode=' + provinceCode
+                + '&cityCode=' + cityCode
+                + '&districtCode=' + districtCode
                 + '&status=' + status
                 + '&txtBeginPage=' + txtBeginPage
                 + '&txtEndPage=' + txtEndPage
@@ -328,11 +328,11 @@
                         <label class="first ">上级代理商区域：</label>
                         <span id="agent_citys">
                             <select class="prov" name="parent_province" id="parent_province"
-                                    th:value="*{parent_province}"></select>
-                            <select class="city" name="parent_city" id="parent_city" disabled="disabled"
-                                    th:value="*{parent_city}"></select>
+                                    th:value="*{parent_provinceCode}"></select>
+                            <select class="cityCode" name="parent_city" id="parent_city" disabled="disabled"
+                                    th:value="*{parent_cityCode}"></select>
                             <select class="dist" name="parent_district" id="parent_district" disabled="disabled"
-                                    th:value="*{parent_district}"></select>
+                                    th:value="*{parent_districtCode}"></select>
                         </span>
                         <br/>
                         <br/>
@@ -349,10 +349,12 @@
 
                         <label class="first ">门店区域：</label>
                         <span id="citys">
-                            <select class="prov" name="province" id="province" th:value="*{province}"></select>
-                            <select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>
-                            <select class="dist" name="district" id="district" disabled="disabled"
-                                    th:value="*{district}"></select>
+                            <select class="prov" name="provinceCode" id="provinceCode"
+                                    th:value="*{provinceCode}"></select>
+                            <select class="cityCode" name="cityCode" id="cityCode" disabled="disabled"
+                                    th:value="*{cityCode}"></select>
+                            <select class="dist" name="districtCode" id="districtCode" disabled="disabled"
+                                    th:value="*{districtCode}"></select>
                         </span>
 
                         <br/>
@@ -456,7 +458,7 @@
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.province}!=null ? |${shop.province} ${shop.city} ${shop.district}| : ''">
+                                            th:text="${shop.provinceCode}!=null ? |${shop.provinceCode} ${shop.cityCode} ${shop.districtCode}| : ''">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>

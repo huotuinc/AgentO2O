@@ -237,6 +237,26 @@ public class Shop implements Author{
     @ManyToOne
     private ShopLevel shopLevel;
 
+    /**
+     * 工作日
+     */
+    @Column(name = "Workday")
+    private String workday;
+
+    /**
+     * 营业开始时间
+     */
+    @Temporal(TemporalType.TIME)
+    @Column(name = "OpenTime")
+    private Date openTime;
+
+    /**
+     * 营业结束时间
+     */
+    @Temporal(TemporalType.TIME)
+    @Column(name = "CloseTime")
+    private Date closeTime;
+
     public boolean isAccountNonLocked() {
         return this.isDisabled == false;
     }
@@ -253,9 +273,6 @@ public class Shop implements Author{
         return true;
     }
 
-    public boolean isAgent() {
-        return false;
-    }
 
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);

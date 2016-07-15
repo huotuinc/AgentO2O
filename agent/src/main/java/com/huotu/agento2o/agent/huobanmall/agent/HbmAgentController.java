@@ -15,11 +15,11 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentActiveEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.impl.AgentServiceImpl;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -131,7 +129,9 @@ public class HbmAgentController {
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
         if (agentId > 0) {
-            Agent oldAgent = agentService.findById(agentId, customerId);
+            MallCustomer customer = mallCustomerService.findByCustomerId(agentId);
+            Agent oldAgent = customer.getAgent();
+            oldAgent.setUsername(customer.getUsername());
             //获取上级代理商的代理商等级
             if (oldAgent.getParentAgent() != null && (oldAgent.getParentAgent()).getAgentLevel() != null) {
                 parentAgentLevelId = oldAgent.getParentAgent().getAgentLevel().getLevelId();

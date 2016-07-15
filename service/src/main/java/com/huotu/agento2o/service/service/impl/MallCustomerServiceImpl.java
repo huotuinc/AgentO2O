@@ -71,6 +71,6 @@ public class MallCustomerServiceImpl implements MallCustomerService {
 
     @Override
     public MallCustomer save(MallCustomer mallCustomer) {
-        return customerRepository.save(mallCustomer);
+        return customerRepository.saveAndFlush(mallCustomer);
     }
 }
