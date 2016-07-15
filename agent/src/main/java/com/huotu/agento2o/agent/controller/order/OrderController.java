@@ -5,6 +5,7 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
@@ -80,7 +81,11 @@ public class OrderController {
             OrderSearchCondition searchCondition,
             @RequestParam(required = false, defaultValue = "1") int pageIndex
     ) {
-        searchCondition.setAgentId(author.getId());
+        if(author.getType() == Agent.class){
+            searchCondition.setAgentId(author.getId());
+        }else if(author.getType() == Shop.class){
+            searchCondition.setShopId(author.getId());
+        }
         Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
         getPicUri(ordersList.getContent());
         int totalPages = ordersList.getTotalPages();

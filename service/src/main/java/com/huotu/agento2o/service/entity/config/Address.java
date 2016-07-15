@@ -9,6 +9,7 @@
 
 package com.huotu.agento2o.service.entity.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -80,10 +81,12 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "Agent_Id")
+    @JsonIgnore
     private Agent agent;
 
     @ManyToOne
     @JoinColumn(name = "Shop_Id")
+    @JsonIgnore
     private Shop shop;
 
     public void setAuthor(Author author){

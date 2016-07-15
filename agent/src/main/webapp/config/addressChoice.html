@@ -177,7 +177,8 @@
                         var address = json.data;
                         var shipName = address.receiver;
                         var shipMobile = address.telephone;
-                        var shipAddr = address.province + address.city + address.district + address.address;
+//                        var shipAddr = address.province + address.city + address.district + address.address;
+                        var shipAddr = address.address;
                         parent.$("input[name=shipName]").val(shipName);
                         parent.$("input[name=shipMobile]").val(shipMobile);
                         parent.$("input[name=shipAddr]").val(shipAddr);

@@ -161,7 +161,7 @@
                     <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.ROrderId}">
 
                         <td class="txt60 c">
-                            <a href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showReturnedOrderDetail()">
+                            <a href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.getAuthorId()})|" onclick="showReturnedOrderDetail()">
                                 <span th:text="${agentReturnOrder.ROrderId}">rOrderId</span>
                             </a>
                             <span th:if="${agentReturnOrder.disabled}" style="color:red;">（已取消）</span>
@@ -178,7 +178,7 @@
                             <a style="margin-top:10px;margin-right: 5px;float:right;" th:if="${agentReturnOrder.orderItemList.size() > 1}"
                                href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="更多"> 更多...</a>
                         </td>
-                        <td class="txt80 c" data-th-text="${agentReturnOrder.author.name}">
+                        <td class="txt80 c" data-th-text="${agentReturnOrder.getAuthorName()}">
                             代理商
                         </td>
                         <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
@@ -203,7 +203,7 @@
                             付款状态
                         </td>
                         <td class="txt80 c">
-                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" title="查看">查看</a>
+                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.getAuthorId()})|" title="查看">查看</a>
                             <span th:if="${agentReturnOrder.checkable()}"> | </span>
                             <a th:if="${agentReturnOrder.checkable()}" href="javascript:void(0)" th:onclick="|checkReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="checkReturnOrder()" title="审核">审核</a>
                             <span th:if="${agentReturnOrder.receivable()}"> | </span>

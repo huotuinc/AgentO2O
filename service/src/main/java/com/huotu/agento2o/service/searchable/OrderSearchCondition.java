@@ -28,6 +28,7 @@ public class OrderSearchCondition {
      * 代理商id
      */
     private Integer agentId;
+    private Integer shopId;
     /**
      * 订单商品名称
      */

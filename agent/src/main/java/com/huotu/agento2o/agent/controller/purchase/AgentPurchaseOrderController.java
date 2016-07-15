@@ -130,7 +130,11 @@ public class AgentPurchaseOrderController {
     public ModelAndView showPurchaseOrderList(@AgtAuthenticationPrincipal Author author, PurchaseOrderSearcher purchaseOrderSearcher) throws Exception {
         ModelAndView model = new ModelAndView();
         model.setViewName("/purchase/purchase/purchase_order_list");
-        purchaseOrderSearcher.setAgentId(author.getId());
+        if(author.getType() == Agent.class){
+            purchaseOrderSearcher.setAgentId(author.getId());
+        }else if(author.getType() == Shop.class){
+            purchaseOrderSearcher.setShopId(author.getId());
+        }
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         setPicUri(purchaseOrderPage.getContent());
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
@@ -172,7 +176,11 @@ public class AgentPurchaseOrderController {
         //获取发货信息
         DeliverySearcher deliverySearcher = new DeliverySearcher();
         deliverySearcher.setOrderId(pOrderId);
-        deliverySearcher.setAgentId(author.getId());
+        if(author.getType() == Agent.class){
+            deliverySearcher.setAgentId(author.getId());
+        }else if(author.getType() == Shop.class){
+            deliverySearcher.setShopId(author.getId());
+        }
         List<AgentDelivery> agentDeliveryList = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher).getContent();
         model.addObject("deliveryList",agentDeliveryList);
         model.addObject("purchaseOrder", purchaseOrder);

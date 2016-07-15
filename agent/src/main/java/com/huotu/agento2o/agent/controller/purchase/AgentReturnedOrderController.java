@@ -95,7 +95,7 @@ public class AgentReturnedOrderController {
     public void setPicUri(List<AgentProduct> agentProductList){
         if(agentProductList != null && agentProductList.size() > 0){
             agentProductList.forEach(agentProduct -> {
-                if(agentProduct.getProduct() != null || StringUtil.isNotEmpty(agentProduct.getProduct().getGoods().getThumbnailPic())){
+                if(agentProduct.getProduct() != null && agentProduct.getProduct().getGoods() != null && StringUtil.isNotEmpty(agentProduct.getProduct().getGoods().getThumbnailPic())){
                     try {
                         URI picUri = resourceService.getResource(agentProduct.getProduct().getGoods().getThumbnailPic());
                         agentProduct.getProduct().getGoods().setPicUri(picUri);

@@ -61,11 +61,7 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
 //                Predicate p2 = criteriaBuilder.equal(join2.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
 //                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             }
-
-            CriteriaBuilder.In in = criteriaBuilder.in(root.get("agentShopType"));
-            in.value(OrderEnum.ShipMode.SHOP_DELIVERY);
-            in.value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
-            predicates.add(criteriaBuilder.in(in));
+            criteriaBuilder.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
 
             if (!StringUtils.isEmpty(afterSaleSearch.getBeginTime())) {
                 Date beginTime = StringUtil.DateFormat(afterSaleSearch.getBeginTime(), StringUtil.TIME_PATTERN);

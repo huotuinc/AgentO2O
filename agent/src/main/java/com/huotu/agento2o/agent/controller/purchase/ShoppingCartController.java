@@ -75,7 +75,7 @@ public class ShoppingCartController {
 
     private void getPicUri(List<ShoppingCart> shoppingCartList) {
         shoppingCartList.forEach(p -> {
-            if (!StringUtil.isEmptyStr(p.getProduct().getGoods().getThumbnailPic())) {
+            if (p.getProduct() != null && p.getProduct().getGoods() != null && !StringUtil.isEmptyStr(p.getProduct().getGoods().getThumbnailPic())) {
                 try {
                     URI picUri = resourceService.getResource(p.getProduct().getGoods().getThumbnailPic());
                     p.getProduct().getGoods().setPicUri(picUri);

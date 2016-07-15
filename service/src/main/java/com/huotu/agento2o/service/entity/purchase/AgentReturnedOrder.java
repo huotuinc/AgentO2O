@@ -157,6 +157,15 @@ public class AgentReturnedOrder {
         this.setShop(author.getAuthorShop());
     }
 
+    public Integer getAuthorId(){
+        if(this.agent != null){
+            return this.agent.getId();
+        }else if(this.shop != null){
+            return this.shop.getId();
+        }
+        return null;
+    }
+
     /**
      * 获取代理商或者门店的名字
      * @return

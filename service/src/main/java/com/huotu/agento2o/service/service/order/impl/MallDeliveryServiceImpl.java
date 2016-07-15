@@ -76,10 +76,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
 //                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             }
-            CriteriaBuilder.In in = cb.in(root.get("agentShopType"));
-            in.value(OrderEnum.ShipMode.SHOP_DELIVERY);
-            in.value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
-            predicates.add(cb.in(in));
+            cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
             predicates.add(cb.equal(cb.lower(root.get("type").as(String.class)), type.toLowerCase()));
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
                 predicates.add(cb.like(root.get("order").get("orderId").as(String.class), "%" + deliverySearcher.getOrderId() + "%"));
