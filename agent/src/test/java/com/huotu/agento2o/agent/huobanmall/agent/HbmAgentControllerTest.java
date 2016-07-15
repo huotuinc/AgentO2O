@@ -12,21 +12,17 @@ package com.huotu.agento2o.agent.huobanmall.agent;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
-import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
-import com.huotu.agento2o.service.repository.author.AgentRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.servlet.http.Cookie;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,13 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HbmAgentControllerTest extends CommonTestBase {
 
     private static String BASE_URL = "/huobanmall/agent";
-    //平台
-    private MallCustomer mockCustomer;
-
-    private Cookie cookie;
-
     //平台下的代理商
     List<MallCustomer> agents = new ArrayList<>();
+    //平台
+    private MallCustomer mockCustomer;
+    private Cookie cookie;
 
     @Before
     public void init() {
@@ -72,22 +66,34 @@ public class HbmAgentControllerTest extends CommonTestBase {
         Page<Agent> page = (Page<Agent>) result.getModelAndView().getModel().get("page");
         List<Agent> agentList = (List<Agent>) page.getContent();
         Assert.assertEquals("huobanmall/agent/agentList", result.getModelAndView().getViewName());
-        Assert.assertTrue(agents.size() == page.getTotalPages());
+        Assert.assertTrue(agents.size() == page.getTotalElements());
         for (int i = 0; i < Math.min(agents.size(), page.getSize()); i++) {
             Assert.assertEquals(agents.get(i).getId(), agentList.get(i).getId());
         }
         //根据代理商账号查询
+        MallCustomer mallAgent = agents.get(0);
         Agent expectAgent = agents.get(0).getAgent();
         result = mockMvc.perform(get(controllerUrl).cookie(cookie)
-                .param("agentLoginName", expectAgent.getUsername()))
+                .param("agentLoginName", mallAgent.getUsername()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("agentLevels"))
                 .andExpect(model().attributeExists("page"))
                 .andExpect(model().attributeExists("agentActiveEnums"))
                 .andReturn();
         page = (Page<Agent>) result.getModelAndView().getModel().get("page");
-        Assert.assertEquals(1, page.getTotalPages());
+        Assert.assertEquals(1, page.getTotalElements());
         Assert.assertEquals(expectAgent.getUsername(), page.getContent().get(0).getUsername());
+
+        result = mockMvc.perform(get(controllerUrl).cookie(cookie)
+                .param("agentName", expectAgent.getName()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("agentLevels"))
+                .andExpect(model().attributeExists("page"))
+                .andExpect(model().attributeExists("agentActiveEnums"))
+                .andReturn();
+        page = (Page<Agent>) result.getModelAndView().getModel().get("page");
+        Assert.assertEquals(1, page.getTotalElements());
+        Assert.assertEquals(expectAgent.getName(), page.getContent().get(0).getName());
         //......
     }
 
@@ -117,6 +123,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         obResult = JSONObject.parseObject(resultString);
         Assert.assertEquals("请求成功", obResult.getString("msg"));
         expectAgent = agents.get(0).getAgent();
+        MallCustomer newMallAgent = mockAgent(mockCustomer, expectAgent);
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("agentId", String.valueOf(expectAgent.getId())))
                 .andExpect(status().isOk())
@@ -223,7 +230,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         JSONObject obResult = JSONObject.parseObject(resultString);
         Assert.assertEquals("请求成功", obResult.getString("msg"));
         JSONArray obData = obResult.getJSONArray("data");
-        Assert.assertTrue(obData.size() == 0);
+        Assert.assertNull(obData);
         result = mockMvc.perform(get(controllerUrl).cookie(cookie)
                 .param("parentAgentLevelId", String.valueOf(agentLevel.getLevelId())))
                 .andExpect(status().isOk())
@@ -271,9 +278,9 @@ public class HbmAgentControllerTest extends CommonTestBase {
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("username", "Username")
                 .param("password", "Password")
-                .param("province", "Province")
-                .param("city", "City")
-                .param("district", "District")
+                .param("provinceCode", "Province")
+                .param("cityCode", "City")
+                .param("districtCode", "District")
                 .param("agentLevelId", String.valueOf(agentLevel.getLevelId()))
                 .param("name", "Name")
                 .param("contact", "Contact")
@@ -289,9 +296,9 @@ public class HbmAgentControllerTest extends CommonTestBase {
 
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("username", "Username")
-                .param("province", "Province")
-                .param("city", "City")
-                .param("district", "District")
+                .param("provinceCode", "Province")
+                .param("cityCode", "City")
+                .param("districtCode", "District")
                 .param("agentLevelId", String.valueOf(agentLevel.getLevelId()))
                 .param("name", "Name")
                 .param("contact", "Contact")

@@ -62,7 +62,7 @@ public class AddresslServiceImplTest extends CommonTestBase {
         List<Address> addressList = addressService.findAddressByAuthorId(mockAgent);
         Assert.assertTrue(addressList.size() > 0);
         addressList = addressService.findAddressByAuthorId(null);
-        Assert.assertTrue(addressList.size() == 0);
+        Assert.assertNull(addressList);
     }
 
     @Test
@@ -72,12 +72,13 @@ public class AddresslServiceImplTest extends CommonTestBase {
         ApiResult result = addressService.addOrUpdate(mockAddress.getId(), mockAgent, requestAddress);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.SUCCESS.getResultMsg()));
         Assert.assertEquals(requestAddress.getReceiver(), addressService.findById(mockAddress.getId(), mockAgent).getReceiver());
-        result = addressService.addOrUpdate(mockAddress.getId(), null, requestAddress);
-        Assert.assertTrue(result.getMsg().equals("该账号已失效"));
         result = addressService.addOrUpdate(null, null, requestAddress);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
         result = addressService.addOrUpdate(mockAddress.getId()+1, mockAgent, requestAddress);
         Assert.assertTrue(result.getMsg().equals(ResultCodeEnum.DATA_NULL.getResultMsg()));
+        mockAgent.getAgent().setDeleted(true);
+        result = addressService.addOrUpdate(mockAddress.getId(), mockAgent, requestAddress);
+        Assert.assertTrue(result.getMsg().equals("该账号已失效"));
     }
 
     @Test

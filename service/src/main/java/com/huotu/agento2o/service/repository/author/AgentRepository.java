@@ -1,6 +1,5 @@
 package com.huotu.agento2o.service.repository.author;
 
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -17,8 +16,6 @@ import java.util.List;
 public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpecificationExecutor {
 
     Agent findByIdAndCustomer_customerId(Integer agentId, Integer customerId);
-
-    Agent findByCustomer_UsernameAndStatus(String userName, AgentStatusEnum status);
 
     List<Agent> findByAgentLevel_levelIdAndIsDeletedFalse(Integer levelId);
 

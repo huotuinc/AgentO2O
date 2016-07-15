@@ -5,7 +5,6 @@ import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.junit.Assert;
@@ -52,17 +51,20 @@ public class ShopControllerTest extends CommonTestBase {
     @Test
     public void testSaveShop() throws Exception {
         MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
-        String userName = UUID.randomUUID().toString();
-        String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
-        shop.setUsername(userName);
-        shop.setPassword(password);
-        shop.setDeleted(false);
-        shop.setDisabled(true);
-        shop.setStatus(AgentStatusEnum.CHECKED);
-        MvcResult result = mockMvc.perform(get(BASE_URL + "/addShop").session(sessionAgent)
-                .param("username", userName)
-                .param("password", password)
+        MvcResult result = mockMvc.perform(post(BASE_URL + "/addShop").session(sessionAgent)
+                .param("username", "username")
+                .param("password", "password")
+                .param("provinceCode", "provinceCode")
+                .param("CityCode", "cityCode")
+                .param("districtCode", "districtCode")
+                .param("name", "name")
+                .param("contact", "contact")
+                .param("mobile", "mobile")
+                .param("email", "email")
+                .param("address", "address")
+                .param("lan", "1")
+                .param("lat", "1")
+                .param("statusVal", "0")
         ).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
@@ -72,8 +74,8 @@ public class ShopControllerTest extends CommonTestBase {
     @Test
     public void testBaseConfig() throws Exception {
         MockHttpSession sessionShop = loginAs(mockShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
-        MvcResult result = mockMvc.perform(get(BASE_URL + "/baseConfig").session(sessionShop)).andExpect(status().isOk()).andReturn();
-        Assert.assertTrue(result.getModelAndView().getViewName().equals("shop/BaseConfigShop"));
+        MvcResult result = mockMvc.perform(get("/config/baseConfig").session(sessionShop)).andExpect(status().isOk()).andReturn();
+        Assert.assertTrue(result.getModelAndView().getViewName().equals("config/shopConfig"));
     }
 
     @Test
@@ -81,8 +83,25 @@ public class ShopControllerTest extends CommonTestBase {
         MockHttpSession sessionShop = loginAs(mockShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
         mockShop.setAfterSalQQ("12345678911");
         mockShop.setComment("更新");
-        MvcResult result = mockMvc.perform(post(BASE_URL + "/updateShop").session(sessionShop)
-                .param("id", mockShop.getId().toString())).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(post("/config/updateShop").session(sessionShop)
+                .param("id", mockShop.getId().toString())
+                .param("provinceCode", "provinceCode")
+                .param("CityCode", "cityCode")
+                .param("districtCode", "districtCode")
+                .param("name", "name")
+                .param("contact", "contact")
+                .param("mobile", "mobile")
+                .param("email", "email")
+                .param("address", "address")
+                .param("lan", "1")
+                .param("lat", "1")
+                .param("serveiceTel", "serveiceTel")
+                .param("afterSalTel", "afterSalTel")
+                .param("afterSalQQ", "afterSalQQ")
+                .param("accountName", "accountName")
+                .param("bankName", "bankName")
+                .param("accountNo", "accountNo")
+        ).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
@@ -108,8 +127,9 @@ public class ShopControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop = shopService.addShop(shop);
+        shopService.flush();
 
-        MvcResult result = mockMvc.perform(get(BASE_URL + "/changeStatus").session(sessionAgent).param("id", shop.getId().toString())).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(post(BASE_URL + "/changeStatus").session(sessionAgent).param("id", shop.getId().toString())).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
@@ -125,10 +145,11 @@ public class ShopControllerTest extends CommonTestBase {
         shop.setUsername(userName);
         shop.setPassword(password);
         shop.setDeleted(false);
+        shop.setStatus(AgentStatusEnum.NOT_CHECK);
         shop.setDisabled(false);
         shop = shopService.addShop(shop);
-
-        MvcResult result = mockMvc.perform(get(BASE_URL + "/delete").session(sessionAgent).param("id", shop.getId().toString())).andExpect(status().isOk()).andReturn();
+        shopService.flush();
+        MvcResult result = mockMvc.perform(post(BASE_URL + "/delete").session(sessionAgent).param("id", shop.getId().toString())).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
@@ -146,8 +167,8 @@ public class ShopControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop = shopService.addShop(shop);
-
-        MvcResult result = mockMvc.perform(get(BASE_URL + "/resetpassword").session(sessionAgent).param("id", shop.getId().toString())
+        shopService.flush();
+        MvcResult result = mockMvc.perform(post(BASE_URL + "/resetpassword").session(sessionAgent).param("id", shop.getId().toString())
                 .param("password", UUID.randomUUID().toString())).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);

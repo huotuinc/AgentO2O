@@ -32,17 +32,17 @@ public class AgentSearcher {
     /**
      * 省
      */
-    private String province;
+    private String provinceCode;
 
     /**
      * 市
      */
-    private String city;
+    private String cityCode;
 
     /**
      * 区
      */
-    private String district;
+    private String districtCode;
 
     /**
      * 等级id

@@ -15,7 +15,6 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
@@ -40,22 +39,6 @@ public interface AgentService {
      * @return
      */
     Agent findByAgentId(Integer agentId);
-
-    /**
-     * 根据登录名获取审核通过的代理商
-     *
-     * @param userName
-     * @return
-     */
-    Agent findByUserName(String userName);
-
-    /**
-     * 增加代理商
-     *
-     * @param agent
-     * @return
-     */
-    Agent addAgent(Agent agent);
 
     /**
      * 刷新，缓存与数据库同步

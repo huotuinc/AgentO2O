@@ -46,13 +46,13 @@
 </head>
 <script th:inline="javascript">
     function init() {
-        var pro = /*[[${searchCondition.province}]]*/"";
-        var city = /*[[${searchCondition.city}]]*/"";
-        var dist = /*[[${searchCondition.district}]]*/"";
+        var pro = /*[[${searchCondition.provinceCode}]]*/"";
+        var cityCode = /*[[${searchCondition.cityCode}]]*/"";
+        var dist = /*[[${searchCondition.districtCode}]]*/"";
         $("#citys").citySelect({
             url: "/resource/3rdParty/js/jquery.cityselect.js",
             prov: pro != null ? pro : '',
-            city: city != null ? city : '',
+            city: cityCode != null ? cityCode : '',
             dist: dist != null ? dist : '',
             nodata: null,
             required: false
@@ -203,26 +203,26 @@
             return;
         }
         var name = $("#name").val();
-        var province = $("#province").val();
-        var city = $("#city").val();
-        var district = $("#district").val();
+        var provinceCode = $("#provinceCode").val();
+        var cityCode = $("#cityCode").val();
+        var districtCode = $("#districtCode").val();
         var status = $("#status").val();
         var url = /*[[@{/shop/exportExcel}]]*/ "";
-        if (province == null) {
-            province = '';
+        if (provinceCode == null) {
+            provinceCode = '';
         }
-        if (city == null) {
-            city = '';
+        if (cityCode == null) {
+            cityCode = '';
         }
-        if (district == null) {
-            district = '';
+        if (districtCode == null) {
+            districtCode = '';
         }
 
         url += '?rnd=' + Math.random()
                 + '&name=' + name
-                + '&province=' + province
-                + '&city=' + city
-                + '&district=' + district
+                + '&provinceCode=' + provinceCode
+                + '&cityCode=' + cityCode
+                + '&districtCode=' + districtCode
                 + '&status=' + status
                 + '&txtBeginPage=' + txtBeginPage
                 + '&txtEndPage=' + txtEndPage
@@ -260,10 +260,12 @@
                         &nbsp;&nbsp;
                         <label class="first ">门店区域：</label>
                         <span id="citys">
-                            <select class="prov" name="province" id="province" th:value="*{province}"></select>
-                            <select class="city" name="city" id="city" disabled="disabled" th:value="*{city}"></select>
-                            <select class="dist" name="district" id="district" disabled="disabled"
-                                    th:value="*{district}"></select>
+                            <select class="prov" name="provinceCode" id="provinceCode"
+                                    th:value="*{provinceCode}"></select>
+                            <select class="cityCode" name="cityCode" id="cityCode" disabled="disabled"
+                                    th:value="*{cityCode}"></select>
+                            <select class="dist" name="districtCode" id="districtCode" disabled="disabled"
+                                    th:value="*{districtCode}"></select>
                         </span>
                         &nbsp;&nbsp;
                         <label class="first ">审核状态：</label>
@@ -374,7 +376,7 @@
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.province}!=null ? |${shop.province} ${shop.city} ${shop.district}| : ''">
+                                            th:text="${shop.provinceCode}!=null ? |${shop.provinceCode} ${shop.cityCode} ${shop.districtCode}| : ''">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>

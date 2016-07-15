@@ -1,23 +1,16 @@
 package com.huotu.agento2o.service.entity.author;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.common.AuthorityEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -34,6 +27,11 @@ public class Agent{
     @Id
     @Column(name = "Agent_ID")
     private Integer id;
+
+    @OneToOne(mappedBy = "agent")
+    @PrimaryKeyJoinColumn(name = "Agent_ID", referencedColumnName = "SC_UserID")
+    @JsonIgnore
+    private MallCustomer mallCustomer;
 
     /**
      * 登录名(用来传递数据)

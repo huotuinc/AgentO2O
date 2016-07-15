@@ -21,6 +21,7 @@ import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -57,6 +58,9 @@ public class AgentServiceImpl implements AgentService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private Environment env;
+
     private Random random = new Random();
 
 
@@ -71,36 +75,13 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public Agent findByUserName(String userName) {
-        return agentRepository.findByCustomer_UsernameAndStatus(userName, AgentStatusEnum.CHECKED);
-    }
-
-    /**
-     * 确保userName和password不能为空
-     *
-     * @param agent
-     * @return
-     */
-    @Override
-    @Transactional
-    public Agent addAgent(Agent agent) {
-        //判断代理商登录名是否唯一
-        if (agent != null && isEnableAgent(agent.getUsername())) {
-            agent.setPassword(passwordEncoder.encode(agent.getPassword()));
-            agent.setCreateTime(new Date());
-            return agentRepository.save(agent);
-        }
-        return null;
-    }
-
-    @Override
     public void flush() {
         agentRepository.flush();
     }
 
     @Override
     public List<Agent> findByAgentLevelId(Integer levelId) {
-        return agentRepository.findByAgentLevel_levelIdAndIsDeletedFalse(levelId);
+        return levelId == null ? null : agentRepository.findByAgentLevel_levelIdAndIsDeletedFalse(levelId);
     }
 
     @Override
@@ -115,7 +96,7 @@ public class AgentServiceImpl implements AgentService {
             predicates.add(criteriaBuilder.equal(root.get("customer").get("customerId").as(Integer.class), customerId));
             predicates.add(criteriaBuilder.equal(root.get("isDeleted").as(Boolean.class), false));
             if (StringUtil.isNotEmpty(agentSearcher.getAgentLoginName())) {
-                predicates.add(criteriaBuilder.like(root.get("username").as(String.class), "%" + agentSearcher.getAgentLoginName() + "%"));
+                predicates.add(criteriaBuilder.like(root.get("mallCustomer").get("username").as(String.class), "%" + agentSearcher.getAgentLoginName() + "%"));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getAgentName())) {
                 predicates.add(criteriaBuilder.like(root.get("name").as(String.class), "%" + agentSearcher.getAgentName() + "%"));
@@ -126,14 +107,14 @@ public class AgentServiceImpl implements AgentService {
             if (agentSearcher.getLevelId() != -1) {
                 predicates.add(criteriaBuilder.equal(root.get("agentLevel").get("levelId").as(Integer.class), agentSearcher.getLevelId()));
             }
-            if (StringUtil.isNotEmpty(agentSearcher.getProvince())) {
-                predicates.add(criteriaBuilder.equal(root.get("provinceCode").as(String.class), agentSearcher.getProvince()));
+            if (StringUtil.isNotEmpty(agentSearcher.getProvinceCode())) {
+                predicates.add(criteriaBuilder.equal(root.get("provinceCode").as(String.class), agentSearcher.getProvinceCode()));
             }
-            if (StringUtil.isNotEmpty(agentSearcher.getCity())) {
-                predicates.add(criteriaBuilder.equal(root.get("cityCode").as(String.class), agentSearcher.getCity()));
+            if (StringUtil.isNotEmpty(agentSearcher.getCityCode())) {
+                predicates.add(criteriaBuilder.equal(root.get("cityCode").as(String.class), agentSearcher.getCityCode()));
             }
-            if (StringUtil.isNotEmpty(agentSearcher.getDistrict())) {
-                predicates.add(criteriaBuilder.equal(root.get("districtCode").as(String.class), agentSearcher.getDistrict()));
+            if (StringUtil.isNotEmpty(agentSearcher.getDistrictCode())) {
+                predicates.add(criteriaBuilder.equal(root.get("districtCode").as(String.class), agentSearcher.getDistrictCode()));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getBeginTime())) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class), StringUtil.DateFormat(agentSearcher.getBeginTime(), StringUtil.TIME_PATTERN)));
@@ -176,9 +157,10 @@ public class AgentServiceImpl implements AgentService {
         AgentLevel agentLevel = agentLevelService.findById(agentLevelId, customerId);
         Agent parentAgent = null;
         Agent agent = null;
+        MallCustomer mallAgent = null;
         UserBaseInfo userBaseInfo = null;
         //必须保证平台方和等级存在才能保存代理商
-        if (customer == null || agentLevel == null || requestAgent == null || requestAgent.getId() == null) {
+        if (customerId == null || customer == null || agentLevel == null || requestAgent == null || requestAgent.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (parentAgentId != null && parentAgentId != -1) {
@@ -197,11 +179,12 @@ public class AgentServiceImpl implements AgentService {
         }
         //根据代理商的id判断是增加还是修改，当大于0时是修改
         if (requestAgent.getId() > 0) {
-            agent = findById(requestAgent.getId(), customerId);
+            mallAgent = mallCustomerService.findByCustomerId(requestAgent.getId());
             //当代理商不存在、已删除情况下无法修改
-            if (agent == null || agent.isDeleted()) {
+            if (mallAgent == null || mallAgent.getAgent() == null || mallAgent.getAgent().getCustomer() == null || !customerId.equals(mallAgent.getAgent().getCustomer().getCustomerId()) || mallAgent.getAgent().isDeleted()) {
                 return new ApiResult("该代理商已失效");
             }
+            agent = mallAgent.getAgent();
         } else {
             //判断用户名是否可用
             if (!isEnableAgent(requestAgent.getUsername())) {
@@ -215,8 +198,11 @@ public class AgentServiceImpl implements AgentService {
             agent.setStatus(AgentStatusEnum.CHECKED);
             agent.setDisabled(false);
             agent.setDeleted(false);
-            saveMallCustomer(agent);
+            mallAgent = newMallCustomer(agent);
+            agent.setId(mallAgent.getCustomerId());
+            mallAgent.setAgent(agent);
         }
+        mallAgent.setNickName(agent.getName());
         agent.setAgentLevel(agentLevel);
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
@@ -231,7 +217,8 @@ public class AgentServiceImpl implements AgentService {
         agent.setAddress_Area(requestAgent.getAddress_Area());
         agent.setTelephone(requestAgent.getTelephone());
         agent.setEmail(requestAgent.getEmail());
-        agent = agentRepository.save(agent);
+        mallAgent = mallCustomerService.save(mallAgent);
+        agent = mallAgent.getAgent();
         Account account = accountRepository.findByAgent_Id(agent.getId());
         if(account == null){
             account = new Account();
@@ -241,12 +228,12 @@ public class AgentServiceImpl implements AgentService {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
-    private MallCustomer saveMallCustomer(Agent agent) {
+    private MallCustomer newMallCustomer(Agent agent) {
         String key = StringUtil.createRandomStr(6);
         Integer token = random.nextInt(900000) + 100000;
-        String url = String.format("http://distribute.{0}/index.aspx?key={1}&t=huotu", "", key);// TODO: 2016/7/13
+        String mainDomian = SysConstant.COOKIE_DOMAIN;
+        String url = String.format("http://distribute.%s/index.aspx?key=%s&t=huotu", mainDomian, key);
         MallCustomer customer = new MallCustomer();
-        customer.setAgent(agent);
         customer.setUsername(agent.getUsername());
         customer.setPassword(passwordEncoder.encode(agent.getPassword()));
         customer.setNickName(agent.getName());
@@ -299,11 +286,13 @@ public class AgentServiceImpl implements AgentService {
         if (agentId == null || requestAgent == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        Agent agent = findByAgentId(agentId);
+        MallCustomer mallAgent = mallCustomerService.findByCustomerId(agentId);
         //当代理商不存在、已删除、已冻结情况下无法修改
-        if (agent == null || agent.isDeleted() || agent.isDisabled()) {
+        if (mallAgent == null || mallAgent.getAgent() == null || mallAgent.getAgent().isDeleted() || mallAgent.getAgent().isDisabled()) {
             return new ApiResult("该账号已失效");
         }
+        Agent agent = mallAgent.getAgent();
+
         UserBaseInfo userBaseInfo = null;
         //小伙伴账号绑定限制
         if (StringUtil.isNotEmpty(hotUserName)) {
@@ -331,6 +320,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setAccountNo(requestAgent.getAccountNo());
         agent.setBankName(requestAgent.getBankName());
         agent.setEmail(requestAgent.getEmail());
+        mallCustomerService.save(mallAgent);
         Account account = accountRepository.findByAgent_Id(agent.getId());
         if(account == null){
             account = new Account();

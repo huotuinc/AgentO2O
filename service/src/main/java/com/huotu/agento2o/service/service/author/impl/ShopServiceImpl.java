@@ -36,7 +36,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -135,7 +134,7 @@ public class ShopServiceImpl implements ShopService {
                 return new ApiResult("该门店已被刪除");
             }
             //当门店状态为待审核和审核通过时代理商不能修改
-            if (oldShop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || oldShop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
+            if (oldShop.getStatus() == null || oldShop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || oldShop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
                 return new ApiResult("不能修改");
             }
             if (shop.getStatus() != null) {
@@ -181,7 +180,7 @@ public class ShopServiceImpl implements ShopService {
             return new ApiResult("该门店已被刪除");
         }
         //只有当门店状态为审核通过时，门店才能修改
-        if (!(oldShop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode())) {
+        if (!(oldShop.getStatus() != null && oldShop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode())) {
             return new ApiResult("不能修改");
         }
         //小伙伴账号绑定限制
@@ -266,7 +265,7 @@ public class ShopServiceImpl implements ShopService {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         //当门店状态为待审核和审核通过时代理商不能删除
-        if (shop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || shop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
+        if (shop.getStatus() == null || shop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || shop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
             return new ApiResult("不可删除");
         }
         shop.setDeleted(true);
@@ -324,14 +323,14 @@ public class ShopServiceImpl implements ShopService {
             if (!StringUtils.isEmpty(searchCondition.getName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + searchCondition.getName() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getProvince())) {
-                predicates.add(cb.like(root.get("provinceCode").as(String.class), "%" + searchCondition.getProvince() + "%"));
+            if (!StringUtil.isEmptyStr(searchCondition.getProvinceCode())) {
+                predicates.add(cb.like(root.get("provinceCode").as(String.class), "%" + searchCondition.getProvinceCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getCity())) {
-                predicates.add(cb.like(root.get("cityCode").as(String.class), "%" + searchCondition.getCity() + "%"));
+            if (!StringUtil.isEmptyStr(searchCondition.getCityCode())) {
+                predicates.add(cb.like(root.get("cityCode").as(String.class), "%" + searchCondition.getCityCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getDistrict())) {
-                predicates.add(cb.like(root.get("districtCode").as(String.class), "%" + searchCondition.getDistrict() + "%"));
+            if (!StringUtil.isEmptyStr(searchCondition.getDistrictCode())) {
+                predicates.add(cb.like(root.get("districtCode").as(String.class), "%" + searchCondition.getDistrictCode() + "%"));
             }
             if (searchCondition.getStatus() != -1) {
                 predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, searchCondition.getStatus())));
@@ -348,14 +347,14 @@ public class ShopServiceImpl implements ShopService {
             if (!StringUtil.isEmptyStr(searchCondition.getParent_username())) {
                 predicates.add(cb.like(root.get("agent").get("username").as(String.class), "%" + searchCondition.getParent_username() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_province())) {
-                predicates.add(cb.like(root.get("agent").get("provinceCode").as(String.class), "%" + searchCondition.getParent_province() + "%"));
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_provinceCode())) {
+                predicates.add(cb.like(root.get("agent").get("provinceCode").as(String.class), "%" + searchCondition.getParent_provinceCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_city())) {
-                predicates.add(cb.like(root.get("agent").get("cityCode").as(String.class), "%" + searchCondition.getParent_city() + "%"));
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_cityCode())) {
+                predicates.add(cb.like(root.get("agent").get("cityCode").as(String.class), "%" + searchCondition.getParent_cityCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_district())) {
-                predicates.add(cb.like(root.get("agent").get("districtCode").as(String.class), "%" + searchCondition.getParent_district() + "%"));
+            if (!StringUtil.isEmptyStr(searchCondition.getParent_districtCode())) {
+                predicates.add(cb.like(root.get("agent").get("districtCode").as(String.class), "%" + searchCondition.getParent_districtCode() + "%"));
             }
 
             //等级过滤

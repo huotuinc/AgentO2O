@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <!--
   ~ 版权所有:杭州火图科技有限公司
   ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
@@ -114,13 +114,13 @@
                                 <tr>
                                     <th>代理商等级:</th>
                                     <td>
-                                        <span th:text="*{parentAuthor==null || parentAuthor.agentLevel==null ? '':parentAuthor.agentLevel.levelName}"></span>
+                                        <span th:text="*{parentAgent==null || parentAgent.agentLevel==null ? '':parentAgent.agentLevel.levelName}"></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>代理商账户:</th>
                                     <td>
-                                        <span th:text="*{parentAuthor==null ? '':parentAuthor.username}"></span>
+                                        <span th:text="*{parentAgent==null ? '':parentAgent.username}"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -148,9 +148,9 @@
                                     <th>代理商所在区域:</th>
                                     <td>
                                         <div id="citys">
-                                            <span class="prov" id="province" th:text="*{province}"></span>
-                                            <span class="city" id="city" th:text="*{city}"></span>
-                                            <span class="dist" id="district" th:text="*{district}"></span>
+                                            <span class="prov" id="provinceCode" th:text="*{provinceCode}"></span>
+                                            <span class="cityCode" id="cityCode" th:text="*{cityCode}"></span>
+                                            <span class="dist" id="districtCode" th:text="*{districtCode}"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -206,7 +206,7 @@
                                     <th>激活状态:</th>
                                     <td>
                                         <span class="input-normal" style="color:red;"
-                                              th:text="*{isAccountNonLocked()}?'激活':'冻结'"></span>
+                                              th:text="*{isDisabled()}?'冻结':'激活'"></span>
                                     </td>
 
                                 </tr>
