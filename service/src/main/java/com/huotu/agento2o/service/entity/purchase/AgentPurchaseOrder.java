@@ -54,6 +54,13 @@ public class AgentPurchaseOrder {
     private Shop shop;
 
     /**
+     * 发货方代理商
+     */
+    @JoinColumn(name = "Parent_Agent_Id")
+    @ManyToOne
+    private Agent parentAgent;
+
+    /**
      * 总金额
      */
     @Column(name = "Final_Amount", precision = 2)
@@ -233,19 +240,6 @@ public class AgentPurchaseOrder {
             return this.agent.getName();
         }else if(this.shop != null){
             return this.shop.getName();
-        }
-        return null;
-    }
-
-    /**
-     * 获取代理商或者门店的上级代理商
-     * @return
-     */
-    public Agent getParentAgent(){
-        if(this.agent != null){
-            return this.agent.getParentAgent();
-        }else if(this.shop != null){
-            return this.shop.getAgent();
         }
         return null;
     }

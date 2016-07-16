@@ -50,6 +50,10 @@ public class AgentReturnedOrder {
     @ManyToOne
     private Shop shop;
 
+    @JoinColumn(name = "Parent_Agent_Id")
+    @ManyToOne
+    private Agent parentAgent;
+
     /**
      * 总金额
      */

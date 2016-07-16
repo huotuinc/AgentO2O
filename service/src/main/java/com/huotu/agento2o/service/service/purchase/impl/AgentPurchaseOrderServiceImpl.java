@@ -85,14 +85,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (purchaseOrderSearcher.getParentAgentId() != null) {
                 if (purchaseOrderSearcher.getParentAgentId() == 0) {
                     //只有代理商的上级代理才可能为平台方
-                    predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
-                    predicates.add(cb.isNull(root.get("shop").as(Shop.class)));
+                    predicates.add(cb.isNull(root.get("parentAgent").as(Agent.class)));
                 } else {
-                    Join<AgentPurchaseOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
-                    Join<AgentPurchaseOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
-                    Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId());
-                    Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId());
-                    predicates.add(cb.or(p1, p2));
+                    predicates.add(cb.equal(root.get("parentAgent").get("id").as(Agent.class),purchaseOrderSearcher.getParentAgentId()));
                     /*predicates.add(cb.or(
                             cb.equal(root.get("agent").get("parentAgent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId()),
                             cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getParentAgentId())
@@ -156,6 +151,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         purchaseOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         purchaseOrder.setAgent(author.getAuthorAgent());
         purchaseOrder.setShop(author.getAuthorShop());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setDisabled(false);
         purchaseOrder.setCreateTime(new Date());
         purchaseOrder.setLastUpdateTime(new Date());
@@ -341,7 +337,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             }
             agentProductRepository.save(agentProduct);
             //减少上级代理商/平台方货品的预占库存及库存
-            if (author.getParentAgent() == null) {
+            if (agentPurchaseOrder.getParentAgent() == null) {
                 //上级为平台方 获取平台方商品
                 if (product == null || product.getFreez() - item.getNum() < 0 || product.getStore() - item.getNum() < 0) {
                     throw new Exception("保存异常！");
@@ -351,7 +347,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 productRepository.save(product);
             } else {
                 //上级为代理商 获取代理商货品
-                AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), product);
+                AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentPurchaseOrder.getParentAgent(), product);
                 if (parentAgentProduct == null || parentAgentProduct.getFreez() - item.getNum() < 0 || parentAgentProduct.getStore() - item.getNum() < 0) {
                     throw new Exception("保存异常！");
                 }

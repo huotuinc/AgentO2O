@@ -90,6 +90,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     public ApiResult addReturnOrder(AgentReturnedOrder agentReturnedOrder, Author author, Integer[] agentProductIds, Integer[] productNums) throws Exception {
         agentReturnedOrder.setROrderId(SerialNo.create());
         agentReturnedOrder.setAuthor(author);
+        agentReturnedOrder.setParentAgent(author.getParentAgent());
         agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
         agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
@@ -143,11 +144,12 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 if (returnedOrderSearch.getParentAgentId() == 0) {
                     predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
                 } else {
-                    Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
+                    /*Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
                     Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
                     Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
-                    predicates.add(cb.or(p1,p2));
+                    predicates.add(cb.or(p1,p2));*/
+                    predicates.add(cb.equal(root.get("parentAgent").get("id").as(Agent.class),returnedOrderSearch.getParentAgentId()));
                 }
             }
             if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
