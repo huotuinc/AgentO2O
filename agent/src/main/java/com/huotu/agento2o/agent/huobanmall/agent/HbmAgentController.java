@@ -131,7 +131,6 @@ public class HbmAgentController {
         if (agentId > 0) {
             MallCustomer customer = mallCustomerService.findByCustomerId(agentId);
             Agent oldAgent = customer.getAgent();
-            oldAgent.setUsername(customer.getUsername());
             //获取上级代理商的代理商等级
             if (oldAgent.getParentAgent() != null && (oldAgent.getParentAgent()).getAgentLevel() != null) {
                 parentAgentLevelId = oldAgent.getParentAgent().getAgentLevel().getLevelId();
@@ -175,7 +174,7 @@ public class HbmAgentController {
         if ( requestAgent.getId() != null && requestAgent.getId() == 0 && StringUtil.isEmptyStr(requestAgent.getPassword())) {
             return new ApiResult("请输入密码");
         }
-        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getDistrictCode())) {
+        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getAddress_Area())) {
             return new ApiResult("请选择区域");
         }
         if (agentLevelId == null || agentLevelId == -1) {

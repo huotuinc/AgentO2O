@@ -36,8 +36,8 @@
             th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
     <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
             th:src="@{/resource/lib/ajaxfileupload.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
-            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/regionNode.js"
+            th:src="@{/resource/3rdParty/js/regionNode.js}"></script>
     <style>
         #jbox {
             left: 20%;
@@ -49,28 +49,12 @@
         var shopPro = /*[[${searchCondition.provinceCode}]]*/"";
         var shopCity = /*[[${searchCondition.cityCode}]]*/"";
         var shopDist = /*[[${searchCondition.districtCode}]]*/"";
-        $("#citys").citySelect({
-            url: "/resource/3rdParty/js/jquery.cityselect.js",
-            prov: shopPro != null ? shopPro : '',
-            cityCode: shopCity != null ? shopCity : '',
-            dist: shopDist != null ? shopDist : '',
-            nodata: null,
-            required: false
-        });
-
-        var par_pro = /*[[${searchCondition.parent_province}]]*/"";
-        var par_city = /*[[${searchCondition.parent_city}]]*/"";
-        var par_dist = /*[[${searchCondition.parent_district}]]*/"";
-        $("#agent_citys").citySelect({
-            url: "/resource/3rdParty/js/jquery.cityselect.js",
-            prov: par_pro != null ? par_pro : '',
-            cityCode: par_city != null ? par_city : '',
-            dist: par_dist != null ? par_dist : '',
-            nodata: null,
-            required: false
-        });
+        $("#citys").citySelect(shopPro, shopCity, shopDist);
+        var par_pro = /*[[${searchCondition.parent_provinceCode}]]*/"";
+        var par_city = /*[[${searchCondition.parent_cityCode}]]*/"";
+        var par_dist = /*[[${searchCondition.parent_districtCode}]]*/"";
+        $("#agent_citys").citySelect(par_pro, par_city, par_dist);
     }
-
     function changeIsDisabled(obj) {
         var shopId = $(obj).attr("shopid");
         var text = $(obj).text();
@@ -160,9 +144,9 @@
         var parent_name = $("#parent_name").val();
         var parent_username = $("#parent_username").val();
         var parent_agentLevel = $("#parent_agentLevel").val();
-        var parent_province = $("#parent_province").val();
-        var parent_city = $("#parent_city").val();
-        var parent_district = $("#parent_district").val();
+        var parent_provinceCode = $("#parent_provinceCode").val();
+        var parent_cityCode = $("#parent_cityCode").val();
+        var parent_districtCode = $("#parent_districtCode").val();
 
         var url = /*[[@{/huobanmall/shop/exportExcel}]]*/"";
         if (provinceCode == null) {
@@ -174,14 +158,14 @@
         if (districtCode == null) {
             districtCode = '';
         }
-        if (parent_province == null) {
-            parent_province = '';
+        if (parent_provinceCode == null) {
+            parent_provinceCode = '';
         }
-        if (parent_city == null) {
-            parent_city = '';
+        if (parent_cityCode == null) {
+            parent_cityCode = '';
         }
-        if (parent_district == null) {
-            parent_district = '';
+        if (parent_districtCode == null) {
+            parent_districtCode = '';
         }
 
         url += '?rnd=' + Math.random()
@@ -196,9 +180,9 @@
                 + '&parent_name=' + parent_name
                 + '&parent_username=' + parent_username
                 + '&parent_agentLevel=' + parent_agentLevel
-                + '&parent_province=' + parent_province
-                + '&parent_city=' + parent_city
-                + '&parent_district=' + parent_district
+                + '&parent_provinceCode=' + parent_provinceCode
+                + '&parent_cityCode=' + parent_cityCode
+                + '&parent_districtCode=' + parent_districtCode
         ;
         window.location.href = url;
     };
@@ -304,7 +288,7 @@
 </script>
 <body marginwidth="0" marginheight="0" onload="init()">
 <!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.ShopSearchCondition"*/-->
-<form method="get" action="/order/getOrdersPage" th:action="@{/huobanmall/shop/shopList}" id="form1"
+<form method="post" action="/order/getOrdersPage" th:action="@{/huobanmall/shop/shopList}" id="form1"
       th:object="${searchCondition}">
     <div class="container">
         <div class="blank10">
@@ -327,11 +311,11 @@
                                style="width: 120px;" th:value="*{parent_username}"/>
                         <label class="first ">上级代理商区域：</label>
                         <span id="agent_citys">
-                            <select class="prov" name="parent_province" id="parent_province"
+                            <select class="prov" name="parent_provinceCode" id="parent_provinceCode"
                                     th:value="*{parent_provinceCode}"></select>
-                            <select class="cityCode" name="parent_city" id="parent_city" disabled="disabled"
+                            <select class="city" name="parent_cityCode" id="parent_cityCode"
                                     th:value="*{parent_cityCode}"></select>
-                            <select class="dist" name="parent_district" id="parent_district" disabled="disabled"
+                            <select class="dist" name="parent_districtCode" id="parent_districtCode"
                                     th:value="*{parent_districtCode}"></select>
                         </span>
                         <br/>
@@ -351,9 +335,9 @@
                         <span id="citys">
                             <select class="prov" name="provinceCode" id="provinceCode"
                                     th:value="*{provinceCode}"></select>
-                            <select class="cityCode" name="cityCode" id="cityCode" disabled="disabled"
+                            <select class="city" name="cityCode" id="cityCode"
                                     th:value="*{cityCode}"></select>
-                            <select class="dist" name="districtCode" id="districtCode" disabled="disabled"
+                            <select class="dist" name="districtCode" id="districtCode"
                                     th:value="*{districtCode}"></select>
                         </span>
 
@@ -458,7 +442,7 @@
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.provinceCode}!=null ? |${shop.provinceCode} ${shop.cityCode} ${shop.districtCode}| : ''">
+                                            th:text="${shop.address_Area}">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>

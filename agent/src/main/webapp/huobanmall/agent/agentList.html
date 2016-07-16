@@ -38,8 +38,8 @@
             th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
             th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
-    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.cityselect.js"
-            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/regionNode.js"
+            th:src="@{/resource/3rdParty/js/regionNode.js}"></script>
     <script type="text/javascript" th:inline="javascript">
         var ajaxUrl = /*[[@{/huobanmall/agent/}]]*/ "/huobanmall/agent";
     </script>
@@ -204,13 +204,11 @@
                         </select>
                         <label class="first ">所在区域:</label>
                         <span id="citys">
-                            <select class="prov" id="provinceCode" th:value="${agentSearcher.provinceCode}"
+                            <select class="prov" id="provinceCode"
                                     name="provinceCode"></select>
-                            <select class="cityCode" id="cityCode" disabled="disabled"
-                                    th:value="${agentSearcher.cityCode}"
+                            <select class="city" id="cityCode"
                                     name="cityCode"></select>
-                            <select class="dist" id="districtCode" disabled="disabled"
-                                    th:value="${agentSearcher.districtCode}"
+                            <select class="dist" id="districtCode"
                                     name="districtCode"></select>
                         </span>
 
@@ -312,7 +310,7 @@
                                 13888888000
                             </td>
                             <td class="txt40 c"
-                                th:text="${#strings.defaultString(agent.provinceCode,'')}+' '+${#strings.defaultString(agent.cityCode,'')}+' '+${#strings.defaultString(agent.districtCode,'')}">
+                                th:text="${#strings.defaultString(agent.address_Area,'')}">
                                 浙江杭州西湖区
                             </td>
                             <td class="txt40 c" th:text="${agent.agentLevel}==null?'':${agent.agentLevel.levelName}">
@@ -422,22 +420,10 @@
 </script>
 <script th:inline="javascript">
     var pro = /*[[${agentSearcher.provinceCode==null?'':agentSearcher.provinceCode}]]*/ "";
-    var cityCode = /*[[${agentSearcher.cityCode}]]*/ "";
+    var city = /*[[${agentSearcher.cityCode}]]*/ "";
     var dist = /*[[${agentSearcher.districtCode}]]*/ "";
     $(function () {
-        if (pro.length != 0) {
-            $("#citys").citySelect({
-                url: "/resource/3rdParty/js/jquery.cityselect.js",
-                prov: pro,
-                city: cityCode,
-                dist: dist,
-                nodata: null,
-                required: false
-            });
-        } else {
-            $("#citys").citySelect();
-        }
-        ;
+        $("#citys").citySelect(pro, city, dist);
     })
 
 </script>

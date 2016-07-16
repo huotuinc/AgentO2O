@@ -207,4 +207,11 @@ public class Agent{
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
     }
+
+    public String getUsername() {
+        if (mallCustomer != null) {
+            return mallCustomer.getUsername();
+        }
+        return this.username;
+    }
 }

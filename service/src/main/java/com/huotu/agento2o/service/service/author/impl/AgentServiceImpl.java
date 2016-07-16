@@ -163,6 +163,9 @@ public class AgentServiceImpl implements AgentService {
         if (customerId == null || customer == null || agentLevel == null || requestAgent == null || requestAgent.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
+        if (requestAgent.getId().equals(parentAgentId)) {
+            return new ApiResult("上级代理商不能绑自己");
+        }
         if (parentAgentId != null && parentAgentId != -1) {
             parentAgent = findById(parentAgentId, customerId);
         }
@@ -193,16 +196,14 @@ public class AgentServiceImpl implements AgentService {
             agent = new Agent();
             agent.setCustomer(customer);
             agent.setCreateTime(new Date());
-            agent.setUsername(requestAgent.getUsername());
-            agent.setPassword(passwordEncoder.encode(requestAgent.getPassword()));
             agent.setStatus(AgentStatusEnum.CHECKED);
             agent.setDisabled(false);
             agent.setDeleted(false);
-            mallAgent = newMallCustomer(agent);
+            mallAgent = newMallCustomer(requestAgent);
             agent.setId(mallAgent.getCustomerId());
             mallAgent.setAgent(agent);
         }
-        mallAgent.setNickName(agent.getName());
+        mallAgent.setNickName(requestAgent.getName());
         agent.setAgentLevel(agentLevel);
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
@@ -236,7 +237,6 @@ public class AgentServiceImpl implements AgentService {
         MallCustomer customer = new MallCustomer();
         customer.setUsername(agent.getUsername());
         customer.setPassword(passwordEncoder.encode(agent.getPassword()));
-        customer.setNickName(agent.getName());
         customer.setIndustryType(0);
         customer.setUserActivate(1);
         customer.setRoleID(-2);

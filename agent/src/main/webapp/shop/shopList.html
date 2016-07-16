@@ -36,8 +36,8 @@
             th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
     <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
             th:src="@{/resource/lib/ajaxfileupload.js}"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
-            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/regionNode.js"
+            th:src="@{/resource/3rdParty/js/regionNode.js}"></script>
     <style>
         #jbox {
             left: 20%;
@@ -47,16 +47,9 @@
 <script th:inline="javascript">
     function init() {
         var pro = /*[[${searchCondition.provinceCode}]]*/"";
-        var cityCode = /*[[${searchCondition.cityCode}]]*/"";
+        var city = /*[[${searchCondition.cityCode}]]*/"";
         var dist = /*[[${searchCondition.districtCode}]]*/"";
-        $("#citys").citySelect({
-            url: "/resource/3rdParty/js/jquery.cityselect.js",
-            prov: pro != null ? pro : '',
-            city: cityCode != null ? cityCode : '',
-            dist: dist != null ? dist : '',
-            nodata: null,
-            required: false
-        });
+        $("#citys").citySelect(pro, city, dist);
     }
 
     function changeStatus(obj) {
@@ -241,7 +234,7 @@
 </script>
 <body marginwidth="0" marginheight="0" onload="init()">
 <!--/*@thymesVar id="searchCondition" type="com.huotu.agento2o.service.searchable.ShopSearchCondition"*/-->
-<form method="get" action="/order/getOrdersPage" th:action="@{/shop/shopList}" id="form1"
+<form method="post" action="/order/getOrdersPage" th:action="@{/shop/shopList}" id="form1"
       th:object="${searchCondition}">
     <div class="container">
         <div class="blank10">
@@ -262,9 +255,9 @@
                         <span id="citys">
                             <select class="prov" name="provinceCode" id="provinceCode"
                                     th:value="*{provinceCode}"></select>
-                            <select class="cityCode" name="cityCode" id="cityCode" disabled="disabled"
+                            <select class="city" name="cityCode" id="cityCode"
                                     th:value="*{cityCode}"></select>
-                            <select class="dist" name="districtCode" id="districtCode" disabled="disabled"
+                            <select class="dist" name="districtCode" id="districtCode"
                                     th:value="*{districtCode}"></select>
                         </span>
                         &nbsp;&nbsp;
@@ -376,7 +369,7 @@
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.provinceCode}!=null ? |${shop.provinceCode} ${shop.cityCode} ${shop.districtCode}| : ''">
+                                            th:text="${shop.address_Area}">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>

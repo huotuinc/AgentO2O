@@ -10,7 +10,6 @@
 package com.huotu.agento2o.agent.controller.config;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
@@ -23,7 +22,6 @@ import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +56,9 @@ public class AgentController {
         }
         if(Agent.class == author.getType()){
             //代理商
-            model.addAttribute("agent",author.getAuthorAgent());
+            Agent agent = author.getAuthorAgent();
+            agent.setUsername(author.getUsername());
+            model.addAttribute("agent", agent);
             return "config/agentConfig";
         }else if(Shop.class == author.getType()){
             //门店
@@ -83,7 +83,7 @@ public class AgentController {
         if (!mallCustomer.getId().equals(requestAgent.getId())) {
             return new ApiResult("没有权限");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getDistrictCode())){
+        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getAddress_Area())) {
             return new ApiResult("请选择区域");
         }
         if(StringUtil.isEmptyStr(requestAgent.getName())){
@@ -155,7 +155,7 @@ public class AgentController {
         if (!curShop.getId().equals(shop.getId())) {
             return new ApiResult("没有权限");
         }
-        if(StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getDistrictCode())){
+        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getAddress_Area())) {
             return new ApiResult("请选择区域");
         }
         if(StringUtil.isEmptyStr(shop.getName())){
