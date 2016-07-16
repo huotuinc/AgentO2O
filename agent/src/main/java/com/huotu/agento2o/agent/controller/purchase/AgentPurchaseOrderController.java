@@ -176,11 +176,11 @@ public class AgentPurchaseOrderController {
         //获取发货信息
         DeliverySearcher deliverySearcher = new DeliverySearcher();
         deliverySearcher.setOrderId(pOrderId);
-        if(author.getType() == Agent.class){
+        /*if(author.getType() == Agent.class){
             deliverySearcher.setAgentId(author.getId());
         }else if(author.getType() == Shop.class){
             deliverySearcher.setShopId(author.getId());
-        }
+        }*/
         List<AgentDelivery> agentDeliveryList = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher).getContent();
         model.addObject("deliveryList",agentDeliveryList);
         model.addObject("purchaseOrder", purchaseOrder);

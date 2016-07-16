@@ -238,12 +238,12 @@ public class AgentReturnedOrderController {
         //获取本级代理商/门店采购退货发货信息
         if(subAuthorId == null){
             deliverySearcher.setOrderId(rOrderId);
-            deliverySearcher.setAgentId(author.getId());
+//            deliverySearcher.setAgentId(author.getId());
             agentDeliveryList = agentDeliveryService.showReturnDeliveryList(deliverySearcher).getContent();
 
         } else{//获取下级代理商/门店采购退货发货信息
-            deliverySearcher.setAgentId(subAuthorId);
-            deliverySearcher.setParentAgentId(author.getId());
+//            deliverySearcher.setAgentId(subAuthorId);
+//            deliverySearcher.setParentAgentId(author.getId());
             deliverySearcher.setOrderId(rOrderId);
             agentDeliveryList = agentDeliveryService.showReturnDeliveryList(deliverySearcher).getContent();
         }
