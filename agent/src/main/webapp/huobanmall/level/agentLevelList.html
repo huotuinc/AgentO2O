@@ -32,7 +32,7 @@
     <script src="resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
             th:src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
     <script type="text/javascript" th:inline="javascript">
-        var ajaxUrl = /*[[@{/huobanmall/level/}]]*/ "/huobanmall/level";
+        var ajaxUrl = /*[[@{/huobanmall/level/}]]*/ "/huobanmall/level/";
     </script>
 
     <style type="text/css">
@@ -164,7 +164,9 @@
         showEdit: function (levelId) {
             $("#edit_dialog").html($("#level_edit_template").html());
             if (levelId > 0) {
-                J.GetJsonRespons(ajaxUrl + levelId, null, function (json) {
+                J.GetJsonRespons(ajaxUrl + "/get", {
+                    levelId: levelId
+                }, function (json) {
                     var level = json.data;
                     $("#levelName").val(level.levelName);
                     $("#comment").val(level.comment);

@@ -78,7 +78,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public List<Shop> findByAgentId(Integer agentId) {
-        return shopRepository.findByAgent_Id(agentId);
+        return shopRepository.findByAgent_IdAndIsDeletedFalse(agentId);
     }
 
     @Override
@@ -103,12 +103,12 @@ public class ShopServiceImpl implements ShopService {
         UserBaseInfo userBaseInfo = null;
         if (StringUtil.isNotEmpty(hotUserName)) {
             userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName,
-                    shop.getCustomer().getCustomerId());
+                    agent.getCustomer().getCustomerId());
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在", 400);
             }
 
-            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            Shop shopUser = shopRepository.findByUserBaseInfo_userIdAndIsDeletedFalse(userBaseInfo.getUserId());
             if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
                 return new ApiResult("小伙伴账号已被绑定", 400);
             }
@@ -191,7 +191,7 @@ public class ShopServiceImpl implements ShopService {
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在", 400);
             }
-            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            Shop shopUser = shopRepository.findByUserBaseInfo_userIdAndIsDeletedFalse(userBaseInfo.getUserId());
             if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
                 return new ApiResult("小伙伴账号已被绑定", 400);
             }
@@ -217,6 +217,7 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setAccountName(shop.getAccountName());
         oldShop.setAccountNo(shop.getAccountNo());
         oldShop.setEmail(shop.getEmail());
+        oldShop.setLogo(shop.getLogo());
         shopRepository.save(oldShop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }

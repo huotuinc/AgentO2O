@@ -4,14 +4,12 @@ import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -68,9 +66,9 @@ public class HbmAgentLevelController {
      * @param levelId
      * @return
      */
-    @RequestMapping(value = "{levelId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
     @ResponseBody
-    public ApiResult showLevel(@RequestAttribute(value = "customerId") Integer customerId,@PathVariable Integer levelId) {
+    public ApiResult showLevel(@RequestAttribute(value = "customerId") Integer customerId, Integer levelId) {
         AgentLevel agentLevel = agentLevelService.findById(levelId,customerId);
         if (agentLevel == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);

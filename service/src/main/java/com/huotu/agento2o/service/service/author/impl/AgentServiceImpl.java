@@ -147,7 +147,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public List<Agent> findByParentAgentId(Integer agentId) {
-        return agentRepository.findByParentAgent_Id(agentId);
+        return agentRepository.findByParentAgent_IdAndIsDeletedFalse(agentId);
     }
 
     @Override
@@ -166,8 +166,12 @@ public class AgentServiceImpl implements AgentService {
         if (requestAgent.getId().equals(parentAgentId)) {
             return new ApiResult("上级代理商不能绑自己");
         }
+        //判断上级代理商绑定条件，不可以绑定比自己等级低的上级代理商
         if (parentAgentId != null && parentAgentId != -1) {
             parentAgent = findById(parentAgentId, customerId);
+            if (parentAgent != null && parentAgent.getAgentLevel() != null && parentAgent.getAgentLevel().getLevel() > agentLevel.getLevel()) {
+                return new ApiResult("无法绑定上级代理商");
+            }
         }
         //小伙伴账号绑定限制
         if (StringUtil.isNotEmpty(hotUserName)) {
@@ -175,8 +179,8 @@ public class AgentServiceImpl implements AgentService {
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在");
             }
-            Agent userAgent = agentRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
-            if (userAgent != null && userAgent.getId() != requestAgent.getId()) {
+            Agent userAgent = agentRepository.findByUserBaseInfo_userIdAndIsDeletedFalse(userBaseInfo.getUserId());
+            if (userAgent != null && !userAgent.getId().equals(requestAgent.getId())) {
                 return new ApiResult("小伙伴账号已被绑定");
             }
         }
@@ -199,6 +203,7 @@ public class AgentServiceImpl implements AgentService {
             agent.setStatus(AgentStatusEnum.CHECKED);
             agent.setDisabled(false);
             agent.setDeleted(false);
+            agent.setUsername(requestAgent.getUsername());
             mallAgent = newMallCustomer(requestAgent);
             agent.setId(mallAgent.getCustomerId());
             mallAgent.setAgent(agent);
@@ -277,7 +282,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Agent findByUserBaseInfoId(Integer userId) {
-        return agentRepository.findByUserBaseInfo_userId(userId);
+        return agentRepository.findByUserBaseInfo_userIdAndIsDeletedFalse(userId);
     }
 
     @Override
@@ -300,8 +305,8 @@ public class AgentServiceImpl implements AgentService {
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在");
             }
-            Agent userAgent = agentRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
-            if (userAgent != null && userAgent.getId() != requestAgent.getId()) {
+            Agent userAgent = agentRepository.findByUserBaseInfo_userIdAndIsDeletedFalse(userBaseInfo.getUserId());
+            if (userAgent != null && !userAgent.getId().equals(requestAgent.getId())) {
                 return new ApiResult("小伙伴账号已被绑定");
             }
         }

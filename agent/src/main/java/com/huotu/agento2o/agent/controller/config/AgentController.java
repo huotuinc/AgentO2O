@@ -10,6 +10,7 @@
 package com.huotu.agento2o.agent.controller.config;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
+import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
@@ -24,9 +25,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URI;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by WangJie on 2016/5/23.
@@ -42,6 +51,9 @@ public class AgentController {
     private AuthorService authorService;
     @Autowired
     private ShopService shopService;
+    @Autowired
+    private StaticResourceService resourceServer;
+
     /**
      * 基本资料设置
      *
@@ -61,8 +73,15 @@ public class AgentController {
             model.addAttribute("agent", agent);
             return "config/agentConfig";
         }else if(Shop.class == author.getType()){
+            Shop shop = author.getAuthorShop();
+            URI logo_uri = null;
+            if (!StringUtils.isEmpty(shop.getLogo())) {
+                logo_uri = resourceServer.getResource(shop.getLogo());
+            }
             //门店
-            model.addAttribute("shop",author.getAuthorShop());
+            model.addAttribute("shop", shop);
+            model.addAttribute("logo_uri", logo_uri);
+
             return "config/shopConfig";
         }
         throw new Exception("没有权限");
@@ -179,6 +198,9 @@ public class AgentController {
         if(StringUtil.isEmptyStr(shop.getServeiceTel())){
             return new ApiResult("请输入客服电话");
         }
+        if (StringUtil.isEmptyStr(shop.getLogo())) {
+            return new ApiResult("请上传LOGO");
+        }
         if(StringUtil.isEmptyStr(shop.getAfterSalTel())){
             return new ApiResult("请输入售后电话");
         }
@@ -195,6 +217,31 @@ public class AgentController {
             return new ApiResult("请输入银行卡号");
         }
         return shopService.saveShopConfig(shop, hotUserName);
+    }
+
+    @RequestMapping(value = "/uploadShopLogo", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<Object, Object> upLoadShop(
+            @AgtAuthenticationPrincipal(type = Shop.class) Shop curShop,
+            @RequestParam(value = "btnFile", required = false) MultipartFile files) {
+        int result = 0;
+        Map<Object, Object> responseData = new HashMap<Object, Object>();
+        try {
+            Date now = new Date();
+            String fileName = files.getOriginalFilename();
+            String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
+            String path = StaticResourceService.IMG + curShop.getId() + "/" + StringUtil.DateFormat(now, "yyyyMMdd") + "/"
+                    + StringUtil.DateFormat(now, "yyyyMMddHHmmSS") + "." + prefix;
+            URI uri = resourceServer.uploadResource(path, files.getInputStream());
+            responseData.put("fileUrl", uri);
+            responseData.put("fileUri", path);
+            result = 1;
+        } catch (Exception e) {
+            responseData.put("msg", e.getMessage());
+        }
+        responseData.put("result", result);
+
+        return responseData;
     }
 
 }

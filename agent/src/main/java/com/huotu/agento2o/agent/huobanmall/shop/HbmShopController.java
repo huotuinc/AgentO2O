@@ -147,8 +147,10 @@ public class HbmShopController {
      * 导出Excel
      */
     @RequestMapping("exportExcel")
-    public void exportExcel(ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
+    public void exportExcel(@RequestAttribute(value = "customerId") Integer customerId, ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
                             HttpSession session, HttpServletResponse response) {
+        MallCustomer mallCustomer = mallCustomerService.findByCustomerId(customerId);
+        searchCondition.setMallCustomer(mallCustomer);
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
         Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
         List<Shop> shopList = pageInfo.getContent();
