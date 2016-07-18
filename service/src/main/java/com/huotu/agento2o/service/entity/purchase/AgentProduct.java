@@ -16,6 +16,7 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 
@@ -89,6 +90,12 @@ public class AgentProduct {
      */
     @Transient
     private Integer returnedNum;
+
+    /**
+     * 退货价
+     */
+    @Transient
+    private double price;
 
     public String getAuthorName(){
         if(this.getAgent() != null){

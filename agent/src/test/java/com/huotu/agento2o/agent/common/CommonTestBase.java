@@ -341,6 +341,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
@@ -404,6 +405,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         AgentPurchaseOrder purchaseOrder = new AgentPurchaseOrder();
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAgent(author.getAuthorAgent());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setShop(author.getAuthorShop());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
@@ -449,6 +451,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAgent(author.getAuthorAgent());
         purchaseOrder.setShop(author.getAuthorShop());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -485,6 +488,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAgent(author.getAuthorAgent());
         purchaseOrder.setShop(author.getAuthorShop());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -522,6 +526,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAgent(author.getAuthorAgent());
         purchaseOrder.setShop(author.getAuthorShop());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());
@@ -560,6 +565,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         purchaseOrder.setPOrderId(SerialNo.create());
         purchaseOrder.setAgent(author.getAuthorAgent());
         purchaseOrder.setShop(author.getAuthorShop());
+        purchaseOrder.setParentAgent(author.getParentAgent());
         purchaseOrder.setCostFreight(0);
         purchaseOrder.setShipName(UUID.randomUUID().toString());
         purchaseOrder.setShipMobile(UUID.randomUUID().toString());

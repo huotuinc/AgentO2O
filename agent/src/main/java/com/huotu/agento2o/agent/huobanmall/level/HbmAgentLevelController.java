@@ -68,7 +68,7 @@ public class HbmAgentLevelController {
      * @param levelId
      * @return
      */
-    @RequestMapping(value = "/{levelId}", method = RequestMethod.GET)
+    @RequestMapping(value = "{levelId}", method = RequestMethod.GET)
     @ResponseBody
     public ApiResult showLevel(@RequestAttribute(value = "customerId") Integer customerId,@PathVariable Integer levelId) {
         AgentLevel agentLevel = agentLevelService.findById(levelId,customerId);

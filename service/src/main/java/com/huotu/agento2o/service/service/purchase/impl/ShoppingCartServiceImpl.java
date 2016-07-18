@@ -21,6 +21,7 @@ import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
+import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import com.huotu.agento2o.service.service.purchase.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private AgentProductRepository agentProductRepository;
     @Autowired
     private AgentProductService agentProductService;
+    @Autowired
+    private MallProductService productService;
 
 
     @Override
@@ -100,6 +103,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (shoppingCartList != null && shoppingCartList.size() > 0) {
             shoppingCartList.forEach(p -> {
                 if (p.getProduct() != null) {
+                    productService.setProductPrice(p.getProduct(),author);
                     AgentProduct agentProduct = agentProductService.findAgentProduct(author,p.getProduct());
                     if (agentProduct != null) {
                         p.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
@@ -143,6 +147,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ids.forEach(p -> {
             ShoppingCart cart = findById(p, author);
             if (cart != null) {
+                productService.setProductPrice(cart.getProduct(),author);
                 AgentProduct agentProduct = null;
                 if (author != null && author.getType() == Agent.class) {
                     agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(cart.getAgent(),cart.getProduct());

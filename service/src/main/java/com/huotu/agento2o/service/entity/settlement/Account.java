@@ -69,7 +69,6 @@ public class Account {
     @Column(name = "WithdrawCount")
     private int withdrawCount = Constant.WITHDRAWCOUNT;
 
-    // TODO: 2016/7/13 将这些方法写在一个类里？
     public void setAuthor(Author author) {
         this.setAgent(author.getAuthorAgent());
         this.setShop(author.getAuthorShop());

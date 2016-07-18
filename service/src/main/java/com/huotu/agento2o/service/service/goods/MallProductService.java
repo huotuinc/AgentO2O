@@ -23,4 +23,6 @@ public interface MallProductService {
     MallProduct findByProductId(Integer productId);
 
     List<MallProduct> findByGoodsId(Author author,Integer goodsId);
+
+    void setProductPrice(MallProduct product,Author author);
 }

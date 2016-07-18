@@ -26,6 +26,7 @@ import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
+import com.huotu.agento2o.service.service.goods.MallProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +38,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by helloztt on 2016/5/14.
@@ -52,6 +55,8 @@ public class MallGoodsServiceImpl implements MallGoodsService {
     private MallGoodsTypeRepository goodsTypeRepository;
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
+    @Autowired
+    private MallProductService productService;
 
     /**
      * 根据 CustomerId 和 AgentId 查找指定门店商品，AgentId=0 表示平台方商品
@@ -82,6 +87,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
+                    productService.setProductPrice(product,author);
                     AgentProduct agentProduct = getAgentProduct(author,product);
                     ShoppingCart shoppingCart = getShoppingCart(author,product);
                     if (agentProduct != null) {
@@ -92,9 +98,25 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                         product.setShoppingStore(Math.max(0,shoppingCart.getNum()));
                     }
                 });
+                if(goods.getProducts().size() == 1){
+                    goods.setPrice(goods.getProducts().get(0).getPrice());
+                }else if(goods.getAgentPrice() != null && goods.getAgentPrice() != 0){
+                    goods.setPrice(goods.getAgentPrice());
+                }
             });
         }
         return goodsPage;
+    }
+
+    public Map<Integer,Double> getLevelProductPrice(String priceInfo){
+        Map<Integer,Double> productPriceMap = new HashMap<>();
+        String[] priceInfoList = priceInfo.split("\\|");
+        for(int i = 0 ; i< priceInfoList.length ; i ++){
+            if(priceInfoList[i].indexOf(":") > -1){
+                productPriceMap.put(Integer.parseInt(priceInfoList[i].split(":")[0]),Double.parseDouble(priceInfoList[i].split(":")[1]));
+            }
+        }
+        return productPriceMap;
     }
 
     public AgentProduct getAgentProduct(Author author, MallProduct product){
@@ -150,6 +172,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
+                    productService.setProductPrice(product,author);
                     AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(),product);
                     AgentProduct agentProduct = getAgentProduct(author,product);
                     ShoppingCart shoppingCart = getShoppingCart(author,product);
@@ -163,6 +186,11 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                         product.setShoppingStore(Math.max(0,shoppingCart.getNum()));
                     }
                 });
+                if(goods.getProducts().size() == 1){
+                    goods.setPrice(goods.getProducts().get(0).getPrice());
+                }else if(goods.getAgentPrice() != null && goods.getAgentPrice() != 0){
+                    goods.setPrice(goods.getAgentPrice());
+                }
             });
         }
         return goodsPage;

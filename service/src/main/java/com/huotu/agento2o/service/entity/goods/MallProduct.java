@@ -78,8 +78,11 @@ public class MallProduct {
      */
     @Column(name = "AgentPriceInfo")
     private String agentPriceInfo;
-
-
+    /**
+     * 代理商，门店默认进货价
+     */
+    @Column(name = "AgentPrice")
+    private Double agentPrice;
 
     /**
      * 如果读取平台方库存,则可用库存为 this.[store - freez]

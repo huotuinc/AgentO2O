@@ -10,8 +10,10 @@
 
 package com.huotu.agento2o.service.service.goods.impl;
 
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
@@ -25,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by helloztt on 2016/5/16.
@@ -55,6 +59,7 @@ public class MallProductServiceImpl implements MallProductService {
         List<MallProduct> agentProductList = new ArrayList<>();
         if (productList != null && productList.size() > 0) {
             productList.forEach(product -> {
+                setProductPrice(product,author);
                 //当前库存
                 AgentProduct agentProduct = agentProductService.findAgentProduct(author,product);
                 ShoppingCart shoppingCart = shoppingCartService.findByAuthorAndProduct(author,product);
@@ -79,5 +84,37 @@ public class MallProductServiceImpl implements MallProductService {
             });
         }
         return agentProductList;
+    }
+
+
+    public Map<Integer,Double> getLevelProductPrice(String priceInfo){
+        Map<Integer,Double> productPriceMap = new HashMap<>();
+        String[] priceInfoList = priceInfo.split("\\|");
+        for(int i = 0 ; i< priceInfoList.length ; i ++){
+            if(priceInfoList[i].indexOf(":") > -1){
+                productPriceMap.put(Integer.parseInt(priceInfoList[i].split(":")[0]),Double.parseDouble(priceInfoList[i].split(":")[1]));
+            }
+        }
+        return productPriceMap;
+    }
+
+    /**
+     * 设置货品进货价
+     * @param product
+     * @param author
+     */
+    public void setProductPrice(MallProduct product,Author author){
+        Map<Integer,Double> productPriceMap = null;
+        if(!StringUtil.isEmpty(product.getAgentPriceInfo())){
+            productPriceMap = getLevelProductPrice(product.getAgentPriceInfo());
+        }
+        //如果有等级进货价，门店进货价则读取相应进货价，如果没有则读取默认进货价
+        if(productPriceMap != null && author.getType() == Agent.class && productPriceMap.containsKey(author.getAuthorAgent().getAgentLevel().getLevelId())){
+            product.setPrice(productPriceMap.get(author.getAuthorAgent().getAgentLevel().getLevelId()));
+        }else if(productPriceMap != null && author.getType() == Shop.class && productPriceMap.containsKey(0)){
+            product.setPrice(productPriceMap.get(0));
+        }else if(product.getAgentPrice() != null && product.getAgentPrice() != 0){
+            product.setPrice(product.getAgentPrice());
+        }
     }
 }

@@ -81,7 +81,6 @@ public class PurchaseController {
         model.setViewName("/purchase/purchase/goods_list");
         Page<MallGoods> goodsPage;
         //如果上级直系代理商为空，则读取平台方代理商品(Agent_Id=0)；否则读取 上级直系代理商商品
-        // TODO: 2016/5/17 代理商/门店进货价读取
         if (author != null && author.getType() == Agent.class && author.getParentAgent() == null) {
             goodsPage = goodsService.findByCustomerIdAndAgentId(author.getCustomer().getCustomerId(), author, goodsSearcher);
         } else {

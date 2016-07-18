@@ -47,6 +47,11 @@ public class MallGoods {
      */
     @Column(name = "Price")
     private double price;
+    /**
+     * 进货价
+     */
+    @Column(name = "AgentPrice")
+    private Double agentPrice;
 
     @Column(name = "Customer_Id")
     private Integer customerId;

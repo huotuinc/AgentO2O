@@ -18,6 +18,7 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
+import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,13 +34,21 @@ public class AgentProductServiceImpl implements AgentProductService {
 
     @Autowired
     AgentProductRepository agentProductRepository;
+    @Autowired
+    private MallProductService mallProductService;
 
     @Override
     public List<AgentProduct> findByAgentId(Author author) {
+        List<AgentProduct> productList = null;
         if (author != null && author.getType() == Agent.class) {
-            return agentProductRepository.findByAgent_IdAndDisabledFalse(author.getId());
+            productList = agentProductRepository.findByAgent_IdAndDisabledFalse(author.getId());
         } else if (author != null && author.getType() == Shop.class) {
-            return agentProductRepository.findByShop_IdAndDisabledFalse(author.getId());
+            productList = agentProductRepository.findByShop_IdAndDisabledFalse(author.getId());
+        }
+        if(productList != null){
+            productList.forEach(p->{
+                mallProductService.setProductPrice(p.getProduct(),author);
+            });
         }
         return null;
     }

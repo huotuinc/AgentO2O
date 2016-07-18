@@ -30,6 +30,7 @@ import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepo
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
+import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -65,6 +66,8 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     private MallProductRepository productRepository;
     @Autowired
     private MallGoodsRepository goodsRepository;
+    @Autowired
+    private MallProductService productService;
 
     /**
      * 采购单列表
@@ -183,7 +186,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             orderItem.setName(shoppingCart.getProduct().getName());
             orderItem.setPdtDesc(shoppingCart.getProduct().getStandard());
             orderItem.setUnit(shoppingCart.getProduct().getUnit());
-            // TODO: 2016/5/18 根据 Agent_Id 获取相应销售价（进货价）
+            productService.setProductPrice(shoppingCart.getProduct(),author);
             orderItem.setPrice(shoppingCart.getProduct().getPrice());
             orderItem.setThumbnailPic(shoppingCart.getProduct().getGoods().getThumbnailPic());
             orderItem = itemRepository.save(orderItem);
