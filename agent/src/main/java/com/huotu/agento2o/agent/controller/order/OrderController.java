@@ -6,13 +6,12 @@ import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.model.order.OrderExportModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
-import com.huotu.agento2o.service.searchable.OrderSearchCondition;
+import com.huotu.agento2o.service.searchable.CusOrderSearch;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
 import com.huotu.agento2o.service.service.order.MallOrderItemService;
 import com.huotu.agento2o.service.service.order.MallOrderService;
@@ -75,14 +74,10 @@ public class OrderController {
     public String getOrdersAll(
             @AgtAuthenticationPrincipal Author author,
             Model model,
-            OrderSearchCondition searchCondition,
+            CusOrderSearch searchCondition,
             @RequestParam(required = false, defaultValue = "1") int pageIndex
     ) {
-        if(author.getType() == Agent.class){
-            searchCondition.setAgentId(author.getId());
-        } else if (author.getType() == ShopAuthor.class) {
-            searchCondition.setShopId(author.getId());
-        }
+        searchCondition.setAuthor(author);
         Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
         getPicUri(ordersList.getContent());
         int totalPages = ordersList.getTotalPages();
@@ -183,7 +178,7 @@ public class OrderController {
      * @param agentId
      */
     @RequestMapping("exportExcel")
-    public void exportExcel(OrderSearchCondition searchCondition,
+    public void exportExcel(CusOrderSearch searchCondition,
                             @AgtAuthenticationPrincipal Author author,
                             int txtBeginPage,
                             int txtEndPage,

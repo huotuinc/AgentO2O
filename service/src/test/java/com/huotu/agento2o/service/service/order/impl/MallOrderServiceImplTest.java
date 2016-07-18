@@ -13,7 +13,7 @@ import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
-import com.huotu.agento2o.service.searchable.OrderSearchCondition;
+import com.huotu.agento2o.service.searchable.CusOrderSearch;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.junit.Assert;
@@ -86,19 +86,19 @@ public class MallOrderServiceImplTest extends CommonTestBase {
     @Test
     public void testFindAll() throws Exception {
 
-        OrderSearchCondition searchCondition1 = new OrderSearchCondition();
+        CusOrderSearch searchCondition1 = new CusOrderSearch();
         searchCondition1.setAgentId(mockSecondLevelShopOne.getId());
         Page<MallOrder> page1 = orderService.findAll(1, mockSecondLevelShopOne, 20, searchCondition1);
         int num1 = page1.getContent().size();
 
 
-        OrderSearchCondition searchCondition2 = new OrderSearchCondition();
+        CusOrderSearch searchCondition2 = new CusOrderSearch();
         searchCondition2.setAgentId(mockSecondLevelShopTwo.getId());
         Page<MallOrder> page2 = orderService.findAll(1, mockSecondLevelShopTwo, 20, searchCondition2);
         int num2 = page2.getContent().size();
 
 
-        OrderSearchCondition searchCondition3 = new OrderSearchCondition();
+        CusOrderSearch searchCondition3 = new CusOrderSearch();
         searchCondition3.setAgentId(mockSecondLevelAgent.getId());
         Page<MallOrder> page3 = orderService.findAll(1, mockSecondLevelAgent, 20, searchCondition3);
         int num3 = page3.getContent().size();

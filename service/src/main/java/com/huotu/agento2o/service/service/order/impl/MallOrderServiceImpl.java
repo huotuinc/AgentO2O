@@ -2,8 +2,11 @@ package com.huotu.agento2o.service.service.order.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.hot.datacenter.common.EnumHelper;
+import com.hot.datacenter.entity.order.MallOrder;
+import com.hot.datacenter.ienum.OrderEnum;
+import com.hot.datacenter.service.AbstractCusCrudService;
 import com.huotu.agento2o.common.SysConstant;
-import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
@@ -11,14 +14,11 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.order.MallDelivery;
-import com.huotu.agento2o.service.entity.order.MallOrder;
-import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.repository.order.CusOrderRepository;
 import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
-import com.huotu.agento2o.service.searchable.OrderSearchCondition;
+import com.huotu.agento2o.service.searchable.CusOrderSearch;
 import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -40,18 +40,13 @@ import java.util.List;
  * Created by AiWelv on 2016/5/12.
  */
 @Service
-public class MallOrderServiceImpl implements MallOrderService {
+public class MallOrderServiceImpl extends AbstractCusCrudService<MallOrder, String, CusOrderSearch> implements MallOrderService {
 
     @Autowired
     private CusOrderRepository orderRepository;
 
     @Autowired
     private MallDeliveryRepository deliveryRepository;
-
-    @Override
-    public MallOrder findByOrderId(String orderId) {
-        return orderRepository.getOne(orderId);
-    }
 
     @Override
     public MallOrder findByShopAndOrderId(ShopAuthor shop, String orderId) {
@@ -82,72 +77,12 @@ public class MallOrderServiceImpl implements MallOrderService {
 //    }
 
     @Override
-    public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition) {
-        Specification<MallOrder> specification = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (author != null && author.getType() == ShopAuthor.class) {
-//                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
-//                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
-//                judgeShipMode(searchCondition, cb, predicates, p1, p2);
-                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getShopId()));
-            } else if (author != null && author.getType() == Agent.class) {
-//                Join<MallOrder, ShopAuthor> join1 = root.join(root.getModel().getSingularAttribute("shop", ShopAuthor.class), JoinType.LEFT);
-//                Join<MallOrder, ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", ShopAuthor.class), JoinType.LEFT);
-//                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
-//                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
-//                judgeShipMode(searchCondition, cb, predicates, p1, p2);
-                predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), searchCondition.getAgentId()));
-            }
-            cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
-            //去除拼团未成功的
-//            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
-//            Predicate p1 = cb.isNull(join.get("id").as(Integer.class));
-//            Predicate p2 = cb.equal(join.get("orderPintuanStatusOption").as(ActEnum.OrderPintuanStatusOption.class),
-//                    ActEnum.OrderPintuanStatusOption.GROUPED);
-//            predicates.add(cb.or(p1, p2));
-            if (!StringUtils.isEmpty(searchCondition.getOrderId())) {
-                predicates.add(cb.like(root.get("orderId").as(String.class), "%" + searchCondition.getOrderId() + "%"));
-            }
+    public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, CusOrderSearch orderSearch) {
 
-            if (!StringUtil.isEmptyStr(searchCondition.getOrderItemName())) {
-                predicates.add(cb.like(root.get("orderItems").get("name").as(String.class), "%" + searchCondition.getOrderItemName() + "%"));
-            }
-            if (!StringUtils.isEmpty(searchCondition.getShipName())) {
-                predicates.add(cb.like(root.get("shipName").as(String.class), "%" + searchCondition.getShipName() + "%"));
-            }
-            if (!StringUtils.isEmpty(searchCondition.getShipMobile())) {
-                predicates.add(cb.like(root.get("shipMobile").as(String.class), "%" + searchCondition.getShipMobile() + "%"));
-            }
-            if (searchCondition.getPayStatus() != -1) {
-                predicates.add(cb.equal(root.get("payStatus").as(OrderEnum.PayStatus.class),
-                        EnumHelper.getEnumType(OrderEnum.PayStatus.class, searchCondition.getPayStatus())));
-            }
-            if (searchCondition.getShipStatus() != -1) {
-                predicates.add(cb.equal(root.get("shipStatus").as(OrderEnum.ShipStatus.class),
-                        EnumHelper.getEnumType(OrderEnum.ShipStatus.class, searchCondition.getShipStatus())));
-            }
-            if (!StringUtils.isEmpty(searchCondition.getBeginTime())) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
-                        StringUtil.DateFormat(searchCondition.getBeginTime(), StringUtil.TIME_PATTERN)));
-            }
-            if (!StringUtil.isEmpty(searchCondition.getEndTime())) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
-                        StringUtil.DateFormat(searchCondition.getEndTime(), StringUtil.TIME_PATTERN)));
-            }
-            if (!StringUtil.isEmpty(searchCondition.getBeginPayTime())) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("payTime").as(Date.class),
-                        StringUtil.DateFormat(searchCondition.getBeginPayTime(), StringUtil.TIME_PATTERN)));
-            }
-            if (!StringUtil.isEmpty(searchCondition.getEndPayTime())) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("payTime").as(Date.class),
-                        StringUtil.DateFormat(searchCondition.getEndPayTime(), StringUtil.TIME_PATTERN)));
-            }
-            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-        };
         //排序
         Sort sort;
-        Sort.Direction direction = searchCondition.getOrderRule() == 0 ? Sort.Direction.DESC : Sort.Direction.ASC;
-        switch (searchCondition.getOrderType()) {
+        Sort.Direction direction = orderSearch.getOrderRule() == 0 ? Sort.Direction.DESC : Sort.Direction.ASC;
+        switch (orderSearch.getOrderType()) {
             case 1:
                 //按支付时间
                 sort = new Sort(direction, "payTime");
@@ -159,7 +94,7 @@ public class MallOrderServiceImpl implements MallOrderService {
                 sort = new Sort(direction, "createTime");
                 break;
         }
-        return orderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, sort));
+        return findAll(orderSearch, new PageRequest(pageIndex - 1, pageSize, sort));
     }
 
 
@@ -172,7 +107,7 @@ public class MallOrderServiceImpl implements MallOrderService {
      * @param shop
      * @param beneficiaryShop
      */
-    private void judgeShipMode(OrderSearchCondition searchCondition, CriteriaBuilder cb, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
+    private void judgeShipMode(CusOrderSearch searchCondition, CriteriaBuilder cb, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
         if (searchCondition.getShipMode() == 0) {
             predicates.add(shop);
         } else if (searchCondition.getShipMode() == 1) {
@@ -255,4 +190,60 @@ public class MallOrderServiceImpl implements MallOrderService {
         return ExcelHelper.createWorkbook("订单列表", SysConstant.ORDER_EXPORT_HEADER, rowAndCells);
     }
 
+
+    @Override
+    public Specification<MallOrder> specification(CusOrderSearch orderSearch) {
+
+        Specification<MallOrder> specification = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            String field = null;
+            if (orderSearch.getAuthor() != null && orderSearch.getAuthor().getAuthType() == ShopAuthor.class) {
+                field = "shopId";
+            } else if (orderSearch.getAuthor() != null && orderSearch.getAuthor().getAuthType() == Agent.class) {
+                field = "agentId";
+            }
+            predicates.add(cb.equal(root.get(field).as(Integer.class), orderSearch.getAuthor().getId()));
+            cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+            if (!StringUtils.isEmpty(orderSearch.getOrderId())) {
+                predicates.add(cb.like(root.get("orderId").as(String.class), "%" + orderSearch.getOrderId() + "%"));
+            }
+
+            if (!StringUtil.isEmptyStr(orderSearch.getOrderItemName())) {
+                predicates.add(cb.like(root.get("orderItems").get("name").as(String.class), "%" + orderSearch.getOrderItemName() + "%"));
+            }
+            if (!StringUtils.isEmpty(orderSearch.getShipName())) {
+                predicates.add(cb.like(root.get("shipName").as(String.class), "%" + orderSearch.getShipName() + "%"));
+            }
+            if (!StringUtils.isEmpty(orderSearch.getShipMobile())) {
+                predicates.add(cb.like(root.get("shipMobile").as(String.class), "%" + orderSearch.getShipMobile() + "%"));
+            }
+            if (orderSearch.getPayStatus() != -1) {
+                predicates.add(cb.equal(root.get("payStatus").as(OrderEnum.PayStatus.class),
+                        EnumHelper.getEnumType(OrderEnum.PayStatus.class, orderSearch.getPayStatus())));
+            }
+            if (orderSearch.getShipStatus() != -1) {
+                predicates.add(cb.equal(root.get("shipStatus").as(OrderEnum.ShipStatus.class),
+                        EnumHelper.getEnumType(OrderEnum.ShipStatus.class, orderSearch.getShipStatus())));
+            }
+            if (!StringUtils.isEmpty(orderSearch.getBeginTime())) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(orderSearch.getBeginTime(), StringUtil.TIME_PATTERN)));
+            }
+            if (!StringUtil.isEmpty(orderSearch.getEndTime())) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+                        StringUtil.DateFormat(orderSearch.getEndTime(), StringUtil.TIME_PATTERN)));
+            }
+            if (!StringUtil.isEmpty(orderSearch.getBeginPayTime())) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("payTime").as(Date.class),
+                        StringUtil.DateFormat(orderSearch.getBeginPayTime(), StringUtil.TIME_PATTERN)));
+            }
+            if (!StringUtil.isEmpty(orderSearch.getEndPayTime())) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("payTime").as(Date.class),
+                        StringUtil.DateFormat(orderSearch.getEndPayTime(), StringUtil.TIME_PATTERN)));
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+
+        return specification;
+    }
 }
