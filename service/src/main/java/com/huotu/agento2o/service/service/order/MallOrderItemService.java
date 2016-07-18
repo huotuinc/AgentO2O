@@ -10,7 +10,8 @@
 package com.huotu.agento2o.service.service.order;
 
 
-import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.hot.datacenter.entity.order.OrderItem;
+import com.hot.datacenter.ienum.OrderEnum;
 
 import java.util.List;
 
@@ -26,6 +27,6 @@ public interface MallOrderItemService {
      */
     void updateShipStatus(int itemId, OrderEnum.ShipStatus shipStatus);
 
-    List<MallOrderItem> findMallOrderItemByOrderId(String orderId);
+    List<OrderItem> findMallOrderItemByOrderId(String orderId);
 
 }

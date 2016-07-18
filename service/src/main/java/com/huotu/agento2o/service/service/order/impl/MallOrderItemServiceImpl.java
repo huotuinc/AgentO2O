@@ -9,8 +9,9 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.entity.order.MallOrderItem;
-import com.huotu.agento2o.service.repository.order.MallOrderItemRepository;
+import com.hot.datacenter.entity.order.OrderItem;
+import com.hot.datacenter.ienum.OrderEnum;
+import com.hot.datacenter.repository.order.OrderItemRepository;
 import com.huotu.agento2o.service.service.order.MallOrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ import java.util.List;
 @Service
 public class MallOrderItemServiceImpl implements MallOrderItemService {
     @Autowired
-    private MallOrderItemRepository orderItemRepository;
+    private OrderItemRepository orderItemRepository;
 
 
     @Override
@@ -32,7 +33,7 @@ public class MallOrderItemServiceImpl implements MallOrderItemService {
     }
 
     @Override
-    public List<MallOrderItem> findMallOrderItemByOrderId(String orderId) {
+    public List<OrderItem> findMallOrderItemByOrderId(String orderId) {
         return orderItemRepository.findByOrder_OrderId(orderId);
     }
 }

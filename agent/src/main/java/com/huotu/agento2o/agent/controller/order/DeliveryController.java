@@ -1,5 +1,6 @@
 package com.huotu.agento2o.agent.controller.order;
 
+import com.hot.datacenter.entity.order.MallOrder;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
@@ -7,7 +8,6 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
-import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
@@ -125,7 +125,7 @@ public class DeliveryController {
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
     public String showConsignFlow(@AgtAuthenticationPrincipal ShopAuthor shop, String orderId, Model model) {
-        MallOrder order = orderService.findByOrderId(orderId);
+        MallOrder order = orderService.findOne(orderId);
         AgentProduct agentProduct ;
         for (int i=0; i<order.getOrderItems().size(); i++){
             agentProduct = agentProductService.findAgentProduct(shop,order.getOrderItems().get(i).getProduct());
