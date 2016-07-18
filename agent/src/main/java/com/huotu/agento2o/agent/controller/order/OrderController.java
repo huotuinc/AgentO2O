@@ -4,13 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.model.order.OrderExportModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
@@ -18,7 +17,6 @@ import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
 import com.huotu.agento2o.service.service.order.MallOrderItemService;
 import com.huotu.agento2o.service.service.order.MallOrderService;
-import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -83,7 +81,7 @@ public class OrderController {
     ) {
         if(author.getType() == Agent.class){
             searchCondition.setAgentId(author.getId());
-        }else if(author.getType() == Shop.class){
+        } else if (author.getType() == ShopAuthor.class) {
             searchCondition.setShopId(author.getId());
         }
         Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
@@ -138,7 +136,7 @@ public class OrderController {
      */
     @RequestMapping("/showRemark")
     public String showRemark(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal ShopAuthor shop,
             Model model,
             @RequestParam(name = "orderId",required = true) String orderId){
         MallOrder order = orderService.findByShopAndOrderId(shop,orderId);
@@ -156,7 +154,7 @@ public class OrderController {
     @RequestMapping("/remark")
     @ResponseBody
     public ApiResult editRemark(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal ShopAuthor shop,
             @RequestParam(name = "orderId",required = true) String orderId,
             String agentMarkType,
             String agentMarkText){
@@ -228,7 +226,7 @@ public class OrderController {
 
     @RequestMapping(value = "/batchDeliver", method = RequestMethod.POST)
     public String batchDeliver(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal ShopAuthor shop,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes
     ) throws IOException {

@@ -10,21 +10,20 @@
 package com.huotu.agento2o.agent.controller.order;
 
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -35,16 +34,16 @@ public class AfterSaleControllerTest extends CommonTestBase {
     private static String BASE_URL = "/agent/afterSale";
 
     //平台方
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
     //一级代理商
-    private MallCustomer mockFirstLevelAgent;
+    private CustomerAuthor mockFirstLevelAgent;
     //二级代理商
-    private MallCustomer mockSecondLevelAgent;
+    private CustomerAuthor mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private ShopAuthor mockFirstLevelShop;
     //二级代理商下级门店1,门店2
-    private Shop mockSecondLevelShopOne;
-    private Shop mockSecondLevelShopTwo;
+    private ShopAuthor mockSecondLevelShopOne;
+    private ShopAuthor mockSecondLevelShopTwo;
 
     //二级代理商下级门店的售后单
     private List<MallAfterSales> mockSecondLevelShopOneList = new ArrayList();

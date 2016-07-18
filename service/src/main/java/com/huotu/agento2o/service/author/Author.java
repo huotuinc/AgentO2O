@@ -1,16 +1,9 @@
-package com.huotu.agento2o.service.entity.author;
+package com.huotu.agento2o.service.author;
 
-import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.user.UserBaseInfo;
-import lombok.Getter;
-import lombok.Setter;
+import com.hot.datacenter.entity.customer.MallAgent;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -25,20 +18,25 @@ public interface Author extends Serializable, UserDetails {
      * 不取名为getAgent因为shop里面有agent的get方法
      * @return
      */
-    Agent getAuthorAgent();
+    MallAgent getAuthorAgent();
 
     /**
      * 如果为Shop类型，返回当前实体；否则返回null
      * @return
      */
-    Shop getAuthorShop();
+    ShopAuthor getAuthorShop();
 
-    Agent getParentAgent();
+    MallAgent getParentAgent();
 
-    MallCustomer getCustomer();
+    Integer getCustomerId();
 
     String getName();
 
-    Class getType();
+    /**
+     * 返回角色类型
+     *
+     * @return
+     */
+    Class getAuthType();
 
 }

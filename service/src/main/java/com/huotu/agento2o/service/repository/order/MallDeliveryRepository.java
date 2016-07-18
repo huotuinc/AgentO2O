@@ -10,7 +10,7 @@
 
 package com.huotu.agento2o.service.repository.order;
 
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -25,7 +25,7 @@ import java.util.List;
 public interface MallDeliveryRepository extends PagingAndSortingRepository<MallDelivery, String>, JpaSpecificationExecutor<MallDelivery> {
     List<MallDelivery> findByOrder_OrderId(String orderId);
 
-    List<MallDelivery> findByShop(Shop shop);
+    List<MallDelivery> findByShop(ShopAuthor shop);
 
     List<MallDelivery> findByOrder_OrderIdAndTypeIgnoreCase(String orderId, String type);
 }

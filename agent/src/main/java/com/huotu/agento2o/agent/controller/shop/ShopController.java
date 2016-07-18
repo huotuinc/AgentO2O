@@ -5,9 +5,9 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -48,7 +48,7 @@ public class ShopController {
      * @return
      */
     @RequestMapping("/addShopPage")
-    public String toAddShopPage(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, Model model,boolean ifShow) throws Exception {
+    public String toAddShopPage(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, ShopAuthor shop, Model model, boolean ifShow) throws Exception {
         model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
             shop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
@@ -66,7 +66,7 @@ public class ShopController {
      */
     @RequestMapping(value = "/addShop", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult saveShop(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop, String hotUserName,Integer statusVal) {
+    public ApiResult saveShop(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, ShopAuthor shop, String hotUserName, Integer statusVal) {
         if (StringUtil.isEmptyStr(shop.getUsername())) {
             return new ApiResult("请输入用户名");
         }
@@ -116,7 +116,7 @@ public class ShopController {
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
         searchCondition.setMallCustomer(curAgent.getCustomer());
         searchCondition.setParentAuthor(curAgent);
-        Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
+        Page<ShopAuthor> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalRecords", shopsList.getTotalElements());
@@ -159,11 +159,11 @@ public class ShopController {
      */
     @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult resetPassword(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, Shop shop) {
+    public ApiResult resetPassword(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, ShopAuthor shop) {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        Shop oldShop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
+        ShopAuthor oldShop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
@@ -181,8 +181,8 @@ public class ShopController {
                             HttpServletResponse response) {
         searchCondition.setParentAuthor(customer);
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
-        Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
-        List<Shop> shopList = pageInfo.getContent();
+        Page<ShopAuthor> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
+        List<ShopAuthor> shopList = pageInfo.getContent();
         session.setAttribute("state", null);
         // 生成提示信息，
         response.setContentType("apsplication/vnd.ms-excel");

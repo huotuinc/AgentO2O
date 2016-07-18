@@ -1,9 +1,5 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.goods.MallProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
@@ -12,9 +8,7 @@ import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -4,9 +4,9 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
@@ -102,8 +102,8 @@ public class DeliveryController {
     @RequestMapping(value = "/judgeStock" ,method = RequestMethod.GET)
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
-    public ApiResult judgeStock( @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
-                                 String orderId){
+    public ApiResult judgeStock(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
+                                String orderId){
         MallOrder order = orderService.findByOrderId(orderId);
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
         AgentProduct agentProduct ;
@@ -125,7 +125,7 @@ public class DeliveryController {
      */
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
-    public String showConsignFlow(@AgtAuthenticationPrincipal Shop shop,String orderId, Model model) {
+    public String showConsignFlow(@AgtAuthenticationPrincipal ShopAuthor shop, String orderId, Model model) {
         MallOrder order = orderService.findByOrderId(orderId);
         AgentProduct agentProduct ;
         for (int i=0; i<order.getOrderItems().size(); i++){
@@ -148,7 +148,7 @@ public class DeliveryController {
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addDelivery(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal ShopAuthor shop,
             DeliveryInfo deliveryInfo
     ) throws Exception {
         return deliveryService.pushDelivery(deliveryInfo, shop.getId());

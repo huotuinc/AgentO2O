@@ -12,9 +12,9 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
@@ -105,7 +105,7 @@ public class AgentPurchaseOrderDeliveryController {
         Page page = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher);
         int totalPages = page.getTotalPages();
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
-        List<Shop> shopList = shopService.findByAgentId(agent.getId());
+        List<ShopAuthor> shopList = shopService.findByAgentId(agent.getId());
         modelAndView.addObject("purchaseDeliveryList",page.getContent());
         modelAndView.addObject("totalPages",totalPages);
         modelAndView.addObject("totalRecords",page.getTotalElements());
@@ -135,7 +135,7 @@ public class AgentPurchaseOrderDeliveryController {
         Page page = agentDeliveryService.showReturnDeliveryList(deliverySearcher);
         int totalPages = page.getTotalPages();
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
-        List<Shop> shopList = shopService.findByAgentId(agent.getId());
+        List<ShopAuthor> shopList = shopService.findByAgentId(agent.getId());
         modelAndView.addObject("purchaseDeliveryList",page.getContent());
         modelAndView.addObject("totalPages",totalPages);
         modelAndView.addObject("totalRecords",page.getTotalElements());

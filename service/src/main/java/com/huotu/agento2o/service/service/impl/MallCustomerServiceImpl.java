@@ -10,8 +10,8 @@
 
 package com.huotu.agento2o.service.service.impl;
 
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class MallCustomerServiceImpl implements MallCustomerService {
      */
     @Override
     @Transactional
-    public MallCustomer newCustomer(MallCustomer customer) {
+    public CustomerAuthor newCustomer(CustomerAuthor customer) {
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         customer = customerRepository.save(customer);
         customerRepository.flush();
@@ -45,13 +45,13 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     }
 
     @Override
-    public MallCustomer findByCustomerId(Integer customerId) {
+    public CustomerAuthor findByCustomerId(Integer customerId) {
         return customerId == null ? null : customerRepository.findOne(customerId);
     }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        MallCustomer mallCustomer = customerRepository.findByUsername(userName);
+        CustomerAuthor mallCustomer = customerRepository.findByUsername(userName);
         if(mallCustomer == null){
             throw  new UsernameNotFoundException("没有该代理商");
         }
@@ -65,12 +65,12 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     }
 
     @Override
-    public MallCustomer findByUserName(String userName) {
+    public CustomerAuthor findByUserName(String userName) {
         return customerRepository.findByUsername(userName);
     }
 
     @Override
-    public MallCustomer save(MallCustomer mallCustomer) {
+    public CustomerAuthor save(CustomerAuthor mallCustomer) {
         return customerRepository.saveAndFlush(mallCustomer);
     }
 }

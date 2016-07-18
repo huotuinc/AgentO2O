@@ -10,20 +10,20 @@
 
 package com.huotu.agento2o.service.service;
 
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * Created by helloztt on 2016/5/14.
  */
 public interface MallCustomerService extends UserDetailsService {
-    MallCustomer newCustomer(MallCustomer customer);
+    CustomerAuthor newCustomer(CustomerAuthor customer);
 
-    MallCustomer findByCustomerId(Integer customerId);
+    CustomerAuthor findByCustomerId(Integer customerId);
 
     int resetPassword(Integer customerId, String password);
 
-    MallCustomer findByUserName(String userName);
+    CustomerAuthor findByUserName(String userName);
 
-    MallCustomer save(MallCustomer mallCustomer);
+    CustomerAuthor save(CustomerAuthor mallCustomer);
 }

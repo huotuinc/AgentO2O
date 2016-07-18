@@ -10,9 +10,8 @@
 
 package com.huotu.agento2o.service.repository.purchase;
 
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,7 +49,8 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
 
 //    AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
     AgentProduct findByAgentAndProductAndDisabledFalse(Agent agent,MallProduct product);
-    AgentProduct findByShopAndProductAndDisabledFalse(Shop shop,MallProduct product);
+
+    AgentProduct findByShopAndProductAndDisabledFalse(ShopAuthor shop, MallProduct product);
 
     /**
      * 查询出需要提醒的用户

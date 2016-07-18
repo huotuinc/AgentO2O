@@ -17,10 +17,10 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
@@ -132,7 +132,7 @@ public class AgentPurchaseOrderController {
         model.setViewName("/purchase/purchase/purchase_order_list");
         if(author.getType() == Agent.class){
             purchaseOrderSearcher.setAgentId(author.getId());
-        }else if(author.getType() == Shop.class){
+        } else if (author.getType() == ShopAuthor.class) {
             purchaseOrderSearcher.setShopId(author.getId());
         }
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
@@ -178,7 +178,7 @@ public class AgentPurchaseOrderController {
         deliverySearcher.setOrderId(pOrderId);
         /*if(author.getType() == Agent.class){
             deliverySearcher.setAgentId(author.getId());
-        }else if(author.getType() == Shop.class){
+        }else if(author.getType() == ShopAuthor.class){
             deliverySearcher.setShopId(author.getId());
         }*/
         List<AgentDelivery> agentDeliveryList = agentDeliveryService.showPurchaseDeliveryList(deliverySearcher).getContent();
@@ -262,7 +262,7 @@ public class AgentPurchaseOrderController {
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         setPicUri(purchaseOrderPage.getContent());
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
-        List<Shop> shopList = shopService.findByAgentId(agent.getId());
+        List<ShopAuthor> shopList = shopService.findByAgentId(agent.getId());
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", purchaseOrderSearcher.getPageIndex());

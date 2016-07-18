@@ -11,7 +11,7 @@
 package com.huotu.agento2o.service.service.settlement;
 
 import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 

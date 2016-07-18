@@ -1,7 +1,7 @@
 package com.huotu.agento2o.service.service.order;
 
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.searchable.AfterSaleSearch;
 import org.springframework.data.domain.Page;

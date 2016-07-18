@@ -1,9 +1,9 @@
 package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
@@ -31,9 +31,9 @@ public class AgentServiceImplTest extends CommonTestBase {
     @Autowired
     private MallPasswordEncoder passwordEncoder;
 
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
 
-    private MallCustomer mockAgent;
+    private CustomerAuthor mockAgent;
     @Autowired
     private MallCustomerRepository customerRepository;
     @Autowired
@@ -48,8 +48,8 @@ public class AgentServiceImplTest extends CommonTestBase {
 //    @Test
 //    @Rollback(false)
     public void mockTopAgent(){
-        MallCustomer customer = customerService.findByCustomerId(4886);
-        MallCustomer agentCustomer = new MallCustomer();
+        CustomerAuthor customer = customerService.findByCustomerId(4886);
+        CustomerAuthor agentCustomer = new CustomerAuthor();
         agentCustomer.setNickName("代理商1");
         agentCustomer.setUsername("agent");
         agentCustomer.setPassword("123456");
@@ -73,8 +73,8 @@ public class AgentServiceImplTest extends CommonTestBase {
 //    @Test
 //    @Rollback(false)
     public void testMockAgent(){
-        MallCustomer customer = customerService.findByCustomerId(4471);
-        MallCustomer agentCustomer = mockMallCustomer();
+        CustomerAuthor customer = customerService.findByCustomerId(4471);
+        CustomerAuthor agentCustomer = mockMallCustomer();
         Agent agent = new Agent();
         agent.setId(agentCustomer.getId());
         agent.setStatus(AgentStatusEnum.CHECKED);
@@ -245,7 +245,7 @@ public class AgentServiceImplTest extends CommonTestBase {
         String password = UUID.randomUUID().toString();
         int result = mallCustomerService.resetPassword(mockAgent.getId(), password);
         Assert.assertTrue(result > 0);
-        MallCustomer agent = mallCustomerService.findByCustomerId(mockAgent.getId());
+        CustomerAuthor agent = mallCustomerService.findByCustomerId(mockAgent.getId());
         Assert.assertEquals(passwordEncoder.encode(password), agent.getPassword());
         result = mallCustomerService.resetPassword(-1, password);
         Assert.assertTrue(result == 0);

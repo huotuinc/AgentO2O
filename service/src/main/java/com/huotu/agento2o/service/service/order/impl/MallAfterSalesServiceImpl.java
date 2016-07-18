@@ -1,12 +1,12 @@
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
+import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallAfterSalesItem;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
@@ -24,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,15 +46,15 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
     public Page<MallAfterSales> findAll(int pageIndex, Author author, int pageSize, Integer agentId, AfterSaleSearch afterSaleSearch) {
         Specification<MallAfterSales> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (author != null && author.getType() == Shop.class) {
+            if (author != null && author.getType() == ShopAuthor.class) {
                 predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
 //                Predicate p1 = criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), agentId);
 //                Predicate p2 = criteriaBuilder.equal(root.get("beneficiaryShop").get("id").as(Integer.class), agentId);
 //                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             } else if (author != null && author.getType() == Agent.class) {
                 predicates.add(criteriaBuilder.equal(root.get("shop").get("agent").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
-//                Join<MallAfterSales,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
-//                Join<MallAfterSales,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class),JoinType.LEFT);
+//                Join<MallAfterSales,ShopAuthor> join1 = root.join(root.getModel().getSingularAttribute("shop",ShopAuthor.class), JoinType.LEFT);
+//                Join<MallAfterSales,ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",ShopAuthor.class),JoinType.LEFT);
 //                Predicate p1 = criteriaBuilder.equal(join1.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
 //                Predicate p2 = criteriaBuilder.equal(join2.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
 //                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);

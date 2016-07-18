@@ -11,10 +11,9 @@ package com.huotu.agento2o.agent.controller.config;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,16 +35,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AddressControllerTest extends CommonTestBase {
 
     private static String BASE_URL = "/config";
-    //平台
-    private MallCustomer mockCustomer;
-    //代理商
-    private MallCustomer mockAgent;
-    //门店
-    private Shop mockShop;
     //代理商的收货地址
     List<Address> agentAddress = new ArrayList<>();
     //门店的收货地址
     List<Address> shopAddress = new ArrayList<>();
+    //平台
+    private CustomerAuthor mockCustomer;
+    //代理商
+    private CustomerAuthor mockAgent;
+    //门店
+    private ShopAuthor mockShop;
 
     @Before
     public void init() {

@@ -14,8 +14,8 @@ import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.WithdrawEnum;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
@@ -66,7 +66,7 @@ public class HbmWithdrawController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("huobanmall/settlement/withdrawRecord");
         Page<WithdrawRecord> withdrawRecordPage = withdrawRecordService.getPageByCustomerId(customerId, withdrawRecordSearcher);
-        List<Shop> shopList = shopService.findByCustomerId(customerId);
+        List<ShopAuthor> shopList = shopService.findByCustomerId(customerId);
         modelAndView.addObject("withdrawRecordPage", withdrawRecordPage);
         modelAndView.addObject("shopList", shopList);
         modelAndView.addObject("totalRecords", withdrawRecordPage.getTotalElements());

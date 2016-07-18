@@ -1,9 +1,9 @@
 package com.huotu.agento2o.service.repository.author;
 
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -14,19 +14,19 @@ import java.util.List;
  * Created by helloztt on 2016/5/9.
  */
 @Repository(value = "shopRepository")
-public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecificationExecutor {
+public interface ShopRepository extends JpaRepository<ShopAuthor, Integer>, JpaSpecificationExecutor {
 
-    Shop findByUsername(String userName);
+    ShopAuthor findByUsername(String userName);
 
-    Shop findByUserBaseInfo_userId(Integer userId);
+    ShopAuthor findByUserBaseInfo_userId(Integer userId);
 
-    Shop findByIdAndAgent(Integer id, Agent agent);
+    ShopAuthor findByIdAndAgent(Integer id, Agent agent);
 
-    List<Shop> findByAgent_Id(Integer agentId);
+    List<ShopAuthor> findByAgent_Id(Integer agentId);
 
-    Shop findByIdAndCustomer(Integer id, MallCustomer customer);
+    ShopAuthor findByIdAndCustomer(Integer id, CustomerAuthor customer);
 
-    List<Shop> findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum status);
+    List<ShopAuthor> findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum status);
 
-    List<Shop> findByIsDeletedFalseAndIsDeletedFalseAndStatusAndCustomer_CustomerId(AgentStatusEnum status,Integer customerId);
+    List<ShopAuthor> findByIsDeletedFalseAndIsDeletedFalseAndStatusAndCustomer_CustomerId(AgentStatusEnum status, Integer customerId);
 }

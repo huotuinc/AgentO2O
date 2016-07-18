@@ -10,10 +10,9 @@
 
 package com.huotu.agento2o.service.entity.settlement;
 
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,7 +49,7 @@ public class Settlement {
      */
     @OneToOne
     @JoinColumn(name = "Shop_Id" )
-    private Shop shop;
+    private ShopAuthor shop;
 
     /**
      * 分销商编号

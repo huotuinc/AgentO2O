@@ -10,9 +10,7 @@
 
 package com.huotu.agento2o.service.service.statistics;
 
-import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.common.PurchaseEnum;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.model.statistics.IndexStatistics;
 
 import java.util.Date;

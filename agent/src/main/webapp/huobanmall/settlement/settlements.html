@@ -9,7 +9,7 @@
   ~
   -->
 
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>T+1结算对账</title>
@@ -89,7 +89,7 @@
                             <label class="first">门店：
                                 <select id="shopId" name="shopId">
                                     <option value="0" th:selected="*{shopId==0}">请选择</option>
-                                    <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
+                                    <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.author.ShopAuthor>"*/-->
                                     <option th:each="shop:${shopList}" th:value="${shop.id}" th:selected="${settlementSearcher.shopId == shop.id ? true : false}" th:text="${shop.name}"></option>
                                 </select>
                             </label>

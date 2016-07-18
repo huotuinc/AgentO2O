@@ -4,7 +4,7 @@ import com.huotu.agento2o.agent.common.CookieHelper;
 import com.huotu.agento2o.agent.common.UserNameAndPasswordNullException;
 import com.huotu.agento2o.agent.config.security.AuthenticationToken;
 import com.huotu.agento2o.common.SysConstant;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

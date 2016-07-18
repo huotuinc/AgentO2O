@@ -12,12 +12,10 @@ package com.huotu.agento2o.agent.service.product.impl;
 
 import com.huotu.agento2o.agent.service.product.ProductScheduleService;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.product.SendEmailService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
@@ -64,7 +62,7 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
         }
         for(int i = 0 ; i < shops.size() ; i++){
             Integer shopId = Integer.parseInt(shops.get(i).toString());
-            Shop shop = shopService.findById(shopId);
+            ShopAuthor shop = shopService.findById(shopId);
             if(shop == null || StringUtil.isEmptyStr(shop.getEmail())){
                 continue;
             }

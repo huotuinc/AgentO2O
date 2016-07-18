@@ -68,7 +68,7 @@
                         <select name="agentId" id="agentId">
                             <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
                             <!--/*@thymesVar id="agentList" type="java.util.List<com.huotu.agento2o.service.entity.author.Agent"*/-->
-                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
+                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.author.ShopAuthor>"*/-->
                             <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}"
                                     th:selected="${agent.id == searchCondition.agentId}">代理商
                             </option>

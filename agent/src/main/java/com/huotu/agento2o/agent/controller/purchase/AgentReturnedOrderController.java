@@ -9,10 +9,10 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
@@ -324,7 +324,7 @@ public class AgentReturnedOrderController {
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
 
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
-        List<Shop> shopList = shopService.findByAgentId(agent.getId());
+        List<ShopAuthor> shopList = shopService.findByAgentId(agent.getId());
 
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/returned/agent_return_order_list");

@@ -64,7 +64,7 @@ public class AgentDelivery {
     private double freight;//物流费用
 //    @ManyToOne
 //    @JoinColumn(name = "Customer_Id")
-//    private MallCustomer customer;
+//    private CustomerAuthor customer;
     @Column(name = "Customer_Id")
     private Integer customerId;
     @Column(name = "T_Begin")

@@ -12,12 +12,11 @@ package com.huotu.agento2o.agent.controller.purchase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -35,9 +34,7 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 /**
@@ -49,15 +46,15 @@ public class ShoppingCartControllerTest extends CommonTestBase {
     private static String BASE_URL = "/shoppingCart";
 
     //平台方
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
     //一级代理商
-    private MallCustomer mockFirstLevelAgent;
+    private CustomerAuthor mockFirstLevelAgent;
     //二级代理商
-    private MallCustomer mockSecondLevelAgent;
+    private CustomerAuthor mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private ShopAuthor mockFirstLevelShop;
     //二级代理商下级门店
-    private Shop mockSecondLevelShop;
+    private ShopAuthor mockSecondLevelShop;
 
     //无规格商品(只有一个货品)
     private List<MallGoods> mockGoodsWith1ProductList = new ArrayList<>();

@@ -11,7 +11,7 @@
 package com.huotu.agento2o.service.service.settlement;
 
 import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.settlement.Settlement;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.searchable.SettlementSearcher;
@@ -31,7 +31,7 @@ public interface SettlementService {
      * @param settleTime
      * @return
      */
-    void settle(Shop shop, Date settleTime) throws Exception;
+    void settle(ShopAuthor shop, Date settleTime) throws Exception;
 
     Settlement findById(Integer id);
 

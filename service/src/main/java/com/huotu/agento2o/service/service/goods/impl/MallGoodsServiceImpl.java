@@ -12,9 +12,9 @@ package com.huotu.agento2o.service.service.goods.impl;
 
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -101,7 +101,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         AgentProduct agentProduct = null;
         if (author != null && author.getType() == Agent.class) {
             agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(),product);
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),product);
         }
         return agentProduct;
@@ -111,7 +111,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         ShoppingCart shoppingCart  = null;
         if (author != null && author.getType() == Agent.class) {
             shoppingCart = shoppingCartRepository.findByAgentAndProduct(author.getAuthorAgent(),product);
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             shoppingCart = shoppingCartRepository.findByShopAndProduct(author.getAuthorShop(),product);
         }
         return shoppingCart;

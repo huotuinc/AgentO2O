@@ -6,17 +6,15 @@ import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.httputil.HttpClientUtil;
 import com.huotu.agento2o.common.httputil.HttpResult;
 import com.huotu.agento2o.common.util.*;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.model.order.BatchDeliverResult;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
-import com.huotu.agento2o.service.model.order.LogiModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
 import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
@@ -32,8 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -64,14 +60,14 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
     public Page<MallDelivery> getPage(int pageIndex, Author author, int pageSize, DeliverySearcher deliverySearcher, String type) {
         Specification<MallDelivery> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (author != null && author.getType() == Shop.class) {
+            if (author != null && author.getType() == ShopAuthor.class) {
                 Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             } else if (author != null && author.getType() == Agent.class) {
                 predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), deliverySearcher.getAgentId()));
-//                Join<MallDelivery, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
-//                Join<MallDelivery, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
+//                Join<MallDelivery, ShopAuthor> join1 = root.join(root.getModel().getSingularAttribute("shop", ShopAuthor.class), JoinType.LEFT);
+//                Join<MallDelivery, ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", ShopAuthor.class), JoinType.LEFT);
 //                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);

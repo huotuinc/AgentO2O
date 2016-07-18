@@ -10,9 +10,8 @@
 
 package com.huotu.agento2o.service.repository.purchase;
 
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,10 +35,12 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
 
 //    ShoppingCart findByIdAndAuthor(Integer id, Author author);
     ShoppingCart findByIdAndAgent(Integer id, Agent agent);
-    ShoppingCart findByIdAndShop(Integer id, Shop shop);
+
+    ShoppingCart findByIdAndShop(Integer id, ShopAuthor shop);
 
     ShoppingCart findByAgentAndProduct(Agent agent,MallProduct product);
-    ShoppingCart findByShopAndProduct(Shop shop,MallProduct product);
+
+    ShoppingCart findByShopAndProduct(ShopAuthor shop, MallProduct product);
 
 //    ShoppingCart findByAuthorAndProduct(Author author, MallProduct product);
 

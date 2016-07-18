@@ -12,12 +12,11 @@ package com.huotu.agento2o.agent.controller;
 
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.agent.config.SecurityConfig;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.service.author.AgentService;
@@ -25,7 +24,6 @@ import com.huotu.agento2o.service.service.author.ShopService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,9 +56,9 @@ public class IndexControllerTest extends CommonTestBase {
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         //平台方
-        MallCustomer customer = mockMallCustomer();
+        CustomerAuthor customer = mockMallCustomer();
         //一级代理商
-        MallCustomer agentCustomer = new MallCustomer();
+        CustomerAuthor agentCustomer = new CustomerAuthor();
         agentCustomer.setNickName(UUID.randomUUID().toString());
         agentCustomer.setUsername(userName);
         agentCustomer.setPassword(passwordEncoder.encode(password));
@@ -121,7 +119,7 @@ public class IndexControllerTest extends CommonTestBase {
     public void shopLoginAsShopTest() throws Exception{
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
+        ShopAuthor shop = new ShopAuthor();
         shop.setUsername(userName);
         shop.setPassword(passwordEncoder.encode(password));
         shop.setDeleted(false);

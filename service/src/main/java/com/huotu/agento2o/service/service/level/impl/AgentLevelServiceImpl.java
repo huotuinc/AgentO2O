@@ -2,9 +2,8 @@ package com.huotu.agento2o.service.service.level.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
-import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.level.AgentLevelRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
@@ -75,7 +74,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
         if(levelId == null || customerId == null || requestAgentLevel == null){
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        MallCustomer customer = mallCustomerService.findByCustomerId(customerId);
+        CustomerAuthor customer = mallCustomerService.findByCustomerId(customerId);
         AgentLevel agentLevel;
         if (customer == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);

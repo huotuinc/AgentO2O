@@ -11,11 +11,10 @@
 package com.huotu.agento2o.service.service.order;
 
 import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
-import com.huotu.agento2o.service.model.order.LogiModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import org.springframework.data.domain.Page;

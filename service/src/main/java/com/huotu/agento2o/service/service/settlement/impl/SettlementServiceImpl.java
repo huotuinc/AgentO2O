@@ -15,9 +15,9 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.SettlementEnum;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.*;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.Settlement;
@@ -59,7 +59,7 @@ public class SettlementServiceImpl implements SettlementService {
     @Autowired
     private SettlementOrderRepository settlementOrderRepository;
     @Autowired
-    private MallOrderRepository orderRepository;
+    private CusOrderRepository orderRepository;
     @Autowired
     private MallOrderItemRepository orderItemRepository;
     @Autowired
@@ -84,7 +84,7 @@ public class SettlementServiceImpl implements SettlementService {
      */
     @Override
     @Transactional
-    public void settle(Shop shop, Date settleTime) throws Exception {
+    public void settle(ShopAuthor shop, Date settleTime) throws Exception {
         List<SettlementOrder> settlementOrders = settlementRepository.findSettlementOrder(shop.getId(), shop.getCustomer().getCustomerId(), settleTime);
         if (settlementOrders == null || settlementOrders.size() == 0) {
             return;
@@ -295,7 +295,7 @@ public class SettlementServiceImpl implements SettlementService {
                     settlement.getCreateDateTime() + "," + SettlementEnum.SettlementStatusEnum.READY_SETTLE);
         }
         //分销商和门店均审核通过
-        Shop shop = settlement.getShop();
+        ShopAuthor shop = settlement.getShop();
         if (customerSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED && authorSettlementCheckStatus == SettlementEnum.SettlementCheckStatus.CHECKED) {
             Account shopAccount = accountRepository.findByShop(shop);
             //审核通过，待提货款增加

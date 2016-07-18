@@ -15,10 +15,10 @@ import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -168,11 +168,11 @@ public class PurchaseController {
         //增加购物车记录
         ShoppingCart cart = new ShoppingCart();
         if (author != null && author.getType() == Agent.class) {
-            cart.setAgent(((MallCustomer)author).getAgent());
+            cart.setAgent(((CustomerAuthor) author).getAgent());
             cart.setShop(null);
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             cart.setAgent(null);
-            cart.setShop((Shop)author);
+            cart.setShop((ShopAuthor) author);
         }
         cart.setProduct(product);
         cart.setNum(num);

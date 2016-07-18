@@ -10,10 +10,9 @@
 
 package com.huotu.agento2o.service.repository.purchase;
 
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,10 +28,10 @@ import java.util.List;
 @Repository
 public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchaseOrder, String>, JpaSpecificationExecutor<AgentPurchaseOrder> {
 
-    AgentPurchaseOrder findByPOrderIdAndAgentAndShop(String pOrderId, Agent agent, Shop shop);
+    AgentPurchaseOrder findByPOrderIdAndAgentAndShop(String pOrderId, Agent agent, ShopAuthor shop);
 
 
-    List<AgentPurchaseOrder> findByAgentAndShop(Agent agent, Shop shop);
+    List<AgentPurchaseOrder> findByAgentAndShop(Agent agent, ShopAuthor shop);
 
     /**
      * 按日期统计代理商/门店有效的采购单
@@ -43,7 +42,7 @@ public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchas
      * @param end
      * @return
      */
-    int countByAgentAndShopAndCreateTimeBetweenAndDisabledFalse(Agent agent,Shop shop, Date start, Date end);
+    int countByAgentAndShopAndCreateTimeBetweenAndDisabledFalse(Agent agent, ShopAuthor shop, Date start, Date end);
 
     /**
      * 按日期统计下级代理商/下级门店有效的采购单

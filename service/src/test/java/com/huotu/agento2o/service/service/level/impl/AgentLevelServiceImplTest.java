@@ -2,10 +2,7 @@ package com.huotu.agento2o.service.service.level.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.config.ServiceConfig;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
@@ -13,13 +10,7 @@ import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +26,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
     @Autowired
     private AgentService agentService;
 
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
 
     private AgentLevel mockAgentLevel;
 
@@ -104,7 +95,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
         result = agentLevelService.deleteAgentLevel(-1, mockCustomer.getCustomerId());
         Assert.assertEquals(ResultCodeEnum.DATA_NULL.getResultMsg(), result.getMsg());
         mockAgentLevel = mockAgentLevel(mockCustomer);
-        MallCustomer agent = mockAgent(mockCustomer, null);
+        CustomerAuthor agent = mockAgent(mockCustomer, null);
         agent.getAgent().setAgentLevel(mockAgentLevel);
         customerService.newCustomer(agent);
 //        agentService.addAgent(agent);

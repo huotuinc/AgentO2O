@@ -11,7 +11,7 @@
 package com.huotu.agento2o.agent.service.settlement.impl;
 
 import com.huotu.agento2o.agent.service.settlement.SettlementScheduleService;
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.settlement.SettlementService;
 import org.apache.commons.logging.Log;
@@ -41,7 +41,7 @@ public class SettlementScheduleServiceImpl implements SettlementScheduleService 
     public void settlementSchedule() {
         log.info("start settle . . .");
         Date now = new Date();
-        List<Shop> shopList = shopService.findAll();
+        List<ShopAuthor> shopList = shopService.findAll();
         if (shopList != null && shopList.size() > 0) {
             shopList.forEach(shop -> {
                 int num = 3;

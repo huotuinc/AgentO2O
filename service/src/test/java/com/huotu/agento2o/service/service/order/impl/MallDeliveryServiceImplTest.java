@@ -9,7 +9,7 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
@@ -30,7 +30,7 @@ public class MallDeliveryServiceImplTest extends CommonTestBase {
     @Test
     public void testGetPage() throws Exception {
         int pageIndex = 1;
-        Shop shop = new Shop();
+        ShopAuthor shop = new ShopAuthor();
 //        shop.setId(8);
         int pageSize = 20;
         DeliverySearcher deliverySearcher = new DeliverySearcher();

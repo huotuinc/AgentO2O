@@ -14,8 +14,8 @@ import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.settlement.Settlement;
 import com.huotu.agento2o.service.entity.settlement.SettlementOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
@@ -72,7 +72,7 @@ public class HbmSettlementController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("huobanmall/settlement/settlements");
         Page<Settlement> settlementPage = settlementService.getCustomerPage(customerId, settlementSearcher);
-        List<Shop> shopList = shopService.findByCustomerId(customerId);
+        List<ShopAuthor> shopList = shopService.findByCustomerId(customerId);
         modelAndView.addObject("settlementPage", settlementPage);
         modelAndView.addObject("shopList", shopList);
         modelAndView.addObject("totalRecords", settlementPage.getTotalElements());
@@ -191,7 +191,7 @@ public class HbmSettlementController {
                                        HttpServletResponse response) throws Exception {
         int pageSize = 20 * (endPage - beginPage + 1);
         Settlement settlement = settlementService.findBySettlementNo(settlementNo);
-        MallCustomer customer = customerService.findByCustomerId(customerId);
+        CustomerAuthor customer = customerService.findByCustomerId(customerId);
         String createTime = StringUtil.DateFormat(settlement.getCreateDateTime(),StringUtil.DATE_PATTERN);
         String excelName = URLEncoder.encode(createTime + customer.getNickName() + "结算单明细", "UTF-8");
         Page<SettlementOrder> settlementOrderPage = settlementOrderService.getPage(settlement, beginPage, pageSize);

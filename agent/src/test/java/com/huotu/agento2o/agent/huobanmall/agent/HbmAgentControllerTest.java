@@ -12,7 +12,7 @@ package com.huotu.agento2o.agent.huobanmall.agent;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import org.junit.Assert;
@@ -37,9 +37,9 @@ public class HbmAgentControllerTest extends CommonTestBase {
 
     private static String BASE_URL = "/huobanmall/agent";
     //平台下的代理商
-    List<MallCustomer> agents = new ArrayList<>();
+    List<CustomerAuthor> agents = new ArrayList<>();
     //平台
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
     private Cookie cookie;
 
     @Before
@@ -48,7 +48,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         mockCustomer = mockMallCustomer();
         cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
         for (int i = 0; i <= random.nextInt(5) + 1; i++) {
-            MallCustomer mockAgent = mockAgent(mockCustomer, null);
+            CustomerAuthor mockAgent = mockAgent(mockCustomer, null);
             agents.add(mockAgent);
         }
     }
@@ -71,7 +71,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
             Assert.assertEquals(agents.get(i).getId(), agentList.get(i).getId());
         }
         //根据代理商账号查询
-        MallCustomer mallAgent = agents.get(0);
+        CustomerAuthor mallAgent = agents.get(0);
         Agent expectAgent = agents.get(0).getAgent();
         result = mockMvc.perform(get(controllerUrl).cookie(cookie)
                 .param("agentLoginName", mallAgent.getUsername()))
@@ -123,7 +123,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         obResult = JSONObject.parseObject(resultString);
         Assert.assertEquals("请求成功", obResult.getString("msg"));
         expectAgent = agents.get(0).getAgent();
-        MallCustomer newMallAgent = mockAgent(mockCustomer, expectAgent);
+        CustomerAuthor newMallAgent = mockAgent(mockCustomer, expectAgent);
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("agentId", String.valueOf(expectAgent.getId())))
                 .andExpect(status().isOk())
@@ -190,7 +190,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
         Assert.assertTrue(parentAgentLevelId == -1);
         //显示修改页面
         AgentLevel agentLevel = parentAgent.getAgentLevel();
-        MallCustomer agent = mockAgent(mockCustomer, parentAgent);
+        CustomerAuthor agent = mockAgent(mockCustomer, parentAgent);
         result = mockMvc.perform(get(controllerUrl).cookie(cookie)
                 .param("id", String.valueOf(agent.getId())))
                 .andExpect(status().isOk())

@@ -1,18 +1,10 @@
 package com.huotu.agento2o.service.config;
 
-import com.huotu.agento2o.service.model.purchase.EmailConfig;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 /**
  * Created by helloztt on 2016/5/6.
@@ -25,11 +17,7 @@ import javax.sql.DataSource;
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "transactionManager"
 )
-@ImportResource({"classpath:hbm_config_prod.xml", "classpath:hbm_config_test.xml"})
 public class ServiceConfig {
-    @Resource(name = "jdbcDataSource")
-    private DataSource dataSource;
-
     @Value("${mail.apiUser}")
     private String apiUser;
 
@@ -45,13 +33,4 @@ public class ServiceConfig {
     @Value("${mail.fromName}")
     private String fromName;
 
-    @Bean
-    public JdbcTemplate getTemplate() {
-        return new JdbcTemplate(dataSource);
-    }
-
-    @Bean
-    public EmailConfig emailConfig() {
-        return new EmailConfig(apiUser, apiKey,template,from,fromName);
-    }
 }

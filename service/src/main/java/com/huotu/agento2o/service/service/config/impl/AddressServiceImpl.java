@@ -11,9 +11,9 @@ package com.huotu.agento2o.service.service.config.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.service.author.AuthorService;
@@ -40,7 +40,7 @@ public class AddressServiceImpl implements AddressService {
     public List<Address> findAddressByAuthorId(Author author) {
         if (author != null && Agent.class == author.getType()) {
             return addressRepository.findByAgent_Id(author.getId());
-        } else if (author != null && Shop.class == author.getType()) {
+        } else if (author != null && ShopAuthor.class == author.getType()) {
            return addressRepository.findByShop_Id(author.getId());
         }
         return null;
@@ -51,7 +51,7 @@ public class AddressServiceImpl implements AddressService {
         if(addressId != null && requestAuthor != null && requestAuthor.getId() != null){
             if(Agent.class == requestAuthor.getType()){
                 return addressRepository.findByIdAndAgent_Id(addressId,requestAuthor.getId());
-            }else if(Shop.class == requestAuthor.getType()){
+            } else if (ShopAuthor.class == requestAuthor.getType()) {
                 return addressRepository.findByIdAndShop_Id(addressId,requestAuthor.getId());
             }
         }
@@ -62,7 +62,7 @@ public class AddressServiceImpl implements AddressService {
     public Address findDefaultByAuthorId(Author requestAuthor) {
         if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
             return addressRepository.findByAgent_IdAndIsDefaultTrue(requestAuthor.getId());
-        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
+        } else if (requestAuthor != null && ShopAuthor.class == requestAuthor.getType()) {
             return addressRepository.findByShop_IdAndIsDefaultTrue(requestAuthor.getId());
         }
         return null;

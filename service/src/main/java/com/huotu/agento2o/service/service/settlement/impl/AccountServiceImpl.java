@@ -14,10 +14,10 @@ import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.WithdrawEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
@@ -25,7 +25,6 @@ import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.settlement.WithdrawRecordRepository;
-import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.settlement.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.Jsr310Converters;
@@ -59,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = null;
         if (author != null && author.getType() == Agent.class) {
             account = accountRepository.findByAgent(author.getAuthorAgent());
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             account = accountRepository.findByShop(author.getAuthorShop());
         }
         if (account == null) {

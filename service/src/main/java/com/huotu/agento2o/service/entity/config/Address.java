@@ -10,9 +10,9 @@
 package com.huotu.agento2o.service.entity.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -87,7 +87,7 @@ public class Address {
     @ManyToOne
     @JoinColumn(name = "Shop_Id")
     @JsonIgnore
-    private Shop shop;
+    private ShopAuthor shop;
 
     public void setAuthor(Author author){
         this.setAgent(author.getAuthorAgent());

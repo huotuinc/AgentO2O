@@ -10,11 +10,11 @@
 
 package com.huotu.agento2o.service.entity.purchase;
 
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.PurchaseEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,7 +48,7 @@ public class AgentReturnedOrder {
      */
     @JoinColumn(name = "Shop_Id")
     @ManyToOne
-    private Shop shop;
+    private ShopAuthor shop;
 
     @JoinColumn(name = "Parent_Agent_Id")
     @ManyToOne
@@ -200,7 +200,7 @@ public class AgentReturnedOrder {
      * 获取代理商或者门店的平台方
      * @return
      */
-    public MallCustomer getMallCustomer(){
+    public CustomerAuthor getMallCustomer() {
         if(this.agent != null){
             return this.agent.getCustomer();
         }else if(this.shop != null){

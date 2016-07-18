@@ -3,11 +3,11 @@ package com.huotu.agento2o.service.service.purchase.impl;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
@@ -145,7 +145,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                     predicates.add(cb.isNull(root.get("agent").get("parentAgent").as(Agent.class)));
                 } else {
                     /*Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
-                    Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+                    Join<AgentReturnedOrder, ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("shop", ShopAuthor.class), JoinType.LEFT);
                     Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     predicates.add(cb.or(p1,p2));*/
@@ -154,7 +154,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             }
             if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
                 Join<AgentReturnedOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
-                Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+                Join<AgentReturnedOrder, ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("shop", ShopAuthor.class), JoinType.LEFT);
                 Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
                 Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
                 predicates.add(cb.or(p1,p2));
@@ -221,7 +221,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             AgentProduct agentProduct = null;
             if (author != null && author.getType() == Agent.class) {
                 agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
-            } else if (author != null && author.getType() == Shop.class) {
+            } else if (author != null && author.getType() == ShopAuthor.class) {
                 agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),product);
             }
             agentProduct.setFreez(agentProduct.getFreez() - num);
@@ -439,7 +439,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         AgentProduct agentProduct = null;
         if(author.getType() == Agent.class){
             agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), mallProduct);
-        }else if(author.getType() == Shop.class){
+        } else if (author.getType() == ShopAuthor.class) {
             agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),mallProduct);
         }
         if(agentProduct == null){

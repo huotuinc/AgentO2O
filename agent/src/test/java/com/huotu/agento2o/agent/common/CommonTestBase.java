@@ -14,13 +14,13 @@ import com.huotu.agento2o.agent.config.MVCConfig;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.SerialNo;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.*;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.config.ServiceConfig;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
@@ -32,16 +32,15 @@ import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
-import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
+import com.huotu.agento2o.service.repository.order.CusOrderRepository;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderItemRepository;
-import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
@@ -101,13 +100,13 @@ public abstract class CommonTestBase extends SpringWebTest {
     //标准类目 羽绒服
     protected MallGoodsType standardGoodsType;
     @Autowired
-    protected MallOrderRepository orderRepository;
+    protected CusOrderRepository orderRepository;
+    @Autowired
+    protected MallPasswordEncoder passwordEncoder;
     @Autowired
     private AgentService agentService;
     @Autowired
     private ShopService shopService;
-    @Autowired
-    protected MallPasswordEncoder passwordEncoder;
     @Autowired
     private ShopRepository shopRepository;
     @Autowired
@@ -144,8 +143,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     }
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockMallCustomer() {
-        MallCustomer customer = new MallCustomer();
+    protected CustomerAuthor mockMallCustomer() {
+        CustomerAuthor customer = new CustomerAuthor();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
         customer.setPassword(passWord);
@@ -153,8 +152,8 @@ public abstract class CommonTestBase extends SpringWebTest {
     }
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
-        MallCustomer customer = mockMallCustomer();
+    protected CustomerAuthor mockAgent(CustomerAuthor mockCustomer, Agent parentAgent) {
+        CustomerAuthor customer = mockMallCustomer();
         Agent agent = new Agent();
         agent.setId(customer.getId());
         agent.setCustomer(mockCustomer);
@@ -176,8 +175,8 @@ public abstract class CommonTestBase extends SpringWebTest {
         return customerRepository.saveAndFlush(customer);
     }
 
-    protected Shop mockShop(MallCustomer mockCustomer, Agent parentAgent) {
-        Shop shop = new Shop();
+    protected ShopAuthor mockShop(CustomerAuthor mockCustomer, Agent parentAgent) {
+        ShopAuthor shop = new ShopAuthor();
         shop.setCustomer(mockCustomer);
         shop.setUsername(UUID.randomUUID().toString());
         shop.setPassword(passWord);
@@ -326,7 +325,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         InvoiceConfig otherInvoiceConfig = null;
         if (author != null && Agent.class == author.getType()) {
             otherInvoiceConfig = invoiceConfigRepository.findByAgentAndDefaultType(author.getAuthorAgent(), 1);
-        } else if (author != null && Shop.class == author.getType()) {
+        } else if (author != null && ShopAuthor.class == author.getType()) {
             otherInvoiceConfig = invoiceConfigRepository.findByShopAndDefaultType(author.getAuthorShop(), 1);
         }
         if (otherInvoiceConfig != null) {
@@ -618,7 +617,7 @@ public abstract class CommonTestBase extends SpringWebTest {
      * 模拟一个订单
      */
     @SuppressWarnings("Duplicates")
-    protected MallOrder mockMallOrder(Shop shop) {
+    protected MallOrder mockMallOrder(ShopAuthor shop) {
 
         MallOrder mallOrder = new MallOrder();
         mallOrder.setOrderId(random.nextInt() + "1");
@@ -670,7 +669,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         return mallProductRepository.saveAndFlush(mallProduct);
     }
 
-    protected MallAfterSales mockMallAfterSales(Shop shop, String orderId) {
+    protected MallAfterSales mockMallAfterSales(ShopAuthor shop, String orderId) {
         MallAfterSales mallAfterSales = new MallAfterSales();
         mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setOrderItem(new MallOrderItem());
@@ -688,7 +687,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         return mallAfterSalesRepository.saveAndFlush(mallAfterSales);
     }
 
-    protected MallAfterSales mockMallAfterSales(Shop shop) {
+    protected MallAfterSales mockMallAfterSales(ShopAuthor shop) {
         MallAfterSales mallAfterSales = new MallAfterSales();
         mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setOrderItem(new MallOrderItem());
@@ -707,7 +706,7 @@ public abstract class CommonTestBase extends SpringWebTest {
     }
 
     @SuppressWarnings("Duplicates")
-    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
+    protected AgentLevel mockAgentLevel(CustomerAuthor mockCustomer) {
         AgentLevel agentLevel = new AgentLevel();
         agentLevel.setLevelName(UUID.randomUUID().toString());
         agentLevel.setComment(UUID.randomUUID().toString());

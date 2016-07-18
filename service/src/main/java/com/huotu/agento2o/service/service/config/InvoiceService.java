@@ -9,7 +9,7 @@
 
 package com.huotu.agento2o.service.service.config;
 
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 
 import java.util.List;

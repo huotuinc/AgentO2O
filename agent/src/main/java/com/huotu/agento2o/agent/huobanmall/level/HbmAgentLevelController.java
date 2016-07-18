@@ -4,7 +4,6 @@ import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;

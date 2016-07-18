@@ -81,7 +81,7 @@
                             <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}"
                                     th:selected="${agent.id == deliverySearcher.agentId}">代理商
                             </option>
-                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
+                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.author.ShopAuthor>"*/-->
                             <option th:each="shop:${shopList}" th:value="${shop.id}" th:text="${shop.name}"
                                     th:selected="${shop.id == deliverySearcher.shopId}">门店
                             </option>

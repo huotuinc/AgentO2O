@@ -10,7 +10,7 @@
 
 package com.huotu.agento2o.service.service.goods;
 
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 
 import java.util.List;

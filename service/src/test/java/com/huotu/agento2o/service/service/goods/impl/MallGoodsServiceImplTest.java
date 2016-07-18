@@ -10,9 +10,7 @@
 
 package com.huotu.agento2o.service.service.goods.impl;
 
-import com.huotu.agento2o.common.util.Constant;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
@@ -23,10 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by helloztt on 2016/5/14.
@@ -39,9 +33,9 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
     @Test
     public void testFindByCustomerIdAndAgentId() throws Exception {
         //平台方
-        MallCustomer mockCustomer = mockMallCustomer();
+        CustomerAuthor mockCustomer = mockMallCustomer();
         //代理商
-        MallCustomer mockAgent = mockAgent(mockCustomer,null);
+        CustomerAuthor mockAgent = mockAgent(mockCustomer, null);
         MallGoods goods = mockMallGoods(mockCustomer.getCustomerId(),null);
         GoodsSearcher searcher = new GoodsSearcher();
         searcher.setPageNo(1);
@@ -54,10 +48,10 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
     @Test
     public void testFindByAgentId() throws Exception {
         //平台方
-        MallCustomer mockCustomer = mockMallCustomer();
+        CustomerAuthor mockCustomer = mockMallCustomer();
         //代理商
-        MallCustomer parentMockAgent = mockAgent(mockCustomer,null);
-        MallCustomer mockAgent = mockAgent(mockCustomer,parentMockAgent.getAgent());
+        CustomerAuthor parentMockAgent = mockAgent(mockCustomer, null);
+        CustomerAuthor mockAgent = mockAgent(mockCustomer, parentMockAgent.getAgent());
         //平台方商品
         MallGoods mockGoods = mockMallGoods(mockCustomer.getCustomerId(),null);
         //平台方货品

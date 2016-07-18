@@ -11,9 +11,9 @@
 package com.huotu.agento2o.service.service.author;
 
 import com.huotu.agento2o.common.util.ApiResult;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
@@ -26,21 +26,21 @@ import java.util.List;
  */
 public interface ShopService extends UserDetailsService {
 
-    Shop findByUserName(String userName);
+    ShopAuthor findByUserName(String userName);
 
-    Shop findById(Integer id);
+    ShopAuthor findById(Integer id);
 
-    Shop findByIdAndParentAuthor(Integer shopId, Agent agent);
+    ShopAuthor findByIdAndParentAuthor(Integer shopId, Agent agent);
 
-    List<Shop> findByAgentId(Integer agentId);
+    List<ShopAuthor> findByAgentId(Integer agentId);
 
-    Shop findByIdAndCustomer_Id(Integer shopId, Integer customer_Id);
+    ShopAuthor findByIdAndCustomer_Id(Integer shopId, Integer customer_Id);
 
-    Shop addShop(Shop shop);
+    ShopAuthor addShop(ShopAuthor shop);
 
-    ApiResult saveOrUpdateShop(Shop shop, String hotUserName, Agent agent);
+    ApiResult saveOrUpdateShop(ShopAuthor shop, String hotUserName, Agent agent);
 
-    ApiResult saveShopConfig(Shop shop, String hotUserName);
+    ApiResult saveShopConfig(ShopAuthor shop, String hotUserName);
 
     void flush();
 
@@ -72,13 +72,13 @@ public interface ShopService extends UserDetailsService {
 
     ApiResult updatePasswordById(String password, int shopId);
 
-    Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
+    Page<ShopAuthor> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
 
-    List<Shop> findAll();
+    List<ShopAuthor> findAll();
 
-    List<Shop> findByCustomerId(Integer customerId);
+    List<ShopAuthor> findByCustomerId(Integer customerId);
 
-    HSSFWorkbook createWorkBook(List<Shop> shops);
+    HSSFWorkbook createWorkBook(List<ShopAuthor> shops);
 
     /**
      * 根据平台id和用户名模糊查询小伙伴的用户名集合

@@ -13,10 +13,10 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.author.ShopService;
@@ -60,7 +60,7 @@ public class AgentController {
             agent.setUsername(author.getUsername());
             model.addAttribute("agent", agent);
             return "config/agentConfig";
-        }else if(Shop.class == author.getType()){
+        } else if (ShopAuthor.class == author.getType()) {
             //门店
             model.addAttribute("shop",author.getAuthorShop());
             return "config/shopConfig";
@@ -79,7 +79,7 @@ public class AgentController {
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, Agent requestAgent,String hotUserName) {
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = CustomerAuthor.class) CustomerAuthor mallCustomer, Agent requestAgent, String hotUserName) {
         if (!mallCustomer.getId().equals(requestAgent.getId())) {
             return new ApiResult("没有权限");
         }
@@ -123,7 +123,7 @@ public class AgentController {
     @RequestMapping(value = "/getAgentUserNames", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, String hotUserName) {
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = CustomerAuthor.class) CustomerAuthor mallCustomer, String hotUserName) {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(mallCustomer.getAgent().getCustomer().getCustomerId(), hotUserName));
     }
 
@@ -137,7 +137,7 @@ public class AgentController {
     @RequestMapping(value = "/getShopUserNames", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Shop.class) Shop curShop, String hotUserName) {
+    public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor curShop, String hotUserName) {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(curShop.getCustomer().getCustomerId(), hotUserName));
     }
 
@@ -151,7 +151,7 @@ public class AgentController {
     @RequestMapping(value = "/updateShop")
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult updateShop(@AgtAuthenticationPrincipal(type = Shop.class) Shop curShop, Shop shop, String hotUserName) {
+    public ApiResult updateShop(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor curShop, ShopAuthor shop, String hotUserName) {
         if (!curShop.getId().equals(shop.getId())) {
             return new ApiResult("没有权限");
         }

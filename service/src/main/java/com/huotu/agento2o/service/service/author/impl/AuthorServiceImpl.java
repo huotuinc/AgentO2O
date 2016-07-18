@@ -1,10 +1,10 @@
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
@@ -30,7 +30,7 @@ public class AuthorServiceImpl implements AuthorService {
     public Author findById(Author requestAuthor) {
         if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
             return mallCustomerRepository.findOne(requestAuthor.getId());
-        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
+        } else if (requestAuthor != null && ShopAuthor.class == requestAuthor.getType()) {
             return shopRepository.findOne(requestAuthor.getId());
         }else{
             return null;
@@ -41,14 +41,14 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public boolean updatePwd(Author requestAuthor, String password) {
         if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
-            MallCustomer author = mallCustomerRepository.findOne(requestAuthor.getId());
+            CustomerAuthor author = mallCustomerRepository.findOne(requestAuthor.getId());
             if(author == null){
                 return false;
             }
             author.setPassword(passwordEncoder.encode(password));
             mallCustomerRepository.save(author);
-        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
-            Shop author = shopRepository.findOne(requestAuthor.getId());
+        } else if (requestAuthor != null && ShopAuthor.class == requestAuthor.getType()) {
+            ShopAuthor author = shopRepository.findOne(requestAuthor.getId());
             if(author == null){
                 return false;
             }
@@ -64,7 +64,7 @@ public class AuthorServiceImpl implements AuthorService {
         Author author = null;
         if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
             author = mallCustomerRepository.findOne(requestAuthor.getId());
-        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
+        } else if (requestAuthor != null && ShopAuthor.class == requestAuthor.getType()) {
             author = shopRepository.findOne(requestAuthor.getId());
         }
         if(author == null){

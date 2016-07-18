@@ -10,12 +10,7 @@
 
 package com.huotu.agento2o.service.service.author;
 
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.List;
+import com.huotu.agento2o.service.author.Author;
 
 /**
  * Created by helloztt on 2016/5/9.

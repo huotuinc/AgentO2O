@@ -11,10 +11,10 @@
 package com.huotu.agento2o.agent.config.resolver;
 
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,12 +40,12 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             throw new Exception("没有权限");
         }
         if (userDetails instanceof Author) {
-            if (authenticationPrincipal.type() == Shop.class && userDetails instanceof Shop) {
+            if (authenticationPrincipal.type() == ShopAuthor.class && userDetails instanceof ShopAuthor) {
                 return userDetails;
-            } else if (authenticationPrincipal.type() == MallCustomer.class && userDetails instanceof MallCustomer) {
+            } else if (authenticationPrincipal.type() == CustomerAuthor.class && userDetails instanceof CustomerAuthor) {
                 return userDetails;
-            } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof MallCustomer) {
-                Agent agent = ((MallCustomer) userDetails).getAuthorAgent();
+            } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof CustomerAuthor) {
+                Agent agent = ((CustomerAuthor) userDetails).getAuthorAgent();
                 if(agent == null){
                     throw new Exception("没有权限");
                 }

@@ -11,18 +11,13 @@ package com.huotu.agento2o.agent.huobanmall.level;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
-import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.config.Address;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.service.author.AgentService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.servlet.http.Cookie;
@@ -41,15 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class HbmAgentLevelControllerTest extends CommonTestBase {
 
-    @Autowired
-    private AgentService agentService;
-
     private static String BASE_URL = "/huobanmall/level";
-    //平台
-    private MallCustomer mockCustomer;
-
     //代理商的收货地址
     List<AgentLevel> agentLevels = new ArrayList<>();
+    @Autowired
+    private AgentService agentService;
+    //平台
+    private CustomerAuthor mockCustomer;
 
     @Before
     public void init() {
@@ -124,7 +117,7 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
         obResult = JSONObject.parseObject(result);
         Assert.assertEquals("请求成功",obResult.getString("msg"));
         expectAgentLevel = agentLevels.get(1);
-        MallCustomer mockAgent = mockAgent(mockCustomer,null);
+        CustomerAuthor mockAgent = mockAgent(mockCustomer, null);
         mockAgent.getAgent().setAgentLevel(expectAgentLevel);
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("levelId",String.valueOf(expectAgentLevel.getLevelId())))

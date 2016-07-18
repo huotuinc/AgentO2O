@@ -14,8 +14,8 @@ import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.common.AgentActiveEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
@@ -129,7 +129,7 @@ public class HbmAgentController {
         Integer agentId = agent.getId();
         Integer parentAgentLevelId = -1;
         if (agentId > 0) {
-            MallCustomer customer = mallCustomerService.findByCustomerId(agentId);
+            CustomerAuthor customer = mallCustomerService.findByCustomerId(agentId);
             Agent oldAgent = customer.getAgent();
             //获取上级代理商的代理商等级
             if (oldAgent.getParentAgent() != null && (oldAgent.getParentAgent()).getAgentLevel() != null) {

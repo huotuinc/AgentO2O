@@ -11,7 +11,7 @@ package com.huotu.agento2o.service.service.config.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
 import com.huotu.agento2o.service.service.config.AddressService;
@@ -34,11 +34,11 @@ public class AddresslServiceImplTest extends CommonTestBase {
 
     private Address mockAddress;
 
-    private MallCustomer mockAgent;
+    private CustomerAuthor mockAgent;
 
     @Before
     public void init() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        CustomerAuthor mockCustomer = mockMallCustomer();
         mockAgent = mockAgent(mockCustomer, null);
         mockAddress = mockAddress(mockAgent);
     }

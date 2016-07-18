@@ -10,10 +10,10 @@
 
 package com.huotu.agento2o.service.model.order;
 
-import com.huotu.agento2o.service.entity.order.MallDelivery;
-import com.huotu.agento2o.service.entity.order.MallOrderItem;
-import com.huotu.agento2o.service.entity.order.MallPayments;
-import com.huotu.agento2o.service.entity.order.MallRefunds;
+import com.hot.datacenter.entity.order.Delivery;
+import com.hot.datacenter.entity.order.OrderItem;
+import com.hot.datacenter.entity.order.PaymentLog;
+import com.hot.datacenter.entity.order.RefundLog;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -34,19 +34,19 @@ public class OrderDetailModel {
     /**
      * 发货单列表
      */
-    private List<MallDelivery> deliveryList;
+    private List<Delivery> deliveryList;
     /**
      * 退货单列表
      */
-    private List<MallDelivery> refundsList;
+    private List<Delivery> refundsList;
     /**
      * 付款列表
      */
-    private List<MallPayments> paymentsList;
+    private List<PaymentLog> paymentsList;
     /**
      * 退款列表
      */
-    private List<MallRefunds> refundsMoneyList;
+    private List<RefundLog> refundsMoneyList;
 
 //    /**
 //     * 物流公司名字
@@ -116,7 +116,7 @@ public class OrderDetailModel {
     /**
      * 商品列表
      */
-    private List<MallOrderItem> supOrderItemList = new ArrayList<>();
+    private List<OrderItem> supOrderItemList = new ArrayList<>();
     /**
      * 订单备注
      */

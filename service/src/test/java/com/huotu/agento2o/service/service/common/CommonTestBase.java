@@ -10,14 +10,14 @@
 
 package com.huotu.agento2o.service.service.common;
 
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.Address;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -30,13 +30,12 @@ import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
+import com.huotu.agento2o.service.repository.order.CusOrderRepository;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
-import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.author.ShopService;
-import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,21 +68,21 @@ public abstract class CommonTestBase {
     @Autowired
     protected AgentProductRepository agentProductRepository;
     @Autowired
+    protected MallCustomerRepository customerRepository;
+    @Autowired
     private AgentLevelService agentLevelService;
     @Autowired
     private ShopService shopService;
     @Autowired
-    private MallOrderRepository orderRepository;
+    private CusOrderRepository orderRepository;
     @Autowired
     private MallAfterSalesRepository afterSalesRepository;
     @Autowired
     private AddressRepository addressRepository;
-    @Autowired
-    protected MallCustomerRepository customerRepository;
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockMallCustomer() {
-        MallCustomer customer = new MallCustomer();
+    protected CustomerAuthor mockMallCustomer() {
+        CustomerAuthor customer = new CustomerAuthor();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
         customer.setPassword(UUID.randomUUID().toString());
@@ -91,8 +90,8 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
-        MallCustomer customer = mockMallCustomer();
+    protected CustomerAuthor mockAgent(CustomerAuthor mockCustomer, Agent parentAgent) {
+        CustomerAuthor customer = mockMallCustomer();
         Agent agent = new Agent();
         agent.setId(customer.getId());
         agent.setCustomer(mockCustomer);
@@ -115,8 +114,8 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected Shop mockShop(Agent parentAgent) {
-        Shop shop = new Shop();
+    protected ShopAuthor mockShop(Agent parentAgent) {
+        ShopAuthor shop = new ShopAuthor();
         shop.setUsername(UUID.randomUUID().toString());
         shop.setPassword(UUID.randomUUID().toString());
         shop.setName(UUID.randomUUID().toString());
@@ -136,8 +135,8 @@ public abstract class CommonTestBase {
         return shop;
     }
 
-    protected Shop mockShop(Agent parentAgent,double lan,double lat) {
-        Shop shop = new Shop();
+    protected ShopAuthor mockShop(Agent parentAgent, double lan, double lat) {
+        ShopAuthor shop = new ShopAuthor();
         // TODO: 2016/7/14 城市code 
         shop.setUsername(UUID.randomUUID().toString());
         shop.setPassword(UUID.randomUUID().toString());
@@ -217,7 +216,7 @@ public abstract class CommonTestBase {
      * @param mockCustomer
      * @return
      */
-    protected AgentLevel mockAgentLevel(MallCustomer mockCustomer) {
+    protected AgentLevel mockAgentLevel(CustomerAuthor mockCustomer) {
         AgentLevel agentLevel = new AgentLevel();
         agentLevel.setLevelName(UUID.randomUUID().toString());
         agentLevel.setComment(UUID.randomUUID().toString());
@@ -232,7 +231,7 @@ public abstract class CommonTestBase {
      * 模拟一个订单
      */
     @SuppressWarnings("Duplicates")
-    protected MallOrder mockMallOrder(Shop shop) {
+    protected MallOrder mockMallOrder(ShopAuthor shop) {
 
         MallOrder mallOrder = new MallOrder();
         mallOrder.setOrderId(random.nextInt() + "1");
@@ -258,7 +257,7 @@ public abstract class CommonTestBase {
     /**
      * 模拟一个售后单
      */
-    protected MallAfterSales mockMallAfterSales(Shop shop) {
+    protected MallAfterSales mockMallAfterSales(ShopAuthor shop) {
         MallAfterSales mallAfterSales = new MallAfterSales();
         mallAfterSales.setAfterId(random.nextInt() + "1");
         mallAfterSales.setCreateTime(new Date());

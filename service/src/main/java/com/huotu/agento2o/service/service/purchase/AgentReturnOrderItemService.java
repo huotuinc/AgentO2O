@@ -1,7 +1,5 @@
 package com.huotu.agento2o.service.service.purchase;
 
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 
 import java.util.List;

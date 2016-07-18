@@ -9,9 +9,8 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;
@@ -36,16 +35,16 @@ public class MallOrderServiceImplTest extends CommonTestBase {
     private MallOrderService orderService;
 
     //平台方
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
     //一级代理商
-    private MallCustomer mockFirstLevelAgent;
+    private CustomerAuthor mockFirstLevelAgent;
     //二级代理商
-    private MallCustomer mockSecondLevelAgent;
+    private CustomerAuthor mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private ShopAuthor mockFirstLevelShop;
     //二级代理商下级门店1,门店2
-    private Shop mockSecondLevelShopOne;
-    private Shop mockSecondLevelShopTwo;
+    private ShopAuthor mockSecondLevelShopOne;
+    private ShopAuthor mockSecondLevelShopTwo;
 
     //二级代理商下级门店的订单
     private List<MallOrder> mockSecondLevelShopOneList = new ArrayList();

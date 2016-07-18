@@ -9,10 +9,10 @@
 
 package com.huotu.agento2o.service.entity.config;
 
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +39,7 @@ public class InvoiceConfig {
 
     @OneToOne
     @JoinColumn(name = "Shop_Id")
-    private Shop shop;
+    private ShopAuthor shop;
 
     /**
      * 发票抬头

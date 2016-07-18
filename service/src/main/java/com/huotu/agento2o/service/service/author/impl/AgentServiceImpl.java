@@ -5,9 +5,9 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.settlement.Account;
@@ -153,11 +153,11 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public ApiResult addOrUpdate(Integer customerId, Integer agentLevelId, Integer parentAgentId, String hotUserName, Agent requestAgent) {
-        MallCustomer customer = mallCustomerService.findByCustomerId(customerId);
+        CustomerAuthor customer = mallCustomerService.findByCustomerId(customerId);
         AgentLevel agentLevel = agentLevelService.findById(agentLevelId, customerId);
         Agent parentAgent = null;
         Agent agent = null;
-        MallCustomer mallAgent = null;
+        CustomerAuthor mallAgent = null;
         UserBaseInfo userBaseInfo = null;
         //必须保证平台方和等级存在才能保存代理商
         if (customerId == null || customer == null || agentLevel == null || requestAgent == null || requestAgent.getId() == null) {
@@ -229,12 +229,12 @@ public class AgentServiceImpl implements AgentService {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
-    private MallCustomer newMallCustomer(Agent agent) {
+    private CustomerAuthor newMallCustomer(Agent agent) {
         String key = StringUtil.createRandomStr(6);
         Integer token = random.nextInt(900000) + 100000;
         String mainDomian = SysConstant.COOKIE_DOMAIN;
         String url = String.format("http://distribute.%s/index.aspx?key=%s&t=huotu", mainDomian, key);
-        MallCustomer customer = new MallCustomer();
+        CustomerAuthor customer = new CustomerAuthor();
         customer.setUsername(agent.getUsername());
         customer.setPassword(passwordEncoder.encode(agent.getPassword()));
         customer.setIndustryType(0);
@@ -286,7 +286,7 @@ public class AgentServiceImpl implements AgentService {
         if (agentId == null || requestAgent == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        MallCustomer mallAgent = mallCustomerService.findByCustomerId(agentId);
+        CustomerAuthor mallAgent = mallCustomerService.findByCustomerId(agentId);
         //当代理商不存在、已删除、已冻结情况下无法修改
         if (mallAgent == null || mallAgent.getAgent() == null || mallAgent.getAgent().isDeleted() || mallAgent.getAgent().isDisabled()) {
             return new ApiResult("该账号已失效");

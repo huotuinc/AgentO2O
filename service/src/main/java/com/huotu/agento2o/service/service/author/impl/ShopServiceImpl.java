@@ -16,11 +16,11 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
@@ -62,40 +62,40 @@ public class ShopServiceImpl implements ShopService {
     private AccountRepository accountRepository;
 
     @Override
-    public Shop findByUserName(String userName) {
+    public ShopAuthor findByUserName(String userName) {
         return shopRepository.findByUsername(userName);
     }
 
     @Override
-    public Shop findById(Integer id) {
+    public ShopAuthor findById(Integer id) {
         return shopRepository.findOne(id);
     }
 
     @Override
-    public Shop findByIdAndParentAuthor(Integer shopId, Agent agent) {
+    public ShopAuthor findByIdAndParentAuthor(Integer shopId, Agent agent) {
         return shopId == null || agent == null ? null : shopRepository.findByIdAndAgent(shopId, agent);
     }
 
     @Override
-    public List<Shop> findByAgentId(Integer agentId) {
+    public List<ShopAuthor> findByAgentId(Integer agentId) {
         return shopRepository.findByAgent_Id(agentId);
     }
 
     @Override
-    public Shop findByIdAndCustomer_Id(Integer shopId, Integer customer_Id) {
-        MallCustomer customer = mallCustomerRepository.findOne(customer_Id);
+    public ShopAuthor findByIdAndCustomer_Id(Integer shopId, Integer customer_Id) {
+        CustomerAuthor customer = mallCustomerRepository.findOne(customer_Id);
         return shopId == null || customer == null ? null : shopRepository.findByIdAndCustomer(shopId, customer);
     }
 
     @Override
-    public Shop addShop(Shop shop) {
+    public ShopAuthor addShop(ShopAuthor shop) {
         return shopRepository.save(shop);
     }
 
     @Override
     @Transactional
     @SuppressWarnings("Duplicates")
-    public ApiResult saveOrUpdateShop(Shop shop, String hotUserName, Agent agent) {
+    public ApiResult saveOrUpdateShop(ShopAuthor shop, String hotUserName, Agent agent) {
         if (agent == null || agent.getCustomer() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -108,7 +108,7 @@ public class ShopServiceImpl implements ShopService {
                 return new ApiResult("小伙伴账号不存在", 400);
             }
 
-            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            ShopAuthor shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
             if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
                 return new ApiResult("小伙伴账号已被绑定", 400);
             }
@@ -117,7 +117,7 @@ public class ShopServiceImpl implements ShopService {
 
         if (shop.getId() == null) { //新增
             //判断门店登录名是否唯一
-            Shop checkShop = findByUserName(shop.getUsername());
+            ShopAuthor checkShop = findByUserName(shop.getUsername());
             if (checkShop != null) {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
@@ -126,7 +126,7 @@ public class ShopServiceImpl implements ShopService {
             shop.setAgent(agent);
             shop.setCustomer(agent.getCustomer());
         } else {  //编辑
-            Shop oldShop = shopRepository.findOne(shop.getId());
+            ShopAuthor oldShop = shopRepository.findOne(shop.getId());
             if (oldShop.isDisabled()) {
                 return new ApiResult("该门店已被冻结");
             }
@@ -171,8 +171,8 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional
     @SuppressWarnings("Duplicates")
-    public ApiResult saveShopConfig(Shop shop, String hotUserName) {
-        Shop oldShop = shopRepository.findOne(shop.getId());
+    public ApiResult saveShopConfig(ShopAuthor shop, String hotUserName) {
+        ShopAuthor oldShop = shopRepository.findOne(shop.getId());
         if (oldShop.isDisabled()) {
             return new ApiResult("该门店已被冻结");
         }
@@ -191,7 +191,7 @@ public class ShopServiceImpl implements ShopService {
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在", 400);
             }
-            Shop shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            ShopAuthor shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
             if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
                 return new ApiResult("小伙伴账号已被绑定", 400);
             }
@@ -228,7 +228,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult updateStatus(AgentStatusEnum status, int shopId, Agent agent) {
-        Shop shop = findByIdAndParentAuthor(shopId, agent);
+        ShopAuthor shop = findByIdAndParentAuthor(shopId, agent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -245,7 +245,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult updateStatusAndAuditComment(AgentStatusEnum status, String auditComment, int id) {
-        Shop shop = shopRepository.findOne(id);
+        ShopAuthor shop = shopRepository.findOne(id);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -260,7 +260,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult deleteById(int shopId, Agent agent) {
-        Shop shop = findByIdAndParentAuthor(shopId, agent);
+        ShopAuthor shop = findByIdAndParentAuthor(shopId, agent);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -275,7 +275,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult updateIsDisabledById(int id) {
-        Shop shop = shopRepository.findOne(id);
+        ShopAuthor shop = shopRepository.findOne(id);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         } else {
@@ -287,7 +287,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult updatePasswordById(String password, int shopId) {
-        Shop shop = shopRepository.findOne(shopId);
+        ShopAuthor shop = shopRepository.findOne(shopId);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -302,7 +302,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Shop shop = findByUserName(userName);
+        ShopAuthor shop = findByUserName(userName);
         if (shop == null) {
             throw new UsernameNotFoundException("没有该门店");
         }
@@ -310,13 +310,13 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition) {
-        Specification<Shop> specification = (root, query, cb) -> {
+    public Page<ShopAuthor> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition) {
+        Specification<ShopAuthor> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             //平台过滤
             if (searchCondition.getMallCustomer() != null) {
-                predicates.add(cb.equal(root.get("customer").as(MallCustomer.class), searchCondition.getMallCustomer()));
+                predicates.add(cb.equal(root.get("customer").as(CustomerAuthor.class), searchCondition.getMallCustomer()));
             }
 
             //门店过滤条件
@@ -377,17 +377,17 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public List<Shop> findAll() {
+    public List<ShopAuthor> findAll() {
         return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum.CHECKED);
     }
 
     @Override
-    public List<Shop> findByCustomerId(Integer customerId) {
+    public List<ShopAuthor> findByCustomerId(Integer customerId) {
         return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum.CHECKED);
     }
 
     @Override
-    public HSSFWorkbook createWorkBook(List<Shop> shops) {
+    public HSSFWorkbook createWorkBook(List<ShopAuthor> shops) {
         List<List<ExcelHelper.CellDesc>> rowAndCells = new ArrayList<>();
         shops.forEach(shop -> {
             List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
@@ -423,7 +423,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult updateAccountInfo(Integer shopId, String bankName, String accountName, String accountNo) {
-        Shop shop = findById(shopId);
+        ShopAuthor shop = findById(shopId);
         if(shop == null || shop.isDeleted() || shop.isDisabled()){
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }

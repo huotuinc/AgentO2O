@@ -9,9 +9,9 @@
 
 package com.huotu.agento2o.service.repository.config;
 
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.config.InvoiceConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -29,9 +29,9 @@ public interface InvoiceConfigRepository extends JpaRepository<InvoiceConfig, In
 
     InvoiceConfig findByAgentAndDefaultType(Agent agent, Integer defaultType);
 
-    List<InvoiceConfig> findByShop(Shop shop);
+    List<InvoiceConfig> findByShop(ShopAuthor shop);
 
-    InvoiceConfig findByShopAndType(Shop shop, InvoiceEnum.InvoiceTypeStatus type);
+    InvoiceConfig findByShopAndType(ShopAuthor shop, InvoiceEnum.InvoiceTypeStatus type);
 
-    InvoiceConfig findByShopAndDefaultType(Shop shop, Integer defaultType);
+    InvoiceConfig findByShopAndDefaultType(ShopAuthor shop, Integer defaultType);
 }

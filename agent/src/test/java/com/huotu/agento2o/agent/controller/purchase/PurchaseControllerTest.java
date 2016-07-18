@@ -15,10 +15,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallGoodsType;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
@@ -46,15 +45,15 @@ public class PurchaseControllerTest extends CommonTestBase {
     private static String BASE_URL = "/purchase";
 
     //平台方
-    private MallCustomer mockCustomer;
+    private CustomerAuthor mockCustomer;
     //一级代理商
-    private MallCustomer mockFirstLevelAgent;
+    private CustomerAuthor mockFirstLevelAgent;
     //二级代理商
-    private MallCustomer mockSecondLevelAgent;
+    private CustomerAuthor mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private ShopAuthor mockFirstLevelShop;
     //二级代理商下级门店
-    private Shop mockSecondLevelShop;
+    private ShopAuthor mockSecondLevelShop;
 
     private List<MallGoodsType> mockCustomerGoodsTypeList = new ArrayList<>();
     //无规格商品(只有一个货品)

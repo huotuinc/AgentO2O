@@ -10,14 +10,14 @@
 
 package com.huotu.agento2o.service.service.statistics.impl;
 
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.model.statistics.IndexStatistics;
-import com.huotu.agento2o.service.repository.order.MallOrderRepository;
+import com.huotu.agento2o.service.repository.order.CusOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
@@ -38,7 +38,7 @@ import java.util.List;
 @Service
 public class IndexStatisticsServiceImpl implements IndexStatisticsService {
     @Autowired
-    private MallOrderRepository orderRepository;
+    private CusOrderRepository orderRepository;
     @Autowired
     private AgentPurchaseOrderRepository purchaseOrderRepository;
     @Autowired
@@ -53,7 +53,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         List<OrderEnum.ShipMode> agentShopTypeList = new ArrayList<>();
         agentShopTypeList.add(OrderEnum.ShipMode.SHOP_DELIVERY);
         agentShopTypeList.add(OrderEnum.ShipMode.PLATFORM_DELIVERY);
-        if (author instanceof Shop) {
+        if (author instanceof ShopAuthor) {
             return orderRepository.countByShop_IdAndAgentShopTypeInAndShop_IdAndCreateTimeBetween(author.getId(), agentShopTypeList, start, end);
         } else {
             return orderRepository.countByShop_ParentAuthor_IdAndAgentShopTypeInAndCreateTimeBetween(author.getId(), agentShopTypeList, start, end);
@@ -149,7 +149,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
             indexStatistics.setToCheckReturnedOrderCount(checkingReturnedOrderCount(author.getId()));
             indexStatistics.setToReceiveReturnedOrderCount(toReceiveReturnedOrderCount(author.getId()));
             indexStatistics.setProductNotifyCount(agentProductRepository.countByWarningAgentInfo(author.getId()));
-        } else if (author != null && author.getType() ==  Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             indexStatistics.setAgent(false);
             indexStatistics.setToCheckSettlementCount(toCheckSettlementCount(author.getId()));
             indexStatistics.setProductNotifyCount(agentProductRepository.countByWarningShopInfo(author.getId()));

@@ -7,18 +7,18 @@ import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
+import com.huotu.agento2o.service.repository.order.CusOrderRepository;
 import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
-import com.huotu.agento2o.service.repository.order.MallOrderRepository;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -31,13 +31,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +44,7 @@ import java.util.List;
 public class MallOrderServiceImpl implements MallOrderService {
 
     @Autowired
-    private MallOrderRepository orderRepository;
+    private CusOrderRepository orderRepository;
 
     @Autowired
     private MallDeliveryRepository deliveryRepository;
@@ -60,7 +55,7 @@ public class MallOrderServiceImpl implements MallOrderService {
     }
 
     @Override
-    public MallOrder findByShopAndOrderId(Shop shop, String orderId) {
+    public MallOrder findByShopAndOrderId(ShopAuthor shop, String orderId) {
         return orderRepository.findByShopAndOrderId(shop, orderId);
     }
 
@@ -70,7 +65,7 @@ public class MallOrderServiceImpl implements MallOrderService {
     }
 
     @Override
-    public ApiResult updateRemark(Shop shop, String orderId, String agentMarkType, String agentMarkText) {
+    public ApiResult updateRemark(ShopAuthor shop, String orderId, String agentMarkType, String agentMarkText) {
         MallOrder order = orderRepository.findByShopAndOrderId(shop, orderId);
         if (order == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
@@ -91,14 +86,14 @@ public class MallOrderServiceImpl implements MallOrderService {
     public Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition) {
         Specification<MallOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (author != null && author.getType() == Shop.class) {
+            if (author != null && author.getType() == ShopAuthor.class) {
 //                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
 //                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
 //                judgeShipMode(searchCondition, cb, predicates, p1, p2);
                 predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getShopId()));
             } else if (author != null && author.getType() == Agent.class) {
-//                Join<MallOrder, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
-//                Join<MallOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
+//                Join<MallOrder, ShopAuthor> join1 = root.join(root.getModel().getSingularAttribute("shop", ShopAuthor.class), JoinType.LEFT);
+//                Join<MallOrder, ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", ShopAuthor.class), JoinType.LEFT);
 //                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
 //                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
 //                judgeShipMode(searchCondition, cb, predicates, p1, p2);

@@ -9,7 +9,7 @@
   ~
   -->
 
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>提现审核</title>
@@ -37,7 +37,7 @@
 <body>
 
 <!--/*@thymesVar id="withdrawRecordSearcher" type="com.huotu.agento2o.service.searchable.WithdrawRecordSearcher"*/-->
-<!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
+<!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.author.ShopAuthor>"*/-->
 <form method="get" action="withdrawRecord" th:action="@{/huobanmall/withdraw/withdrawRecord}" id="form1" th:object="${withdrawRecordSearcher}">
 
     <div class="container">

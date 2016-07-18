@@ -12,9 +12,9 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
@@ -38,7 +38,7 @@ public class AgentProductServiceImpl implements AgentProductService {
     public List<AgentProduct> findByAgentId(Author author) {
         if (author != null && author.getType() == Agent.class) {
             return agentProductRepository.findByAgent_IdAndDisabledFalse(author.getId());
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             return agentProductRepository.findByShop_IdAndDisabledFalse(author.getId());
         }
         return null;
@@ -52,7 +52,7 @@ public class AgentProductServiceImpl implements AgentProductService {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if ((author != null && author.getType() == Agent.class && author.getId().equals(agentProduct.getAgent().getId()))
-                || (author != null && author.getType() == Shop.class && author.getId().equals(agentProduct.getShop().getId()))) {
+                || (author != null && author.getType() == ShopAuthor.class && author.getId().equals(agentProduct.getShop().getId()))) {
             agentProduct.setWarning(warning);
             agentProductRepository.save(agentProduct);
             return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
@@ -90,7 +90,7 @@ public class AgentProductServiceImpl implements AgentProductService {
     public AgentProduct findAgentProduct(Author author, MallProduct product) {
         if (author != null && author.getType() == Agent.class) {
             return agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             return agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
         }
         return null;

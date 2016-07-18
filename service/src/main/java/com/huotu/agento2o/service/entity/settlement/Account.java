@@ -12,10 +12,10 @@ package com.huotu.agento2o.service.entity.settlement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huotu.agento2o.common.util.Constant;
-import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +43,7 @@ public class Account {
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "Shop_Id")
-    private Shop shop;
+    private ShopAuthor shop;
 
     /**
      * 账户余额（待提货款）
@@ -118,7 +118,7 @@ public class Account {
         return null;
     }
 
-    public MallCustomer getAuthorCustomer(){
+    public CustomerAuthor getAuthorCustomer() {
         if(this.getAgent() != null){
             return this.getAgent().getCustomer();
         }else if(this.getShop() != null){

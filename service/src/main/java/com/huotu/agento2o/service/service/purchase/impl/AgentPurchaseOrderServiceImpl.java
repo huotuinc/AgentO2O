@@ -13,11 +13,11 @@ package com.huotu.agento2o.service.service.purchase.impl;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.config.annotation.SystemServiceLog;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
@@ -96,7 +96,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             }
             if (purchaseOrderSearcher.getCustomerId() != null && purchaseOrderSearcher.getCustomerId() != 0) {
                 Join<AgentPurchaseOrder, Agent> join1 = root.join(root.getModel().getSingularAttribute("agent", Agent.class), JoinType.LEFT);
-                Join<AgentPurchaseOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
+                Join<AgentPurchaseOrder, ShopAuthor> join2 = root.join(root.getModel().getSingularAttribute("shop", ShopAuthor.class), JoinType.LEFT);
                 Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId());
                 Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), purchaseOrderSearcher.getCustomerId());
                 predicates.add(cb.or(p1, p2));
@@ -162,7 +162,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             ShoppingCart shoppingCart = null;
             if (author != null && author.getType() == Agent.class) {
                 shoppingCart = shoppingCartRepository.findByIdAndAgent(Integer.valueOf(shoppingCartId), author.getAuthorAgent());
-            } else if (author != null && author.getType() == Shop.class) {
+            } else if (author != null && author.getType() == ShopAuthor.class) {
                 shoppingCart = shoppingCartRepository.findByIdAndShop(Integer.valueOf(shoppingCartId), author.getAuthorShop());
             }
             if (shoppingCart == null) {
@@ -316,7 +316,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             AgentProduct agentProduct = null;
             if (author != null && author.getType() == Agent.class) {
                 agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), item.getProduct());
-            } else if (author != null && author.getType() == Shop.class) {
+            } else if (author != null && author.getType() == ShopAuthor.class) {
                 agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), item.getProduct());
             }
             MallProduct product = item.getProduct();

@@ -15,7 +15,7 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.settlement.Settlement;
 import com.huotu.agento2o.service.entity.settlement.SettlementOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
@@ -71,7 +71,7 @@ public class SettlementController {
      * @throws Exception
      */
     @RequestMapping(value = "/settlements", method = RequestMethod.GET)
-    public ModelAndView showSettlementList(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop, SettlementSearcher settlementSearcher) throws Exception {
+    public ModelAndView showSettlementList(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop, SettlementSearcher settlementSearcher) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("settlement/settlements");
         settlementSearcher.setShopId(shop.getId());
@@ -94,7 +94,7 @@ public class SettlementController {
      */
     @RequestMapping(value = "/changeSettlementStatus", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public ApiResult changeSettlementStatus(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
+    public ApiResult changeSettlementStatus(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
                                             @RequestParam("settlementNo") String settlementNo,
                                             @RequestParam("authorStatus") Integer authorStatus,
                                             @RequestParam("settlementComment") String settlementComment) throws Exception {
@@ -113,7 +113,7 @@ public class SettlementController {
 
     @RequestMapping(value = "/batchChangeSettlementStatus", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public ApiResult batchChangeSettlementStatus(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
+    public ApiResult batchChangeSettlementStatus(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
                                                  @RequestParam("authorStatus") Integer authorStatus,
                                                  @RequestParam("settlementNo") String... settlementNo) throws Exception {
         if (settlementNo.length == 0) {
@@ -142,7 +142,7 @@ public class SettlementController {
      * @throws Exception
      */
     @RequestMapping(value = "/settlementDetail", method = RequestMethod.GET)
-    public ModelAndView showSettlementOrderList(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
+    public ModelAndView showSettlementOrderList(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
                                                 @RequestParam(value = "settlementNo") String settlementNo,
                                                 @RequestParam(value = "pageNo") Integer pageNo) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
@@ -159,7 +159,7 @@ public class SettlementController {
 
     @RequestMapping(value = "/exportSettlementDetail", method = RequestMethod.GET)
     @SuppressWarnings("Duplicates")
-    public void exportSettlementDetail(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop,
+    public void exportSettlementDetail(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
                                        @RequestParam(value = "settlementNo") String settlementNo,
                                        @RequestParam(value = "beginPage") Integer beginPage,
                                        @RequestParam(value = "endPage") Integer endPage,

@@ -12,9 +12,9 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.author.Author;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
@@ -93,7 +93,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         List<ShoppingCart> shoppingCartList = null;
         if (author != null && author.getType() == Agent.class) {
             shoppingCartList = shoppingCartRepository.findByAgent_IdOrderByCreateTimeDesc(author.getId());
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             shoppingCartList = shoppingCartRepository.findByShop_IdOrderByCreateTimeDesc(author.getId());
         }
         //设置可用库存和当前库存
@@ -121,7 +121,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCart findById(Integer id, Author author) {
         if (author != null && author.getType() == Agent.class) {
             return shoppingCartRepository.findByIdAndAgent(id, author.getAuthorAgent());
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             return shoppingCartRepository.findByIdAndShop(id, author.getAuthorShop());
         }
         return null;
@@ -131,7 +131,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCart findByAuthorAndProduct(Author author, MallProduct product) {
         if (author != null && author.getType() == Agent.class) {
             return shoppingCartRepository.findByAgentAndProduct(author.getAuthorAgent(),product);
-        } else if (author != null && author.getType() == Shop.class) {
+        } else if (author != null && author.getType() == ShopAuthor.class) {
             return shoppingCartRepository.findByShopAndProduct(author.getAuthorShop(),product);
         }
         return null;
@@ -146,7 +146,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 AgentProduct agentProduct = null;
                 if (author != null && author.getType() == Agent.class) {
                     agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(cart.getAgent(),cart.getProduct());
-                } else if (author != null && author.getType() == Shop.class) {
+                } else if (author != null && author.getType() == ShopAuthor.class) {
                     agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(cart.getShop(),cart.getProduct());
                 }
                 if (agentProduct != null) {

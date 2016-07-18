@@ -10,7 +10,7 @@
 package com.huotu.agento2o.service.service.config;
 
 import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.entity.config.Address;
 
 import java.util.List;

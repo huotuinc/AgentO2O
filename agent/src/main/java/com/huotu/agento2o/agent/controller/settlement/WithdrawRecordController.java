@@ -13,7 +13,7 @@ package com.huotu.agento2o.agent.controller.settlement;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
@@ -50,7 +50,7 @@ public class WithdrawRecordController {
     private ShopService shopService;
 
     @RequestMapping("withdrawRecords")
-    public ModelAndView showWithdrawRecords(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop, WithdrawRecordSearcher withdrawRecordSearcher) throws Exception {
+    public ModelAndView showWithdrawRecords(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop, WithdrawRecordSearcher withdrawRecordSearcher) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         Account account = accountService.findByAuthor(shop);
         Page<WithdrawRecord> withdrawRecordPage = withdrawRecordService.getPage(account, withdrawRecordSearcher);
@@ -65,7 +65,7 @@ public class WithdrawRecordController {
 
     @RequestMapping("saveAuthorAccountInfo")
     @ResponseBody
-    public ApiResult saveAuthorAccountInfo(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop ,
+    public ApiResult saveAuthorAccountInfo(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
                                            @RequestParam(value = "bankName") String bankName,
                                            @RequestParam(value = "accountName") String accountName,
                                            @RequestParam(value = "accountNo") String accountNo) throws Exception{
@@ -84,7 +84,7 @@ public class WithdrawRecordController {
 
     @RequestMapping(value = "/checkWithdrawNum",method = RequestMethod.GET,produces = "application/json")
     @ResponseBody
-    public ApiResult checkWithdrawNum(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop,@RequestParam("customerNo") Integer customerId) throws Exception {
+    public ApiResult checkWithdrawNum(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop, @RequestParam("customerNo") Integer customerId) throws Exception {
         if(!shop.getCustomer().getCustomerId().equals(customerId)){
             return new ApiResult("没有权限！");
         }

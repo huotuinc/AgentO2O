@@ -14,7 +14,6 @@ import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallAfterSalesItem;
-import com.huotu.agento2o.service.model.order.LogiModel;
 import com.huotu.agento2o.service.repository.order.MallAfterSalesItemRepository;
 import com.huotu.agento2o.service.service.order.MallAfterSalesItemService;
 import org.springframework.beans.factory.annotation.Autowired;

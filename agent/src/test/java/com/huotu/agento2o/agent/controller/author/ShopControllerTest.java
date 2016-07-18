@@ -2,10 +2,10 @@ package com.huotu.agento2o.agent.controller.author;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.author.CustomerAuthor;
+import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,9 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ShopControllerTest extends CommonTestBase {
     private static String BASE_URL = "/shop";
 
-    private MallCustomer mockCustomer;
-    private MallCustomer mockAgent;
-    private Shop mockShop;
+    private CustomerAuthor mockCustomer;
+    private CustomerAuthor mockAgent;
+    private ShopAuthor mockShop;
 
     @Autowired
     private ShopService shopService;
@@ -120,7 +120,7 @@ public class ShopControllerTest extends CommonTestBase {
 
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
+        ShopAuthor shop = new ShopAuthor();
         shop.setAgent(mockAgent.getAgent());
         shop.setUsername(userName);
         shop.setPassword(password);
@@ -140,7 +140,7 @@ public class ShopControllerTest extends CommonTestBase {
         MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
+        ShopAuthor shop = new ShopAuthor();
         shop.setAgent(mockAgent.getAgent());
         shop.setUsername(userName);
         shop.setPassword(password);
@@ -160,7 +160,7 @@ public class ShopControllerTest extends CommonTestBase {
         MockHttpSession sessionAgent = loginAs(mockAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
-        Shop shop = new Shop();
+        ShopAuthor shop = new ShopAuthor();
         shop.setAgent(mockAgent.getAgent());
         shop.setUsername(userName);
         shop.setPassword(password);
