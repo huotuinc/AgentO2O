@@ -3,7 +3,9 @@ package com.huotu.agento2o.service.service.order.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.hot.datacenter.common.EnumHelper;
+import com.hot.datacenter.entity.order.Delivery;
 import com.hot.datacenter.entity.order.MallOrder;
+import com.hot.datacenter.entity.order.OrderItem;
 import com.hot.datacenter.ienum.OrderEnum;
 import com.hot.datacenter.service.AbstractCusCrudService;
 import com.huotu.agento2o.common.SysConstant;
@@ -121,8 +123,8 @@ public class MallOrderServiceImpl extends AbstractCusCrudService<MallOrder, Stri
     public OrderDetailModel findOrderDetail(String orderId) {
         OrderDetailModel orderDetailModel = new OrderDetailModel();
         MallOrder orders = orderRepository.findOne(orderId);
-        List<MallOrderItem> mallOrderItem = orders.getOrderItems();
-        List<MallDelivery> deliveryList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.DEVERY.getCode());
+        List<OrderItem> mallOrderItem = orders.getOrderItems();
+        List<Delivery> deliveryList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.DEVERY.getCode());
         List<MallDelivery> refundList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.RETURN.getCode());
         orderDetailModel.setOrderId(orders.getOrderId());
         if (deliveryList != null && deliveryList.size() > 0) {
