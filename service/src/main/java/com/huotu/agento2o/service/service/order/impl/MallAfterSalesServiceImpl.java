@@ -5,7 +5,6 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallAfterSalesItem;

@@ -8,7 +8,6 @@ import com.huotu.agento2o.common.httputil.HttpResult;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;

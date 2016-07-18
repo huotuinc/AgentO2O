@@ -16,7 +16,6 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.order.*;
 import com.huotu.agento2o.service.entity.settlement.Account;

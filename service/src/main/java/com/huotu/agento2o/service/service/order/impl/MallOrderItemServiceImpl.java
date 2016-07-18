@@ -9,7 +9,6 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.repository.order.MallOrderItemRepository;
 import com.huotu.agento2o.service.service.order.MallOrderItemService;

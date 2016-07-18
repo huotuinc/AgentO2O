@@ -10,8 +10,6 @@
 
 package com.huotu.agento2o.service.repository.settlement;
 
-import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.SettlementEnum;
 import com.huotu.agento2o.service.entity.settlement.SettlementOrder;
 import org.springframework.beans.factory.annotation.Autowired;

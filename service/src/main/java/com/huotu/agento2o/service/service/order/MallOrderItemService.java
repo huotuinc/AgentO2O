@@ -10,7 +10,6 @@
 package com.huotu.agento2o.service.service.order;
 
 
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 
 import java.util.List;

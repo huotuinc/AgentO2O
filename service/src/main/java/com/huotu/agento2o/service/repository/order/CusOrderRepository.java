@@ -2,8 +2,8 @@ package com.huotu.agento2o.service.repository.order;
 
 
 import com.hot.datacenter.entity.order.MallOrder;
+import com.hot.datacenter.ienum.OrderEnum;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.OrderEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,7 +30,7 @@ public interface CusOrderRepository extends JpaRepository<MallOrder, String>, Jp
      * @param end
      * @return
      */
-    @Query("SELECT COUNT(a) FROM MallOrder a WHERE a.shop.id = ?1 and a.agentShopType in ?2 and a.createTime between ?3 and ?4")
+    @Query("SELECT COUNT(a) FROM MallOrder a WHERE a.shopId = ?1 and a.shipMode in ?2 and a.createTime between ?3 and ?4")
     int countByShop_IdAndAgentShopTypeInAndShop_IdAndCreateTimeBetween(Integer shopId, List<OrderEnum.ShipMode> agentShopTypeList, Date start, Date end);
 
     /**
@@ -42,7 +42,7 @@ public interface CusOrderRepository extends JpaRepository<MallOrder, String>, Jp
      * @param end
      * @return
      */
-    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.shop.agent.id = ?1 or a.agentShopType in ?2) and a.createTime between ?3 and ?4")
+    @Query("SELECT COUNT(a) FROM MallOrder a WHERE (a.agentId = ?1 or a.shipMode in ?2) and a.createTime between ?3 and ?4")
     int countByShop_ParentAuthor_IdAndAgentShopTypeInAndCreateTimeBetween(Integer agentId, List<OrderEnum.ShipMode> agentShopTypeList, Date start, Date end);
 
     /**

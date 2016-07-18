@@ -9,7 +9,6 @@
 
 package com.huotu.agento2o.service.repository.order;
 
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

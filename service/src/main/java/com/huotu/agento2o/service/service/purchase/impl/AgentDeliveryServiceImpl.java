@@ -11,7 +11,6 @@
 package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.*;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
