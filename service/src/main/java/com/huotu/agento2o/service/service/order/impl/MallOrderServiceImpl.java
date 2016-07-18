@@ -32,6 +32,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -49,6 +50,11 @@ public class MallOrderServiceImpl extends AbstractCusCrudService<MallOrder, Stri
 
     @Autowired
     private DeliveryRepository deliveryRepository;
+
+    @PostConstruct
+    private void init() {
+        initRepository(MallOrder.class);
+    }
 
     @Override
     public MallOrder findByShopAndOrderId(ShopAuthor shop, String orderId) {
