@@ -53,9 +53,6 @@
     <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
             th:src="@{/resource/lib/ajaxfileupload.js}"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
-            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
-
     <style type="text/css">
         body, td, th {
             font-family: "微软雅黑", "宋体", Arial;
@@ -146,7 +143,7 @@
                                     <th>门店所在区域:</th>
                                     <td>
                                         <div id="citys">
-                                            <span th:text="|*{provinceCode} *{cityCode} *{districtCode}|"></span>
+                                            <span th:text="*{address_Area}"></span>
                                         </div>
                                     </td>
                                 </tr>

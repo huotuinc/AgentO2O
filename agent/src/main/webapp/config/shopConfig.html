@@ -54,8 +54,8 @@
     <script type="text/javascript" src="../resource/lib/ajaxfileupload.js"
             th:src="@{/resource/lib/ajaxfileupload.js}"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
-    <script type="text/javascript" src="../resource/3rdParty/js/jquery.cityselect.js"
-            th:src="@{/resource/3rdParty/js/jquery.cityselect.js}"></script>
+    <script type="text/javascript" src="../resource/3rdParty/js/regionNode.js"
+            th:src="@{/resource/3rdParty/js/regionNode.js}"></script>
     <script type="text/javascript" src="../resource/3rdParty/js/bootstrap-typeahead.js"
             th:src="@{/resource/3rdParty/js/bootstrap-typeahead.js}"></script>
 
@@ -170,8 +170,8 @@
                                     <td>
                                         <div id="citys">
                                             <select class="prov" id="provinceCode"></select>
-                                            <select class="cityCode" id="cityCode" disabled="disabled"></select>
-                                            <select class="dist" id="districtCode" disabled="disabled"></select>
+                                            <select class="city" id="cityCode"></select>
+                                            <select class="dist" id="districtCode"></select>
                                         </div>
                                     </td>
                                 </tr>
@@ -345,9 +345,17 @@
         var bankName = $.trim($("#bankName").val());
         var accountName = $.trim($("#accountName").val());
         var accountNo = $.trim($("#accountNo").val());
-        debugger;
 
-        if (provinceCode.length == 0 || cityCode.length == 0 || districtCode.length == 0) {
+        var distLentgh = $("#districtCode")[0].length;
+        var provinceText = $("#provinceCode").find("option:selected").text();
+        var cityText = $("#cityCode").find("option:selected").text();
+        var distText = $("#districtCode").find("option:selected").text();
+        var address_Area = provinceText + "/" + cityText;
+        if (distLentgh > 1) {
+            address_Area = address_Area + "/" + distText;
+        }
+
+        if (provinceCode.length == 0 || cityCode.length == 0 || (distLentgh > 1 && districtCode.length == 0)) {
             $.jBox.tip("请选择区域");
             return;
         }
@@ -439,6 +447,7 @@
                 provinceCode: provinceCode,
                 cityCode: cityCode,
                 districtCode: districtCode,
+                address_Area: address_Area,
                 name: name,
                 contact: contact,
                 mobile: mobile,
@@ -472,7 +481,7 @@
 </script>
 <script th:inline="javascript">
     var pro = /*[[${shop.provinceCode}]]*/"";
-    var cityCode = /*[[${shop.cityCode}]]*/"";
+    var city = /*[[${shop.cityCode}]]*/"";
     var dist = /*[[${shop.districtCode}]]*/"";
     var id = /*[[${shop.id}]]*/"";
         $('#hotUserName').typeahead({
@@ -494,18 +503,9 @@
         })
 
     if (id != null) {
-        $("#citys").citySelect({
-            url: "/resource/3rdParty/js/jquery.cityselect.js",
-            prov: pro,
-            cityCode: cityCode,
-            dist: dist,
-            nodata: null,
-            required:false
-        });
         $("#password").parent().parent().hide();
-    } else {
-        $("#citys").citySelect();
     }
+    $("#citys").citySelect(pro, city, dist);
     //    change2view2form('shopConfigForm');
     /*<![CDATA[*/
     /*百度地图API相关*/
@@ -556,7 +556,7 @@
         setmarker(pt.lng, pt.lat);
         geoc.getLocation(pt, function (rs) {
             var addComp = rs.addressComponents;
-            $("#address").val(addComp.provinceCode + addComp.cityCode + addComp.districtCode + addComp.street + addComp.streetNumber);
+            $("#address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
         });
 
     });

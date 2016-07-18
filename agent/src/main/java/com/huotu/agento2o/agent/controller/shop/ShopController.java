@@ -73,7 +73,7 @@ public class ShopController {
         if (shop.getId() == null && StringUtil.isEmptyStr(shop.getPassword())) {
             return new ApiResult("请输入密码");
         }
-        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getDistrictCode())) {
+        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getAddress_Area())) {
             return new ApiResult("请选择区域");
         }
         if (StringUtil.isEmptyStr(shop.getName())) {

@@ -157,7 +157,7 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setEmail(shop.getEmail());
             shop = oldShop;
         }
-        shop = shopRepository.save(shop);
+        shop = shopRepository.saveAndFlush(shop);
         //如果结算账户不存在，则新建结算账户
         Account account = accountRepository.findByShop_Id(shop.getId());
         if (account == null) {
