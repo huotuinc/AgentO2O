@@ -16,7 +16,7 @@ import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.product.SendEmailService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.commons.logging.Log;
@@ -40,7 +40,7 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
     @Autowired
     private AgentService agentService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
 
 
     @Override
@@ -62,7 +62,7 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
         }
         for(int i = 0 ; i < shops.size() ; i++){
             Integer shopId = Integer.parseInt(shops.get(i).toString());
-            ShopAuthor shop = shopService.findById(shopId);
+            ShopAuthor shop = agentShopService.findById(shopId);
             if(shop == null || StringUtil.isEmptyStr(shop.getEmail())){
                 continue;
             }

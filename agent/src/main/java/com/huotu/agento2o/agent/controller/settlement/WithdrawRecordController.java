@@ -18,7 +18,7 @@ import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 import com.huotu.agento2o.service.searchable.WithdrawRecordSearcher;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.settlement.AccountService;
 import com.huotu.agento2o.service.service.settlement.WithdrawRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class WithdrawRecordController {
     @Autowired
     private AccountService accountService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
 
     @RequestMapping("withdrawRecords")
     public ModelAndView showWithdrawRecords(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop, WithdrawRecordSearcher withdrawRecordSearcher) throws Exception {
@@ -78,7 +78,7 @@ public class WithdrawRecordController {
         if (StringUtils.isEmpty(accountNo)) {
             return new ApiResult("银行账号不能为空");
         }
-        ApiResult result = shopService.updateAccountInfo(shop.getId(), bankName, accountName, accountNo);
+        ApiResult result = agentShopService.updateAccountInfo(shop.getId(), bankName, accountName, accountNo);
         return result;
     }
 

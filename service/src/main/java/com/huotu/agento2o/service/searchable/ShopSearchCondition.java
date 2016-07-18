@@ -1,6 +1,5 @@
 package com.huotu.agento2o.service.searchable;
 
-import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ public class ShopSearchCondition {
     /**
      * 平台过滤
      */
-    private CustomerAuthor mallCustomer;
+    private int mallCustomer;
 
     /**
      * 门店查询条件

@@ -12,7 +12,7 @@ package com.huotu.agento2o.agent.service.settlement.impl;
 
 import com.huotu.agento2o.agent.service.settlement.SettlementScheduleService;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.settlement.SettlementService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +30,7 @@ import java.util.List;
 public class SettlementScheduleServiceImpl implements SettlementScheduleService {
     private static final Log log = LogFactory.getLog(SettlementScheduleServiceImpl.class);
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     @Autowired
     private SettlementService settlementService;
 
@@ -41,7 +41,7 @@ public class SettlementScheduleServiceImpl implements SettlementScheduleService 
     public void settlementSchedule() {
         log.info("start settle . . .");
         Date now = new Date();
-        List<ShopAuthor> shopList = shopService.findAll();
+        List<ShopAuthor> shopList = agentShopService.findAll();
         if (shopList != null && shopList.size() > 0) {
             shopList.forEach(shop -> {
                 int num = 3;

@@ -26,7 +26,7 @@ import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -62,7 +62,7 @@ public class AgentPurchaseOrderController {
     @Autowired
     private AgentService agentService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     @Autowired
     private AgentDeliveryService agentDeliveryService;
 
@@ -262,7 +262,7 @@ public class AgentPurchaseOrderController {
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         setPicUri(purchaseOrderPage.getContent());
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
-        List<ShopAuthor> shopList = shopService.findByAgentId(agent.getId());
+        List<ShopAuthor> shopList = agentShopService.findByAgentId(agent.getId());
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", purchaseOrderSearcher.getPageIndex());

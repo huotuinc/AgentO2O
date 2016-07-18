@@ -18,7 +18,6 @@ import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.InvoiceEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
@@ -35,7 +34,6 @@ import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
-import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.config.AddressRepository;
 import com.huotu.agento2o.service.repository.config.InvoiceConfigRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
@@ -46,7 +44,7 @@ import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -108,7 +106,7 @@ public abstract class CommonTestBase extends SpringWebTest {
     @Autowired
     private AgentService agentService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     @Autowired
     private ShopRepository shopRepository;
     @Autowired

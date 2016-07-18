@@ -18,8 +18,8 @@ import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.author.AuthorService;
-import com.huotu.agento2o.service.service.author.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -41,7 +41,7 @@ public class AgentController {
     @Autowired
     private AuthorService authorService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     /**
      * 基本资料设置
      *
@@ -138,7 +138,7 @@ public class AgentController {
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
     public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor curShop, String hotUserName) {
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(curShop.getCustomer().getCustomerId(), hotUserName));
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentShopService.getHotUserNames(curShop.getCustomer().getCustomerId(), hotUserName));
     }
 
 
@@ -194,7 +194,7 @@ public class AgentController {
         if(StringUtil.isEmptyStr(shop.getAccountNo())){
             return new ApiResult("请输入银行卡号");
         }
-        return shopService.saveShopConfig(shop, hotUserName);
+        return agentShopService.saveShopConfig(shop, hotUserName);
     }
 
 }

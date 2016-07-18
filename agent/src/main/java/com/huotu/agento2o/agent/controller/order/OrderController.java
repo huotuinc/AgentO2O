@@ -1,13 +1,14 @@
 package com.huotu.agento2o.agent.controller.order;
 
 import com.alibaba.fastjson.JSON;
+import com.hot.datacenter.entity.order.MallOrder;
+import com.hot.datacenter.entity.order.OrderItem;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.entity.order.MallOrder;
-import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.extendfields.OrderItemExtends;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.model.order.OrderExportModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
@@ -63,6 +64,7 @@ public class OrderController {
     private MallOrderItemService orderItemService;
     @Autowired
     private StaticResourceService resourceService;
+
     /**
      * 获取订单全部数据 query 查询分页
      * Modified By cwb
@@ -78,12 +80,12 @@ public class OrderController {
             @RequestParam(required = false, defaultValue = "1") int pageIndex
     ) {
         searchCondition.setAuthor(author);
-        Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
+        Page<MallOrder> ordersList = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
         getPicUri(ordersList.getContent());
         int totalPages = ordersList.getTotalPages();
         model.addAttribute("payStatusEnums", OrderEnum.PayStatus.values());
-        model.addAttribute("shipStatusEnums",OrderEnum.ShipStatus.values());
-        model.addAttribute("shipModeEnums",OrderEnum.ShipMode.values());
+        model.addAttribute("shipStatusEnums", OrderEnum.ShipStatus.values());
+        model.addAttribute("shipModeEnums", OrderEnum.ShipMode.values());
         model.addAttribute("ordersList", ordersList.getContent());
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("agentId", author.getId());
@@ -97,18 +99,20 @@ public class OrderController {
 
     private void getPicUri(List<MallOrder> mallOrderList) {
         mallOrderList.forEach(order -> {
-            if(order.getOrderItems() != null && order.getOrderItems().size() > 0){
+            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
                 getItemPicUri(order.getOrderItems());
             }
         });
     }
 
-    private void getItemPicUri(List<MallOrderItem> mallOrderItemList){
-        mallOrderItemList.forEach(item->{
-            if(!StringUtil.isEmptyStr(item.getThumbnailPic())){
+    private void getItemPicUri(List<OrderItem> mallOrderItemList) {
+        mallOrderItemList.forEach(item -> {
+            if (!StringUtil.isEmptyStr(item.getThumbnailPic())) {
                 try {
                     URI picUri = resourceService.getResource(item.getThumbnailPic());
-                    item.setPicUri(picUri);
+                    OrderItemExtends orderItemExtends = new OrderItemExtends();
+                    orderItemExtends.setPicUri(picUri);
+                    item.setExtendField(orderItemExtends);
                 } catch (URISyntaxException e) {
                 }
             }
@@ -132,12 +136,12 @@ public class OrderController {
     public String showRemark(
             @AgtAuthenticationPrincipal ShopAuthor shop,
             Model model,
-            @RequestParam(name = "orderId",required = true) String orderId){
-        MallOrder order = orderService.findByShopAndOrderId(shop,orderId);
-        if(order != null){
-            model.addAttribute("orderId",order.getOrderId());
-            model.addAttribute("agentMarkType",order.getAgentMarkType());
-            model.addAttribute("agentMarkText",order.getAgentMarkText());
+            @RequestParam(name = "orderId", required = true) String orderId) {
+        MallOrder order = orderService.findByShopAndOrderId(shop, orderId);
+        if (order != null) {
+            model.addAttribute("orderId", order.getOrderId());
+            model.addAttribute("agentMarkType", order.getAgentMarkType());
+            model.addAttribute("agentMarkText", order.getAgentMarkText());
         }
         return "order/remark";
     }
@@ -149,12 +153,12 @@ public class OrderController {
     @ResponseBody
     public ApiResult editRemark(
             @AgtAuthenticationPrincipal ShopAuthor shop,
-            @RequestParam(name = "orderId",required = true) String orderId,
+            @RequestParam(name = "orderId", required = true) String orderId,
             String agentMarkType,
-            String agentMarkText){
-        if(orderId != ""){
-            return orderService.updateRemark(shop,orderId,agentMarkType,agentMarkText);
-        }else{
+            String agentMarkText) {
+        if (orderId != "") {
+            return orderService.updateRemark(shop, orderId, agentMarkType, agentMarkText);
+        } else {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
     }
@@ -187,7 +191,7 @@ public class OrderController {
                             HttpServletResponse response) {
         searchCondition.setAgentId(agentId);
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
-        Page<MallOrder> pageInfo = orderService.findAll(txtBeginPage,author ,pageSize, searchCondition);
+        Page<MallOrder> pageInfo = orderService.findAll(txtBeginPage, author, pageSize, searchCondition);
         List<MallOrder> orderList = pageInfo.getContent();
         session.setAttribute("state", null);
         // 生成提示信息，

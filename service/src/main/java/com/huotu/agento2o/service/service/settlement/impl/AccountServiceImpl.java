@@ -22,7 +22,6 @@ import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
-import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.settlement.WithdrawRecordRepository;
 import com.huotu.agento2o.service.service.settlement.AccountService;

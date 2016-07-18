@@ -14,7 +14,6 @@ import com.huotu.agento2o.service.author.Author;
 import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.config.Address;
@@ -34,7 +33,7 @@ import com.huotu.agento2o.service.repository.order.MallAfterSalesRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +70,7 @@ public abstract class CommonTestBase {
     @Autowired
     private AgentLevelService agentLevelService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     @Autowired
     private CusOrderRepository orderRepository;
     @Autowired
@@ -129,7 +128,7 @@ public abstract class CommonTestBase {
         if (parentAgent != null) {
             shop.setAgent(parentAgent);
         }
-        shop = shopService.addShop(shop);
+        shop = agentShopService.addShop(shop);
         agentService.flush();
         return shop;
     }
@@ -153,7 +152,7 @@ public abstract class CommonTestBase {
         if (parentAgent != null) {
             shop.setAgent(parentAgent);
         }
-        shop = shopService.addShop(shop);
+        shop = agentShopService.addShop(shop);
         agentService.flush();
         return shop;
     }

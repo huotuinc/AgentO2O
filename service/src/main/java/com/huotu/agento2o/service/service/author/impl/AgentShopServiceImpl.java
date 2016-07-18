@@ -10,25 +10,27 @@
 
 package com.huotu.agento2o.service.service.author.impl;
 
+import com.hot.datacenter.entity.client.User;
+import com.hot.datacenter.entity.customer.AgentShop;
+import com.hot.datacenter.entity.customer.MallAgent;
+import com.hot.datacenter.ienum.AgentStatusEnum;
+import com.hot.datacenter.repository.client.UserRepository;
+import com.hot.datacenter.repository.customer.AgentShopRepository;
+import com.hot.datacenter.repository.customer.MallCustomerRepository;
+import com.hot.datacenter.search.AgentShopSearch;
+import com.hot.datacenter.service.AbstractCrudService;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.settlement.Account;
-import com.huotu.agento2o.service.entity.user.UserBaseInfo;
-import com.huotu.agento2o.service.repository.MallCustomerRepository;
-import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.settlement.AccountRepository;
-import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
-import com.huotu.agento2o.service.searchable.ShopSearchCondition;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,84 +51,63 @@ import java.util.List;
  * Created by helloztt on 2016/5/9.
  */
 @Service(value = "shopService")
-public class ShopServiceImpl implements ShopService {
+public class AgentShopServiceImpl extends AbstractCrudService<AgentShop, Integer, AgentShopSearch> implements AgentShopService {
     @Autowired
-    private ShopRepository shopRepository;
+    private AgentShopRepository shopRepository;
     @Autowired
     private MallPasswordEncoder passwordEncoder;
     @Autowired
-    private UserBaseInfoRepository userBaseInfoRepository;
+    private UserRepository userRepository;
     @Autowired
     private MallCustomerRepository mallCustomerRepository;
     @Autowired
     private AccountRepository accountRepository;
 
     @Override
-    public ShopAuthor findByUserName(String userName) {
+    public AgentShop findByUserName(String userName) {
         return shopRepository.findByUsername(userName);
     }
 
     @Override
-    public ShopAuthor findById(Integer id) {
-        return shopRepository.findOne(id);
-    }
-
-    @Override
-    public ShopAuthor findByIdAndParentAuthor(Integer shopId, Agent agent) {
-        return shopId == null || agent == null ? null : shopRepository.findByIdAndAgent(shopId, agent);
-    }
-
-    @Override
-    public List<ShopAuthor> findByAgentId(Integer agentId) {
+    public List<AgentShop> findByAgentId(Integer agentId) {
         return shopRepository.findByAgent_Id(agentId);
-    }
-
-    @Override
-    public ShopAuthor findByIdAndCustomer_Id(Integer shopId, Integer customer_Id) {
-        CustomerAuthor customer = mallCustomerRepository.findOne(customer_Id);
-        return shopId == null || customer == null ? null : shopRepository.findByIdAndCustomer(shopId, customer);
-    }
-
-    @Override
-    public ShopAuthor addShop(ShopAuthor shop) {
-        return shopRepository.save(shop);
     }
 
     @Override
     @Transactional
     @SuppressWarnings("Duplicates")
-    public ApiResult saveOrUpdateShop(ShopAuthor shop, String hotUserName, Agent agent) {
-        if (agent == null || agent.getCustomer() == null) {
+    public ApiResult saveOrUpdateShop(AgentShop shop, String hotUserName, MallAgent agent) {
+        if (agent == null || agent.getCustomerId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         //小伙伴账号绑定限制
-        UserBaseInfo userBaseInfo = null;
+        User user = null;
         if (StringUtil.isNotEmpty(hotUserName)) {
-            userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName,
-                    shop.getCustomer().getCustomerId());
-            if (userBaseInfo == null) {
+            user = userRepository.findByLoginNameAndCustomerId(hotUserName,
+                    shop.getCustomerId());
+            if (user == null) {
                 return new ApiResult("小伙伴账号不存在", 400);
             }
 
-            ShopAuthor shopUser = shopRepository.findByUserBaseInfo_userId(userBaseInfo.getUserId());
+            AgentShop shopUser = shopRepository.findByUser_userId(user.getUserId());
             if (shopUser != null && !shopUser.getId().equals(shop.getId())) {
                 return new ApiResult("小伙伴账号已被绑定", 400);
             }
         }
-        shop.setUserBaseInfo(userBaseInfo);
+        shop.setUser(user);
 
         if (shop.getId() == null) { //新增
             //判断门店登录名是否唯一
-            ShopAuthor checkShop = findByUserName(shop.getUsername());
+            AgentShop checkShop = findByUserName(shop.getUsername());
             if (checkShop != null) {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
             shop.setCreateTime(new Date());
             shop.setPassword(passwordEncoder.encode(shop.getPassword()));
             shop.setAgent(agent);
-            shop.setCustomer(agent.getCustomer());
+            shop.setCustomerId(agent.getCustomerId());
         } else {  //编辑
-            ShopAuthor oldShop = shopRepository.findOne(shop.getId());
+            AgentShop oldShop = shopRepository.findOne(shop.getId());
             if (oldShop.isDisabled()) {
                 return new ApiResult("该门店已被冻结");
             }
@@ -153,7 +134,7 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setLan(shop.getLan());
             oldShop.setLat(shop.getLat());
             oldShop.setComment(shop.getComment());
-            oldShop.setUserBaseInfo(shop.getUserBaseInfo());
+            oldShop.setUser(shop.getUser());
             oldShop.setEmail(shop.getEmail());
             shop = oldShop;
         }
@@ -186,7 +167,7 @@ public class ShopServiceImpl implements ShopService {
         //小伙伴账号绑定限制
         UserBaseInfo userBaseInfo = null;
         if (StringUtil.isNotEmpty(hotUserName)) {
-            userBaseInfo = userBaseInfoRepository.findByLoginNameAndMallCustomer_customerId(hotUserName,
+            userBaseInfo = userRepository.findByLoginNameAndMallCustomer_customerId(hotUserName,
                     oldShop.getCustomer().getCustomerId());
             if (userBaseInfo == null) {
                 return new ApiResult("小伙伴账号不存在", 400);
@@ -287,7 +268,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ApiResult updatePasswordById(String password, int shopId) {
-        ShopAuthor shop = shopRepository.findOne(shopId);
+        AgentShop shop = shopRepository.findOne(shopId);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
@@ -310,80 +291,79 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Page<ShopAuthor> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition) {
-        Specification<ShopAuthor> specification = (root, query, cb) -> {
+    public Page<AgentShop> findAll(int pageIndex, int pageSize, AgentShopSearch agentShopSearch) {
+        return findAll(agentShopSearch, new PageRequest(pageIndex - 1, pageSize));
+    }
+
+    @Override
+    public Specification<AgentShop> specification(AgentShopSearch agentShopSearch) {
+        Specification<AgentShop> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             //平台过滤
-            if (searchCondition.getMallCustomer() != null) {
-                predicates.add(cb.equal(root.get("customer").as(CustomerAuthor.class), searchCondition.getMallCustomer()));
+            if (agentShopSearch.getCustomerId() != null) {
+                predicates.add(cb.equal(root.get("customerId").as(Integer.class), agentShopSearch.getCustomerId()));
             }
 
             //门店过滤条件
-            if (!StringUtils.isEmpty(searchCondition.getName())) {
-                predicates.add(cb.like(root.get("name").as(String.class), "%" + searchCondition.getName() + "%"));
+            if (!StringUtils.isEmpty(agentShopSearch.getName())) {
+                predicates.add(cb.like(root.get("name").as(String.class), "%" + agentShopSearch.getName() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getProvinceCode())) {
-                predicates.add(cb.like(root.get("provinceCode").as(String.class), "%" + searchCondition.getProvinceCode() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getProvinceCode())) {
+                predicates.add(cb.like(root.get("provinceCode").as(String.class), "%" + agentShopSearch.getProvinceCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getCityCode())) {
-                predicates.add(cb.like(root.get("cityCode").as(String.class), "%" + searchCondition.getCityCode() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getCityCode())) {
+                predicates.add(cb.like(root.get("cityCode").as(String.class), "%" + agentShopSearch.getCityCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getDistrictCode())) {
-                predicates.add(cb.like(root.get("districtCode").as(String.class), "%" + searchCondition.getDistrictCode() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getDistrictCode())) {
+                predicates.add(cb.like(root.get("districtCode").as(String.class), "%" + agentShopSearch.getDistrictCode() + "%"));
             }
-            if (searchCondition.getStatus() != -1) {
-                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, searchCondition.getStatus())));
+            if (agentShopSearch.getStatus() != -1) {
+                predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, agentShopSearch.getStatus())));
             }
             predicates.add(cb.equal(root.get("isDeleted").as(Boolean.class), false));
 
             //上级代理商过滤条件
-            if (searchCondition.getParentAuthor() != null) {
-                predicates.add(cb.equal(root.get("agent").as(Agent.class), searchCondition.getParentAuthor()));
+            if (agentShopSearch.getParentAuthor() != null) {
+                predicates.add(cb.equal(root.get("agent").as(Agent.class), agentShopSearch.getParentAuthor()));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_name())) {
-                predicates.add(cb.like(root.get("agent").get("name").as(String.class), "%" + searchCondition.getParent_name() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getParent_name())) {
+                predicates.add(cb.like(root.get("agent").get("name").as(String.class), "%" + agentShopSearch.getParent_name() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_username())) {
-                predicates.add(cb.like(root.get("agent").get("username").as(String.class), "%" + searchCondition.getParent_username() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getParent_username())) {
+                predicates.add(cb.like(root.get("agent").get("username").as(String.class), "%" + agentShopSearch.getParent_username() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_provinceCode())) {
-                predicates.add(cb.like(root.get("agent").get("provinceCode").as(String.class), "%" + searchCondition.getParent_provinceCode() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getParent_provinceCode())) {
+                predicates.add(cb.like(root.get("agent").get("provinceCode").as(String.class), "%" + agentShopSearch.getParent_provinceCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_cityCode())) {
-                predicates.add(cb.like(root.get("agent").get("cityCode").as(String.class), "%" + searchCondition.getParent_cityCode() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getParent_cityCode())) {
+                predicates.add(cb.like(root.get("agent").get("cityCode").as(String.class), "%" + agentShopSearch.getParent_cityCode() + "%"));
             }
-            if (!StringUtil.isEmptyStr(searchCondition.getParent_districtCode())) {
-                predicates.add(cb.like(root.get("agent").get("districtCode").as(String.class), "%" + searchCondition.getParent_districtCode() + "%"));
+            if (!StringUtil.isEmptyStr(agentShopSearch.getParent_districtCode())) {
+                predicates.add(cb.like(root.get("agent").get("districtCode").as(String.class), "%" + agentShopSearch.getParent_districtCode() + "%"));
             }
 
             //等级过滤
-            if (searchCondition.getParent_agentLevel() != -1) {
-                predicates.add(cb.equal(root.get("agent").get("agentLevel").get("levelId").as(Integer.class), searchCondition.getParent_agentLevel()));
+            if (agentShopSearch.getParent_agentLevel() != -1) {
+                predicates.add(cb.equal(root.get("agent").get("agentLevel").get("levelId").as(Integer.class), agentShopSearch.getParent_agentLevel()));
             }
 
             //平台显示列表
-            if ("list".equals(searchCondition.getType())) {//门店列表
+            if ("list".equals(agentShopSearch.getType())) {//门店列表
                 predicates.add(cb.notEqual(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, 0)));
-            } else if ("audit".equals(searchCondition.getType())) {//门店审核
+            } else if ("audit".equals(agentShopSearch.getType())) {//门店审核
                 predicates.add(cb.equal(root.get("status").as(AgentStatusEnum.class), EnumHelper.getEnumType(AgentStatusEnum.class, 1)));
                 predicates.add(cb.equal(root.get("isDisabled").as(Boolean.class), false));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-
-        return shopRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize));
+        return specification;
     }
 
     @Override
-    public List<ShopAuthor> findAll() {
-        return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum.CHECKED);
-    }
-
-    @Override
-    public List<ShopAuthor> findByCustomerId(Integer customerId) {
-        return shopRepository.findByIsDeletedFalseAndIsDeletedFalseAndStatus(AgentStatusEnum.CHECKED);
+    public List<AgentShop> findByCustomerId(Integer customerId) {
+        return shopRepository.findByIsDeletedFalseAndIsDisabledFalseAndStatusAndCustomerId(AgentStatusEnum.CHECKED, customerId);
     }
 
     @Override
@@ -417,14 +397,14 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public List<String> getHotUserNames(Integer customerId, String name) {
         List<String> names = new ArrayList<>();
-        names = userBaseInfoRepository.findByLoginNameLikeAndMallCustomer_customerId("%" + name + "%", customerId);
+        names = userRepository.findByLoginNameLikeAndMallCustomer_customerId("%" + name + "%", customerId);
         return names;
     }
 
     @Override
     public ApiResult updateAccountInfo(Integer shopId, String bankName, String accountName, String accountNo) {
-        ShopAuthor shop = findById(shopId);
-        if(shop == null || shop.isDeleted() || shop.isDisabled()){
+        AgentShop shop = findOne(shopId);
+        if (shop == null || shop.isDeleted() || shop.isDisabled()) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         shop.setBankName(bankName);

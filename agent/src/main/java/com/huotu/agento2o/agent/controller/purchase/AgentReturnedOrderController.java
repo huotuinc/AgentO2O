@@ -21,7 +21,7 @@ import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
@@ -68,7 +68,7 @@ public class AgentReturnedOrderController {
     @Autowired
     private AgentService agentService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
 
     @Autowired
     private AgentDeliveryService agentDeliveryService;
@@ -324,7 +324,7 @@ public class AgentReturnedOrderController {
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
 
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
-        List<ShopAuthor> shopList = shopService.findByAgentId(agent.getId());
+        List<ShopAuthor> shopList = agentShopService.findByAgentId(agent.getId());
 
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/returned/agent_return_order_list");

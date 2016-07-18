@@ -4,9 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class ShopControllerTest extends CommonTestBase {
     private ShopAuthor mockShop;
 
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
 
     @Before
     @SuppressWarnings("Duplicates")
@@ -126,8 +125,8 @@ public class ShopControllerTest extends CommonTestBase {
         shop.setPassword(password);
         shop.setDeleted(false);
         shop.setDisabled(false);
-        shop = shopService.addShop(shop);
-        shopService.flush();
+        shop = agentShopService.addShop(shop);
+        agentShopService.flush();
 
         MvcResult result = mockMvc.perform(post(BASE_URL + "/changeStatus").session(sessionAgent).param("id", shop.getId().toString())).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
@@ -147,8 +146,8 @@ public class ShopControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setStatus(AgentStatusEnum.NOT_CHECK);
         shop.setDisabled(false);
-        shop = shopService.addShop(shop);
-        shopService.flush();
+        shop = agentShopService.addShop(shop);
+        agentShopService.flush();
         MvcResult result = mockMvc.perform(post(BASE_URL + "/delete").session(sessionAgent).param("id", shop.getId().toString())).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obj = JSONObject.parseObject(content);
@@ -166,8 +165,8 @@ public class ShopControllerTest extends CommonTestBase {
         shop.setPassword(password);
         shop.setDeleted(false);
         shop.setDisabled(false);
-        shop = shopService.addShop(shop);
-        shopService.flush();
+        shop = agentShopService.addShop(shop);
+        agentShopService.flush();
         MvcResult result = mockMvc.perform(post(BASE_URL + "/resetpassword").session(sessionAgent).param("id", shop.getId().toString())
                 .param("password", UUID.randomUUID().toString())).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");

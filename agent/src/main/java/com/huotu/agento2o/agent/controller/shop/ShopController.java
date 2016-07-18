@@ -6,10 +6,9 @@ import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,7 +36,7 @@ import java.util.List;
 public class ShopController {
 
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
 
     /**
      * 代理商登陆 新增/编辑门店页面
@@ -51,7 +50,7 @@ public class ShopController {
     public String toAddShopPage(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, ShopAuthor shop, Model model, boolean ifShow) throws Exception {
         model.addAttribute("agent", curAgent);
         if (!"".equals(shop.getId()) && shop.getId() != null) {//编辑
-            shop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
+            shop = agentShopService.findByIdAndParentAuthor(shop.getId(), curAgent);
             model.addAttribute("shop", shop);
         }
         return ifShow ? "shop/showShop" : "shop/addShop";
@@ -99,7 +98,7 @@ public class ShopController {
         }else if(statusVal == 1){
             shop.setStatus(AgentStatusEnum.CHECKING);
         }
-        return shopService.saveOrUpdateShop(shop, hotUserName,curAgent);
+        return agentShopService.saveOrUpdateShop(shop, hotUserName, curAgent);
     }
 
     /**
@@ -116,7 +115,7 @@ public class ShopController {
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
         searchCondition.setMallCustomer(curAgent.getCustomer());
         searchCondition.setParentAuthor(curAgent);
-        Page<ShopAuthor> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
+        Page<ShopAuthor> shopsList = agentShopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalRecords", shopsList.getTotalElements());
@@ -136,7 +135,7 @@ public class ShopController {
     @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult changeStatus(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, int id) {
-        return shopService.updateStatus(AgentStatusEnum.CHECKING, id, curAgent);
+        return agentShopService.updateStatus(AgentStatusEnum.CHECKING, id, curAgent);
     }
 
     /**
@@ -148,7 +147,7 @@ public class ShopController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult deleteById(@AgtAuthenticationPrincipal(type = Agent.class) Agent curAgent, int id) {
-        return shopService.deleteById(id, curAgent);
+        return agentShopService.deleteById(id, curAgent);
     }
 
     /**
@@ -163,11 +162,11 @@ public class ShopController {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        ShopAuthor oldShop = shopService.findByIdAndParentAuthor(shop.getId(), curAgent);
+        ShopAuthor oldShop = agentShopService.findByIdAndParentAuthor(shop.getId(), curAgent);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        return shopService.updatePasswordById(shop.getPassword(), shop.getId());
+        return agentShopService.updatePasswordById(shop.getPassword(), shop.getId());
     }
 
     /**
@@ -181,7 +180,7 @@ public class ShopController {
                             HttpServletResponse response) {
         searchCondition.setParentAuthor(customer);
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
-        Page<ShopAuthor> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
+        Page<ShopAuthor> pageInfo = agentShopService.findAll(txtBeginPage, pageSize, searchCondition);
         List<ShopAuthor> shopList = pageInfo.getContent();
         session.setAttribute("state", null);
         // 生成提示信息，
@@ -193,7 +192,7 @@ public class ShopController {
             String excelName = "shop-" + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
             excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
             response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
-            HSSFWorkbook workbook = shopService.createWorkBook(shopList);
+            HSSFWorkbook workbook = agentShopService.createWorkBook(shopList);
             fOut = response.getOutputStream();
             workbook.write(fOut);
         } catch (Exception ignored) {
@@ -219,6 +218,6 @@ public class ShopController {
     @ResponseBody
     public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, String hotUserName) {
         int customerId = agent.getCustomer().getCustomerId();
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(customerId, hotUserName));
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentShopService.getHotUserNames(customerId, hotUserName));
     }
 }

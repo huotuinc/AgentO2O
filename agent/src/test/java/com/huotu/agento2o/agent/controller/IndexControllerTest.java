@@ -14,13 +14,11 @@ import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.author.CustomerAuthor;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
-import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.service.author.AgentService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,7 @@ public class IndexControllerTest extends CommonTestBase {
     @Autowired
     private AgentService agentService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     @Autowired
     private AgentRepository agentRepository;
     @Autowired
@@ -125,8 +123,8 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        shopService.addShop(shop);
-        shopService.flush();
+        agentShopService.addShop(shop);
+        agentShopService.flush();
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);

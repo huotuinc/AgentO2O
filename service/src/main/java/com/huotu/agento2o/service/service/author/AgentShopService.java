@@ -10,11 +10,14 @@
 
 package com.huotu.agento2o.service.service.author;
 
+import com.hot.datacenter.entity.customer.AgentShop;
+import com.hot.datacenter.entity.customer.MallAgent;
+import com.hot.datacenter.ienum.AgentStatusEnum;
+import com.hot.datacenter.search.AgentShopSearch;
+import com.hot.datacenter.service.CrudService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.author.ShopAuthor;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,21 +27,13 @@ import java.util.List;
 /**
  * Created by helloztt on 2016/5/9.
  */
-public interface ShopService extends UserDetailsService {
+public interface AgentShopService extends CrudService<AgentShop, Integer, AgentShopSearch>, UserDetailsService {
 
-    ShopAuthor findByUserName(String userName);
+    AgentShop findByUserName(String userName);
 
-    ShopAuthor findById(Integer id);
+    List<AgentShop> findByAgentId(Integer agentId);
 
-    ShopAuthor findByIdAndParentAuthor(Integer shopId, Agent agent);
-
-    List<ShopAuthor> findByAgentId(Integer agentId);
-
-    ShopAuthor findByIdAndCustomer_Id(Integer shopId, Integer customer_Id);
-
-    ShopAuthor addShop(ShopAuthor shop);
-
-    ApiResult saveOrUpdateShop(ShopAuthor shop, String hotUserName, Agent agent);
+    ApiResult saveOrUpdateShop(AgentShop shop, String hotUserName, MallAgent agent);
 
     ApiResult saveShopConfig(ShopAuthor shop, String hotUserName);
 
@@ -61,8 +56,6 @@ public interface ShopService extends UserDetailsService {
      */
     ApiResult updateStatusAndAuditComment(AgentStatusEnum status, String auditComment, int id);
 
-    ApiResult deleteById(int shopId, Agent agent);
-
     /**
      * 冻结解冻
      *
@@ -72,11 +65,9 @@ public interface ShopService extends UserDetailsService {
 
     ApiResult updatePasswordById(String password, int shopId);
 
-    Page<ShopAuthor> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
+    Page<AgentShop> findAll(int pageIndex, int pageSize, AgentShopSearch agentShopSearch);
 
-    List<ShopAuthor> findAll();
-
-    List<ShopAuthor> findByCustomerId(Integer customerId);
+    List<AgentShop> findByCustomerId(Integer customerId);
 
     HSSFWorkbook createWorkBook(List<ShopAuthor> shops);
 

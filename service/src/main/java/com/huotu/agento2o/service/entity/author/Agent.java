@@ -3,7 +3,6 @@ package com.huotu.agento2o.service.entity.author;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.author.CustomerAuthor;
-import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import lombok.Getter;

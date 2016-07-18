@@ -10,7 +10,7 @@ import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import com.huotu.agento2o.service.service.MallCustomerService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ import java.util.List;
 public class HbmShopController {
 
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
 
     @Autowired
     private AgentLevelService agentLevelService;
@@ -54,7 +54,7 @@ public class HbmShopController {
      */
     @RequestMapping("/showShopPage")
     public String toAddShopPage(@RequestAttribute(value = "customerId") Integer customerId, ShopAuthor shop, Model model) throws Exception {
-        shop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
+        shop = agentShopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (shop == null) {
             throw new Exception("没有权限");
         }
@@ -76,7 +76,7 @@ public class HbmShopController {
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         CustomerAuthor mallCustomer = mallCustomerService.findByCustomerId(customerId);
         searchCondition.setMallCustomer(mallCustomer);
-        Page<ShopAuthor> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
+        Page<ShopAuthor> shopsList = agentShopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("type", searchCondition.getType());
         model.addAttribute("agentLevels", agentLevels);
@@ -98,11 +98,11 @@ public class HbmShopController {
     @RequestMapping(value = "/changeIsDisabled", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult changeIsDisabled(@RequestAttribute(value = "customerId") Integer customerId, int id) {
-        ShopAuthor shop = shopService.findByIdAndCustomer_Id(id, customerId);
+        ShopAuthor shop = agentShopService.findByIdAndCustomer_Id(id, customerId);
         if (shop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        return shopService.updateIsDisabledById(id);
+        return agentShopService.updateIsDisabledById(id);
     }
 
     /**
@@ -117,11 +117,11 @@ public class HbmShopController {
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        ShopAuthor oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
+        ShopAuthor oldShop = agentShopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        return shopService.updateStatusAndAuditComment(shop.getStatus(), shop.getAuditComment(), shop.getId());
+        return agentShopService.updateStatusAndAuditComment(shop.getStatus(), shop.getAuditComment(), shop.getId());
     }
 
     /**
@@ -133,14 +133,14 @@ public class HbmShopController {
     @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(@RequestAttribute(value = "customerId") Integer customerId, ShopAuthor shop) {
-        ShopAuthor oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
+        ShopAuthor oldShop = agentShopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
         if (shop == null || shop.getId() == null) {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
-        return shopService.updatePasswordById(shop.getPassword(), shop.getId());
+        return agentShopService.updatePasswordById(shop.getPassword(), shop.getId());
     }
 
     /**
@@ -150,7 +150,7 @@ public class HbmShopController {
     public void exportExcel(ShopSearchCondition searchCondition, int txtBeginPage, int txtEndPage,
                             HttpSession session, HttpServletResponse response) {
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
-        Page<ShopAuthor> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);
+        Page<ShopAuthor> pageInfo = agentShopService.findAll(txtBeginPage, pageSize, searchCondition);
         List<ShopAuthor> shopList = pageInfo.getContent();
         session.setAttribute("state", null);
         // 生成提示信息，
@@ -162,7 +162,7 @@ public class HbmShopController {
             String excelName = "shops-" + StringUtil.DateFormat(new Date(), StringUtil.DATETIME_PATTERN_WITH_NOSUP);
             excelName = java.net.URLEncoder.encode(excelName, "UTF-8");
             response.setHeader("content-disposition", "attachment;filename=" + excelName + ".xls");
-            HSSFWorkbook workbook = shopService.createWorkBook(shopList);
+            HSSFWorkbook workbook = agentShopService.createWorkBook(shopList);
             fOut = response.getOutputStream();
             workbook.write(fOut);
         } catch (Exception ignored) {

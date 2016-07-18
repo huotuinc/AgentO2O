@@ -21,7 +21,7 @@ import com.huotu.agento2o.service.entity.settlement.SettlementOrder;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.searchable.SettlementSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
-import com.huotu.agento2o.service.service.author.ShopService;
+import com.huotu.agento2o.service.service.author.AgentShopService;
 import com.huotu.agento2o.service.service.settlement.SettlementOrderService;
 import com.huotu.agento2o.service.service.settlement.SettlementService;
 import org.apache.commons.logging.Log;
@@ -54,7 +54,7 @@ public class HbmSettlementController {
     @Autowired
     private SettlementOrderService settlementOrderService;
     @Autowired
-    private ShopService shopService;
+    private AgentShopService agentShopService;
     @Autowired
     private MallCustomerService customerService;
 
@@ -72,7 +72,7 @@ public class HbmSettlementController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("huobanmall/settlement/settlements");
         Page<Settlement> settlementPage = settlementService.getCustomerPage(customerId, settlementSearcher);
-        List<ShopAuthor> shopList = shopService.findByCustomerId(customerId);
+        List<ShopAuthor> shopList = agentShopService.findByCustomerId(customerId);
         modelAndView.addObject("settlementPage", settlementPage);
         modelAndView.addObject("shopList", shopList);
         modelAndView.addObject("totalRecords", settlementPage.getTotalElements());
