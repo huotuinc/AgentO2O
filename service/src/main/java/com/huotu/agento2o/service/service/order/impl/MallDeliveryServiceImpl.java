@@ -15,7 +15,6 @@ import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.model.order.BatchDeliverResult;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
-import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
 import com.huotu.agento2o.service.service.order.MallOrderService;

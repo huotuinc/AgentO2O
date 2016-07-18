@@ -7,6 +7,7 @@ import com.hot.datacenter.entity.order.Delivery;
 import com.hot.datacenter.entity.order.MallOrder;
 import com.hot.datacenter.entity.order.OrderItem;
 import com.hot.datacenter.ienum.OrderEnum;
+import com.hot.datacenter.repository.order.DeliveryRepository;
 import com.hot.datacenter.service.AbstractCusCrudService;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.util.ApiResult;
@@ -19,7 +20,6 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.repository.order.CusOrderRepository;
-import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
 import com.huotu.agento2o.service.searchable.CusOrderSearch;
 import com.huotu.agento2o.service.service.order.MallOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -48,7 +48,7 @@ public class MallOrderServiceImpl extends AbstractCusCrudService<MallOrder, Stri
     private CusOrderRepository orderRepository;
 
     @Autowired
-    private MallDeliveryRepository deliveryRepository;
+    private DeliveryRepository deliveryRepository;
 
     @Override
     public MallOrder findByShopAndOrderId(ShopAuthor shop, String orderId) {
@@ -125,7 +125,7 @@ public class MallOrderServiceImpl extends AbstractCusCrudService<MallOrder, Stri
         MallOrder orders = orderRepository.findOne(orderId);
         List<OrderItem> mallOrderItem = orders.getOrderItems();
         List<Delivery> deliveryList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.DEVERY.getCode());
-        List<MallDelivery> refundList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.RETURN.getCode());
+        List<Delivery> refundList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.RETURN.getCode());
         orderDetailModel.setOrderId(orders.getOrderId());
         if (deliveryList != null && deliveryList.size() > 0) {
             orderDetailModel.setDeliveryList(deliveryList);
@@ -148,7 +148,7 @@ public class MallOrderServiceImpl extends AbstractCusCrudService<MallOrder, Stri
         orderDetailModel.setAgentRemark(orders.getAgentMarkText());
 
         double costPrice = 0;
-        for (MallOrderItem orderItem : mallOrderItem) {
+        for (OrderItem orderItem : mallOrderItem) {
             costPrice += orderItem.getCost() * orderItem.getNums();
         }
         orderDetailModel.setCostPrice((double) Math.round(costPrice * 100) / 100);
