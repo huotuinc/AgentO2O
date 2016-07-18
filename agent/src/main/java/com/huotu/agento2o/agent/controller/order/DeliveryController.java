@@ -10,6 +10,7 @@ import com.huotu.agento2o.service.author.ShopAuthor;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.extendfields.OrderItemExtends;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
@@ -80,7 +81,7 @@ public class DeliveryController {
         else
             modelAndView.setViewName("order/return_list");
 
-        Page<MallDelivery> ordersDeliveryPage = deliveryService.getPage(pageIndex,author, Constant.PAGESIZE,  deliverySearcher, type);
+        Page<MallDelivery> ordersDeliveryPage = deliveryService.getPage(pageIndex, author, Constant.PAGESIZE, deliverySearcher, type);
         modelAndView.addObject("deliveryList", ordersDeliveryPage.getContent());
         modelAndView.addObject("totalRecords", ordersDeliveryPage.getTotalElements());
         modelAndView.addObject("totalPages", ordersDeliveryPage.getTotalPages());
@@ -95,20 +96,21 @@ public class DeliveryController {
      * 判断货品的库存是否满足订单所需的货品数量,其规则为
      * nums<=freez<=store
      * 满足则返回200失败返回505
+     *
      * @param orderId
      * @return
      */
-    @RequestMapping(value = "/judgeStock" ,method = RequestMethod.GET)
+    @RequestMapping(value = "/judgeStock", method = RequestMethod.GET)
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     public ApiResult judgeStock(@AgtAuthenticationPrincipal(type = ShopAuthor.class) ShopAuthor shop,
-                                String orderId){
+                                String orderId) {
         MallOrder order = orderService.findByOrderId(orderId);
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
-        AgentProduct agentProduct ;
-        for (MallOrderItem mallOrderItem : mallOrderItems){
-            agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
-            if (agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore()){
+        AgentProduct agentProduct;
+        for (MallOrderItem mallOrderItem : mallOrderItems) {
+            agentProduct = agentProductService.findAgentProduct(shop, mallOrderItem.getProduct());
+            if (agentProduct != null && agentProduct.getFreez() >= mallOrderItem.getNums() && agentProduct.getFreez() <= agentProduct.getStore()) {
                 return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
             }
         }
@@ -126,13 +128,15 @@ public class DeliveryController {
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
     public String showConsignFlow(@AgtAuthenticationPrincipal ShopAuthor shop, String orderId, Model model) {
         MallOrder order = orderService.findOne(orderId);
-        AgentProduct agentProduct ;
-        for (int i=0; i<order.getOrderItems().size(); i++){
-            agentProduct = agentProductService.findAgentProduct(shop,order.getOrderItems().get(i).getProduct());
-            if (agentProduct!=null) {
-                order.getOrderItems().get(i).setStore(agentProduct.getStore());
-                order.getOrderItems().get(i).setFreez(agentProduct.getFreez());
-                order.getOrderItems().get(i).setStockAdequate(agentProduct.getFreez() >= order.getOrderItems().get(i).getNums() && agentProduct.getFreez() <= agentProduct.getStore());
+        AgentProduct agentProduct;
+        for (int i = 0; i < order.getOrderItems().size(); i++) {
+            agentProduct = agentProductService.findAgentProduct(shop, order.getOrderItems().get(i).getProduct());
+            if (agentProduct != null) {
+                OrderItemExtends orderItemExtends = new OrderItemExtends();
+                orderItemExtends.setStore(agentProduct.getStore());
+                orderItemExtends.setFreez(agentProduct.getFreez());
+                orderItemExtends.setStockAdequate(agentProduct.getFreez() >= order.getOrderItems().get(i).getNums() && agentProduct.getFreez() <= agentProduct.getStore());
+                order.getOrderItems().get(i).setExtendField(orderItemExtends);
             }
         }
         model.addAttribute("order", order);

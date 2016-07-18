@@ -1,10 +1,17 @@
 package com.huotu.agento2o.service.extendfields;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.net.URI;
+
 /**
+ * 订单货品的额外字段
  * Created by allan on 7/18/16.
  */
+@Setter
+@Getter
 public class OrderItemExtends {
-    @Transient
     public boolean stockAdequate = false;
     private URI picUri;
     /**
@@ -12,8 +19,6 @@ public class OrderItemExtends {
      * 其对应的表为Agt_product
      * 对应的entity为AgentProduct
      */
-    @Transient
     private Integer store = 0;
-    @Transient
     private Integer freez = 0;
 }
