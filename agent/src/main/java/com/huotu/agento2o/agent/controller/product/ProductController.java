@@ -47,9 +47,6 @@ public class ProductController {
                        @RequestParam(required = true,defaultValue = "0") Integer agentProductId,
                        @RequestParam(required = true,defaultValue = "0") Integer warning) {
         ApiResult result;
-        if(agentProductId == 0 || warning == 0){
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
         result = agentProductService.updateWarning(author,agentProductId,warning);
         return result;
     }

@@ -50,7 +50,7 @@ public class AgentProductServiceImpl implements AgentProductService {
                 mallProductService.setProductPrice(p.getProduct(),author);
             });
         }
-        return null;
+        return productList;
     }
 
     @Override

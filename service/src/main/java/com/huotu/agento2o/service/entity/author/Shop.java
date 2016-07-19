@@ -258,11 +258,11 @@ public class Shop implements Author{
     private Date closeTime;
 
     public boolean isAccountNonLocked() {
-        return this.isDisabled == false;
+        return !this.isDisabled;
     }
 
     public boolean isEnabled() {
-        return this.isDeleted == false;
+        return !this.isDeleted;
     }
 
     public boolean isAccountNonExpired() {
