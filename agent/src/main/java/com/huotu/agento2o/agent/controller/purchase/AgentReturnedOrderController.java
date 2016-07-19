@@ -169,7 +169,11 @@ public class AgentReturnedOrderController {
             @AgtAuthenticationPrincipal Author author,
             ReturnedOrderSearch searchCondition) throws Exception {
 
-        searchCondition.setAgentId(author.getId());
+        if(author.getType() == Shop.class){
+            searchCondition.setShopId(author.getId());
+        } else if(author.getType() == Agent.class){
+            searchCondition.setAgentId(author.getId());
+        }
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
         setOrderPicUri(agentReturnedOrderPage.getContent());
         ModelAndView model = new ModelAndView();
