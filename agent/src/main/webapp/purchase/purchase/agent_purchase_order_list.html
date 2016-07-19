@@ -397,12 +397,14 @@
         var pOrderId = $("input[name=pOrderId]").val();
         var orderItemName = $("input[name=orderItemName]").val();
         var payStatusCode = $("#payStatusCode").val();
-        var shipStatusCode = $("#payStatusCode").val();
+        var shipStatusCode = $("#shipStatusCode").val();
         var statusCode = $("#statusCode").val();
         var beginTime = $("#beginTime").val();
         var endTime = $("#endTime").val();
         var beginPayTime = $("#beginPayTime").val();
         var endPayTime = $("#endPayTime").val();
+        var agentId = $("#agentId").val();
+        var shopId = $("#shopId").val();
 
         var url = baseUrl + "/agent/exportExcel";
         url += '?rnd=' + Math.random()
@@ -416,7 +418,9 @@
                 + '&beginPayTime=' + beginPayTime
                 + '&endPayTime=' + endPayTime
                 + '&beginPage=' + txtBeginPage
-                + '&endPage=' + txtEndPage;
+                + '&endPage=' + txtEndPage
+                + '&agentId=' + agentId
+                + '&shopId=' + shopId;
         window.location.href = url;
     };
 

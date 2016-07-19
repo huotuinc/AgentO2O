@@ -212,10 +212,6 @@ public class Agent{
     @ManyToOne
     private AgentLevel agentLevel;
 
-    public boolean isAgent() {
-        return true;
-    }
-
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
     }

@@ -347,6 +347,9 @@
         var payStatus = $("#payStatus").val();
         var beginTime = $("#beginTime").val();
         var endTime = $("#endTime").val();
+        var agentId = $("#agentId").val();
+        var shopId = $("#shopId").val();
+
 
         var url = basicUrl + "/agent/exportExcel";
         url += '?rnd=' + Math.random()
@@ -357,7 +360,9 @@
                 + '&beginTime=' + beginTime
                 + '&endTime' + endTime
                 + '&beginPage=' + txtBeginPage
-                + '&endPage=' + txtEndPage;
+                + '&endPage=' + txtEndPage
+                + '&agentId=' + agentId
+                + '&shopId=' + shopId;
         window.location.href = url;
     };
 

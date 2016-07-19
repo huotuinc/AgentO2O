@@ -10,7 +10,6 @@
 
 package com.huotu.agento2o.agent.huobanmall.purchase;
 
-import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.config.annotataion.RequestAttribute;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.ienum.EnumHelper;
@@ -19,7 +18,6 @@ import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
@@ -155,6 +153,7 @@ public class HbmAgentPurchaseOrderController {
                             HttpSession session,
                             HttpServletResponse response) {
         int pageSize = Constant.PAGESIZE * (endPage - beginPage + 1);
+        purchaseOrderSearcher.setParentAgentId(0);
         purchaseOrderSearcher.setCustomerId(customerId);
         purchaseOrderSearcher.setPageIndex(beginPage);
         purchaseOrderSearcher.setPageSize(pageSize);
