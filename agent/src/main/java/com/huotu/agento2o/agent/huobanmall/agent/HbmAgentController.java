@@ -20,6 +20,7 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
+import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.level.AgentLevelService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,9 @@ public class HbmAgentController {
     @Autowired
     private MallCustomerService mallCustomerService;
 
+    @Autowired
+    private ShopService shopService;
+
     /**
      * 代理商列表
      *
@@ -64,6 +68,11 @@ public class HbmAgentController {
     @RequestMapping("/agentList")
     public String showAgentList(@RequestAttribute(value = "customerId") Integer customerId, Model model, AgentSearcher agentSearcher) {
         Page<Agent> page = agentService.getAgentList(customerId, agentSearcher);
+        List<Agent> agents = page.getContent();
+        agents.forEach(agent -> {
+            agent.setChildAgentNum(agentService.findByParentAgentId(agent.getId()).size());
+            agent.setChildShopNum(shopService.findByAgentId(agent.getId()).size());
+        });
         model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
         model.addAttribute("page", page);
         model.addAttribute("agentActiveEnums", AgentActiveEnum.values());

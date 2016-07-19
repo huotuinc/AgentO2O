@@ -213,6 +213,13 @@
                                               th:text="*{comment}"></span>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <th>创建时间:</th>
+                                    <td>
+                                        <span rows="6" style="width: 80%" id="comment" th:field="*{createTime}"
+                                              th:text="*{createTime == null ?'':#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

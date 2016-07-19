@@ -95,7 +95,7 @@ public interface AgentService {
     int unfreezeAgent(Integer agentId);
 
     /**
-     * 根据父代理商id获取代理商集合
+     * 根据父代理商id获取未删除的代理商集合
      *
      * @param agentId
      * @return
@@ -123,7 +123,7 @@ public interface AgentService {
     HSSFWorkbook createWorkBook(List<Agent> agents);
 
     /**
-     * 根据小伙伴id查找绑定的代理商
+     * 根据小伙伴id查找绑定的未删除代理商
      *
      * @param userId
      * @return

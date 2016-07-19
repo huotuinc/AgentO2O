@@ -18,11 +18,11 @@ public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecifi
 
     Shop findByUsername(String userName);
 
-    Shop findByUserBaseInfo_userId(Integer userId);
+    Shop findByUserBaseInfo_userIdAndIsDeletedFalse(Integer userId);
 
     Shop findByIdAndAgent(Integer id, Agent agent);
 
-    List<Shop> findByAgent_Id(Integer agentId);
+    List<Shop> findByAgent_IdAndIsDeletedFalse(Integer agentId);
 
     Shop findByIdAndCustomer(Integer id, MallCustomer customer);
 

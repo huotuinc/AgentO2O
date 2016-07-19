@@ -179,6 +179,7 @@ public class ShopController {
                             int txtBeginPage, int txtEndPage,
                             HttpSession session,
                             HttpServletResponse response) {
+        searchCondition.setMallCustomer(customer.getCustomer());
         searchCondition.setParentAuthor(customer);
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
         Page<Shop> pageInfo = shopService.findAll(txtBeginPage, pageSize, searchCondition);

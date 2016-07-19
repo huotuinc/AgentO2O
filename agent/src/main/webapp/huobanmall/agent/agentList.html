@@ -271,22 +271,26 @@
                     <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
                         <thead>
                         <tr>
-                            <th scope="col" style="width: 6%">序号</th>
-                            <th scope="col" style="width: 11%">代理商名称
+                            <th scope="col" style="width: 5%">序号</th>
+                            <th scope="col" style="width: 9%">代理商名称
                             </th>
-                            <th scope="col" style="width: 11%">用户名
+                            <th scope="col" style="width: 9%">用户名
                             </th>
-                            <th scope="col" style="width: 11%">联系人
+                            <th scope="col" style="width: 9%">联系人
                             </th>
-                            <th scope="col" style="width: 11%">手机号码
+                            <th scope="col" style="width: 9%">手机号码
                             </th>
-                            <th scope="col" style="width: 11%">地区
+                            <th scope="col" style="width: 9%">地区
                             </th>
-                            <th scope="col" style="width: 11%">等级
+                            <th scope="col" style="width: 9%">等级
                             </th>
-                            <th scope="col" style="width: 11%">账号状态
+                            <th scope="col" style="width: 9%">账号状态
                             </th>
-                            <th scope="col" style="width: 17%">操作
+                            <th scope="col" style="width: 9%">下级代理商个数
+                            </th>
+                            <th scope="col" style="width: 9%">下级门店个数
+                            </th>
+                            <th scope="col" style="width: 14%">操作
                             </th>
                         </tr>
                         </thead>
@@ -310,7 +314,7 @@
                                 13888888000
                             </td>
                             <td class="txt40 c"
-                                th:text="${#strings.defaultString(agent.address_Area,'')}">
+                                th:text="${agent.address_Area}">
                                 浙江杭州西湖区
                             </td>
                             <td class="txt40 c" th:text="${agent.agentLevel}==null?'':${agent.agentLevel.levelName}">
@@ -318,6 +322,12 @@
                             </td>
                             <td class="txt40 c" style="color:red;" th:text="${agent.isDisabled()}?'冻结':'激活'">
                                 激活
+                            </td>
+                            <td class="txt40 c" th:text="${agent.childAgentNum}">
+                                1
+                            </td>
+                            <td class="txt40 c" th:text="${agent.childShopNum}">
+                                1
                             </td>
 
                             <td class="txt80 c tail">

@@ -34,9 +34,9 @@ public class Agent{
     private MallCustomer mallCustomer;
 
     /**
-     * 登录名(用来传递数据)
+     * 登录名
      */
-    @Transient
+    @Column(name = "Login_Name")
     private String username;
 
     /**
@@ -44,6 +44,18 @@ public class Agent{
      */
     @Transient
     private String password;
+
+    /**
+     * 下级门店个数
+     */
+    @Transient
+    private int childShopNum;
+
+    /**
+     * 下级代理商个数
+     */
+    @Transient
+    private int childAgentNum;
     /**
      * 平台方
      */
@@ -206,12 +218,5 @@ public class Agent{
 
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
-    }
-
-    public String getUsername() {
-        if (mallCustomer != null) {
-            return mallCustomer.getUsername();
-        }
-        return this.username;
     }
 }
