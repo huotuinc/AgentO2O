@@ -119,7 +119,7 @@ public class HbmAgentReturnOrderController {
     public ApiResult checkAgentReturnOrder(@RequestAttribute(value = "customerId") Integer customerId,
                                            @RequestParam(required = true) String rOrderId,
                                            @RequestParam(required = true) String checkStatus,
-                                           String statusComment){
+                                           String parentComment){
 
         ApiResult result = ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         if (StringUtil.isEmptyStr(rOrderId) || StringUtil.isEmptyStr(checkStatus)) {
@@ -127,10 +127,10 @@ public class HbmAgentReturnOrderController {
         }
         //审核不通过时需输入备注
         if (!(String.valueOf(PurchaseEnum.OrderStatus.CHECKED.getCode()).equals(checkStatus) ||
-                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(statusComment)))) {
+                (String.valueOf(PurchaseEnum.OrderStatus.RETURNED.getCode()).equals(checkStatus) && !StringUtil.isEmptyStr(parentComment)))) {
             return result;
         }
-        return agentReturnedOrderService.checkReturnOrder(customerId,null,rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), statusComment);
+        return agentReturnedOrderService.checkReturnOrder(customerId,null,rOrderId, EnumHelper.getEnumType(PurchaseEnum.OrderStatus.class, Integer.valueOf(checkStatus)), parentComment);
     }
 
     /**
