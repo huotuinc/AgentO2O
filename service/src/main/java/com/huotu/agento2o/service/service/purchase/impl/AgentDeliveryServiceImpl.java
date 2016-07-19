@@ -185,7 +185,8 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
             List<Predicate> predicates = new ArrayList<>();
             if (deliverySearcher.getAgentId() != null && deliverySearcher.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agentId").as(Integer.class), deliverySearcher.getAgentId()));
-            }else if(deliverySearcher.getShopId() != null && deliverySearcher.getShopId() != 0){
+            }
+            if (deliverySearcher.getShopId() != null && deliverySearcher.getShopId() != 0) {
                 predicates.add(cb.equal(root.get("shopId").as(Integer.class),deliverySearcher.getShopId()));
             }
             if (deliverySearcher.getParentAgentId() != null && deliverySearcher.getParentAgentId() != 0) {

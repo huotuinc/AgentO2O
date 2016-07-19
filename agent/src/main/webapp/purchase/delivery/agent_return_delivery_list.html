@@ -71,14 +71,19 @@
                         <input name="logiNo" type="text" th:value="*{logiNo}"
                                class="input-small" style="width: 120px;"/>
                         &nbsp;
-                        <label class="first ">下级代理商/门店：</label>
+                        <label class="first ">下级代理商：</label>
                         <select name="agentId" id="agentId">
-                            <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
+                            <option selected="selected" value="0" th:selected="*{agentId == 0}">==所有==</option>
                             <!--/*@thymesVar id="agentList" type="java.util.List<com.huotu.agento2o.service.entity.author.Agent>"*/-->
-                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
                             <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}"
                                     th:selected="${agent.id == deliverySearcher.agentId}">代理商
                             </option>
+                        </select>
+                        &nbsp;
+                        <label class="first ">下级门店：</label>
+                        <select name="shopId" id="shopId">
+                            <option selected="selected" value="0" th:selected="*{shopId == 0}">==所有==</option>
+                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
                             <option th:each="shop:${shopList}" th:value="${shop.id}" th:text="${shop.name}"
                                     th:selected="${shop.id == deliverySearcher.shopId}">门店
                             </option>

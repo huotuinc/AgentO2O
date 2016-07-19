@@ -59,12 +59,12 @@
         var shopId = $(obj).attr("shopid");
         var text = $(obj).text();
         jboxConfirm("确定" + text + "?", function () {
-            $.jBox.tip("正在"+text+"...", "loading");
+            $.jBox.tip("正在" + text + "...", "loading");
             J.GetJsonRespons("/huobanmall/shop/changeIsDisabled", {
                 id: shopId
             }, function (result) {
                 if (result.code == 200) {
-                    $.jBox.tip(text+"成功", "success");
+                    $.jBox.tip(text + "成功", "success");
                     setTimeout(function () {
                         window.location.reload();
                     }, 500);
@@ -240,7 +240,7 @@
             auditComment: auditComment
         };
         if (auditVal == 'RETURNED' && auditComment.length == 0) {
-            $.jBox.tip("请填写不通过备注");
+            $.jBox.tip("请输入审核说明！");
             return null;
         }
         return requestData;
@@ -283,6 +283,15 @@
             password: password
         };
         return passwordData;
+    }
+
+    //审核状态单选框单击事件
+    function change(type) {
+        if (type == 1) {
+            document.getElementById('comment').style.display = 'none';
+        } else {
+            document.getElementById('comment').style.display = '';
+        }
     }
     /*]]>*/
 </script>
@@ -494,18 +503,29 @@
 </body>
 </html>
 <script type="text/html" id="audit_template">
-    <div class="cnt form" style="padding: 10px; width: 300px; height: 160px;">
-        <div>
-            <input id="audit_pass" type="radio" name="audit_radio" value="CHECKED" checked="checked"/>
-            <label for="audit_pass">审核通过</label>
-            <input id="audit_nopass" type="radio" name="audit_radio" value="RETURNED"/>
-            <label for="audit_nopass">审核不通过</label>
-        </div>
-        <br/>
-        <span scope="row">备注：</span>
-        <div>
-            <textarea id="auditComment"
-                      style="margin-top: 10px;margin-bottom: 10px; width: 260px; height: 100px;"></textarea>
+    <div style="width: auto; min-height: 49px; height: auto;"
+         class="ui-dialog-content ui-widget-content" scrolltop="0" scrollleft="0">
+        <div class="hua_card">
+            <div style="width:300px">
+                <ul>
+                    <li style="text-align: center ; ">
+                        <label>
+                            <input type="radio" name="audit_radio" value="CHECKED" id="audit_pass" style="
+    vertical-align: text-top; text-align: center;
+" onclick="javascript:change(1)" checked="checked"/>
+                            审核通过</label>
+                        <label>
+                            <input type="radio" name="audit_radio" value="RETURNED" id="audit_nopass"
+                                   onclick="javascript:change(2)" style="vertical-align: text-top;"/>
+                            审核不通过</label>
+                    </li>
+                    <li style="display: none" id="comment">
+                        <label>
+                            审核说明<textarea name="auditComment" id="auditComment" style="width: 80%"></textarea>
+                        </label>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </script>

@@ -64,16 +64,21 @@
                                class="input-small" style="width: 120px;"/>
 
                         &nbsp;
-                        <label class="first ">下级代理商/门店：</label>
+                        <label class="first ">下级代理商：</label>
                         <select name="agentId" id="agentId">
-                            <option selected="selected"  value=""  th:selected="*{agentId == 0}">==所有==</option>
+                            <option selected="selected" value="0" th:selected="*{agentId == 0}">==所有==</option>
                             <!--/*@thymesVar id="agentList" type="java.util.List<com.huotu.agento2o.service.entity.author.Agent"*/-->
-                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
                             <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}"
                                     th:selected="${agent.id == searchCondition.agentId}">代理商
                             </option>
+                        </select>
+                        &nbsp;
+                        <label class="first ">下级门店：</label>
+                        <select name="shopId" id="shopId">
+                            <option selected="selected" value="0" th:selected="*{shopId == 0}">==所有==</option>
+                            <!--/*@thymesVar id="shopList" type="java.util.List<com.huotu.agento2o.service.entity.author.Shop>"*/-->
                             <option th:each="shop:${shopList}" th:value="${shop.id}" th:text="${shop.name}"
-                                    th:selected="${shop.id == searchCondition.agentId}">门店
+                                    th:selected="${shop.id == searchCondition.shopId}">门店
                             </option>
                         </select>
 
@@ -175,7 +180,9 @@
                     <!--@thymesVar id="agentReturnedOrderList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder>"-->
                     <tr data-th-each="agentReturnOrder,agentReturnOrderStat:${agentReturnedOrderList}" data-th-id="${agentReturnOrder.ROrderId}">
                         <td class="txt20">
-                            <a href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" onclick="showReturnedOrderDetail()">
+                            <a href="javascript:void(0)"
+                               th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|"
+                               onclick="showReturnedOrderDetail()">
                                 <span th:text="${agentReturnOrder.ROrderId}">rOrderId</span>
                             </a>
                         </td>
@@ -191,8 +198,9 @@
                                href="javascript:void(0)" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="更多"> 更多...</a>
                         </td>
                         <td class="txt100 c">
-                            <span  data-th-text="${agentReturnOrder.author.name}">代理商</span>
-                            <span style="color: red" th:text="${agentReturnOrder.author.isAgent()?'（代理商）':'（门店）'}"></span>
+                            <span data-th-text="${agentReturnOrder.getAuthorName()}">代理商</span>
+                            <span style="color: red"
+                                  th:text="${agentReturnOrder.getAgent() != null ?'（代理商）':'（门店）'}"></span>
                         </td>
 
                         <td class="txt80 c" data-th-text="${#calendars.format(agentReturnOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
@@ -217,7 +225,8 @@
                             付款状态
                         </td>
                         <td class="txt80 c">
-                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.author.id})|" title="查看">查看</a>
+                            <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}"
+                               th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}')|" title="查看">查看</a>
                             <span th:if="${agentReturnOrder.checkable()}"> | </span>
                             <a th:if="${agentReturnOrder.checkable()}" href="javascript:void(0)" th:onclick="|checkReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="checkReturnOrder()" title="审核">审核</a>
                             <span th:if="${agentReturnOrder.receivable()}"> | </span>
@@ -464,7 +473,7 @@
     }
 
     function showReturnedOrderDetail(rOrderId,subAuthorId){
-        window.location.href = basicUrl + "/showReturnedOrderDetail?rOrderId=" + rOrderId+"&subAuthorId="+subAuthorId;
+        window.location.href = basicUrl + "/showReturnedOrderDetail?rOrderId=" + rOrderId;
     }
 
     /*]]>*/

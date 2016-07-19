@@ -137,7 +137,8 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             List<Predicate> predicates = new ArrayList<>();
             if (returnedOrderSearch.getAgentId() != null && returnedOrderSearch.getAgentId() != 0) {
                 predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), returnedOrderSearch.getAgentId()));
-            } else if (returnedOrderSearch.getShopId() != null && returnedOrderSearch.getShopId() != 0) {
+            }
+            if (returnedOrderSearch.getShopId() != null && returnedOrderSearch.getShopId() != 0) {
                 predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), returnedOrderSearch.getShopId()));
             }
             if (returnedOrderSearch.getParentAgentId() != null) {
