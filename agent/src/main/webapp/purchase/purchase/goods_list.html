@@ -300,6 +300,9 @@
         if(num > max){
             $.jBox.tip("订购数量大于可用库存！");
             $(this).val(max);
+        }else if(num <1){
+            $.jBox.tip("订购数量必须大于1");
+            $(this).val(1);
         }
     })
 

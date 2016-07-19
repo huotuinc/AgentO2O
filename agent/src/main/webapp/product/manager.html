@@ -139,7 +139,7 @@
             var agentProductId = $(obj).attr('agentProductId');
             var num = parseInt($(obj).prevAll("input[name=num]").val());
             if(num < 0){
-                $.jBox.tip('预警数量必须大于0！');
+                $.jBox.tip('预警数量必须大于等于0！');
                 return;
             }
             $.jBox.tip("正在保存...", "loading");
