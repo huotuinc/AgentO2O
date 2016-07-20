@@ -106,6 +106,14 @@ public class AgentReturnedOrderController {
         }
     }
 
+    /**
+     * 显示退货信息
+     *
+     * @param author
+     * @param data
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/showAddReturnOrder")
     public ModelAndView showAddReturnOrder(
             @AgtAuthenticationPrincipal Author author,
@@ -396,6 +404,12 @@ public class AgentReturnedOrderController {
 
     }
 
+    /**
+     * 支付
+     * @param author
+     * @param rOrderId
+     * @return
+     */
     @RequestMapping(value = "/payAgentReturnOrder")
     @ResponseBody
     public ApiResult payReturnOrder(@AgtAuthenticationPrincipal Author author,
