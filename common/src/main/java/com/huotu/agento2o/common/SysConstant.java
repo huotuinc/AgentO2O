@@ -18,8 +18,8 @@ public class SysConstant {
     @Autowired
     private void initConstant(Environment environment) {
         COOKIE_DOMAIN = environment.getProperty("cookie.domain", ".huobantest.com");
-        HUOBANMALL_PUSH_URL = environment.getProperty("huobanmall.pushUrl", "http://192.168.1.70:31105");
-        HUOBANMALL_RESOURCE_HOST = environment.getProperty("huobanmall.resourceUrl", "http://192.168.1.70:3152");
+        HUOBANMALL_PUSH_URL = environment.getProperty("huobanmall.pushUrl", "http://mallapi.pdmall.com");
+        HUOBANMALL_RESOURCE_HOST = environment.getProperty("huobanmall.resourceUrl", "http://manager.pdmall.com");
     }
 
     public static String[] ORDER_EXPORT_HEADER = {

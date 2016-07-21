@@ -5,6 +5,7 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
@@ -80,7 +81,6 @@ public class DeliveryController {
             modelAndView.setViewName("order/delivery_list");
         else
             modelAndView.setViewName("order/return_list");
-
         Page<MallDelivery> ordersDeliveryPage = deliveryService.getPage(pageIndex,author, Constant.PAGESIZE,  deliverySearcher, type);
         modelAndView.addObject("deliveryList", ordersDeliveryPage.getContent());
         modelAndView.addObject("totalRecords", ordersDeliveryPage.getTotalElements());

@@ -65,18 +65,19 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
         Specification<MallDelivery> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (author != null && author.getType() == Shop.class) {
-                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId());
+                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), author.getId()));
+//                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             } else if (author != null && author.getType() == Agent.class) {
-                predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), deliverySearcher.getAgentId()));
+                predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), author.getId()));
 //                Join<MallDelivery, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
 //                Join<MallDelivery, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
 //                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
 //                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             }
-            cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+//            predicates.add(cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
             predicates.add(cb.equal(cb.lower(root.get("type").as(String.class)), type.toLowerCase()));
             if (!StringUtils.isEmpty(deliverySearcher.getOrderId())) {
                 predicates.add(cb.like(root.get("order").get("orderId").as(String.class), "%" + deliverySearcher.getOrderId() + "%"));
@@ -167,8 +168,8 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
             if (deliveryInfo.getRemark() != null && !"".equals(deliveryInfo.getRemark())) {
                 map.put("remark", deliveryInfo.getRemark());
             }
-            // TODO: 2016/6/14
-            map.put("agentId", agentId);
+            // TODO: 2016/6/14 supplierId 改为 agentId
+            map.put("supplierId", agentId);
             map.put("dicDeliverItemsStr", dicDeliverItemsStr.substring(0, dicDeliverItemsStr.length() - 1));
             String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);
             map.put("sign", sign);

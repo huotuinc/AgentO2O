@@ -49,20 +49,19 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
         Specification<MallAfterSales> specification = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (author != null && author.getType() == Shop.class) {
-                predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
+                predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), author.getId()));
 //                Predicate p1 = criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), agentId);
 //                Predicate p2 = criteriaBuilder.equal(root.get("beneficiaryShop").get("id").as(Integer.class), agentId);
 //                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             } else if (author != null && author.getType() == Agent.class) {
-                predicates.add(criteriaBuilder.equal(root.get("shop").get("agent").get("id").as(Integer.class), afterSaleSearch.getAgentId()));
+                predicates.add(criteriaBuilder.equal(root.get("shop").get("agent").get("id").as(Integer.class), author.getId()));
 //                Join<MallAfterSales,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
 //                Join<MallAfterSales,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class),JoinType.LEFT);
 //                Predicate p1 = criteriaBuilder.equal(join1.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
 //                Predicate p2 = criteriaBuilder.equal(join2.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
 //                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             }
-            criteriaBuilder.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
-
+//            predicates.add(criteriaBuilder.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
             if (!StringUtils.isEmpty(afterSaleSearch.getBeginTime())) {
                 Date beginTime = StringUtil.DateFormat(afterSaleSearch.getBeginTime(), StringUtil.TIME_PATTERN);
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class), beginTime));
@@ -92,6 +91,7 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
 
     /**
      * 用于判断门店或是平台发货
+     *
      * @param afterSaleSearch
      * @param criteriaBuilder
      * @param predicates

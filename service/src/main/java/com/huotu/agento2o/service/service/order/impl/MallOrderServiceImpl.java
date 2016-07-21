@@ -104,7 +104,7 @@ public class MallOrderServiceImpl implements MallOrderService {
 //                judgeShipMode(searchCondition, cb, predicates, p1, p2);
                 predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), searchCondition.getAgentId()));
             }
-            cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+            predicates.add(cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
 //            Predicate p1 = cb.isNull(join.get("id").as(Integer.class));
