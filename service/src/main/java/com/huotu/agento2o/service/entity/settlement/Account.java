@@ -96,7 +96,7 @@ public class Account {
         if(this.getAgent() != null){
             return this.getAgent().getBankName();
         }else if(this.getShop() != null){
-            return this.getAgent().getBankName();
+            return this.getShop().getBankName();
         }
         return null;
     }
@@ -124,5 +124,14 @@ public class Account {
             return this.getShop().getCustomer();
         }
         return null;
+    }
+
+    public boolean hasAuthorAccountInfo() {
+        if (this.getAgent() != null) {
+            return this.getAgent().hasAccountInfo();
+        } else if (this.getShop() != null) {
+            return this.getShop().hasAccountInfo();
+        }
+        return false;
     }
 }

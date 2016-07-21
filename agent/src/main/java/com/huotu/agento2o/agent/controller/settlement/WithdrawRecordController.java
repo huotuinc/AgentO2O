@@ -55,7 +55,7 @@ public class WithdrawRecordController {
         Account account = accountService.findByAuthor(shop);
         Page<WithdrawRecord> withdrawRecordPage = withdrawRecordService.getPage(account, withdrawRecordSearcher);
         modelAndView.setViewName("settlement/withdrawRecords");
-        modelAndView.addObject("authorAccount", account);
+        modelAndView.addObject("account", account);
         modelAndView.addObject("withdrawRecordPage", withdrawRecordPage);
         modelAndView.addObject("totalRecords", withdrawRecordPage.getTotalElements());
         modelAndView.addObject("totalPages", withdrawRecordPage.getTotalPages());

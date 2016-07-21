@@ -40,6 +40,14 @@ public class HbmAgentPrchaseOrderDeliveryController {
     @Autowired
     private AuthorService authorService;
 
+    /**
+     * 显示发货单
+     *
+     * @param customerId
+     * @param pOrderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showDelivery",method = RequestMethod.GET)
     public ModelAndView showDelivery(
             @RequestAttribute(value = "customerId") Integer customerId,
@@ -55,6 +63,13 @@ public class HbmAgentPrchaseOrderDeliveryController {
         return model;
     }
 
+    /**
+     * 发货
+     * @param customerId
+     * @param deliveryInfo
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/delivery")
     @ResponseBody
     public ApiResult delivery(
@@ -63,6 +78,12 @@ public class HbmAgentPrchaseOrderDeliveryController {
         return agentDeliveryService.pushDelivery(deliveryInfo,customerId,null);
     }
 
+    /**
+     * 发货物流列表
+     * @param customerId
+     * @param deliverySearcher
+     * @return
+     */
     @RequestMapping(value = "/showPurchaseDeliveryList")
     public ModelAndView showPurchaseDeliveryList(@RequestAttribute(value = "customerId") Integer customerId, DeliverySearcher deliverySearcher){
         ModelAndView modelAndView = new ModelAndView();
@@ -83,6 +104,12 @@ public class HbmAgentPrchaseOrderDeliveryController {
         return modelAndView;
     }
 
+    /**
+     * 退货物流列表
+     * @param customerId
+     * @param deliverySearcher
+     * @return
+     */
     @RequestMapping(value = "/showReturnDeliveryList")
     public ModelAndView showReturnDeliveryList(@RequestAttribute(value = "customerId") Integer customerId, DeliverySearcher deliverySearcher){
         ModelAndView modelAndView = new ModelAndView();

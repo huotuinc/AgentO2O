@@ -90,6 +90,15 @@ public class HbmAgentReturnOrderController {
         }
     }
 
+    /**
+     * 显示退货单详情
+     *
+     * @param customerId
+     * @param rOrderId
+     * @param agentId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showReturnedOrderDetail")
     public ModelAndView showReturnOrderDetail(@RequestAttribute(value = "customerId") Integer customerId,@RequestParam(required = true) String rOrderId,Integer agentId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
@@ -114,6 +123,14 @@ public class HbmAgentReturnOrderController {
         return modelAndView;
     }
 
+    /**
+     * 审核退货单
+     * @param customerId
+     * @param rOrderId
+     * @param checkStatus
+     * @param parentComment
+     * @return
+     */
     @RequestMapping(value = "/checkAgentReturnOrder")
     @ResponseBody
     public ApiResult checkAgentReturnOrder(@RequestAttribute(value = "customerId") Integer customerId,
@@ -151,6 +168,12 @@ public class HbmAgentReturnOrderController {
 
     }
 
+    /**
+     * 支付
+     * @param customerId
+     * @param rOrderId
+     * @return
+     */
     @RequestMapping(value = "/payReturnOrder")
     @ResponseBody
     public ApiResult payReturnOrder(@RequestAttribute(value = "customerId") Integer customerId,
