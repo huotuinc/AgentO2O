@@ -95,6 +95,7 @@ public class DeliveryController {
     /**
      * 判断货品的库存是否满足订单所需的货品数量,其规则为
      * nums<=freez<=store
+     * 压货模式下freez有可能大于store
      * 满足则返回200失败返回505
      * @param orderId
      * @return
@@ -109,11 +110,11 @@ public class DeliveryController {
         AgentProduct agentProduct ;
         for (MallOrderItem mallOrderItem : mallOrderItems){
             agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
-            if (agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore()){
-                return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+            if (!(agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore())){
+                return ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE);
             }
         }
-        return ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE);
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
     /**

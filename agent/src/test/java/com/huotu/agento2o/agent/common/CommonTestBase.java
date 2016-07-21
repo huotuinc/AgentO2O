@@ -672,7 +672,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         MallProduct mallProduct = new MallProduct();
         mallProduct.setProductId(random.nextInt() + 1);
         mallProduct.setGoods(new MallGoods());
-        mallProduct.setName("xxx");
+        mallProduct.setName(UUID.randomUUID().toString());
         return mallProductRepository.saveAndFlush(mallProduct);
     }
 

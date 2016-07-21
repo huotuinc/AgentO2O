@@ -72,7 +72,7 @@
                             <label class="first ">发货方式：</label>
                             <select name="shipMode" id="shipMode">
                                 <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
-                                <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipStatus"*/-->
+                                <!--/*@thymesVar id="shipModeEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipStatus"*/-->
                                 <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == afterSaleSearch.shipMode}">未发货</option>
                             </select>
                             <label class="first"> 售后单状态：
@@ -145,8 +145,8 @@
                             <td class="txt80 c" th:text="${#dates.format(afterSale.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td style="color:red;" class="txt80 c" th:text="${afterSale.afterSaleStatus.value}"></td>
                             <td class="txt80 c">
-                                <a th:if="${afterSale.shop!=null and afterSale.beneficiaryShop==null}" th:title="查看" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看(门店发货)</a>
-                                <a th:if="${afterSale.shop==null and afterSale.beneficiaryShop!=null}" th:title="查看" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看(平台代发)</a>
+                                <a th:if="${afterSale.shop!=null and afterSale.agentShopType.code==1}" th:title="查看" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看(门店发货)</a>
+                                <a th:if="${afterSale.shop==null and afterSale.agentShopType.code==2}" th:title="查看" th:href="@{/agent/afterSale/afterSalesDetail(afterId=${afterSale.afterId})}">查看(平台代发)</a>
                             </td>
                         </tr>
                         </tbody>

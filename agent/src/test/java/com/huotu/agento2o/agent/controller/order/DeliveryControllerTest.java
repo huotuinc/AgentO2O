@@ -11,6 +11,7 @@ package com.huotu.agento2o.agent.controller.order;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * 点击发货功能是，测试其是否有相应的库存，其库存的判断为nums<=freez<=store
  * Created by AiWelv on 2016/6/6.
  */
 public class DeliveryControllerTest extends CommonTestBase {
@@ -42,88 +44,112 @@ public class DeliveryControllerTest extends CommonTestBase {
     private MallCustomer mockCustomer;
     //一级代理商
     private MallCustomer mockFirstLevelAgent;
-    //二级代理商
-    private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
     private Shop mockFirstLevelShop;
-    //二级代理商下级门店1,门店2
-    private Shop mockSecondLevelShopOne;
-    private Shop mockSecondLevelShopTwo;
 
-    //二级代理商下级门店的订单
-    private List<MallOrder> mockSecondLevelShopOneList = new ArrayList();
-    private List<MallOrder> mockSecondLevelShopTwoList = new ArrayList();
-    //二级代理商所能看见的订单
-    private List<MallOrder> mockSecondLevelAgentList = new ArrayList();
-
-    private List<MallProduct> mockSecondLevelShopMallProductOneList = new ArrayList();
-    private List<AgentProduct> mockSecondLevelShopAgentProductOneList = new ArrayList();
-
-    private List<MallOrderItem> mockSecondMallOrderItemList = new ArrayList();
+    private List<MallProduct> mockCustomerProduct = new ArrayList<>();
+    private List<AgentProduct> mockShopProduct = new ArrayList();
 
     @Before
     @SuppressWarnings("Duplicates")
     public void init() {
         //模拟数据
         //用户相关
-        System.out.println(passWord + "____");
         mockCustomer = mockMallCustomer();
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
         mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
-        mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
-        mockSecondLevelShopOne = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
-        mockSecondLevelShopTwo = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
 
-        //二级代理商下级门店1的订单
-        for (int i = 0; i <= random.nextInt(10) + 1; i++) {
-            mockSecondLevelShopOneList.add(mockMallOrder(mockSecondLevelShopOne));
+        //创建平台商品(保证至少有5件货品)
+        for (int i = 0; i < random.nextInt(10) + 5; i++) {
+            mockCustomerProduct.add(mockMallProduct());
         }
-
-        //二级代理商下级门店2的订单
-        for (int i = 0; i < random.nextInt(5) + 1; i++) {
-            mockSecondLevelShopTwoList.add(mockMallOrder(mockSecondLevelShopTwo));
-        }
-
-
-        //创建MallProduct
-        for (int i = 0; i < 5; i++) {
-            mockSecondLevelShopMallProductOneList.add(mockMallProduct());
-        }
-
-        //创建AgentProduct
-        for (int i = 0; i < 5; i++) {
-            mockSecondLevelShopAgentProductOneList.add(mockAgentProduct(mockSecondLevelShopMallProductOneList.get(i), mockSecondLevelShopOne));
-        }
-
-        //创建item
-        for (int i = 0; i < 5; i++) {
-            mockSecondMallOrderItemList.add(mockMallOrderItem(mockSecondLevelShopOneList.get(0), mockSecondLevelShopMallProductOneList.get(i),
-                    mockMallAfterSales(mockSecondLevelShopOne, mockSecondLevelShopOneList.get(0).getOrderId()),i+random.nextInt(20)));
+        //门店的订单(保证至少有2件货品)
+        for (int i = 0; i < random.nextInt(mockCustomerProduct.size() - 2) + 2; i++) {
+            mockShopProduct.add(mockAgentProduct(mockCustomerProduct.get(i),mockFirstLevelShop));
         }
 
     }
 
-    /**
-     * 点击发货功能是，测试其是否有相应的库存，其库存的判断为nums<=freez<=store
-     * @throws Exception
-     */
+    //1.订单单个货品，库存充足（临界值预计返回200）
     @Test
-        public void testJudgeStock() throws Exception {
-        MockHttpSession sessionShop1 = loginAs(mockSecondLevelShopOne.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
-        MvcResult resultShop1 = mockMvc.perform(
+    public void testJudgeStockByOneItemEnough() throws Exception{
+        //模拟数据
+        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        List<MallOrderItem> orderItems = new ArrayList<>();
+        AgentProduct randomProduct = mockShopProduct.get(random.nextInt(mockShopProduct.size()));
+        orderItems.add(mockMallOrderItem(order,randomProduct.getProduct(),null,randomProduct.getFreez()));
+
+        MockHttpSession sessionShop1 = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MvcResult result = mockMvc.perform(
                 get(BASE_URL + "/judgeStock")
-                        .session(sessionShop1).param("orderId", mockSecondLevelShopOneList.get(0).getOrderId()))
+                        .session(sessionShop1).param("orderId", order.getOrderId()))
                 .andExpect(status().isOk())
                 .andReturn();
-        String contentWithNoId = new String(resultShop1.getResponse().getContentAsByteArray(), "UTF-8");
+        String contentWithNoId = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject objWithNoId = JSONObject.parseObject(contentWithNoId);
-        if (objWithNoId.get("code") == "200"){
-            Assert.assertEquals(200, objWithNoId.get("code"));
-        }else{
-            Assert.assertEquals(505, objWithNoId.get("code"));
+        Assert.assertEquals(200, objWithNoId.get("code"));
+
+    }
+    //2.订单单个货品，库存不足（预计返回505）
+    @Test
+    public void testJudgeStockByOneItemNotEnough() throws Exception{
+        //模拟数据
+        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        List<MallOrderItem> orderItems = new ArrayList<>();
+        AgentProduct randomProduct = mockShopProduct.stream().findAny().get();
+        orderItems.add(mockMallOrderItem(order,randomProduct.getProduct(),null,randomProduct.getFreez() + 1));
+
+        MockHttpSession sessionShop1 = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MvcResult result = mockMvc.perform(
+                get(BASE_URL + "/judgeStock")
+                        .session(sessionShop1).param("orderId", order.getOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoId = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoId = JSONObject.parseObject(contentWithNoId);
+        Assert.assertEquals(505, objWithNoId.get("code"));
+    }
+    //3.订单多个货品，所有货品库存充足（预计返回200）
+    @Test
+    public void testJudgeStockByManyItemEnough() throws Exception{
+        //模拟数据
+        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        List<MallOrderItem> orderItems = new ArrayList<>();
+        for(int i = 0 ; i < mockShopProduct.size() ; i++){
+            AgentProduct agentProduct = mockShopProduct.get(i);
+            orderItems.add(mockMallOrderItem(order,agentProduct.getProduct(),null,1));
         }
+        MockHttpSession sessionShop1 = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MvcResult result = mockMvc.perform(
+                get(BASE_URL + "/judgeStock")
+                        .session(sessionShop1).param("orderId", order.getOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoId = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoId = JSONObject.parseObject(contentWithNoId);
+        Assert.assertEquals(200, objWithNoId.get("code"));
+    }
+    //4.订单多个货品，存在货品库存不足（预计返回505）
+    @Test
+    public void testJudgeStockByManyItemNotEnough() throws Exception{
+        //模拟数据
+        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        List<MallOrderItem> orderItems = new ArrayList<>();
+        //2个item,第一个库存充足，第二个库存不足
+        AgentProduct agentProduct1 = mockShopProduct.get(0);
+        orderItems.add(mockMallOrderItem(order,agentProduct1.getProduct(),null,1));
+        AgentProduct agentProduct2 = mockShopProduct.get(1);
+        orderItems.add(mockMallOrderItem(order,agentProduct2.getProduct(),null,agentProduct2.getFreez()+1));
 
-
+        MockHttpSession sessionShop1 = loginAs(mockFirstLevelShop.getUsername(), passWord, String.valueOf(RoleTypeEnum.SHOP.getCode()));
+        MvcResult result = mockMvc.perform(
+                get(BASE_URL + "/judgeStock")
+                        .session(sessionShop1).param("orderId", order.getOrderId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentWithNoId = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        JSONObject objWithNoId = JSONObject.parseObject(contentWithNoId);
+        Assert.assertEquals(505, objWithNoId.get("code"));
     }
 
 }
