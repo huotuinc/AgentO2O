@@ -26,7 +26,6 @@ public class DeliverySearcher {
     private Integer agentId;
     private Integer shopId;
     private Integer parentAgentId;
-    private Integer shipMode = -1;
     private int pageIndex = 1;
     private String logiNo;
     private Integer customerId;

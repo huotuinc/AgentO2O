@@ -4,8 +4,6 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
@@ -56,7 +54,7 @@ public class DeliveryController {
     private AgentProductService agentProductService;
 
     /**
-     * 根据供应商和筛选条件查找发货单列表
+     * 根据供应商和筛选条件查找发货单或退货单列表
      *
      * @param author
      * @return view:
@@ -85,7 +83,6 @@ public class DeliveryController {
         modelAndView.addObject("deliveryList", ordersDeliveryPage.getContent());
         modelAndView.addObject("totalRecords", ordersDeliveryPage.getTotalElements());
         modelAndView.addObject("totalPages", ordersDeliveryPage.getTotalPages());
-        modelAndView.addObject("shipModeEnums", OrderEnum.ShipMode.values());
         modelAndView.addObject("pageSize", ordersDeliveryPage.getSize());
         modelAndView.addObject("pageIndex", pageIndex);
         modelAndView.addObject("deliverySearcher", deliverySearcher);

@@ -414,6 +414,8 @@
                                             <th scope="col">支付方式
                                             </th>
 
+                                            <th scope="col" th:if="${author.getAuthorShop() == null}">所属门店
+                                            </th>
 
                                             <th scope="col" width="70px">操作
                                             </th>
@@ -464,6 +466,10 @@
                                             </td>
                                             <td class="txt80" th:text="${orders.paymentType.value}">
                                                 银联在线支付
+                                            </td>
+                                            <td class="txt60" th:text="${orders.shop.name}"
+                                                th:if="${author.getAuthorShop() == null}">
+                                                门店1
                                             </td>
                                             <td class="txt80 c tail">
                                                 <div th:inline="text">
@@ -568,7 +574,7 @@
 
     function searchOrder() {
         $("input[name=orderRule]").val($("input[name=raSortType]:checked").val());
-        $("#pageIndex").val(1);
+        $("input[name=pageIndex]").val(1);
         $('#form1').submit();
     }
     function searchOrderAll() {

@@ -7,8 +7,8 @@ import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -31,13 +31,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,14 +90,14 @@ public class MallOrderServiceImpl implements MallOrderService {
 //                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getAgentId());
 //                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), searchCondition.getAgentId());
 //                judgeShipMode(searchCondition, cb, predicates, p1, p2);
-                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), searchCondition.getShopId()));
+                predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), author.getId()));
             } else if (author != null && author.getType() == Agent.class) {
 //                Join<MallOrder, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
 //                Join<MallOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
 //                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
 //                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), searchCondition.getAgentId());
 //                judgeShipMode(searchCondition, cb, predicates, p1, p2);
-                predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), searchCondition.getAgentId()));
+                predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), author.getId()));
             }
             predicates.add(cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
             //去除拼团未成功的
@@ -123,6 +118,10 @@ public class MallOrderServiceImpl implements MallOrderService {
             }
             if (!StringUtils.isEmpty(searchCondition.getShipMobile())) {
                 predicates.add(cb.like(root.get("shipMobile").as(String.class), "%" + searchCondition.getShipMobile() + "%"));
+            }
+            if (searchCondition.getShipMode() != -1) {
+                predicates.add(cb.equal(root.get("agentShopType").as(OrderEnum.ShipMode.class),
+                        EnumHelper.getEnumType(OrderEnum.ShipMode.class, searchCondition.getShipMode())));
             }
             if (searchCondition.getPayStatus() != -1) {
                 predicates.add(cb.equal(root.get("payStatus").as(OrderEnum.PayStatus.class),

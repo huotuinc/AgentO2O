@@ -5,12 +5,10 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
 import com.huotu.agento2o.service.model.order.OrderExportModel;
 import com.huotu.agento2o.service.model.order.OrderForDelivery;
@@ -18,7 +16,6 @@ import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.order.MallDeliveryService;
 import com.huotu.agento2o.service.service.order.MallOrderItemService;
 import com.huotu.agento2o.service.service.order.MallOrderService;
-import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -81,11 +78,6 @@ public class OrderController {
             OrderSearchCondition searchCondition,
             @RequestParam(required = false, defaultValue = "1") int pageIndex
     ) {
-        if(author.getType() == Agent.class){
-            searchCondition.setAgentId(author.getId());
-        }else if(author.getType() == Shop.class){
-            searchCondition.setShopId(author.getId());
-        }
         Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
         getPicUri(ordersList.getContent());
         int totalPages = ordersList.getTotalPages();
@@ -123,6 +115,13 @@ public class OrderController {
         });
     }
 
+    /**
+     * 显示订单详情
+     *
+     * @param orderId
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/showOrderDetail", method = RequestMethod.GET)
     public ModelAndView showOrderDetail(@RequestParam("orderId") String orderId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();

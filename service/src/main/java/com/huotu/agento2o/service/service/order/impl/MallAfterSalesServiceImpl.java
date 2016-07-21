@@ -1,9 +1,8 @@
 package com.huotu.agento2o.service.service.order.impl;
 
-import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.StringUtil;
-import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -23,9 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,16 +46,8 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
             List<Predicate> predicates = new ArrayList<>();
             if (author != null && author.getType() == Shop.class) {
                 predicates.add(criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), author.getId()));
-//                Predicate p1 = criteriaBuilder.equal(root.get("shop").get("id").as(Integer.class), agentId);
-//                Predicate p2 = criteriaBuilder.equal(root.get("beneficiaryShop").get("id").as(Integer.class), agentId);
-//                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             } else if (author != null && author.getType() == Agent.class) {
                 predicates.add(criteriaBuilder.equal(root.get("shop").get("agent").get("id").as(Integer.class), author.getId()));
-//                Join<MallAfterSales,Shop> join1 = root.join(root.getModel().getSingularAttribute("shop",Shop.class), JoinType.LEFT);
-//                Join<MallAfterSales,Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop",Shop.class),JoinType.LEFT);
-//                Predicate p1 = criteriaBuilder.equal(join1.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
-//                Predicate p2 = criteriaBuilder.equal(join2.get("parentAuthor").get("id").as(Integer.class),afterSaleSearch.getAgentId());
-//                judgeShipMode(afterSaleSearch, criteriaBuilder, predicates, p1, p2);
             }
 //            predicates.add(criteriaBuilder.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
             if (!StringUtils.isEmpty(afterSaleSearch.getBeginTime())) {
@@ -87,25 +75,6 @@ public class MallAfterSalesServiceImpl implements MallAfterSalesService {
         };
         return afterSalesRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize,
                 new Sort(Sort.Direction.DESC, "createTime")));
-    }
-
-    /**
-     * 用于判断门店或是平台发货
-     *
-     * @param afterSaleSearch
-     * @param criteriaBuilder
-     * @param predicates
-     * @param shop
-     * @param beneficiaryShop
-     */
-    private void judgeShipMode(AfterSaleSearch afterSaleSearch, CriteriaBuilder criteriaBuilder, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
-        if (afterSaleSearch.getShipMode() == 0) {
-            predicates.add(shop);
-        } else if (afterSaleSearch.getShipMode() == 1) {
-            predicates.add(beneficiaryShop);
-        } else {
-            predicates.add(criteriaBuilder.or(shop, beneficiaryShop));
-        }
     }
 
     @Override

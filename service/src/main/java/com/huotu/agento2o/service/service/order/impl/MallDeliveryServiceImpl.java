@@ -6,11 +6,9 @@ import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.httputil.HttpClientUtil;
 import com.huotu.agento2o.common.httputil.HttpResult;
 import com.huotu.agento2o.common.util.*;
-import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
-import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
@@ -31,9 +29,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -66,16 +61,8 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
             List<Predicate> predicates = new ArrayList<>();
             if (author != null && author.getType() == Shop.class) {
                 predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), author.getId()));
-//                Predicate p1 = cb.equal(root.get("shop").get("id").as(Integer.class), deliverySearcher.getAgentId());
-//                Predicate p2 = cb.equal(root.get("beneficiaryShop").get("id").as(Integer.class), deliverySearcher.getAgentId());
-//                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             } else if (author != null && author.getType() == Agent.class) {
                 predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), author.getId()));
-//                Join<MallDelivery, Shop> join1 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
-//                Join<MallDelivery, Shop> join2 = root.join(root.getModel().getSingularAttribute("beneficiaryShop", Shop.class), JoinType.LEFT);
-//                Predicate p1 = cb.equal(join1.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
-//                Predicate p2 = cb.equal(join2.get("parentAuthor").get("id").as(Integer.class), deliverySearcher.getAgentId());
-//                judgeShipMode(deliverySearcher, cb, predicates, p1, p2);
             }
 //            predicates.add(cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
             predicates.add(cb.equal(cb.lower(root.get("type").as(String.class)), type.toLowerCase()));
@@ -102,23 +89,6 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
         };
         return deliveryRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, new Sort(Sort.Direction.DESC, "createTime")));
 
-    }
-    /**
-     * 用于分页查询时判断订单发货的方式
-     * @param deliverySearcher
-     * @param cb
-     * @param predicates
-     * @param shop
-     * @param beneficiaryShop
-     */
-    private void judgeShipMode(DeliverySearcher deliverySearcher, CriteriaBuilder cb, List<Predicate> predicates, Predicate shop, Predicate beneficiaryShop) {
-        if (deliverySearcher.getShipMode() == 0) {
-            predicates.add(shop);
-        } else if (deliverySearcher.getShipMode() == 1) {
-            predicates.add(beneficiaryShop);
-        } else {
-            predicates.add(cb.or(shop, beneficiaryShop));
-        }
     }
 
     @Override
