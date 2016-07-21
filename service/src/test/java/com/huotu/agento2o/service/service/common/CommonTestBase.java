@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.service.common;
 
+import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
@@ -235,8 +236,8 @@ public abstract class CommonTestBase {
     protected MallOrder mockMallOrder(Shop shop) {
 
         MallOrder mallOrder = new MallOrder();
-        mallOrder.setOrderId(random.nextInt() + "1");
-        mallOrder.setAgentMarkType("p2");
+        mallOrder.setOrderId(SerialNo.create());
+        mallOrder.setAgentMarkType("b1");
         mallOrder.setAgentMarkText("XXXX" + random.nextInt());
         mallOrder.setOrderStatus(OrderEnum.OrderStatus.ACTIVE);
         mallOrder.setPaymentType(OrderEnum.PaymentOptions.ALIPAY_PC);
@@ -260,7 +261,7 @@ public abstract class CommonTestBase {
      */
     protected MallAfterSales mockMallAfterSales(Shop shop) {
         MallAfterSales mallAfterSales = new MallAfterSales();
-        mallAfterSales.setAfterId(random.nextInt() + "1");
+        mallAfterSales.setAfterId(SerialNo.create());
         mallAfterSales.setCreateTime(new Date());
         mallAfterSales.setShop(shop);
         if (random.nextInt() % 2 == 0)
