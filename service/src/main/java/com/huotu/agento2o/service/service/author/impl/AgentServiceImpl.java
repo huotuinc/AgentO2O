@@ -237,8 +237,9 @@ public class AgentServiceImpl implements AgentService {
     private MallCustomer newMallCustomer(Agent agent) {
         String key = StringUtil.createRandomStr(6);
         Integer token = random.nextInt(900000) + 100000;
-        String mainDomian = SysConstant.COOKIE_DOMAIN;
-        String url = String.format("http://distribute.%s/index.aspx?key=%s&t=huotu", mainDomian, key);
+        //COOKIE_DOMAIN start with .
+        String mainDomain = SysConstant.COOKIE_DOMAIN;
+        String url = String.format("http://distribute%s/index.aspx?key=%s&t=huotu", mainDomain, key);
         MallCustomer customer = new MallCustomer();
         customer.setUsername(agent.getUsername());
         customer.setPassword(passwordEncoder.encode(agent.getPassword()));

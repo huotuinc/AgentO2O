@@ -47,7 +47,7 @@ public interface MallDeliveryService {
      */
     ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int agentId) throws UnsupportedEncodingException;
 
-    ApiResult pushDelivery(DeliveryInfo deliveryInfo, int agentId) throws UnsupportedEncodingException;
+    ApiResult pushDelivery(DeliveryInfo deliveryInfo, int shopId) throws UnsupportedEncodingException;
 
     ApiResult pushRefund(String orderId, LogiModel logiModel, Integer agentId, String dicReturnItemsStr) throws UnsupportedEncodingException;
 }

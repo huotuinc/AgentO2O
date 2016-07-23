@@ -112,7 +112,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
     }
 
     @Override
-    public ApiResult pushDelivery(DeliveryInfo deliveryInfo, int agentId) throws UnsupportedEncodingException {
+    public ApiResult pushDelivery(DeliveryInfo deliveryInfo, int shopId) throws UnsupportedEncodingException {
         MallOrder order = orderService.findByOrderId(deliveryInfo.getOrderId());
         if (order.deliveryable()) {
             String dicDeliverItemsStr = "";
@@ -139,7 +139,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
                 map.put("remark", deliveryInfo.getRemark());
             }
             // TODO: 2016/6/14 supplierId 改为 agentId
-            map.put("supplierId", agentId);
+            map.put("supplierId", shopId);
             map.put("dicDeliverItemsStr", dicDeliverItemsStr.substring(0, dicDeliverItemsStr.length() - 1));
             String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);
             map.put("sign", sign);

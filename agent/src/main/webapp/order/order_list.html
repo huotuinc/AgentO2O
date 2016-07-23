@@ -431,11 +431,11 @@
                                                 </label>
                                                 <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="查看" th:text="${orders.orderId}"></a>
                                             </td>
-                                            <td class="txt120">
-                                                <span style="width: 20%;    float: left;">
+                                            <td class="txt120" style="padding: 10px 0px">
+                                                <span style="width: 20%;float: left;">
                                                     <img
                                                         th:src="${orders.orderItems.size() >0 and orders.orderItems[0].picUri !=null ? orders.orderItems[0].picUri : ''}"
-                                                        style="vertical-align: top;width: 50px;height: 50px;" th:styleappend="${orders.orderItems.size() >0 and orders.orderItems[0].picUri !=null?'margin-left:5px':''}"/></span>
+                                                        style="vertical-align: top;width: 50px;height: 50px;margin-left: 5px;" th:styleappend="${orders.orderItems.size() >0 and orders.orderItems[0].picUri !=null?'margin-left:5px':''}"/></span>
                                                 <span style="overflow: hidden;text-align: left; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1;
                                                  -webkit-box-orient: vertical; width:60%; float:left;margin-top:10px;"
                                                       data-th-text="${orders.orderItems.size()}>0?${orders.orderItems[0].name}">商品名称</span>
@@ -448,7 +448,7 @@
                                                 2015/9/21 20:18:01
                                             </td>
                                             <td class="txt80">
-                                                <span style='color:#ccc;'
+                                                <span
                                                       th:if="${orders.payTime!=null and orders.payTime!=''}"
                                                       th:text="${#dates.format(orders.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
                                             </td>
