@@ -15,7 +15,6 @@ import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -167,11 +166,11 @@ public class PurchaseController {
         //增加购物车记录
         ShoppingCart cart = new ShoppingCart();
         if (author != null && author.getType() == Agent.class) {
-            cart.setAgent(((MallCustomer)author).getAgent());
+            cart.setAgent(author.getAuthorAgent());
             cart.setShop(null);
         } else if (author != null && author.getType() == Shop.class) {
             cart.setAgent(null);
-            cart.setShop((Shop)author);
+            cart.setShop(author.getAuthorShop());
         }
         cart.setProduct(product);
         cart.setNum(num);

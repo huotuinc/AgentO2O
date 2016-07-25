@@ -14,7 +14,6 @@ import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.PurchaseEnum;
-import com.huotu.agento2o.service.config.annotation.SystemServiceLog;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -155,7 +154,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
      * @return
      */
     @Override
-    @SystemServiceLog(value = "新增采购单")
     @Transactional(rollbackFor = RuntimeException.class)
     public ApiResult addPurchaseOrder(AgentPurchaseOrder purchaseOrder, Author author, String... shoppingCartIds) throws Exception {
         purchaseOrder.setPOrderId(SerialNo.create());
@@ -293,7 +291,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         if (!agentPurchaseOrder.payabled()) {
-            return new ApiResult("采购单未审核或已已支付，无法支付！");
+            return new ApiResult("采购单未审核或已支付，无法支付！");
         }
         agentPurchaseOrder.setPayStatus(PurchaseEnum.PayStatus.PAYED);
         agentPurchaseOrder.setPayTime(new Date());
