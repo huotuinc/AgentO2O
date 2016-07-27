@@ -238,7 +238,8 @@ public interface OrderEnum {
     enum ShipMode implements ICommonEnum {
 //        ALL_MODE(-1, "==所有=="),
         SHOP_DELIVERY(1, "门店发货"),
-        PLATFORM_DELIVERY(2, "平台代发");
+        PLATFORM_DELIVERY(2, "门店收益"),
+        SHOP_PART_BENEFIT(3, "门店部分收益");
 
         private Integer code;
         private String value;

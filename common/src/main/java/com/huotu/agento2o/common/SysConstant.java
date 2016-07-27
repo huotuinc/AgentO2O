@@ -18,7 +18,7 @@ public class SysConstant {
     @Autowired
     private void initConstant(Environment environment) {
         COOKIE_DOMAIN = environment.getProperty("cookie.domain", ".huobantest.com");
-        HUOBANMALL_PUSH_URL = environment.getProperty("huobanmall.pushUrl", "http://mallapi.pdmall.com");
+        HUOBANMALL_PUSH_URL = environment.getProperty("huobanmall.pushUrl", "http://mallapi.agent.com");
         HUOBANMALL_RESOURCE_HOST = environment.getProperty("huobanmall.resourceUrl", "http://manager.pdmall.com");
     }
 

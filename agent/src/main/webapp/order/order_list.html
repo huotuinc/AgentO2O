@@ -47,18 +47,18 @@
 
         });
 
-        function showList(statu) {
-            if (statu == 0) {
+        function showList(status) {
+            if (status == 0) {
                 $("#shipStatus").attr("value", -1);
                 $('#form1').submit();
-            } else if (statu == 2) {
+            } else if (status == 2) {
                 $("#shipStatus").attr("value", 0);
                 $('#form1').submit();
                 //$('.aparent3').parent().toggleClass('om-state-default om-corner-top  om-tabs-activated om-state-active');
-            } else if (statu == 3) {
+            } else if (status == 3) {
                 $("#shipStatus").attr("value", 1);
                 $('#form1').submit();
-            } else if (statu == 4) {
+            } else if (status == 4) {
                 $("#shipStatus").attr("value", 4);
                 $('#form1').submit();
             }
@@ -235,7 +235,7 @@
                         <label class="first ">发货方式：</label>
                         <select name="shipMode" id="shipMode">
                             <option selected="selected" value="-1" th:selected="*{shipMode == -1}" >==所有==</option>
-                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipStatus"*/-->
+                            <!--/*@thymesVar id="shipModeEnums" type="com.huotu.agento2o.service.common.OrderEnum.ShipMode"*/-->
                             <option th:each="shipModeEnum:${shipModeEnums}" th:value="${shipModeEnum.code}" th:text="${shipModeEnum.value}" th:selected="${shipModeEnum.code == searchCondition.shipMode}">未发货</option>
                         </select>
 
@@ -413,6 +413,8 @@
 
                                             <th scope="col">支付方式
                                             </th>
+                                            <th scope="col">收益状态
+                                            </th>
 
                                             <th scope="col" th:if="${author.getAuthorShop() == null}">所属门店
                                             </th>
@@ -467,6 +469,9 @@
                                             <td class="txt80" th:text="${orders.paymentType.value}">
                                                 银联在线支付
                                             </td>
+                                            <td class="txt40" th:text="${orders.agentShopType.value}">
+                                                银联在线支付
+                                            </td>
                                             <td class="txt60" th:text="${orders.shop.name}"
                                                 th:if="${author.getAuthorShop() == null}">
                                                 门店1
@@ -483,7 +488,7 @@
                                                     </span>*/-->
                                                     <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看">查看</a>
                                                     <span th:if="${author.getAuthorShop() != null }">
-                                                        |<a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
+                                                        | <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
                                                     </span>
                                                     <!--/*<a th:attr="orderId=''+${orders.orderId}" onclick="showRefunds(this)" title="退货" th:if="${orders.returnable()}">退货</a>*/-->
                                                 </div>
