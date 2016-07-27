@@ -96,7 +96,7 @@ public class AgentServiceImpl implements AgentService {
             predicates.add(criteriaBuilder.equal(root.get("customer").get("customerId").as(Integer.class), customerId));
             predicates.add(criteriaBuilder.equal(root.get("isDeleted").as(Boolean.class), false));
             if (StringUtil.isNotEmpty(agentSearcher.getAgentLoginName())) {
-                predicates.add(criteriaBuilder.like(root.get("mallCustomer").get("username").as(String.class), "%" + agentSearcher.getAgentLoginName() + "%"));
+                predicates.add(criteriaBuilder.like(root.get("username").as(String.class), "%" + agentSearcher.getAgentLoginName() + "%"));
             }
             if (StringUtil.isNotEmpty(agentSearcher.getAgentName())) {
                 predicates.add(criteriaBuilder.like(root.get("name").as(String.class), "%" + agentSearcher.getAgentName() + "%"));

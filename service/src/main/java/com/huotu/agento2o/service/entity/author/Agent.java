@@ -1,6 +1,5 @@
 package com.huotu.agento2o.service.entity.author;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -27,11 +26,6 @@ public class Agent{
     @Id
     @Column(name = "Agent_ID")
     private Integer id;
-
-    @OneToOne(mappedBy = "agent")
-    @PrimaryKeyJoinColumn(name = "Agent_ID", referencedColumnName = "SC_UserID")
-    @JsonIgnore
-    private MallCustomer mallCustomer;
 
     /**
      * 登录名
