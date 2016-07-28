@@ -10,6 +10,7 @@
 package com.huotu.agento2o.agent.controller.order;
 
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -41,10 +42,10 @@ public class AfterSaleControllerTest extends CommonTestBase {
     //二级代理商
     private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private MallCustomer mockFirstLevelShop;
     //二级代理商下级门店1,门店2
-    private Shop mockSecondLevelShopOne;
-    private Shop mockSecondLevelShopTwo;
+    private MallCustomer mockSecondLevelShopOne;
+    private MallCustomer mockSecondLevelShopTwo;
 
     //二级代理商下级门店的售后单
     private List<MallAfterSales> mockSecondLevelShopOneList = new ArrayList();
@@ -58,21 +59,21 @@ public class AfterSaleControllerTest extends CommonTestBase {
         //模拟数据
         //用户相关
         System.out.println(passWord + "____");
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent(),null);
         mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
-        mockSecondLevelShopOne = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
-        mockSecondLevelShopTwo = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
+        mockSecondLevelShopOne = mockShop(mockCustomer, mockSecondLevelAgent.getAgent(),null);
+        mockSecondLevelShopTwo = mockShop(mockCustomer, mockSecondLevelAgent.getAgent(),null);
 
         //二级代理商下级门店1的订单
         for (int i = 0; i <= random.nextInt(10) + 1; i++) {
-            mockSecondLevelShopOneList.add(mockMallAfterSales(mockSecondLevelShopOne));
+            mockSecondLevelShopOneList.add(mockMallAfterSales(mockSecondLevelShopOne.getShop()));
         }
 
         //二级代理商下级门店2的订单
         for (int i = 0; i < random.nextInt(5) + 1; i++) {
-            mockSecondLevelShopTwoList.add(mockMallAfterSales(mockSecondLevelShopTwo));
+            mockSecondLevelShopTwoList.add(mockMallAfterSales(mockSecondLevelShopTwo.getShop()));
         }
     }
 

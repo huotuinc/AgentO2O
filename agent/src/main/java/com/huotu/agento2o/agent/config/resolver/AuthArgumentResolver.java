@@ -42,10 +42,14 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         if (userDetails instanceof Author) {
             if (authenticationPrincipal.type() == Shop.class && userDetails instanceof Shop) {
                 return userDetails;
-            } else if (authenticationPrincipal.type() == MallCustomer.class && userDetails instanceof MallCustomer) {
-                return userDetails;
-            } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof MallCustomer) {
-                Agent agent = ((MallCustomer) userDetails).getAuthorAgent();
+            }else if (authenticationPrincipal.type() == Shop.class && userDetails instanceof MallCustomer && ((MallCustomer) userDetails).getType() == Shop.class) {
+                Shop shop = ((MallCustomer) userDetails).getShop();
+                if(shop == null){
+                    throw new Exception("没有权限");
+                }
+                return shop;
+            } else if (authenticationPrincipal.type() == Agent.class && userDetails instanceof MallCustomer && ((MallCustomer) userDetails).getType() == Agent.class) {
+                Agent agent = ((MallCustomer) userDetails).getAgent();
                 if(agent == null){
                     throw new Exception("没有权限");
                 }

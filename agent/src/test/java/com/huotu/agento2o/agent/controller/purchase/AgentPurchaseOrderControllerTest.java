@@ -13,6 +13,7 @@ package com.huotu.agento2o.agent.controller.purchase;
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -53,9 +54,9 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     //二级代理商
     private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private MallCustomer mockFirstLevelShop;
     //二级代理商下级门店
-    private Shop mockSecondLevelShop;
+    private MallCustomer mockSecondLevelShop;
 
     //无规格商品(只有一个货品)
     private List<MallGoods> mockGoodsWith1ProductList = new ArrayList<>();
@@ -85,15 +86,15 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     public void init() throws Exception {
         //模拟数据
         //用户相关
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent(),null);
         mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
-        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
+        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent(),null);
 
         //平台商品相关
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), false);
+            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), true);
             List<MallProduct> mockGoodsWith1ProductsList = new ArrayList<>();
             mockGoodsWith1ProductsList.add(mockMallProduct(mockGoodsWith1Products));
             mockGoodsWith1Products.setProducts(mockGoodsWith1ProductsList);
@@ -103,7 +104,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
         }
 
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), false);
+            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), true);
             List<MallProduct> productList = new ArrayList<>();
             for (int j = 0; j < random.nextInt(10) + 2; j++) {
                 productList.add(mockMallProduct(mockGoodsWithNProducts));
@@ -600,7 +601,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
 
         // 库存不足
         ShoppingCart mockShoppingCart = mockFirstLevelShopShoppingCartList.get(0);
-        AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(mockFirstLevelShop.getAgent(), mockShoppingCart.getProduct());
+        AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(mockFirstLevelShop.getParentAgent(), mockShoppingCart.getProduct());
         mockShoppingCart.setNum(parentAgentProduct.getStore() - parentAgentProduct.getFreez() + 1);
         mockShoppingCart = shoppingCartRepository.saveAndFlush(mockShoppingCart);
         MvcResult resultWithNumTooMuchId = mockMvc.perform(
@@ -952,7 +953,7 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
                 .andReturn();
         String contentWithCanNotDeleteParam = new String(resultWithCanNotDelete.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject objWithCanNotDeleteParam = JSONObject.parseObject(contentWithCanNotDeleteParam);
-        Assert.assertEquals("采购单未审核或已已支付，无法支付！", objWithCanNotDeleteParam.getString("msg"));
+        Assert.assertEquals("采购单未审核或已支付，无法支付！", objWithCanNotDeleteParam.getString("msg"));
 
         //4.传可取消的采购单单号
         MvcResult result = mockMvc.perform(post(controllerUrl)

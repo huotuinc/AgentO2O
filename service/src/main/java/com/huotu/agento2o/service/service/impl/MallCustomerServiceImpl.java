@@ -10,8 +10,13 @@
 
 package com.huotu.agento2o.service.service.impl;
 
+import com.huotu.agento2o.common.SysConstant;
+import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
+import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Random;
 
 /**
  * Created by helloztt on 2016/5/14.
@@ -29,9 +36,11 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     private MallCustomerRepository customerRepository;
     @Autowired
     private MallPasswordEncoder passwordEncoder;
+    private Random random = new Random();
 
     /**
      * 用于单元测试
+     *
      * @param customer
      * @return
      */
@@ -45,6 +54,31 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     }
 
     @Override
+    public MallCustomer newCustomer(String userName, String password, CustomerTypeEnum customerType) {
+        String key = StringUtil.createRandomStr(6);
+        Integer token = random.nextInt(900000) + 100000;
+        //COOKIE_DOMAIN start with .
+        String mainDomain = SysConstant.COOKIE_DOMAIN;
+        String url = String.format("http://distribute%s/index.aspx?key=%s&t=huotu", mainDomain, key);
+        MallCustomer customer = new MallCustomer();
+        customer.setUsername(userName);
+        customer.setPassword(passwordEncoder.encode(password));
+        customer.setIndustryType(0);
+        customer.setUserActivate(1);
+        customer.setRoleID(-2);
+        customer.setBelongManagerID(3);
+        customer.setEmail("");
+        customer.setIsOld(1);
+        customer.setDeveloperUrl(url);
+        customer.setDeveloperToken(String.valueOf(token));
+        customer.setScType(1);
+        customer.setScore(0.0);
+        customer.setCityID(0);
+        customer.setCustomerType(customerType);
+        return customerRepository.saveAndFlush(customer);
+    }
+
+    @Override
     public MallCustomer findByCustomerId(Integer customerId) {
         return customerId == null ? null : customerRepository.findOne(customerId);
     }
@@ -52,8 +86,8 @@ public class MallCustomerServiceImpl implements MallCustomerService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         MallCustomer mallCustomer = customerRepository.findByUsername(userName);
-        if(mallCustomer == null){
-            throw  new UsernameNotFoundException("没有该代理商");
+        if (mallCustomer == null) {
+            throw new UsernameNotFoundException("没有该代理商");
         }
         return mallCustomer;
     }

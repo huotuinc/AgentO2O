@@ -374,7 +374,7 @@
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>
                                         <td class="txt40 c" style="color: red"
-                                            th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                            th:text="${!shop.disabled} ? '激活':'冻结'">
                                         </td>
                                         <td class="txt80 c tail">
                                             <div>

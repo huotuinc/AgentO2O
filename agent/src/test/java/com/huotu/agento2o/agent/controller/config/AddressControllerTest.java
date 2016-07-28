@@ -11,6 +11,7 @@ package com.huotu.agento2o.agent.controller.config;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -41,7 +42,7 @@ public class AddressControllerTest extends CommonTestBase {
     //代理商
     private MallCustomer mockAgent;
     //门店
-    private Shop mockShop;
+    private MallCustomer mockShop;
     //代理商的收货地址
     List<Address> agentAddress = new ArrayList<>();
     //门店的收货地址
@@ -50,9 +51,9 @@ public class AddressControllerTest extends CommonTestBase {
     @Before
     public void init() {
         //初始化模拟数据
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockAgent = mockAgent(mockCustomer, null);
-        mockShop = mockShop(mockCustomer, mockAgent.getAgent());
+        mockShop = mockShop(mockCustomer, mockAgent.getAgent(),null);
         for (int i = 0; i <= random.nextInt(5); i++) {
             Address mockAddress = mockAddress(mockAgent);
             agentAddress.add(mockAddress);

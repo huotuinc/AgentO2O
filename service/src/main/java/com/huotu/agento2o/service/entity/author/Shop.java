@@ -26,12 +26,11 @@ import java.util.List;
 @Cacheable(value = false)
 @Getter
 @Setter
-public class Shop implements Author{
+public class Shop{
 
     private static final long serialVersionUID = -5103560839055745939L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Shop_ID")
     private Integer id;
     /**
@@ -47,9 +46,10 @@ public class Shop implements Author{
     @Column(name = "LoginName")
     private String username;
     /**
-     * 登录密码
+     * 登录密码(用来传递数据)
      */
-    @Column(name = "LoginPwd")
+    @Transient
+//    @Column(name = "LoginPwd")
     private String password;
 
     /**
@@ -257,52 +257,8 @@ public class Shop implements Author{
     @Column(name = "CloseTime")
     private Date closeTime;
 
-    public boolean isAccountNonLocked() {
-        return !this.isDisabled;
-    }
-
-    public boolean isEnabled() {
-        return !this.isDeleted;
-    }
-
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
 
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
-    }
-
-    @SuppressWarnings("Duplicates")
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        //增加角色
-        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
-        return authorityList;
-    }
-
-    @Override
-    public Agent getAuthorAgent() {
-        return null;
-    }
-
-    @Override
-    public Shop getAuthorShop() {
-        return this;
-    }
-
-    @Override
-    public Agent getParentAgent() {
-        return agent;
-    }
-
-    @Override
-    public Class getType() {
-        return Shop.class;
     }
 }

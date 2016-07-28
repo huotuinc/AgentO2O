@@ -28,13 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
     private MallPasswordEncoder passwordEncoder;
 
     public Author findById(Author requestAuthor) {
-        if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
-            return mallCustomerRepository.findOne(requestAuthor.getId());
-        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
-            return shopRepository.findOne(requestAuthor.getId());
-        }else{
-            return null;
-        }
+        return mallCustomerRepository.findOne(requestAuthor.getId());
     }
 
     @Override
@@ -61,12 +55,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public boolean checkPwd(Author requestAuthor, String password) {
-        Author author = null;
-        if (requestAuthor != null && Agent.class == requestAuthor.getType()) {
-            author = mallCustomerRepository.findOne(requestAuthor.getId());
-        } else if (requestAuthor != null && Shop.class == requestAuthor.getType()) {
-            author = shopRepository.findOne(requestAuthor.getId());
-        }
+        Author author= mallCustomerRepository.findOne(requestAuthor.getId());
         if(author == null){
             return false;
         }

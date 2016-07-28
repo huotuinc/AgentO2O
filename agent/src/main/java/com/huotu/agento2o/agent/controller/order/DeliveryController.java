@@ -4,6 +4,7 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
@@ -123,7 +124,7 @@ public class DeliveryController {
      */
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
-    public String showConsignFlow(@AgtAuthenticationPrincipal Shop shop,String orderId, Model model) {
+    public String showConsignFlow(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop,String orderId, Model model) {
         MallOrder order = orderService.findByOrderId(orderId);
         AgentProduct agentProduct ;
         for (int i=0; i<order.getOrderItems().size(); i++){
@@ -146,7 +147,7 @@ public class DeliveryController {
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult addDelivery(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
             DeliveryInfo deliveryInfo
     ) throws Exception {
         return deliveryService.pushDelivery(deliveryInfo, shop.getId());

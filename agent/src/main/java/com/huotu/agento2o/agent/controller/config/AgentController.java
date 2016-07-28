@@ -139,7 +139,7 @@ public class AgentController {
      * @param hotUserName
      * @return
      */
-    @RequestMapping(value = "/getAgentUserNames", method = RequestMethod.POST)
+    @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
     public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, String hotUserName) {
@@ -153,12 +153,12 @@ public class AgentController {
      * @param hotUserName
      * @return
      */
-    @RequestMapping(value = "/getShopUserNames", method = RequestMethod.POST)
+    /*@RequestMapping(value = "/getShopUserNames", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('BASE_DATA')")
     public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = Shop.class) Shop curShop, String hotUserName) {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, shopService.getHotUserNames(curShop.getCustomer().getCustomerId(), hotUserName));
-    }
+    }*/
 
 
     /**

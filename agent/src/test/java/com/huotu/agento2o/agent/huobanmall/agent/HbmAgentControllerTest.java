@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.huobanmall.agent;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
@@ -45,7 +46,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
     @Before
     public void init() {
         //初始化模拟数据
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
         for (int i = 0; i <= random.nextInt(5) + 1; i++) {
             MallCustomer mockAgent = mockAgent(mockCustomer, null);

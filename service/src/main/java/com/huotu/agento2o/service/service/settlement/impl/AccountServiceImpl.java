@@ -81,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
         if(agentId != null && agentId != 0){
             author = customerRepository.findOne(agentId);
         }else if(shopId != null && shopId != 0){
-            author = shopRepository.findOne(shopId);
+            author = customerRepository.findOne(shopId);
         }
         if (author == null || !author.getCustomer().getCustomerId().equals(customerId)) {
             return null;

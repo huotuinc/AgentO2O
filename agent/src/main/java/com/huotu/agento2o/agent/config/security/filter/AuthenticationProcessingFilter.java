@@ -4,7 +4,7 @@ import com.huotu.agento2o.agent.common.CookieHelper;
 import com.huotu.agento2o.agent.common.UserNameAndPasswordNullException;
 import com.huotu.agento2o.agent.config.security.AuthenticationToken;
 import com.huotu.agento2o.common.SysConstant;
-import com.huotu.agento2o.service.entity.author.Author;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -62,8 +62,8 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
         if (authentication != null) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             long authorId = 0;
-            if (userDetails instanceof Author) {
-                authorId = ((Author) userDetails).getId();
+            if (userDetails instanceof MallCustomer) {
+                authorId = ((MallCustomer) userDetails).getCustomerId();
             }
             CookieHelper.setCookie(response, "authorId", String.valueOf(authorId), SysConstant.COOKIE_DOMAIN);
         }

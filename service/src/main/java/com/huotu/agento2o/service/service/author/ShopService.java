@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.author;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
@@ -24,9 +25,9 @@ import java.util.List;
 /**
  * Created by helloztt on 2016/5/9.
  */
-public interface ShopService extends UserDetailsService {
+public interface ShopService {
 
-    Shop findByUserName(String userName);
+//    Shop findByUserName(String userName);
 
     Shop findById(Integer id);
 
@@ -35,8 +36,6 @@ public interface ShopService extends UserDetailsService {
     List<Shop> findByAgentId(Integer agentId);
 
     Shop findByIdAndCustomer_Id(Integer shopId, Integer customer_Id);
-
-    Shop addShop(Shop shop);
 
     ApiResult saveOrUpdateShop(Shop shop, String hotUserName, Agent agent);
 

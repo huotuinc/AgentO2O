@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.common.CommonTestBase;
 import org.junit.Assert;
@@ -36,10 +37,12 @@ public class ShopServiceImplTest extends CommonTestBase {
     @Autowired
     private ShopService shopService;
     @Autowired
+    private MallCustomerService mallCustomerService;
+    @Autowired
     private MallPasswordEncoder passwordEncoder;
 
 
-//    @Test
+    @Test
 //    @Rollback(false)
     public void testMockShop(){
         Agent agent = agentService.findByAgentId(29756);
@@ -55,9 +58,9 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testFindByUserName() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
-        Shop shop = shopService.findByUserName(getShop.getUsername());
-        Assert.assertTrue(shop != null);
+        MallCustomer mockShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer realShop = mallCustomerService.findByUserName(mockShop.getUsername());
+        Assert.assertTrue(realShop != null);
 
     }
 
@@ -65,16 +68,16 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testFindById() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
-        Shop shop = shopService.findById(getShop.getId());
-        Assert.assertTrue(shop != null);
+        MallCustomer mockShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer realShop = mallCustomerService.findByCustomerId(mockShop.getId());
+        Assert.assertTrue(realShop != null);
     }
 
     @Test
     public void testFindByIdAndParentAuthor() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
         Shop shop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
         Assert.assertTrue(shop != null);
 
@@ -89,9 +92,9 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testFindByIdAndCustomer_Id() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
-        getShop.setCustomer(mockCustomer);
-        shopService.saveOrUpdateShop(getShop, null,parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
+        getShop.getShop().setCustomer(mockCustomer);
+        shopService.saveOrUpdateShop(getShop.getShop(), null,parentMockAgent.getAgent());
 
         Shop curShop = shopService.findByIdAndCustomer_Id(getShop.getId(), mockCustomer.getCustomerId());
         Assert.assertTrue(curShop.getCustomer().equals(mockCustomer));
@@ -101,17 +104,17 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void updateStatus() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
         shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId(),parentMockAgent.getAgent());
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
         Assert.assertTrue(curShop != null && curShop.getStatus() == AgentStatusEnum.CHECKED);
 
-        getShop.setDisabled(true);
+        getShop.getShop().setDisabled(true);
         ApiResult apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId(),parentMockAgent.getAgent());
         Assert.assertTrue(apiResult.getMsg().equals("该门店已被冻结"));
 
-        getShop.setDeleted(true);
+        getShop.getShop().setDeleted(true);
         apiResult = shopService.updateStatus(AgentStatusEnum.CHECKED, getShop.getId(),parentMockAgent.getAgent());
         Assert.assertTrue(apiResult.getMsg().equals("该门店已被删除"));
     }
@@ -120,7 +123,7 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testUpdateStatusAndAuditComment() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
         shopService.updateStatusAndAuditComment(AgentStatusEnum.CHECKED, "1113", getShop.getId());
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
@@ -131,7 +134,7 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testDeleteById() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
         shopService.deleteById(getShop.getId(),parentMockAgent.getAgent());
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
@@ -142,7 +145,7 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testUpdateIsDisabledById() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
         shopService.updateIsDisabledById(getShop.getId());
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
@@ -153,7 +156,7 @@ public class ShopServiceImplTest extends CommonTestBase {
     public void testUpdatePasswordById() {
         MallCustomer mockCustomer = mockMallCustomer();
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        Shop getShop = mockShop(parentMockAgent.getAgent());
+        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
         shopService.updatePasswordById("3", getShop.getId());
         Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());

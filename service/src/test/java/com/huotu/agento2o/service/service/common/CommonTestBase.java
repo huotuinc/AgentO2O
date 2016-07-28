@@ -95,6 +95,7 @@ public abstract class CommonTestBase {
     protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
         MallCustomer customer = mockMallCustomer();
         Agent agent = new Agent();
+        agent.setUsername(customer.getUsername());
         agent.setId(customer.getId());
         agent.setCustomer(mockCustomer);
         agent.setName(UUID.randomUUID().toString());
@@ -116,10 +117,11 @@ public abstract class CommonTestBase {
     }
 
     @SuppressWarnings("Duplicates")
-    protected Shop mockShop(Agent parentAgent) {
+    protected MallCustomer mockShop(Agent parentAgent) {
+        MallCustomer shopCustomer = mockMallCustomer();
         Shop shop = new Shop();
-        shop.setUsername(UUID.randomUUID().toString());
-        shop.setPassword(UUID.randomUUID().toString());
+        shop.setId(shopCustomer.getId());
+        shop.setUsername(shopCustomer.getUsername());
         shop.setName(UUID.randomUUID().toString());
         shop.setContact(UUID.randomUUID().toString());
         shop.setMobile(UUID.randomUUID().toString());
@@ -132,16 +134,16 @@ public abstract class CommonTestBase {
         if (parentAgent != null) {
             shop.setAgent(parentAgent);
         }
-        shop = shopService.addShop(shop);
-        agentService.flush();
-        return shop;
+        shopCustomer.setShop(shop);
+        return customerRepository.saveAndFlush(shopCustomer);
     }
 
-    protected Shop mockShop(Agent parentAgent,double lan,double lat) {
+    protected MallCustomer mockShop(Agent parentAgent,double lan,double lat) {
+        MallCustomer shopCustomer = mockMallCustomer();
         Shop shop = new Shop();
-        // TODO: 2016/7/14 城市code 
-        shop.setUsername(UUID.randomUUID().toString());
-        shop.setPassword(UUID.randomUUID().toString());
+        // TODO: 2016/7/14 城市code
+        shop.setId(shopCustomer.getId());
+        shop.setUsername(shopCustomer.getUsername());
         shop.setName(UUID.randomUUID().toString());
         shop.setContact(UUID.randomUUID().toString());
         shop.setMobile(UUID.randomUUID().toString());
@@ -156,9 +158,8 @@ public abstract class CommonTestBase {
         if (parentAgent != null) {
             shop.setAgent(parentAgent);
         }
-        shop = shopService.addShop(shop);
-        agentService.flush();
-        return shop;
+        shopCustomer.setShop(shop);
+        return customerRepository.saveAndFlush(shopCustomer);
     }
 
     @SuppressWarnings("Duplicates")

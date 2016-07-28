@@ -12,6 +12,7 @@ package com.huotu.agento2o.agent.config.security;
 
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,7 +27,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import javax.annotation.Resource;
 
 /**
- *
  * Created by helloztt on 2016/5/9.
  */
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider implements AuthenticationManager {
@@ -34,11 +34,10 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     private MallPasswordEncoder passwordEncoder;
     @Resource(name = "mallCustomerService")
     private UserDetailsService mallCustomerService;
-    @Resource(name = "shopService")
-    private UserDetailsService shopService;
 
     /**
      * 校验密码存在
+     *
      * @param userDetails
      * @param authentication
      * @throws AuthenticationException
@@ -64,6 +63,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
 
     /**
      * 校验用户名存在
+     *
      * @param username
      * @param authentication
      * @return
@@ -71,9 +71,15 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
      */
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        AuthenticationToken authenticationToken = (AuthenticationToken) authentication;
         UserDetails loadedUser;
         try {
             loadedUser = this.getCurrentService(authentication).loadUserByUsername(username);
+            if(loadedUser != null && loadedUser instanceof MallCustomer){
+                if(((MallCustomer) loadedUser).getCustomerType().getCode() != authenticationToken.getRoleType()){
+                    throw new UsernameNotFoundException("用户名或密码错误");
+                }
+            }
         } catch (UsernameNotFoundException notFound) {
             throw notFound;
         } catch (Exception repositoryProblem) {
@@ -92,10 +98,8 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
         AuthenticationToken authenticationToken = (AuthenticationToken) authentication;
         UserDetailsService currentService = null;
 
-        if (authenticationToken.getRoleType() == RoleTypeEnum.AGENT.getCode()) {
+        if (authenticationToken.getRoleType() == RoleTypeEnum.AGENT.getCode() || authenticationToken.getRoleType() == RoleTypeEnum.SHOP.getCode()) {
             currentService = mallCustomerService;
-        } else if(authenticationToken.getRoleType() == RoleTypeEnum.SHOP.getCode()){
-            currentService = shopService;
         }
         return currentService;
     }

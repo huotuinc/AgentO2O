@@ -1,6 +1,7 @@
 package com.huotu.agento2o.service.entity;
 
 import com.huotu.agento2o.service.common.AuthorityEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -8,8 +9,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +25,7 @@ import java.util.List;
 @Setter
 @Getter
 @Cacheable(false)
-public class MallCustomer implements Author{
+public class MallCustomer implements Author {
 
     private static final long serialVersionUID = 5043033208318805044L;
 
@@ -65,7 +68,7 @@ public class MallCustomer implements Author{
     private String developerToken;
 
     @Column(name = "SC_TYPE")
-    private Integer type;
+    private Integer scType;
 
     @Column(name = "SC_Score")
     private Double score;
@@ -73,14 +76,26 @@ public class MallCustomer implements Author{
     @Column(name = "SC_CityID")
     private Integer cityID;
 
+    @Column(name = "SC_CustomerType")
+    private CustomerTypeEnum customerType;
+
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(referencedColumnName = "Agent_ID")
     private Agent agent;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(referencedColumnName = "Shop_Id")
+    private Shop shop;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_AGENT.getCode()));
+        //当前账号为代理商
+        if (customerType == CustomerTypeEnum.AGENT) {
+            authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_AGENT.getCode()));
+        } else if (customerType == CustomerTypeEnum.AGENT_SHOP) {
+            authorityList.add(new SimpleGrantedAuthority(AuthorityEnum.ROLE_SHOP.getCode()));
+        }
         return authorityList;
     }
 
@@ -91,7 +106,12 @@ public class MallCustomer implements Author{
 
     @Override
     public boolean isAccountNonLocked() {
-        return agent != null && agent.isDisabled() == false;
+        if (this.getCustomerType() == CustomerTypeEnum.AGENT) {
+            return agent != null && !agent.isDisabled();
+        } else if (this.getCustomerType() == CustomerTypeEnum.AGENT_SHOP) {
+            return shop != null && !shop.isDisabled();
+        }
+        return false;
     }
 
     @Override
@@ -101,53 +121,70 @@ public class MallCustomer implements Author{
 
     @Override
     public boolean isEnabled() {
-        return agent != null && agent.isDeleted() == false;
+        if (this.getCustomerType() == CustomerTypeEnum.AGENT) {
+            return agent != null && !agent.isDeleted();
+        } else if (this.getCustomerType() == CustomerTypeEnum.AGENT_SHOP) {
+            return shop != null && !shop.isDeleted();
+        }
+        return false;
     }
 
     @Override
     public Integer getId() {
-        return this.customerId;
+        return this.getCustomerId();
     }
 
     @Override
     public Agent getAuthorAgent() {
-        return agent;
+        if (this.getCustomerType() == CustomerTypeEnum.AGENT) {
+            return this.agent;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Shop getAuthorShop() {
+        if (this.getCustomerType() == CustomerTypeEnum.AGENT_SHOP) {
+            return this.shop;
+        } else {
+            return null;
+        }
+    }
+
+    public Agent getParentAgent() {
+        if (getType() == Agent.class) {
+            return this.agent.getParentAgent();
+        } else if (getType() == Shop.class) {
+            return this.shop.getAgent();
+        }
         return null;
     }
 
-    @Override
-    public Agent getParentAgent() {
-        if(agent == null){
-            return null;
-        }
-        return agent.getParentAgent();
-    }
-
-    @Override
     public MallCustomer getCustomer() {
-        if(agent == null){
-            return null;
+        if (getType() == Agent.class) {
+            return this.agent.getCustomer();
+        } else if (getType() == Shop.class) {
+            return this.shop.getCustomer();
         }
-        return agent.getCustomer();
+        return null;
     }
 
-    @Override
     public String getName() {
-        if(agent == null){
-            return null;
+        if (getType() == Agent.class) {
+            return this.agent.getName();
+        } else if (getType() == Shop.class) {
+            return this.shop.getName();
         }
-        return agent.getName();
+        return null;
     }
 
-    @Override
     public Class getType() {
-        if(agent == null){
-            return null;
+        if (this.getCustomerType() == CustomerTypeEnum.AGENT) {
+            return Agent.class;
+        } else if (this.getCustomerType() == CustomerTypeEnum.AGENT_SHOP) {
+            return Shop.class;
         }
-        return Agent.class;
+        return null;
     }
 }

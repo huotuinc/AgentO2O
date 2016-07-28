@@ -13,6 +13,7 @@ package com.huotu.agento2o.agent.controller;
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.agent.config.SecurityConfig;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -58,12 +59,13 @@ public class IndexControllerTest extends CommonTestBase {
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         //平台方
-        MallCustomer customer = mockMallCustomer();
+        MallCustomer customer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         //一级代理商
         MallCustomer agentCustomer = new MallCustomer();
         agentCustomer.setNickName(UUID.randomUUID().toString());
         agentCustomer.setUsername(userName);
         agentCustomer.setPassword(passwordEncoder.encode(password));
+        agentCustomer.setCustomerType(CustomerTypeEnum.AGENT);
         agentCustomer = customerRepository.saveAndFlush(agentCustomer);
         Agent agent = new Agent();
         agent.setId(agentCustomer.getId());
@@ -121,14 +123,25 @@ public class IndexControllerTest extends CommonTestBase {
     public void shopLoginAsShopTest() throws Exception{
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
+        //平台方
+        MallCustomer customer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
+        //一级代理商
+        MallCustomer agent = mockAgent(customer,null);
+        //门店
+        MallCustomer shopCustomer = new MallCustomer();
+        shopCustomer.setNickName(UUID.randomUUID().toString());
+        shopCustomer.setUsername(userName);
+        shopCustomer.setPassword(password);
+        shopCustomer.setCustomerType(CustomerTypeEnum.AGENT_SHOP);
+        shopCustomer = customerService.newCustomer(shopCustomer);
         Shop shop = new Shop();
+        shop.setId(shopCustomer.getId());
         shop.setUsername(userName);
-        shop.setPassword(passwordEncoder.encode(password));
         shop.setDeleted(false);
         shop.setDisabled(false);
         shop.setStatus(AgentStatusEnum.CHECKED);
-        shopService.addShop(shop);
-        shopService.flush();
+        shopCustomer.setShop(shop);
+        shopCustomer = customerRepository.save(shopCustomer);
 
         MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
                 .andReturn().getRequest().getSession(true);

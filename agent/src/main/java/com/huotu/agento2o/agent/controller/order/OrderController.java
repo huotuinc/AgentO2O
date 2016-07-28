@@ -5,6 +5,7 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
@@ -137,7 +138,7 @@ public class OrderController {
      */
     @RequestMapping("/showRemark")
     public String showRemark(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
             Model model,
             @RequestParam(name = "orderId",required = true) String orderId){
         MallOrder order = orderService.findByShopAndOrderId(shop,orderId);
@@ -155,7 +156,7 @@ public class OrderController {
     @RequestMapping("/remark")
     @ResponseBody
     public ApiResult editRemark(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
             @RequestParam(name = "orderId",required = true) String orderId,
             String agentMarkType,
             String agentMarkText){
@@ -227,7 +228,7 @@ public class OrderController {
 
     @RequestMapping(value = "/batchDeliver", method = RequestMethod.POST)
     public String batchDeliver(
-            @AgtAuthenticationPrincipal Shop shop,
+            @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes
     ) throws IOException {

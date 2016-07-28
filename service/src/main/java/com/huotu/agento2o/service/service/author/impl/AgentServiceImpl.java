@@ -6,6 +6,7 @@ import com.huotu.agento2o.common.util.ExcelHelper;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -61,7 +62,6 @@ public class AgentServiceImpl implements AgentService {
     @Autowired
     private Environment env;
 
-    private Random random = new Random();
 
 
     @Override
@@ -204,7 +204,7 @@ public class AgentServiceImpl implements AgentService {
             agent.setDisabled(false);
             agent.setDeleted(false);
             agent.setUsername(requestAgent.getUsername());
-            mallAgent = newMallCustomer(requestAgent);
+            mallAgent = mallCustomerService.newCustomer(requestAgent.getUsername(),requestAgent.getPassword(), CustomerTypeEnum.AGENT);
             agent.setId(mallAgent.getCustomerId());
             mallAgent.setAgent(agent);
         }
@@ -232,30 +232,6 @@ public class AgentServiceImpl implements AgentService {
             accountRepository.save(account);
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-    }
-
-    private MallCustomer newMallCustomer(Agent agent) {
-        String key = StringUtil.createRandomStr(6);
-        Integer token = random.nextInt(900000) + 100000;
-        //COOKIE_DOMAIN start with .
-        String mainDomain = SysConstant.COOKIE_DOMAIN;
-        String url = String.format("http://distribute%s/index.aspx?key=%s&t=huotu", mainDomain, key);
-        MallCustomer customer = new MallCustomer();
-        customer.setUsername(agent.getUsername());
-        customer.setPassword(passwordEncoder.encode(agent.getPassword()));
-        customer.setIndustryType(0);
-        customer.setUserActivate(1);
-        customer.setRoleID(-2);
-        customer.setBelongManagerID(3);
-        customer.setEmail("");
-        customer.setIsOld(1);
-        customer.setDeveloperUrl(url);
-        customer.setDeveloperToken(String.valueOf(token));
-        customer.setType(1);
-        customer.setScore(0.0);
-        customer.setCityID(0);
-        return mallCustomerService.save(customer);
-
     }
 
     @Override

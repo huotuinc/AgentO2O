@@ -13,11 +13,13 @@ package com.huotu.agento2o.agent.controller.settlement;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.settlement.WithdrawRecord;
 import com.huotu.agento2o.service.model.settlement.WithdrawApplyInfo;
 import com.huotu.agento2o.service.searchable.WithdrawRecordSearcher;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import com.huotu.agento2o.service.service.settlement.AccountService;
 import com.huotu.agento2o.service.service.settlement.WithdrawRecordService;
@@ -48,11 +50,14 @@ public class WithdrawRecordController {
     private AccountService accountService;
     @Autowired
     private ShopService shopService;
+    @Autowired
+    private MallCustomerService mallCustomerService;
 
     @RequestMapping("withdrawRecords")
-    public ModelAndView showWithdrawRecords(@AgtAuthenticationPrincipal(type = Shop.class) Shop shop, WithdrawRecordSearcher withdrawRecordSearcher) throws Exception {
+    public ModelAndView showWithdrawRecords(@AgtAuthenticationPrincipal(type = Shop.class)Shop shop, WithdrawRecordSearcher withdrawRecordSearcher) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
-        Account account = accountService.findByAuthor(shop);
+        MallCustomer shopCustomer = mallCustomerService.findByCustomerId(shop.getId());
+        Account account = accountService.findByAuthor(shopCustomer);
         Page<WithdrawRecord> withdrawRecordPage = withdrawRecordService.getPage(account, withdrawRecordSearcher);
         modelAndView.setViewName("settlement/withdrawRecords");
         modelAndView.addObject("account", account);
@@ -88,7 +93,8 @@ public class WithdrawRecordController {
         if(!shop.getCustomer().getCustomerId().equals(customerId)){
             return new ApiResult("没有权限！");
         }
-        Account supplierAccount = accountService.findByAuthor(shop);
+        MallCustomer shopCustomer = mallCustomerService.findByCustomerId(shop.getId());
+        Account supplierAccount = accountService.findByAuthor(shopCustomer);
         LocalDateTime now = LocalDateTime.now();
         //获取申请日期当月的第一天
         LocalDateTime firstDayOfMonth  = now.with(TemporalAdjusters.firstDayOfMonth()).toLocalDate().atStartOfDay();

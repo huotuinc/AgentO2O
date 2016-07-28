@@ -96,6 +96,11 @@ public class AgentProductServiceImpl implements AgentProductService {
     }
 
     @Override
+    public AgentProduct findAgentProduct(Shop shop, MallProduct product) {
+        return agentProductRepository.findByShopAndProductAndDisabledFalse(shop, product);
+    }
+
+    @Override
     public AgentProduct findAgentProduct(Author author, MallProduct product) {
         if (author != null && author.getType() == Agent.class) {
             return agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);

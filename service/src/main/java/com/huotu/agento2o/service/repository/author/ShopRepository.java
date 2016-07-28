@@ -16,14 +16,16 @@ import java.util.List;
 @Repository(value = "shopRepository")
 public interface ShopRepository extends JpaRepository<Shop, Integer>, JpaSpecificationExecutor {
 
-    Shop findByUsername(String userName);
+//    Shop findByUsername(String userName);
 
     Shop findByUserBaseInfo_userIdAndIsDeletedFalse(Integer userId);
 
+    // TODO: 2016/7/28  
     Shop findByIdAndAgent(Integer id, Agent agent);
 
     List<Shop> findByAgent_IdAndIsDeletedFalse(Integer agentId);
 
+    // TODO: 2016/7/28  
     Shop findByIdAndCustomer(Integer id, MallCustomer customer);
 
     List<Shop> findByIsDeletedFalseAndIsDisabledFalseAndStatus(AgentStatusEnum status);

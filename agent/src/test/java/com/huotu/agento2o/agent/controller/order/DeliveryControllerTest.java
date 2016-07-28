@@ -11,6 +11,7 @@ package com.huotu.agento2o.agent.controller.order;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -45,7 +46,7 @@ public class DeliveryControllerTest extends CommonTestBase {
     //一级代理商
     private MallCustomer mockFirstLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private MallCustomer mockFirstLevelShop;
 
     private List<MallProduct> mockCustomerProduct = new ArrayList<>();
     private List<AgentProduct> mockShopProduct = new ArrayList();
@@ -55,9 +56,9 @@ public class DeliveryControllerTest extends CommonTestBase {
     public void init() {
         //模拟数据
         //用户相关
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent(),null);
 
         //创建平台商品(保证至少有5件货品)
         for (int i = 0; i < random.nextInt(10) + 5; i++) {
@@ -74,7 +75,7 @@ public class DeliveryControllerTest extends CommonTestBase {
     @Test
     public void testJudgeStockByOneItemEnough() throws Exception{
         //模拟数据
-        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        MallOrder order = mockMallOrder(mockFirstLevelShop.getShop());
         List<MallOrderItem> orderItems = new ArrayList<>();
         AgentProduct randomProduct = mockShopProduct.get(random.nextInt(mockShopProduct.size()));
         orderItems.add(mockMallOrderItem(order,randomProduct.getProduct(),null,randomProduct.getFreez()));
@@ -94,7 +95,7 @@ public class DeliveryControllerTest extends CommonTestBase {
     @Test
     public void testJudgeStockByOneItemNotEnough() throws Exception{
         //模拟数据
-        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        MallOrder order = mockMallOrder(mockFirstLevelShop.getShop());
         List<MallOrderItem> orderItems = new ArrayList<>();
         AgentProduct randomProduct = mockShopProduct.stream().findAny().get();
         orderItems.add(mockMallOrderItem(order,randomProduct.getProduct(),null,randomProduct.getFreez() + 1));
@@ -113,7 +114,7 @@ public class DeliveryControllerTest extends CommonTestBase {
     @Test
     public void testJudgeStockByManyItemEnough() throws Exception{
         //模拟数据
-        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        MallOrder order = mockMallOrder(mockFirstLevelShop.getShop());
         List<MallOrderItem> orderItems = new ArrayList<>();
         for(int i = 0 ; i < mockShopProduct.size() ; i++){
             AgentProduct agentProduct = mockShopProduct.get(i);
@@ -133,7 +134,7 @@ public class DeliveryControllerTest extends CommonTestBase {
     @Test
     public void testJudgeStockByManyItemNotEnough() throws Exception{
         //模拟数据
-        MallOrder order = mockMallOrder(mockFirstLevelShop);
+        MallOrder order = mockMallOrder(mockFirstLevelShop.getShop());
         List<MallOrderItem> orderItems = new ArrayList<>();
         //2个item,第一个库存充足，第二个库存不足
         AgentProduct agentProduct1 = mockShopProduct.get(0);

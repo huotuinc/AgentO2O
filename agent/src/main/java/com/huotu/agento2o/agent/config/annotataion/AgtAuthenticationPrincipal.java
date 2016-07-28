@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.agent.config.annotataion;
 
+import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Author;
 
 import java.lang.annotation.ElementType;

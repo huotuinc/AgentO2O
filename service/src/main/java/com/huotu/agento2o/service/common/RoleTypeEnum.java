@@ -4,9 +4,9 @@ package com.huotu.agento2o.service.common;
  * Created by helloztt on 2016/5/7.
  */
 public enum RoleTypeEnum {
-    AGENT(0,"代理登录"),
-    SHOP(1,"门店登录"),
-    OPERATOR(2,"操作员登录");
+    AGENT(2,"代理登录"),
+    SHOP(3,"门店登录");
+//    OPERATOR(2,"操作员登录");
     private int code;
     private String name;
 

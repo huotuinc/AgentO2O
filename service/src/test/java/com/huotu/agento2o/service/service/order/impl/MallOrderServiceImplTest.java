@@ -42,10 +42,10 @@ public class MallOrderServiceImplTest extends CommonTestBase {
     //二级代理商
     private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private MallCustomer mockFirstLevelShop;
     //二级代理商下级门店1,门店2
-    private Shop mockSecondLevelShopOne;
-    private Shop mockSecondLevelShopTwo;
+    private MallCustomer mockSecondLevelShopOne;
+    private MallCustomer mockSecondLevelShopTwo;
 
     //二级代理商下级门店的订单
     private List<MallOrder> mockSecondLevelShopOneList = new ArrayList();
@@ -68,12 +68,12 @@ public class MallOrderServiceImplTest extends CommonTestBase {
 
         //二级代理商下级门店1的订单
         for (int i = 0; i <= random.nextInt(10) + 1; i++) {
-            mockSecondLevelShopOneList.add(mockMallOrder(mockSecondLevelShopOne));
+            mockSecondLevelShopOneList.add(mockMallOrder(mockSecondLevelShopOne.getShop()));
         }
 
         //二级代理商下级门店2的订单
         for (int i = 0; i < random.nextInt(5) + 1; i++) {
-            mockSecondLevelShopTwoList.add(mockMallOrder(mockSecondLevelShopTwo));
+            mockSecondLevelShopTwoList.add(mockMallOrder(mockSecondLevelShopTwo.getShop()));
         }
 
     }
@@ -121,7 +121,7 @@ public class MallOrderServiceImplTest extends CommonTestBase {
     @Test
     public void testFindByShopAndOrderId() throws Exception {
         MallOrder mallOrder = null;
-        mallOrder = orderService.findByShopAndOrderId(mockSecondLevelShopTwo, mockSecondLevelShopTwoList.get(0).getOrderId());
+        mallOrder = orderService.findByShopAndOrderId(mockSecondLevelShopTwo.getShop(), mockSecondLevelShopTwoList.get(0).getOrderId());
         Assert.assertTrue(mallOrder != null);
     }
 

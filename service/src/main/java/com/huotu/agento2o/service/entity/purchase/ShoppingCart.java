@@ -63,7 +63,7 @@ public class ShoppingCart {
         if(agent != null){
             return agent.getParentAgent();
         }else if(shop != null){
-            return shop.getParentAgent();
+            return shop.getAgent();
         }
         return null;
     }

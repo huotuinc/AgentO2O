@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
 import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -52,9 +53,9 @@ public class PurchaseControllerTest extends CommonTestBase {
     //二级代理商
     private MallCustomer mockSecondLevelAgent;
     //一级代理商下级门店
-    private Shop mockFirstLevelShop;
+    private MallCustomer mockFirstLevelShop;
     //二级代理商下级门店
-    private Shop mockSecondLevelShop;
+    private MallCustomer mockSecondLevelShop;
 
     private List<MallGoodsType> mockCustomerGoodsTypeList = new ArrayList<>();
     //无规格商品(只有一个货品)
@@ -72,18 +73,18 @@ public class PurchaseControllerTest extends CommonTestBase {
     public void init() {
         //模拟数据
         //用户相关
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
-        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent());
+        mockFirstLevelShop = mockShop(mockCustomer, mockFirstLevelAgent.getAgent(),null);
         mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());
-        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent());
+        mockSecondLevelShop = mockShop(mockCustomer, mockSecondLevelAgent.getAgent(),null);
 
         //平台自定义商品
         MallGoodsType customerGoodsType = mockMallGoodsType(mockCustomer.getCustomerId());
         mockCustomerGoodsTypeList.add(customerGoodsType);
         //平台商品相关(保证至少有10个商品)
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), false);
+            MallGoods mockGoodsWith1Products = mockMallGoods(mockCustomer.getCustomerId(), true);
             if(i == 0){
                 mockGoodsWith1Products.setTypeId(standardGoodsType.getTypeId());
             }else if(i == 1){
@@ -110,7 +111,7 @@ public class PurchaseControllerTest extends CommonTestBase {
         }
 
         for (int i = 0; i < random.nextInt(10) + 10; i++) {
-            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), false);
+            MallGoods mockGoodsWithNProducts = mockMallGoods(mockCustomer.getCustomerId(), true);
             List<MallProduct> productList = new ArrayList<>();
             for (int j = 0; j < random.nextInt(10) + 2; j++) {
                 productList.add(mockMallProduct(mockGoodsWithNProducts));

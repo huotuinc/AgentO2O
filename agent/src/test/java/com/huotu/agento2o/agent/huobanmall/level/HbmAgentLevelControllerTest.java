@@ -11,6 +11,7 @@ package com.huotu.agento2o.agent.huobanmall.level;
 
 import com.alibaba.fastjson.JSONObject;
 import com.huotu.agento2o.agent.common.CommonTestBase;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -54,7 +55,7 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
     @Before
     public void init() {
         //初始化模拟数据
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
 
         for (int i = 0; i <= random.nextInt(5)+1; i++) {
             AgentLevel mockAgentLevel = mockAgentLevel(mockCustomer);
