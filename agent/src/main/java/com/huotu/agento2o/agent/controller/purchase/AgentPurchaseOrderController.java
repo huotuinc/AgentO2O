@@ -205,13 +205,13 @@ public class AgentPurchaseOrderController {
         return result;
     }
 
-    /**
+   /* *//**
      * 支付采购单（代理商/门店）
      * @param author
      * @param pOrderId
      * @return
      * @throws Exception
-     */
+     *//*
     @RequestMapping(value = "/payPurchaseOrder", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult payPurchaseOrder(
@@ -223,7 +223,7 @@ public class AgentPurchaseOrderController {
         }
         result = purchaseOrderService.payAgentPurchaseOrder(pOrderId, author);
         return result;
-    }
+    }*/
 
     /**
      * 采购单确认收货（代理商/门店）

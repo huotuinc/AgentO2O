@@ -30,10 +30,20 @@ public interface MallGoodsService {
 
     /**
      * 根据 AgentId 查找指定代理商商品
-     * @param author 代理商ID
+     * @param author
+     * @param goodsSearcher
      * @return
      */
     Page<MallGoods> findByAgentId(Author author, GoodsSearcher goodsSearcher);
+
+    /**
+     * 根据 author 查找指定 代理商/门店 商品
+     * @param author
+     * @param goodsSearcher
+     * @return
+     */
+    Page<MallGoods> findByAuthorId(Author author, GoodsSearcher goodsSearcher);
+
 
     /**
      * 根据 商品ID 查找商品

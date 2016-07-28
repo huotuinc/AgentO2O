@@ -90,7 +90,7 @@
                             <a data-th-if="${product.usableStore > 0}" data-th-attr="productId=${product.productId}"
                                onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
                                data-th-text="订购"></a>
-                            <span style="color: red" th:if="${product.freez - product.store  >= 0}">库存不足</span>
+                            <span style="color: red" th:if="${0 >= product.usableStore}">库存不足</span>
                         </td>
                     </tr>
                     </tbody>

@@ -3,7 +3,6 @@ package com.huotu.agento2o.service.entity.order;
 
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +19,8 @@ import java.net.URI;
 @Setter
 @Getter
 public class MallOrderItem {
+    @Transient
+    public boolean stockAdequate = false;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Item_Id")
@@ -57,9 +58,13 @@ public class MallOrderItem {
     private MallAfterSales afterSales;
     @Column(name = "Thumbnail_Pic")
     private String thumbnailPic;
+    /**
+     * 受益方
+     */
+    @Column(name = "Agent_Shop_Id")
+    private Integer shopId;
     @Transient
     private URI picUri;
-
     /**
      * 用于保存该条订单所对应的门店的库存和预占库存
      * 其对应的表为Agt_product
@@ -69,8 +74,6 @@ public class MallOrderItem {
     private Integer store = 0;
     @Transient
     private Integer freez = 0;
-    @Transient
-    public boolean stockAdequate = false;
 
     public boolean returnable() {
         return afterSales != null && (afterSales.getAfterSaleStatus() == AfterSaleEnum.AfterSaleStatus.WAITING_FOR_CONFIRM ||

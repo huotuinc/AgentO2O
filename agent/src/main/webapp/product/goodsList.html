@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  ~
+  -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>商品列表</title>
+    <link href="../../resource/3rdParty/css/admin.global.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.global.css}"/>
+    <link href="../../resource/3rdParty/css/admin.content.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/css/admin.content.css}"/>
+    <link href="../../resource/3rdParty/jBox/Skins/Green/jbox.css" rel="stylesheet" type="text/css"
+          data-th-href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}"/>
+    <link href="../../resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css"
+          data-th-href="@{/resource/3rdParty/jqueryui/jquery-ui-1.10.3.custom.min.css}" rel="stylesheet"/>
+    <link href="../../resource/css/settlements.css" rel="stylesheet" data-th-href="@{/resource/css/settlements.css}"
+          type="text/css"/>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery-1.7.2.min.js"
+            data-th-src="@{/resource/3rdParty/js/jquery-1.7.2.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/jquery.utils.js"
+            data-th-src="@{/resource/3rdParty/js/jquery.utils.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"
+            data-th-src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/js/admin.js"
+            data-th-src="@{/resource/3rdParty/js/admin.js}"></script>
+    <script src="../../resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js"
+            data-th-src="@{/resource/3rdParty/jqueryui/jquery-ui-1.8.20.min.js}"></script>
+    <script type="text/javascript" src="../../resource/3rdParty/My97DatePicker/WdatePicker.js"
+            data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
+</head>
+<body>
+<!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
+<form method="post" action="/product/goodsList" data-th-action="@{/product/goodsList}" id="form1"
+      data-th-object="${goodsSearcher}">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="search block" style="display: block;">
+            <div class="h">
+                <span class="icon-sprite icon-magnifier"></span>
+                <h3>商品筛选</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 35px 10px 10px;">
+                <div class="cnt">
+                    <div class="search-bar">
+                        <div>
+                            <div>
+                                <div style="float: left;padding: 3px 0px">
+                                    <label class="first ">标准类型：&nbsp;</label>
+                                </div>
+                                <div id="parentTidDiv" class="cc-listwrap" style="float: left"/>
+                                <input name="standardTypeId" type="text" th:value="*{standardTypeId}"
+                                       id="standardTypeId" class="input-small" style="width: 120px;display: none"/>
+                            </div>
+                            <br/>
+                            <br/>
+                            <th:block th:if="${customerTypeList!=null}">
+                                <label class="first">自定义类型：</label>
+                                <select name="customerTypeId" id="customerTypeId">
+                                    <option selected="selected" value="-1" th:selected="*{customerTypeId == -1}">
+                                        ==所有==
+                                    </option>
+                                    <option th:each="type:${customerTypeList}" th:value="${type.typeId}"
+                                            th:text="${type.name}"
+                                            th:selected="${type.typeId == goodsSearcher.customerTypeId}">自定义类型
+                                    </option>
+                                </select>
+                            </th:block>
+                            <label class="first ">商品名称：</label>
+                            <input name="goodsName" type="text" data-th-value="${goodsSearcher.goodsName}"
+                                   id="goodsName"
+                                   class="input-small" style="width: 120px;"/>
+                            <label>
+                                <a class="btn-lit btn-middle" onclick="searchGoods()" style="margin-bottom: 3px;">
+                                    <span>查询</span>
+                                </a>
+                            </label>
+                            <label><a class="btn-lit btn-middle" id="searchAll" href="javascript:searchAll();"
+                                      style="margin-bottom: 3px;"><span>显示全部</span></a></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">序号
+                            </th>
+                            <th scope="col">商品名称
+                            </th>
+                            <th scope="col">库存
+                            </th>
+                            <th scope="col">预占库存
+                            </th>
+                            <th scope="col">可用库存
+                            </th>
+                            <th scope="col">操作
+                            </th>
+
+                        </tr>
+                        </thead>
+                        <tbody data-th-remove="all-but-first">
+                        <!--@thymesVar id="goodsList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallGoods>"-->
+                        <tr data-th-each="goods,goodsStat:${goodsList}" data-th-id="${goods.goodsId}">
+                            <td class="txt20 c" data-th-text="${goodsStat.count}">1</td>
+                            <td class="txt160 c" style="padding:10px 0px">
+                                <span style="width: 20%;    float: left;"><img
+                                        th:src="${goods.picUri !=null ? goods.picUri : ''}"
+                                        style="vertical-align: top;width: 50px;height: 50px;"/></span>
+                                <span style="width: 70%;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
+                            -webkit-line-clamp: 2;-webkit-box-orient: vertical;float: left;margin-right: 20px;"
+                                      data-th-text="${goods.name}">商品名称</span>
+                            </td>
+                            <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![store])}">
+                                1000
+                            </td>
+                            <td class="txt80 c" th:text="${#aggregates.sum(goods.products.![freez])}"></td>
+                            <td class="txt80 c" th:text="${#aggregates.sum(goods.products.![usableStore])}"></td>
+                            <td class="txt80 c">
+                                <a data-th-attr="goodsId=${goods.goodsId}"
+                                   onclick="javascript:showDetail(this)" href="javascript:void(0)"
+                                   data-th-text="查看"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--分页开始-->
+                <script type="text/javascript" th:inline="javascript">
+                    /*<![CDATA[*/
+                    var pageSize = /*[[${pageSize}]]*/ '-1';
+                    var pageIndex = /*[[*{pageNo}]]*/ '-1';
+                    var pageCount = /*[[${totalPages}]]*/ '-1';
+                    var recordCount = /*[[${totalRecords}]]*/ '-1';
+                    var formName = 'form1';
+                    Pager.Output(formName, 'pageNo', pageSize, pageIndex, pageCount, recordCount);
+                    /*]]>*/
+                </script>
+                <!--分页结束-->
+            </div>
+        </div>
+    </div>
+</form>
+<script type="application/javascript" data-th-inline="javascript">
+    /*<![CDATA[*/
+    var stId;
+    $(function () {
+        var typeList = /*[[${typeList}]]*/"";
+        var selectedType = /*[[${goodsSearcher.standardTypeId}]]*/"";
+        typeList = eval(typeList);
+        createTidSelect(typeList, '0', selectedType);
+    })
+
+    //创建类目下拉菜单
+    function createTidSelect(typeLists, grandParentId, selectedType) {
+        var i, j;
+        var parentId;
+        for (i = 0; i < typeLists.length;) {
+            parentId = typeLists[i]['parentStandardTypeId'];
+            var selDiv = document.createElement('div');
+            var sel = document.createElement('SELECT');
+            sel.setAttribute('name', 'tid_' + parentId);
+            sel.setAttribute('id', 'tid_' + parentId);
+            var op = document.createElement('OPTION');
+            op.setAttribute('value', 0);
+            op.innerHTML = '--请选择--';
+            sel.appendChild(op);
+            //
+            if (typeLists[i]['disabled'] == false) {
+                var option = document.createElement('OPTION');
+                option.setAttribute('value', typeLists[i]['standardTypeId']);
+                option.innerHTML = typeLists[i]['name'];
+                option.is_parent = typeLists[i]['parent'];//判断是否是子类目
+                option.parent_id = typeLists[i]['parentStandardTypeId'];
+                sel.appendChild(option);
+            }
+            for (j = i + 1; j < typeLists.length; j++) {
+                if (typeLists[i]['parentStandardTypeId'] != typeLists[j]['parentStandardTypeId']) {   //是否分级，即不是同一级option
+                    for (var k = 0; k <= (j - i); k++) { //找到下拉框的selected的option
+                        if (sel.options[k].value == typeLists[j]['parentStandardTypeId']) {
+                            sel.options[k].selected = true;
+                            stId = typeLists[j]['parentStandardTypeId'];
+                            break;
+                        }
+                    }
+                    break;
+                }
+                //同一级则继续增加option
+                if (typeLists[j]['disabled'] == false) {
+                    var option = document.createElement('OPTION');
+                    option.setAttribute('value', typeLists[j]['standardTypeId']);
+                    option.innerHTML = typeLists[j]['name'];
+                    option.is_parent = typeLists[j]['parent'];//判断是否是子类目
+                    option.parent_id = typeLists[j]['parentStandardTypeId'];
+                    sel.appendChild(option);
+                }
+            }
+            if (j == typeLists.length) {   //最后一级，找出selected对应的option
+                for (var k = 0; k <= (j - i); k++) {
+                    if (sel.options[k].value == selectedType) {
+                        sel.options[k].selected = true;
+                        stId = selectedType;
+                        break;
+                    }
+                }
+            }
+            i = j;
+            selDiv.appendChild(sel);
+            selDiv.style.cssText = 'float:left;padding:0px 1px';
+            //
+            var tidDiv = document.createElement('div');
+            if ('0' == parentId) {
+                document.getElementById('parentTidDiv').appendChild(selDiv);
+                document.getElementById('tid_' + parentId).onchange = function () {
+                    childTidList(this);
+                };
+                tidDiv.id = 'tid_' + parentId + '_span';
+                tidDiv.style.cssText = 'float:left;padding:0px 1px';
+                document.getElementById('parentTidDiv').appendChild(tidDiv);
+            }
+            else {
+                document.getElementById('tid_' + grandParentId + '_span').appendChild(selDiv);
+                document.getElementById('tid_' + parentId).onchange = function () {
+                    childTidList(this);
+                };
+                tidDiv.id = 'tid_' + parentId + '_span';
+                tidDiv.style.cssText = 'float:left;padding:0px 1px';
+                document.getElementById('tid_' + grandParentId + '_span').appendChild(tidDiv);
+            }
+            grandParentId = parentId;
+        }
+    }
+    //子类目监听函数
+    function childTidList(o) {
+        var standardTypeId = o.value;
+        stId = standardTypeId;
+        var is_parent = o.options[o.selectedIndex].is_parent;
+        var parent_id = o.options[o.selectedIndex].parent_id;
+        document.getElementById(o.id + '_span').innerHTML = '';
+        if (standardTypeId == 0) {
+            stId = o.options[o.selectedIndex + 1].parent_id;
+            return;
+        }
+        if (is_parent) {
+            $.ajax({
+                type: "POST",
+                url: "/purchase/getType",
+                data: {
+                    standardTypeId: standardTypeId
+                },
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code == 200) {
+                        var typeList = eval(msg.data);
+                        createTidSelect(typeList, parent_id, standardTypeId);
+                    } else {
+                        $.jBox.tip(msg.msg, 'error');
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 500);
+                    }
+                }
+            });
+        }
+    }
+
+
+    $("input[name=num]").change(function () {
+        var max = parseInt($(this).attr("max"));
+        var num = parseInt($(this).val());
+        if (num > max) {
+            $.jBox.tip("订购数量大于可用库存！");
+            $(this).val(max);
+        } else if (num < 1) {
+            $.jBox.tip("订购数量必须大于1");
+            $(this).val(1);
+        }
+    })
+
+    //查询
+    function searchGoods() {
+        $("#standardTypeId").val((stId == '0') ? "" : stId);
+        $("#current-index").val(1);
+        $("#form1").submit();
+    }
+    function searchAll() {
+        window.location.href = /*[[@{/product/goodsList}]]*/ "/product/goodsList";
+    }
+    //查看详情
+    function showDetail(obj) {
+        var goodsId = parseInt($(obj).attr("goodsId"));
+
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

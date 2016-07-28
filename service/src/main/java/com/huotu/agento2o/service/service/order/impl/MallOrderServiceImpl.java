@@ -99,7 +99,7 @@ public class MallOrderServiceImpl implements MallOrderService {
 //                judgeShipMode(searchCondition, cb, predicates, p1, p2);
                 predicates.add(cb.equal(root.get("shop").get("agent").get("id").as(Integer.class), author.getId()));
             }
-            predicates.add(cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY));
+            predicates.add(cb.in(root.get("agentShopType")).value(OrderEnum.ShipMode.SHOP_DELIVERY).value(OrderEnum.ShipMode.PLATFORM_DELIVERY).value(OrderEnum.ShipMode.SHOP_PART_BENEFIT));
             //去除拼团未成功的
 //            Join<MallOrder, MallPintuan> join = root.join(root.getModel().getSingularAttribute("pintuan", MallPintuan.class), JoinType.LEFT);
 //            Predicate p1 = cb.isNull(join.get("id").as(Integer.class));
@@ -164,7 +164,39 @@ public class MallOrderServiceImpl implements MallOrderService {
                 sort = new Sort(direction, "createTime");
                 break;
         }
-        return orderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, sort));
+        Page<MallOrder> page = orderRepository.findAll(specification, new PageRequest(pageIndex - 1, pageSize, sort));
+        //如果是门店部分收益，只需显示收益部分
+        if (page.getContent() != null && page.getContent().size() > 0) {
+            page.getContent().forEach(mallOrder -> {
+                if (mallOrder.getAgentShopType() != null && mallOrder.getAgentShopType() == OrderEnum.ShipMode.SHOP_PART_BENEFIT) {
+                    filterMallOrder(mallOrder);
+                }
+            });
+        }
+        return page;
+    }
+
+    /**
+     * 门店部分收益过滤不受益部分
+     *
+     * @param mallOrder
+     */
+    private void filterMallOrder(MallOrder mallOrder) {
+        if (mallOrder != null && mallOrder.getOrderItems() != null && mallOrder.getOrderItems().size() > 0) {
+            List<MallOrderItem> oldItems = mallOrder.getOrderItems();
+            List<MallOrderItem> newItems = new ArrayList<>();
+            oldItems.forEach(mallOrderItem -> {
+                if (mallOrderItem.getShopId() != null && mallOrderItem.getShopId() > 0) {
+                    newItems.add(mallOrderItem);
+                }
+            });
+            mallOrder.setOrderItems(newItems);
+            //按百分比计算订单门店部分实际总金额
+            double oldAmount = oldItems.stream().mapToDouble(p -> p.getPrice() * p.getNums()).sum();
+            double newAmount = newItems.stream().mapToDouble(p -> p.getPrice() * p.getNums()).sum();
+            double finalAmount = (double) Math.round(newAmount / oldAmount * mallOrder.getFinalAmount() * 100) / 100;
+            mallOrder.setFinalAmount(finalAmount);
+        }
     }
 
 
@@ -191,6 +223,9 @@ public class MallOrderServiceImpl implements MallOrderService {
     public OrderDetailModel findOrderDetail(String orderId) {
         OrderDetailModel orderDetailModel = new OrderDetailModel();
         MallOrder orders = orderRepository.findOne(orderId);
+        if (orders.getAgentShopType() != null && orders.getAgentShopType() == OrderEnum.ShipMode.SHOP_PART_BENEFIT) {
+            filterMallOrder(orders);
+        }
         List<MallOrderItem> mallOrderItem = orders.getOrderItems();
         List<MallDelivery> deliveryList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.DEVERY.getCode());
         List<MallDelivery> refundList = deliveryRepository.findByOrder_OrderIdAndTypeIgnoreCase(orderId, OrderEnum.DeliveryType.RETURN.getCode());
