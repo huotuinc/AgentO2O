@@ -71,12 +71,12 @@
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
                         <br/>
                         <br/>
-                        <label class="first ">付款状态：</label>
-                        <select name="payStatusCode" id="payStatusCode">
-                            <option selected="selected"  value="-1"  th:selected="*{payStatusCode == -1}">==所有==</option>
-                            <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == purchaseOrderSearcher.payStatusCode}">未支付</option>
-                        </select>
-                        &nbsp;
+                        <!-- <label class="first ">付款状态：</label>
+                         <select name="payStatusCode" id="payStatusCode">
+                             <option selected="selected"  value="-1"  th:selected="*{payStatusCode == -1}">==所有==</option>
+                             <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == purchaseOrderSearcher.payStatusCode}">未支付</option>
+                         </select>
+                         &nbsp;-->
                         <label class="first ">发货状态：</label>
                         <select name="shipStatusCode" id="shipStatusCode">
                             <option selected="selected" value="-1"  th:selected="*{shipStatusCode == -1}">==所有==</option>
@@ -99,16 +99,16 @@
                         <input name="endTime" type="text" id="endTime" placeholder=" [结束日期]"
                                class="input-normal Wdate" th:value="*{endTime}"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
-                        <br/>
+                        <!--<br/>
                         <br/>
                         <label class="first ">支付时间：</label>
                         <input name="beginPayTime" type="text" id="beginPayTime" th:value="*{beginPayTime}" placeholder=" [开始日期]"
                                class="input-normal Wdate"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false})"/>
-                        &nbsp;---&nbsp;
+                        &nbsp;-&#45;&#45;&nbsp;
                         <input name="endPayTime" type="text" id="endPayTime" th:value="*{endPayTime}" placeholder=" [结束日期]"
                                class="input-normal Wdate"
-                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginPayTime\')}'})"/>
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false,minDate:'#F{$dp.$D(\'beginPayTime\')}'})"/>-->
 
                         <label><a class="btn-lit btn-middle" id="search" href="javascript:searchOrder();"
                                   style="margin-bottom: 3px;"><span>搜索</span></a></label>
@@ -161,12 +161,12 @@
                             </th>
                             <th scope="col">下单时间
                             </th>
-                            <th scope="col">支付时间
-                            </th>
+                            <!-- <th scope="col">支付时间
+                             </th>-->
                             <th scope="col">总额
                             </th>
-                            <th scope="col">付款状态
-                            </th>
+                            <!-- <th scope="col">付款状态
+                             </th>-->
                             <th scope="col">发货状态
                             </th>
                             <th scope="col">审核状态
@@ -199,17 +199,17 @@
                             <td class="txt80 c" th:text="${#dates.format(pOrder.createTime,'yyyy-MM-dd HH:mm:ss')}">
                                 2015/9/21 20:18:01
                             </td>
-                            <td class="txt80 c">
-                                                <span
-                                                      th:if="${pOrder.payTime!=null and pOrder.payTime!=''}"
-                                                      th:text="${#dates.format(pOrder.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
-                            </td>
+                            <!-- <td class="txt80 c">
+                                                 <span
+                                                       th:if="${pOrder.payTime!=null and pOrder.payTime!=''}"
+                                                       th:text="${#dates.format(pOrder.payTime,'yyyy-MM-dd HH:mm:ss')}">——无——</span>
+                             </td>-->
                             <td class="txt40">￥
                                 <span th:text="${pOrder.finalAmount}">100</span>
                             </td>
-                            <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus != null ? pOrder.payStatus.value : ''}">
-                                未支付
-                            </td>
+                            <!-- <td style="color:red;" class="txt40 c" th:text="${pOrder.payStatus != null ? pOrder.payStatus.value : ''}">
+                                 未支付
+                             </td>-->
                             <td style="color:red;" class="txt40 c" th:text="${pOrder.shipStatus != null ? pOrder.shipStatus.value : ''}">
                                 未发货
                             </td>
@@ -222,8 +222,8 @@
                                         <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliverable()}">发货</a> |
                                     </span>-->
                                     <a href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="showDetail(this)" title="查看">查看</a>
-                                    <span  th:if="${pOrder.payabled()}"> | </span>
-                                    <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="payOrder(this)" title="支付">支付</a>
+                                    <!-- <span  th:if="${pOrder.payabled()}"> | </span>
+                                     <a th:if="${pOrder.payabled()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="payOrder(this)" title="支付">支付</a>-->
                                     <span  th:if="${pOrder.receivable()}"> | </span>
                                     <a th:if="${pOrder.receivable()}" href="javascript:void(0)" th:attr="pOrderId=''+${pOrder.POrderId}" onclick="receiveOrder(this)" title="确认收货">确认收货</a>
                                     <span  th:if="${pOrder.deletable()}"> | </span>

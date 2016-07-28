@@ -129,14 +129,14 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
                         StringUtil.DateFormat(purchaseOrderSearcher.getEndTime(), StringUtil.TIME_PATTERN)));
             }
-            if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getBeginPayTime())) {
+           /* if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getBeginPayTime())) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("payTime").as(Date.class),
                         StringUtil.DateFormat(purchaseOrderSearcher.getBeginPayTime(), StringUtil.TIME_PATTERN)));
             }
             if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getEndPayTime())) {
                 predicates.add(cb.lessThanOrEqualTo(root.get("payTime").as(Date.class),
                         StringUtil.DateFormat(purchaseOrderSearcher.getEndPayTime(), StringUtil.TIME_PATTERN)));
-            }
+            }*/
             if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class), "%" + purchaseOrderSearcher.getOrderItemName() + "%"));
             }

@@ -10,9 +10,9 @@
 
 package com.huotu.agento2o.service.service.impl;
 
-import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import com.huotu.agento2o.service.repository.AgtMenuRepository;
+import com.huotu.agento2o.service.service.AgtMenuService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,10 +102,13 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             AgtMenu thd = new AgtMenu(2, "/returnedOrder/showReturnedOrderList", "我的采购退货单", 2, wdcgd, "AGENT,SHOP,PURCHASE", 0, "020203");
             menuRepository.save(thd);
 
-            //一级菜单 库存管理
-            AgtMenu kcgl = new AgtMenu(1, "", "库存管理", 2, purchaseMenu, "AGENT,SHOP,PURCHASE", 0, "0203");
+            //一级菜单 商品管理
+            AgtMenu kcgl = new AgtMenu(1, "", "商品管理", 2, purchaseMenu, "AGENT,SHOP,PURCHASE", 0, "0203");
+            //二级采购单 商品列表
+            AgtMenu splb = new AgtMenu(2, "/product/goodsList", "我的商品", 0, kcgl, "AGENT,SHOP,PURCHASE", 0, "020301");
+            menuRepository.save(splb);
             //二级采购单 库存预警
-            AgtMenu kcyj = new AgtMenu(2, "/product/managerUI", "库存预警", 0, kcgl, "PURCHASE", 0, "020301");
+            AgtMenu kcyj = new AgtMenu(2, "/product/managerUI", "库存预警", 1, kcgl, "AGENT,SHOP,PURCHASE", 0, "020302");
             menuRepository.save(kcyj);
 
             //一级订单 下级采购管理
@@ -139,12 +142,14 @@ public class AgtMenuServiceImpl implements AgtMenuService {
 
             //一级子菜单 门店管理
             AgtMenu mdgl = new AgtMenu(1, "", "门店管理", 0, shopMenu, "AGENT,SHOP_MANAGER", 0, "0301");
-            //二级子菜单 新增门店
-            AgtMenu xzmd = new AgtMenu(2, "/shop/addShopPage", "新增门店", 0, mdgl, "AGENT,SHOP_MANAGER", 0, "030101");
-            menuRepository.save(xzmd);
+
             //二级子菜单 门店列表
-            AgtMenu shlb = new AgtMenu(2, "/shop/shopList", "门店列表", 1, mdgl, "AGENT,SHOP_MANAGER", 0, "030102");
+            AgtMenu shlb = new AgtMenu(2, "/shop/shopList", "门店列表", 0, mdgl, "AGENT,SHOP_MANAGER", 0, "030102");
             menuRepository.save(shlb);
+            //二级子菜单 新增门店
+            AgtMenu xzmd = new AgtMenu(2, "/shop/addShopPage", "新增门店", 1, mdgl, "AGENT,SHOP_MANAGER", 0, "030101");
+            menuRepository.save(xzmd);
+
         }
     }
 

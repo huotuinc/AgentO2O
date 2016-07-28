@@ -13,13 +13,9 @@ package com.huotu.agento2o.service.entity.purchase;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinFetchType;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -141,7 +137,7 @@ public class AgentPurchaseOrder {
     @Column(name = "Ship_Status")
     private PurchaseEnum.ShipStatus shipStatus = PurchaseEnum.ShipStatus.NOT_DELIVER;
     /**
-     * 付款状态
+     * 付款状态(该字段已作废，先保留)
      */
     @Column(name = "Pay_Status")
     private PurchaseEnum.PayStatus payStatus = PurchaseEnum.PayStatus.NOT_PAYED;
@@ -152,7 +148,7 @@ public class AgentPurchaseOrder {
     @Column(name = "Createtime")
     private Date createTime;
     /**
-     * 付款时间
+     * 付款时间(该字段已作废，先保留)
      */
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "Paytime")
@@ -194,11 +190,11 @@ public class AgentPurchaseOrder {
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<AgentPurchaseOrderItem> orderItemList;
 
-    //采购状态为 待审核 或 审核不通过 或 审核通过且未支付
+    //采购状态为 待审核 或 审核不通过 或 审核通过且未发货
     //可取消采购单
     public boolean deletable() {
         return disabled == false && (status == PurchaseEnum.OrderStatus.CHECKING || status == PurchaseEnum.OrderStatus.RETURNED
-                || (status == PurchaseEnum.OrderStatus.CHECKED && payStatus == PurchaseEnum.PayStatus.NOT_PAYED));
+                || (status == PurchaseEnum.OrderStatus.CHECKED && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER)));
     }
 
     //采购状态为 待审核
@@ -214,19 +210,17 @@ public class AgentPurchaseOrder {
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED);
     }
 
-    //采购状态为已审核 且支付状态为 已支付 且发货状态 为空 或未发货
+    //采购状态为已审核 且发货状态 为空 或未发货
     //可发货
     public boolean deliverable() {
         return disabled == false && status == PurchaseEnum.OrderStatus.CHECKED
-                && payStatus == PurchaseEnum.PayStatus.PAYED
                 && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
     }
 
-    //采购状态为已审核 且支付状态为 已支付 且发货状态为已发货 且确认收货时间为空
+    //采购状态为已审核 且发货状态为已发货 且确认收货时间为空
     //可确认收货
     public boolean receivable() {
         return disabled == false && status == PurchaseEnum.OrderStatus.CHECKED
-                && payStatus == PurchaseEnum.PayStatus.PAYED
                 && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
                 && receivedTime == null;
     }

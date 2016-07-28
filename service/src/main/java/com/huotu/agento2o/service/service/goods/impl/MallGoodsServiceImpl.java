@@ -150,7 +150,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         Specification<MallGoods> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
-                predicates.add(cb.like(root.get("name").as(String.class), goodsSearcher.getGoodsName()));
+                predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }
             if(!StringUtil.isEmptyStr(goodsSearcher.getStandardTypeId())){
                 MallGoodsType type = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId(goodsSearcher.getStandardTypeId(),-1);
@@ -191,6 +191,59 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                 }else if(goods.getAgentPrice() != null && goods.getAgentPrice() != 0){
                     goods.setPrice(goods.getAgentPrice());
                 }
+            });
+        }
+        return goodsPage;
+    }
+
+
+    @Override
+    public Page<MallGoods> findByAuthorId(Author author, GoodsSearcher goodsSearcher) {
+        Specification<MallGoods> specification = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
+                predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
+            }
+            if (!StringUtil.isEmptyStr(goodsSearcher.getStandardTypeId())) {
+                MallGoodsType type = goodsTypeRepository.findByStandardTypeIdAndDisabledFalseAndCustomerId(goodsSearcher.getStandardTypeId(), -1);
+                predicates.add(cb.equal(root.get("typeId").as(Integer.class), type.getTypeId()));
+            }
+            if (goodsSearcher.getCustomerTypeId() != -1) {
+                predicates.add(cb.equal(root.get("typeId").as(Integer.class), goodsSearcher.getCustomerTypeId()));
+            }
+            //子查询 goodsId in (select distinct goodsId from AgentProduct where author.id= ?1)
+            Subquery subQuery = query.subquery(AgentProduct.class).distinct(true);
+            Root agentProductRoot = subQuery.from(AgentProduct.class);
+            if (author != null && author.getType() == Agent.class) {
+                subQuery.where(cb.equal(agentProductRoot.get("agent").get("id").as(Integer.class), author.getId()));
+            } else if (author != null && author.getType() == Shop.class) {
+                subQuery.where(cb.equal(agentProductRoot.get("shop").get("id").as(Integer.class), author.getId()));
+            }
+            subQuery.select(agentProductRoot.get("goodsId"));
+            predicates.add(root.get("goodsId").in(cb.any(subQuery)));
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        //设置可用库存和预占库存
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
+            goodsPage.getContent().forEach(goods -> {
+                goods.getProducts().forEach(product -> {
+                    AgentProduct agentProduct = null;
+                    if (author != null && author.getType() == Agent.class) {
+                        agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
+                    } else if (author != null && author.getType() == Shop.class) {
+                        agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
+                    }
+                    if (agentProduct != null) {
+                        product.setStore(agentProduct.getStore());
+                        product.setFreez(agentProduct.getFreez());
+                        product.setUsableStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                    } else {
+                        product.setStore(0);
+                        product.setFreez(0);
+                        product.setUsableStore(0);
+                    }
+                });
             });
         }
         return goodsPage;

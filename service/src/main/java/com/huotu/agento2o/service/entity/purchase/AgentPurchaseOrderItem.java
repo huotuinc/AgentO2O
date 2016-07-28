@@ -93,11 +93,10 @@ public class AgentPurchaseOrderItem {
     @Transient
     private URI picUri;
 
-    //采购状态为已审核 且支付状态为 已支付 且发货状态 为空 或未发货
+    //采购状态为已审核 且发货状态 为空 或未发货
     //可发货
     public boolean deliverable() {
         return purchaseOrder.getStatus() == PurchaseEnum.OrderStatus.CHECKED
-                && purchaseOrder.getPayStatus() == PurchaseEnum.PayStatus.PAYED
                 && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER);
     }
 }
