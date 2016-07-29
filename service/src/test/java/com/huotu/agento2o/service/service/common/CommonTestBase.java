@@ -82,12 +82,14 @@ public abstract class CommonTestBase {
     @Autowired
     protected MallCustomerRepository customerRepository;
 
+    private String password = "123456";
+
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockMallCustomer() {
         MallCustomer customer = new MallCustomer();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
-        customer.setPassword(UUID.randomUUID().toString());
+        customer.setPassword(password);
         return customerService.newCustomer(customer);
     }
 
@@ -151,6 +153,7 @@ public abstract class CommonTestBase {
         shop.setAddress(UUID.randomUUID().toString());
         shop.setLan(lan);
         shop.setLat(lat);
+        shop.setLogo("/resource/images/icon/0/agent-store-0.jpg");
         shop.setDisabled(false);
         shop.setDeleted(false);
         shop.setStatus(AgentStatusEnum.CHECKED);

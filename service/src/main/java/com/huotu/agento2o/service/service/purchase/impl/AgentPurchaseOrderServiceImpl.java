@@ -18,16 +18,10 @@ import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentProduct;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
-import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrderItem;
-import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
-import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
-import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
-import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderRepository;
-import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
+import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
@@ -61,6 +55,8 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     private ShoppingCartRepository shoppingCartRepository;
     @Autowired
     private AgentProductRepository agentProductRepository;
+    @Autowired
+    private AgentGoodsRepository agentGoodsRepository;
     @Autowired
     private MallProductRepository productRepository;
     @Autowired
@@ -322,15 +318,25 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             return new ApiResult("采购单无法确认收货！");
         }
         for (AgentPurchaseOrderItem item : agentPurchaseOrder.getOrderItemList()) {
+
             AgentProduct agentProduct = null;
+            AgentGoods agentGoods = null;
             if (author != null && author.getType() == Agent.class) {
                 agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), item.getProduct());
             } else if (author != null && author.getType() == Shop.class) {
                 agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), item.getProduct());
+                agentGoods = agentGoodsRepository.findByShopAndGoodsIdAndDisabledFalse(author.getAuthorShop(),item.getProduct().getGoods().getGoodsId());
             }
             MallProduct product = item.getProduct();
-            //判断AgentProduct是否有该货品信息，若没有则新增
+            //判断AgentProduct是否有该货品信息，若没有则新增;如果当前用户为门店，则同时新增商品
             //增加当前代理商/门店货品的库存数量
+            if(author.getType() == Shop.class && agentGoods == null){
+                agentGoods = new AgentGoods();
+                agentGoods.setGoodsId(item.getProduct().getGoods().getGoodsId());
+                agentGoods.setShop(author.getAuthorShop());
+                agentGoods.setDisabled(false);
+                agentGoods = agentGoodsRepository.saveAndFlush(agentGoods);
+            }
             if (agentProduct == null) {
                 agentProduct = new AgentProduct();
                 agentProduct.setAgent(author.getAuthorAgent());
@@ -341,6 +347,9 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 agentProduct.setFreez(0);
                 agentProduct.setWarning(0);
                 agentProduct.setDisabled(false);
+                if(agentGoods != null){
+                    agentProduct.setAgentGoodsId(agentGoods.getGoodsId());
+                }
             } else {
                 agentProduct.setStore(agentProduct.getStore() + item.getNum());
             }

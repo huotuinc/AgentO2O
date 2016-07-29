@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.impl;
 
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -88,6 +89,11 @@ public class MallCustomerServiceImpl implements MallCustomerService {
         MallCustomer mallCustomer = customerRepository.findByUsername(userName);
         if (mallCustomer == null) {
             throw new UsernameNotFoundException("没有该代理商");
+        }
+        if(mallCustomer.getType() == Shop.class){
+            if(mallCustomer.getShop().getStatus() != AgentStatusEnum.CHECKED){
+                throw new UsernameNotFoundException("门店未审核");
+            }
         }
         return mallCustomer;
     }

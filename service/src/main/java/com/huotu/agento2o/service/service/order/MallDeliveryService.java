@@ -41,13 +41,13 @@ public interface MallDeliveryService {
      * 批量发货
      *
      * @param orderForDeliveries
-     * @param agentId         门店id
+     * @param shopId         门店id
      * @return
      * @throws UnsupportedEncodingException
      */
-    ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int agentId) throws UnsupportedEncodingException;
+    ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int shopId) throws UnsupportedEncodingException;
 
     ApiResult pushDelivery(DeliveryInfo deliveryInfo, int shopId) throws UnsupportedEncodingException;
 
-    ApiResult pushRefund(String orderId, LogiModel logiModel, Integer agentId, String dicReturnItemsStr) throws UnsupportedEncodingException;
+    ApiResult pushRefund(String orderId, LogiModel logiModel, Integer shopId, String dicReturnItemsStr) throws UnsupportedEncodingException;
 }

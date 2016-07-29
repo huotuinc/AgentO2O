@@ -13,6 +13,7 @@ package com.huotu.agento2o.service.entity.purchase;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
+import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import lombok.Getter;
 import lombok.Setter;
@@ -50,11 +51,15 @@ public class AgentProduct {
     private Shop shop;
 
     /**
-     * 商品ID
+     * 平台商品商品ID
      */
     @Column(name = "Goods_Id")
     private Integer goodsId;
-
+    /**
+     * 门店商品ID
+     */
+    @Column(name = "Agent_Goods_Id")
+    private Integer agentGoodsId;
     /**
      * 货品
      */

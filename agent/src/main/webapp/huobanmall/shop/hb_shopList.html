@@ -456,7 +456,7 @@
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>
                                         <td class="txt40 c" style="color: red"
-                                            th:text="${shop.isAccountNonLocked()} ? '激活':'冻结'">
+                                            th:text="${!shop.disabled} ? '激活':'冻结'">
                                         </td>
                                         <td class="txt80 c tail">
                                             <input style="display: none" th:value="${shop.auditComment}"/>
@@ -467,7 +467,7 @@
                                                    th:attr="shopid=${shop.id}">重置密码</a>&nbsp;|
                                                 <a href="javascript:void(0)" onclick="changeIsDisabled(this)"
                                                    th:attr="shopid=${shop.id}"
-                                                   th:text="${shop.isAccountNonLocked()}? '冻结' : '解冻'">冻结</a>
+                                                   th:text="${!shop.disabled}? '冻结' : '解冻'">冻结</a>
                                                 <span th:if="${shop.status.code}==1">
                                                     | <a href="javascript:void(0)" onclick="audit(this)"
                                                          th:attr="shopid=${shop.id},audit=${shop.auditComment}">审核</a>

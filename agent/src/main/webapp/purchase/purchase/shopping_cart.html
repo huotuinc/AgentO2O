@@ -46,7 +46,7 @@
                     <thead>
                     <tr class="even">
                         <th scope="col">
-                            <input type="checkbox" id="checkall"/>全选
+                            <input type="checkbox" id="checkall" checked="checked"/>全选
                         </th>
                         <th scope="col">序号
                         </th>
@@ -71,7 +71,7 @@
                     <tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}">
                     <!--<tr data-th-each="shoppingCart,shoppingCartStat:${shoppingCartList}" th:id="${shoppingCart.id}" onclick="choice(this)">-->
                         <td class="txt20 c">
-                            <input type="checkbox" name="choice" th:value="${shoppingCart.id}"
+                            <input type="checkbox" name="choice" th:value="${shoppingCart.id}" checked="checked"
                                                    th:if="${shoppingCart.product.usableStore >= shoppingCart.num }"/>
                         </td>
                         <td class="txt20 c" data-th-text="${shoppingCartStat.count}">1</td>

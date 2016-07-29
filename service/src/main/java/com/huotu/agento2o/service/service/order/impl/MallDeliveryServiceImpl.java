@@ -97,12 +97,12 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
     }
 
     @Override
-    public ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int agentId) throws UnsupportedEncodingException {
+    public ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int shopId) throws UnsupportedEncodingException {
         Map<String, Object> params = new TreeMap<>();
         params.put("lstDeliveryInfoJson", JSON.toJSONString(orderForDeliveries));
-        params.put("agentId", agentId);
-        String sign = SignBuilder.buildSignIgnoreEmpty(params, null, SysConstant.AGENT_KEY);
-        params.put("sign", sign);
+        params.put("shopId", shopId);
+//        String sign = SignBuilder.buildSignIgnoreEmpty(params, null, SysConstant.AGENT_KEY);
+//        params.put("sign", sign);
         HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/BatchDeliver", params);
         if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
             return JSON.parseObject(httpResult.getHttpContent(), new TypeReference<ApiResult<BatchDeliverResult>>() {
@@ -138,11 +138,10 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
             if (deliveryInfo.getRemark() != null && !"".equals(deliveryInfo.getRemark())) {
                 map.put("remark", deliveryInfo.getRemark());
             }
-            // TODO: 2016/6/14 supplierId 改为 agentId
-            map.put("supplierId", shopId);
+            map.put("shopId", shopId);
             map.put("dicDeliverItemsStr", dicDeliverItemsStr.substring(0, dicDeliverItemsStr.length() - 1));
-            String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);
-            map.put("sign", sign);
+//            String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);
+//            map.put("sign", sign);
             HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/Deliver", map);
             ApiResult apiResult;
             if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
@@ -156,17 +155,17 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
     }
 
     @Override
-    public ApiResult pushRefund(String orderId, LogiModel logiModel, Integer agentId, String dicReturnItemsStr) throws UnsupportedEncodingException {
+    public ApiResult pushRefund(String orderId, LogiModel logiModel, Integer shopId, String dicReturnItemsStr) throws UnsupportedEncodingException {
         Map<String, Object> param = new TreeMap<>();
         param.put("orderId", orderId);
-        param.put("agentId", agentId);
+        param.put("shopId", shopId);
         param.put("logiName", logiModel.getLogiCompanyChina());
         param.put("logiNo", logiModel.getLogiNo());
         param.put("logiMobile", logiModel.getLogiMobile());
         param.put("remark", logiModel.getLogiRemark());
         param.put("dicReturnItemsStr", dicReturnItemsStr);
-        String sign = SignBuilder.buildSignIgnoreEmpty(param, null, SysConstant.AGENT_KEY);
-        param.put("sign", sign);
+//        String sign = SignBuilder.buildSignIgnoreEmpty(param, null, SysConstant.AGENT_KEY);
+//        param.put("sign", sign);
 
         HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/ReturnProduct", param);
         if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
