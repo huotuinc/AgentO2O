@@ -254,7 +254,7 @@ public class OrderController {
                 orderForDelivery.setRemark((String) itemInfo.get(5).getValue());
                 orderForDeliveries.add(orderForDelivery);
             });
-            apiResult = deliveryService.pushBatchDelivery(orderForDeliveries, shop.getId());
+            apiResult = deliveryService.pushBatchDelivery(orderForDeliveries, shop.getCustomer().getId());
         }
         redirectAttributes.addFlashAttribute("deliverResult", JSON.toJSONString(apiResult));
         return "redirect: batchDeliver";

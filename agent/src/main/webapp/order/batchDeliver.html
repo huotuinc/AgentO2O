@@ -21,13 +21,14 @@
         $(function () {
             if (deliverResult != null) {
                 deliverResult = JSON.parse(deliverResult);
-
                 if (deliverResult.code == 200) {
                     $("#msgField").html("本次批量操作成功,其中成功发货" + deliverResult.data.successCount + "单,失败" + deliverResult.data.failedCount + "单");
                     $("#failedList").empty();
-                    $.each(deliverResult.data.lstFailedMsg, function () {
-                        $("#failedList").append('<li>' + this + '</li>');
-                    });
+                    if(deliverResult.data.failedCount > 0){
+                        $.each(deliverResult.data.lstFailedMsg, function () {
+                            $("#failedList").append('<li>' + this + '</li>');
+                        });
+                    }
                     $("#msgPanel").show();
                 }
             }

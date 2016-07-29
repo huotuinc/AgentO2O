@@ -141,7 +141,6 @@ public class DeliveryController {
 
     /**
      * 发货单保存接口
-     * 未完成
      */
     @PreAuthorize("hasAnyRole('SHOP') or hasAnyAuthority('ORDER')")
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)

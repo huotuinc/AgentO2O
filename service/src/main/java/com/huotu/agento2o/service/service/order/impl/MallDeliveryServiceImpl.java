@@ -97,13 +97,13 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
     }
 
     @Override
-    public ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int shopId) throws UnsupportedEncodingException {
+    public ApiResult pushBatchDelivery(List<OrderForDelivery> orderForDeliveries, int customerId) throws UnsupportedEncodingException {
         Map<String, Object> params = new TreeMap<>();
         params.put("lstDeliveryInfoJson", JSON.toJSONString(orderForDeliveries));
-        params.put("shopId", shopId);
+        params.put("customerId", customerId);
 //        String sign = SignBuilder.buildSignIgnoreEmpty(params, null, SysConstant.AGENT_KEY);
 //        params.put("sign", sign);
-        HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/BatchDeliver", params);
+        HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/AgentOrderApi/BatchDeliver", params);
         if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
             return JSON.parseObject(httpResult.getHttpContent(), new TypeReference<ApiResult<BatchDeliverResult>>() {
             });
@@ -142,7 +142,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
             map.put("dicDeliverItemsStr", dicDeliverItemsStr.substring(0, dicDeliverItemsStr.length() - 1));
 //            String sign = SignBuilder.buildSignIgnoreEmpty(map, null, SysConstant.AGENT_KEY);
 //            map.put("sign", sign);
-            HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/Deliver", map);
+            HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/AgentOrderApi/Deliver", map);
             ApiResult apiResult;
             if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
                 apiResult = JSON.parseObject(httpResult.getHttpContent(), ApiResult.class);
@@ -167,7 +167,7 @@ public class MallDeliveryServiceImpl implements MallDeliveryService {
 //        String sign = SignBuilder.buildSignIgnoreEmpty(param, null, SysConstant.AGENT_KEY);
 //        param.put("sign", sign);
 
-        HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/OrderApi/ReturnProduct", param);
+        HttpResult httpResult = HttpClientUtil.getInstance().post(SysConstant.HUOBANMALL_PUSH_URL + "/AgentOrderApi/ReturnProduct", param);
         if (httpResult.getHttpStatus() == HttpStatus.SC_OK) {
             return JSON.parseObject(httpResult.getHttpContent(), ApiResult.class);
         } else {
