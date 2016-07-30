@@ -23,10 +23,10 @@ import java.util.List;
 @Repository
 public interface FreightTemplateRepository extends JpaRepository<FreightTemplate,Long> {
     /**
-     * 查询供应商运费模板
+     * 查询代理商运费模板
      * @param customerId
      * @return
      */
-    @Query("select a from FreightTemplate a where a.customerId = ?1 and a.freightTemplateType = 1")
+    @Query("select a from FreightTemplate a where a.customerId = ?1 and a.freightTemplateType = 2")
     List<FreightTemplate> findByCustomerId(int customerId);
 }

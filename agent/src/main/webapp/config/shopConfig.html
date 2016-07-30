@@ -404,9 +404,9 @@
         var provinceText = $("#provinceCode").find("option:selected").text();
         var cityText = $("#cityCode").find("option:selected").text();
         var distText = $("#districtCode").find("option:selected").text();
-        var address_Area = provinceText + "/" + cityText;
+        var addressArea = provinceText + "/" + cityText;
         if (distLentgh > 1) {
-            address_Area = address_Area + "/" + distText;
+            addressArea = addressArea + "/" + distText;
         }
 
         if (provinceCode.length == 0 || cityCode.length == 0 || (distLentgh > 1 && districtCode.length == 0)) {
@@ -505,7 +505,7 @@
                 provinceCode: provinceCode,
                 cityCode: cityCode,
                 districtCode: districtCode,
-                address_Area: address_Area,
+                addressArea: addressArea,
                 name: name,
                 contact: contact,
                 mobile: mobile,

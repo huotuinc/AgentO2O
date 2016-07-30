@@ -76,6 +76,9 @@ public class HbmShopController {
         List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
         MallCustomer mallCustomer = mallCustomerService.findByCustomerId(customerId);
         searchCondition.setMallCustomer(mallCustomer);
+        if (searchCondition.getType() == null || (!"list".equals(searchCondition.getType()) && !"audit".equals(searchCondition.getType()))) {
+            searchCondition.setType("list");
+        }
         Page<Shop> shopsList = shopService.findAll(pageIndex, Constant.PAGESIZE, searchCondition);
         int totalPages = shopsList.getTotalPages();
         model.addAttribute("type", searchCondition.getType());
@@ -130,17 +133,18 @@ public class HbmShopController {
      * @param shop
      * @return
      */
-    @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(@RequestAttribute(value = "customerId") Integer customerId, Shop shop) {
+        if (shop == null || shop.getId() == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
         Shop oldShop = shopService.findByIdAndCustomer_Id(shop.getId(), customerId);
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        if (shop == null || shop.getId() == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
-        return shopService.updatePasswordById(shop.getPassword(), shop.getId());
+        int result = mallCustomerService.resetPassword(shop.getId(), shop.getPassword());
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
     }
 
     /**

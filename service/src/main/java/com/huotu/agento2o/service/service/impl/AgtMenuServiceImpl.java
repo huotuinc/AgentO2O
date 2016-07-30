@@ -105,10 +105,10 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             //一级菜单 商品管理
             AgtMenu kcgl = new AgtMenu(1, "", "商品管理", 2, purchaseMenu, "AGENT,SHOP,PURCHASE", 0, "0203");
             //二级采购单 商品列表
-            AgtMenu splb = new AgtMenu(2, "/product/goodsList", "我的商品", 0, kcgl, "AGENT,SHOP,PURCHASE", 0, "020301");
+            AgtMenu splb = new AgtMenu(2, "/goods/goodsList", "我的商品", 0, kcgl, "AGENT,SHOP,PURCHASE", 0, "020301");
             menuRepository.save(splb);
             //二级采购单 库存预警
-            AgtMenu kcyj = new AgtMenu(2, "/product/managerUI", "库存预警", 1, kcgl, "AGENT,SHOP,PURCHASE", 0, "020302");
+            AgtMenu kcyj = new AgtMenu(2, "/goods/managerUI", "库存预警", 1, kcgl, "AGENT,SHOP,PURCHASE", 0, "020302");
             menuRepository.save(kcyj);
 
             //一级订单 下级采购管理

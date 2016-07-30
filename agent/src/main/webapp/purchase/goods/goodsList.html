@@ -7,7 +7,6 @@
   ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
   ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
   ~ 2013-2016. All rights reserved.
-  ~
   -->
 <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -37,8 +36,9 @@
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
+<!--@thymesVar id="author" type="com.huotu.agento2o.service.entity.author.Author"-->
 <!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
-<form method="post" action="/product/goodsList" data-th-action="@{/product/goodsList}" id="form1"
+<form method="post" action="/goods/goodsList" data-th-action="@{/goods/goodsList}" id="form1"
       data-th-object="${goodsSearcher}">
     <div class="container">
         <div class="blank10">
@@ -147,7 +147,7 @@
                             <td class="txt80 c">
                                 <a data-th-attr="goodsId=${goods.goodsId}"
                                    onclick="javascript:showDetail(this)" href="javascript:void(0)"
-                                   data-th-text="查看"></a>
+                                   data-th-text="${author.getAuthorAgent() != null ?'查看':'编辑'}"></a>
                             </td>
                         </tr>
                         </tbody>
@@ -312,11 +312,12 @@
         $("#form1").submit();
     }
     function searchAll() {
-        window.location.href = /*[[@{/product/goodsList}]]*/ "/product/goodsList";
+        window.location.href = /*[[@{/goods/goodsList}]]*/ "/goods/goodsList";
     }
     //查看详情
     function showDetail(obj) {
         var goodsId = parseInt($(obj).attr("goodsId"));
+        window.location.href = "/goods/showGoodsDetail?goodsId=" + goodsId;
 
     }
     /*]]>*/

@@ -10,8 +10,11 @@
 
 package com.huotu.agento2o.service.service.goods;
 
+import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
+import com.huotu.agento2o.service.entity.purchase.AgentGoods;
+import com.huotu.agento2o.service.entity.purchase.FreightTemplate;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import org.springframework.data.domain.Page;
 
@@ -51,4 +54,22 @@ public interface MallGoodsService {
      * @return
      */
     MallGoods findByGoodsId(Integer goodsId);
+
+    /**
+     * 根据 商品ID 和 author 获取 商品
+     *
+     * @param goodsId
+     * @param author
+     * @return
+     */
+    MallGoods findByGoodsIdAndAuthor(Integer goodsId, Author author);
+
+    /**
+     * 门店修改商品信息
+     *
+     * @param requestAgentGoods
+     * @param author
+     * @return
+     */
+    ApiResult updateAgentGoods(AgentGoods requestAgentGoods, Author author, FreightTemplate freightTemplate);
 }

@@ -253,7 +253,7 @@
             var passwordData = checkPassword(obj);
             if (passwordData != null) {
                 $.jBox.tip("正在重置...", "loading");
-                J.GetJsonRespons("/huobanmall/shop/resetpassword", passwordData, function (json) {
+                J.GetJsonRespons("/huobanmall/shop/resetPassword", passwordData, function (json) {
                     if (json.code == 200) {
                         $.jBox.tip("重置成功", "success");
                         _this.dialog('close');
@@ -451,7 +451,7 @@
                                         <td class="txt80 c" th:text="${shop.mobile}">
                                         </td>
                                         <td class="txt80 c"
-                                            th:text="${shop.address_Area}">
+                                            th:text="${shop.addressArea}">
                                         </td>
                                         <td class="txt40 c" style="color: red" th:text="${shop.status.value}">
                                         </td>

@@ -2,20 +2,14 @@ package com.huotu.agento2o.service.entity.author;
 
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.common.AuthorityEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.ShopLevel;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -140,7 +134,7 @@ public class Shop{
      * @return
      */
     @Column(name = "Address_Area")
-    private String address_Area;
+    private String addressArea;
 
     /**
      * 门店审核状态

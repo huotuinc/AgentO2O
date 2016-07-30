@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.service.entity.goods;
 
+import com.huotu.agento2o.service.entity.purchase.FreightTemplate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -93,4 +94,10 @@ public class MallGoods {
      */
     @Column(name = "Type_Id")
     private Integer typeId;
+    /**
+     * 运费模板ID
+     */
+    @JoinColumn(name = "Freight_Template_Id")
+    @ManyToOne
+    private FreightTemplate freightTemplate;
 }

@@ -25,8 +25,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
-import java.util.UUID;
-
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -152,16 +150,6 @@ public class ShopServiceImplTest extends CommonTestBase {
         Assert.assertTrue(curShop != null && curShop.isDisabled() == true);
     }
 
-    @Test
-    public void testUpdatePasswordById() {
-        MallCustomer mockCustomer = mockMallCustomer();
-        MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
-        MallCustomer getShop = mockShop(parentMockAgent.getAgent());
-
-        shopService.updatePasswordById("3", getShop.getId());
-        Shop curShop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
-        Assert.assertTrue(curShop != null && curShop.getPassword().equals(passwordEncoder.encode("3")));
-    }
 
     @Test
     public void testFindAll() {

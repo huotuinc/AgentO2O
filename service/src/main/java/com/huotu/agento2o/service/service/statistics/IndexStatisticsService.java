@@ -10,8 +10,6 @@
 
 package com.huotu.agento2o.service.service.statistics;
 
-import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.model.statistics.IndexStatistics;
 
@@ -79,7 +77,7 @@ public interface IndexStatisticsService {
     int unDeliveryOrderCount(int shopId);
 
     /**
-     * 统计下级已付款未发货采购单数量（代理商）
+     * 统计下级已审核未发货采购单数量（代理商）
      *
      * @param agentId
      * @return

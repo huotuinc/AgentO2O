@@ -40,9 +40,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             throw new Exception("没有权限");
         }
         if (userDetails instanceof Author) {
-            if (authenticationPrincipal.type() == Shop.class && userDetails instanceof Shop) {
-                return userDetails;
-            }else if (authenticationPrincipal.type() == Shop.class && userDetails instanceof MallCustomer && ((MallCustomer) userDetails).getType() == Shop.class) {
+            if (authenticationPrincipal.type() == Shop.class && userDetails instanceof MallCustomer && ((MallCustomer) userDetails).getType() == Shop.class) {
                 Shop shop = ((MallCustomer) userDetails).getShop();
                 if(shop == null){
                     throw new Exception("没有权限");
@@ -54,7 +52,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                     throw new Exception("没有权限");
                 }
                 return agent;
-            } else if (authenticationPrincipal.type() == null || authenticationPrincipal.type() == Author.class) {
+            } else if (authenticationPrincipal.type() == null || authenticationPrincipal.type() == Author.class || authenticationPrincipal.type() == MallCustomer.class) {
                 return userDetails;
             }
         }

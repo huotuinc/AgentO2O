@@ -6,7 +6,6 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
-import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,7 +57,7 @@ public class ShopControllerTest extends CommonTestBase {
                 .param("provinceCode", "provinceCode")
                 .param("cityCode", "cityCode")
                 .param("districtCode", "districtCode")
-                .param("address_Area", "address_Area")
+                .param("addressArea", "addressArea")
                 .param("name", "name")
                 .param("contact", "contact")
                 .param("mobile", "mobile")
@@ -90,7 +89,7 @@ public class ShopControllerTest extends CommonTestBase {
                 .param("provinceCode", "provinceCode")
                 .param("CityCode", "cityCode")
                 .param("districtCode", "districtCode")
-                .param("address_Area", "address_Area")
+                .param("addressArea", "addressArea")
                 .param("logo", "logo")
                 .param("name", "name")
                 .param("contact", "contact")

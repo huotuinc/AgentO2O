@@ -12,13 +12,11 @@ package com.huotu.agento2o.service.service.author;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
@@ -68,8 +66,6 @@ public interface ShopService {
      * @param id
      */
     ApiResult updateIsDisabledById(int id);
-
-    ApiResult updatePasswordById(String password, int shopId);
 
     Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition);
 

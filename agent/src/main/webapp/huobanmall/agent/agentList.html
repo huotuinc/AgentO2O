@@ -314,7 +314,7 @@
                                 13888888000
                             </td>
                             <td class="txt40 c"
-                                th:text="${agent.address_Area}">
+                                th:text="${agent.addressArea}">
                                 浙江杭州西湖区
                             </td>
                             <td class="txt40 c" th:text="${agent.agentLevel}==null?'':${agent.agentLevel.levelName}">
@@ -326,8 +326,10 @@
                             <td class="txt40 c" th:text="${agent.childAgentNum}">
                                 1
                             </td>
-                            <td class="txt40 c" th:text="${agent.childShopNum}">
-                                1
+                            <td class="txt40 c">
+                                <a href="javascript:void(0)" onclick="javascript:agentHandler.showChildShop(this)"
+                                   th:attr="agentId=${agent.id},num=${agent.childShopNum}"
+                                   th:text="${agent.childShopNum}"></a>
                             </td>
 
                             <td class="txt80 c tail">
@@ -424,6 +426,14 @@
                 }, function () {
                 }, J.PostMethod);
             });
+        },
+        showChildShop: function (obj) {
+            var agentId = $(obj).attr("agentId");
+            var num = parseInt($(obj).attr("num"));
+            if (num > 0) {
+                var url = ajaxUrl + "/showChildShop?agentId=" + agentId;
+                J.PopupIFrame(url, "下级门店", 760, 500, "ifrm", "", "auto", "");
+            }
         }
     }
     /*]]>*/

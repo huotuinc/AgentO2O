@@ -12,7 +12,6 @@ package com.huotu.agento2o.service.repository.purchase;
 
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
-import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -56,12 +55,12 @@ public interface AgentPurchaseOrderRepository extends JpaRepository<AgentPurchas
     @Query("select count(a) from AgentPurchaseOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.createTime between ?2 and ?3 and a.disabled = false ")
     int countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(int agentId, Date start, Date end);
 
-    @Query("select count(a) from AgentPurchaseOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.payStatus = ?2 and a.shipStatus = ?3 and a.disabled = false ")
-    int countByAuthor_ParentAuthor_IdAndPayStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
+    @Query("select count(a) from AgentPurchaseOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.status = ?2 and a.shipStatus = ?3 and a.disabled = false ")
+    int countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.OrderStatus status,
                                                                                PurchaseEnum.ShipStatus shipStatus);
 
-    @Query("select count(a) from AgentPurchaseOrder a where (a.agent.id = ?1 or a.shop.id = ?1) and a.payStatus = ?2 and a.shipStatus = ?3 and a.receivedTime is not null and a.disabled = false ")
-    int countByAuthor_IdAndPayStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer authorId, PurchaseEnum.PayStatus payStatus,
+    @Query("select count(a) from AgentPurchaseOrder a where (a.agent.id = ?1 or a.shop.id = ?1) and a.status = ?2 and a.shipStatus = ?3 and a.receivedTime is null and a.disabled = false ")
+    int countByAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer authorId, PurchaseEnum.OrderStatus status,
                                                                                        PurchaseEnum.ShipStatus shipStatus);
 
     @Query("select count(a) from AgentPurchaseOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.status = ?2 and a.disabled = false ")

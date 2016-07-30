@@ -10,12 +10,7 @@
 
 package com.huotu.agento2o.service.service.author;
 
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.List;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -28,10 +23,6 @@ public interface AuthorService {
      */
     Author findById(Author requestAuthor);
 
-    /**
-     * 修改密码
-     */
-    boolean updatePwd(Author requestAuthor,String password);
     /**
      * 校验密码是否正确
      */

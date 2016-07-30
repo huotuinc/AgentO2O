@@ -323,9 +323,9 @@
         var provinceText = $("#provinceCode").find("option:selected").text();
         var cityText = $("#cityCode").find("option:selected").text();
         var distText = $("#districtCode").find("option:selected").text();
-        var address_Area = address_Area = provinceText + "/" + cityText;
+        var addressArea = provinceText + "/" + cityText;
         if (distLentgh > 1) {
-            address_Area = address_Area + "/" + distText;
+            addressArea = addressArea + "/" + distText;
         }
         if (username.length == 0) {
             $.jBox.tip("请输入用户名");
@@ -387,7 +387,7 @@
                 provinceCode: provinceCode,
                 cityCode: cityCode,
                 districtCode: districtCode,
-                address_Area: address_Area,
+                addressArea: addressArea,
                 name: name,
                 contact: contact,
                 mobile: mobile,

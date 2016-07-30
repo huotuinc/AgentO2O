@@ -9,6 +9,7 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.ShopSearchCondition;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.ShopService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class ShopController {
 
     @Autowired
     private ShopService shopService;
+
+    @Autowired
+    private MallCustomerService mallCustomerService;
 
     /**
      * 代理商登陆 新增/编辑门店页面
@@ -73,7 +77,7 @@ public class ShopController {
         if (shop.getId() == null && StringUtil.isEmptyStr(shop.getPassword())) {
             return new ApiResult("请输入密码");
         }
-        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getAddress_Area())) {
+        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getAddressArea())) {
             return new ApiResult("请选择区域");
         }
         if (StringUtil.isEmptyStr(shop.getName())) {
@@ -167,7 +171,8 @@ public class ShopController {
         if (oldShop == null) {
             return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        return shopService.updatePasswordById(shop.getPassword(), shop.getId());
+        int result = mallCustomerService.resetPassword(shop.getId(), shop.getPassword());
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
     }
 
     /**

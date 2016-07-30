@@ -3,10 +3,11 @@ package com.huotu.agento2o.agent.controller;
 import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.service.service.AgtMenuService;
 import com.huotu.agento2o.service.entity.AgtMenu;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.model.statistics.IndexStatistics;
+import com.huotu.agento2o.service.service.AgtMenuService;
+import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AuthorService;
 import com.huotu.agento2o.service.service.statistics.IndexStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +35,8 @@ public class IndexController {
     private AgtMenuService menuService;
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private MallCustomerService mallCustomerService;
 
     @RequestMapping(value = {"", "/", "/login"})
     public String index() {
@@ -124,8 +125,9 @@ public class IndexController {
         //修改新密码
         if (user instanceof Author) {
             //修改代理商/门店密码
-            authorService.updatePwd((Author) user, password);
+            int result = mallCustomerService.resetPassword(((Author) user).getId(), password);
+            return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
         }
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
+        return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
     }
 }

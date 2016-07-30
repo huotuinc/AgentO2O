@@ -90,7 +90,7 @@ public class AgentController {
     /**
      * 保存代理商基本信息
      *
-     * @param mallCustomer
+     * @param agent
      * @param requestAgent
      * @param hotUserName
      * @return
@@ -98,11 +98,11 @@ public class AgentController {
     @RequestMapping(value = "/saveAgentConfig", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
-    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, Agent requestAgent,String hotUserName) {
-        if (!mallCustomer.getId().equals(requestAgent.getId())) {
+    public ApiResult saveAgentConfig(@AgtAuthenticationPrincipal(type = Agent.class) Agent agent, Agent requestAgent, String hotUserName) {
+        if (!agent.getId().equals(requestAgent.getId())) {
             return new ApiResult("没有权限");
         }
-        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getAddress_Area())) {
+        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getAddressArea())) {
             return new ApiResult("请选择区域");
         }
         if(StringUtil.isEmptyStr(requestAgent.getName())){
@@ -129,7 +129,7 @@ public class AgentController {
         if(StringUtil.isEmptyStr(requestAgent.getAccountNo())){
             return new ApiResult("请输入银行卡号");
         }
-        return agentService.saveAgentConfig(mallCustomer.getId(), requestAgent,hotUserName);
+        return agentService.saveAgentConfig(agent.getId(), requestAgent, hotUserName);
     }
 
     /**
@@ -141,9 +141,9 @@ public class AgentController {
      */
     @RequestMapping(value = "/getUserNames", method = RequestMethod.POST)
     @ResponseBody
-    @PreAuthorize("hasAnyRole('AGENT') or hasAnyAuthority('BASE_DATA')")
+    @PreAuthorize("hasAnyRole('AGENT','SHOP') or hasAnyAuthority('BASE_DATA')")
     public ApiResult getUserNames(@AgtAuthenticationPrincipal(type = MallCustomer.class) MallCustomer mallCustomer, String hotUserName) {
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(mallCustomer.getAgent().getCustomer().getCustomerId(), hotUserName));
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(mallCustomer.getCustomer().getCustomerId(), hotUserName));
     }
 
     /**
@@ -174,7 +174,7 @@ public class AgentController {
         if (!curShop.getId().equals(shop.getId())) {
             return new ApiResult("没有权限");
         }
-        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getAddress_Area())) {
+        if (StringUtil.isEmptyStr(shop.getProvinceCode()) || StringUtil.isEmptyStr(shop.getCityCode()) || StringUtil.isEmptyStr(shop.getAddressArea())) {
             return new ApiResult("请选择区域");
         }
         if(StringUtil.isEmptyStr(shop.getName())){

@@ -19,7 +19,6 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.*;
-import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.*;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
@@ -59,8 +58,6 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     private AgentGoodsRepository agentGoodsRepository;
     @Autowired
     private MallProductRepository productRepository;
-    @Autowired
-    private MallGoodsRepository goodsRepository;
     @Autowired
     private MallProductService productService;
 
@@ -348,7 +345,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 agentProduct.setWarning(0);
                 agentProduct.setDisabled(false);
                 if(agentGoods != null){
-                    agentProduct.setAgentGoodsId(agentGoods.getGoodsId());
+                    agentProduct.setAgentGoodsId(agentGoods.getId());
                 }
             } else {
                 agentProduct.setStore(agentProduct.getStore() + item.getNum());

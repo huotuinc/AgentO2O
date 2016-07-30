@@ -18,14 +18,12 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
-import com.huotu.agento2o.service.common.RoleTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.settlement.Account;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
-import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
 import com.huotu.agento2o.service.repository.settlement.AccountRepository;
 import com.huotu.agento2o.service.repository.user.UserBaseInfoRepository;
@@ -37,8 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -128,20 +124,17 @@ public class ShopServiceImpl implements ShopService {
             oldShop = new Shop();
             oldShop.setCreateTime(new Date());
             oldShop.setUsername(shop.getUsername());
-//            shop.setPassword(passwordEncoder.encode(shop.getPassword()));
             oldShop.setAgent(agent);
             oldShop.setCustomer(agent.getCustomer());
             mallShop = mallCustomerSerivce.newCustomer(shop.getUsername(), shop.getPassword(), CustomerTypeEnum.AGENT_SHOP);
             oldShop.setId(mallShop.getCustomerId());
+            mallShop.setShop(oldShop);
         } else {  //编辑
-            oldShop = shopRepository.findOne(shop.getId());
             mallShop = mallCustomerSerivce.findByCustomerId(shop.getId());
-            if (oldShop.isDisabled()) {
-                return new ApiResult("该门店已被冻结");
+            if (mallShop == null || mallShop.getShop() == null || mallShop.getShop().isDisabled() || mallShop.getShop().isDeleted()) {
+                return new ApiResult("该门店已失效");
             }
-            if (oldShop.isDeleted()) {
-                return new ApiResult("该门店已被刪除");
-            }
+            oldShop = mallShop.getShop();
             //当门店状态为待审核和审核通过时代理商不能修改
             if (oldShop.getStatus() == null || oldShop.getStatus() == AgentStatusEnum.CHECKING || oldShop.getStatus() == AgentStatusEnum.CHECKED) {
                 return new ApiResult("不能修改");
@@ -150,7 +143,8 @@ public class ShopServiceImpl implements ShopService {
         if (shop.getStatus() != null) {
             oldShop.setStatus(shop.getStatus());
         }
-        oldShop.setAddress_Area(shop.getAddress_Area());
+        mallShop.setNickName(shop.getName());
+        oldShop.setAddressArea(shop.getAddressArea());
         oldShop.setProvinceCode(shop.getProvinceCode());
         oldShop.setCityCode(shop.getCityCode());
         oldShop.setDistrictCode(shop.getDistrictCode());
@@ -164,7 +158,7 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setComment(shop.getComment());
         oldShop.setUserBaseInfo(shop.getUserBaseInfo());
         oldShop.setEmail(shop.getEmail());
-        shopRepository.saveAndFlush(oldShop);
+        mallCustomerSerivce.save(mallShop);
         //如果结算账户不存在，则新建结算账户
         Account account = accountRepository.findByShop_Id(oldShop.getId());
         if (account == null) {
@@ -179,13 +173,11 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     @SuppressWarnings("Duplicates")
     public ApiResult saveShopConfig(Shop shop, String hotUserName) {
-        Shop oldShop = shopRepository.findOne(shop.getId());
-        if (oldShop.isDisabled()) {
-            return new ApiResult("该门店已被冻结");
+        MallCustomer mallShop = mallCustomerSerivce.findByCustomerId(shop.getId());
+        if (mallShop == null || mallShop.getShop() == null || mallShop.getShop().isDisabled() || mallShop.getShop().isDeleted()) {
+            return new ApiResult("该门店已失效");
         }
-        if (oldShop.isDeleted()) {
-            return new ApiResult("该门店已被刪除");
-        }
+        Shop oldShop = mallShop.getShop();
         //只有当门店状态为审核通过时，门店才能修改
         if (!(oldShop.getStatus() != null && oldShop.getStatus() == AgentStatusEnum.CHECKED)) {
             return new ApiResult("不能修改");
@@ -204,7 +196,8 @@ public class ShopServiceImpl implements ShopService {
             }
         }
 //        oldShop.setUsername(shop.getUsername());
-        oldShop.setAddress_Area(shop.getAddress_Area());
+        mallShop.setNickName(shop.getName());
+        oldShop.setAddressArea(shop.getAddressArea());
         oldShop.setProvinceCode(shop.getProvinceCode());
         oldShop.setCityCode(shop.getCityCode());
         oldShop.setDistrictCode(shop.getDistrictCode());
@@ -225,7 +218,7 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setAccountNo(shop.getAccountNo());
         oldShop.setEmail(shop.getEmail());
         oldShop.setLogo(shop.getLogo());
-        shopRepository.save(oldShop);
+        mallCustomerSerivce.save(mallShop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
@@ -273,7 +266,7 @@ public class ShopServiceImpl implements ShopService {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
         //当门店状态为待审核和审核通过时代理商不能删除
-        if (shop.getStatus() == null || shop.getStatus().getCode() == AgentStatusEnum.CHECKING.getCode() || shop.getStatus().getCode() == AgentStatusEnum.CHECKED.getCode()) {
+        if (shop.getStatus() == null || shop.getStatus() == AgentStatusEnum.CHECKING || shop.getStatus() == AgentStatusEnum.CHECKED) {
             return new ApiResult("不可删除");
         }
         shop.setDeleted(true);
@@ -293,20 +286,6 @@ public class ShopServiceImpl implements ShopService {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
-    @Override
-    public ApiResult updatePasswordById(String password, int shopId) {
-        Shop shop = shopRepository.findOne(shopId);
-        if (shop == null) {
-            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
-        }
-        if (shop.isDisabled()) {
-            return new ApiResult("该门店已被冻结");
-        }
-        password = passwordEncoder.encode(password);
-        shop.setPassword(password);
-        shopRepository.save(shop);
-        return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
-    }
 
     @Override
     public Page<Shop> findAll(int pageIndex, int pageSize, ShopSearchCondition searchCondition) {
@@ -392,7 +371,7 @@ public class ShopServiceImpl implements ShopService {
             List<ExcelHelper.CellDesc> cellDescList = new ArrayList<>();
             cellDescList.add(ExcelHelper.asCell(shop.getUsername()));
             cellDescList.add(ExcelHelper.asCell(shop.getName()));
-            cellDescList.add(ExcelHelper.asCell(shop.getAddress_Area()));
+            cellDescList.add(ExcelHelper.asCell(shop.getAddressArea()));
             cellDescList.add(ExcelHelper.asCell(shop.getAddress()));
             cellDescList.add(ExcelHelper.asCell(shop.getLan()));
             cellDescList.add(ExcelHelper.asCell(shop.getLat()));

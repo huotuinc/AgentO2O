@@ -145,7 +145,7 @@ public class Agent{
      * @return
      */
     @Column(name = "Address_Area")
-    private String address_Area;
+    private String addressArea;
 
     /**
      * 审核状态

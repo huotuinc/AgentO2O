@@ -1,0 +1,182 @@
+<!DOCTYPE html >
+<!--
+  ~ 版权所有:杭州火图科技有限公司
+  ~ 地址:浙江省杭州市滨江区西兴街道阡陌路智慧E谷B幢4楼在地图中查看
+  ~
+  ~ (c) Copyright Hangzhou Hot Technology Co., Ltd.
+  ~ Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
+  ~ 2013-2016. All rights reserved.
+  -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>商品详情</title>
+    <link href="../resource/3rdParty/css/admin.global.css" th:href="@{/resource/3rdParty/css/admin.global.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="../resource/3rdParty/css/admin.content.css" th:href="@{/resource/3rdParty/css/admin.content.css}"
+          rel="stylesheet" type="text/css"/>
+    <link href="../resource/css/settlements.css" th:href="@{/resource/css/settlements.css}" rel="stylesheet"
+          type="text/css"/>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/jquery-1.4.2.min.js}"
+            src="../resource/3rdParty/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/jquery.utils.js}"
+            src="../resource/3rdParty/js/jquery.utils.js"></script>
+    <link href="../resource/3rdParty/jBox/Skins/Green/jbox.css"
+          th:href="@{/resource/3rdParty/jBox/Skins/Green/jbox.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"
+            src="../resource/3rdParty/jBox/jquery.jBox-2.3.min.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/js/admin.js}"
+            src="../resource/3rdParty/js/admin.js"></script>
+    <script type="text/javascript" th:src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"
+            src="../resource/3rdParty/My97DatePicker/WdatePicker.js"></script>
+    <style type="text/css">
+        .over {
+            background-color: #CCCCCC;
+        }
+
+        body, td, th {
+            font-family: "微软雅黑", "宋体", Arial;
+        }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var ajaxUrl = /*[[@{/goods/}]]*/ "/goods/";
+        function goBack() {
+            window.location.href = ajaxUrl + "goodsList";
+        }
+        function updateAgentGoods() {
+            var goodsId = /*[[${mallGoods.goodsId}]]*/ "0";
+            var freightTemplateId = $.trim($("#freightTemplateId").val());
+            $.jBox.tip("正在保存...", "loading");
+
+            J.GetJsonRespons(ajaxUrl + "updateAgentGoods", {
+                goodsId: goodsId,
+                freightTemplateId: freightTemplateId
+            }, function (json) {
+                if (json.code == 200) {
+                    $.jBox.tip("保存成功", "success");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 400);
+                } else {
+                    $.jBox.tip(json.msg, "error");
+                }
+            }, function () {
+            }, "post");
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<!--/*@thymesVar id="mallGoods" type="com.huotu.agento2o.service.entity.goods.MallGoods"*/-->
+<!--@thymesVar id="author" type="com.huotu.agento2o.service.entity.author.Author"-->
+<form method="post" action="" id="form1">
+    <div class="container">
+        <div class="blank10">
+        </div>
+        <div class="blank10">
+        </div>
+
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3>商品信息</h3>
+
+            </div>
+
+            <div class="cnt-wp">
+                <div class="cnt form">
+                    <div class="division">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                            <tr>
+                                <th>商品名称：</th>
+                                <td th:text="${mallGoods.name}"> 陆军</td>
+                            </tr>
+                            <tr>
+                                <th>库存：</th>
+                                <td th:text="${#aggregates.sum(mallGoods.products.![store])}">2</td>
+                            </tr>
+                            <tr>
+                                <th>预占库存：</th>
+                                <td th:text="${#aggregates.sum(mallGoods.products.![freez])}">1</td>
+                            </tr>
+                            <tr>
+                                <th>可用库存：</th>
+                                <td th:text="${#aggregates.sum(mallGoods.products.![usableStore])}">1</td>
+                            </tr>
+                            <div th:if="${author.getAuthorShop() != null}">
+                                <tr>
+                                    <th>运费模板：</th>
+                                    <td>
+                                        <select id="freightTemplateId" name="freightTemplateId">
+                                            <option value="0" th:selected="${mallGoods.freightTemplate == null}">请选择
+                                            </option>
+                                            <!--/*-->
+                                            <!--@thymesVar id="freightTemplateList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.FreightTemplate>"-->
+                                            <!--*/-->
+                                            <option th:each="freightTemplate:${freightTemplateList}"
+                                                    th:value="${freightTemplate.id}" th:text="${freightTemplate.name}"
+                                                    th:selected="${mallGoods.freightTemplate != null and mallGoods.freightTemplate.id==freightTemplate.id}"></option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </div>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="blank10"></div>
+                </div>
+                <div class="bar" style="text-align: right;margin-top: 10px;">
+                    <a class="btn-lit" href="javascript:goBack();">
+                        <span>返回</span></a>
+                </div>
+            </div>
+
+        </div>
+        <div class="blank10">
+        </div>
+        <div class="block">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">商品规格</h3>
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">货号</th>
+                            <th scope="col">规格</th>
+                            <th scope="col">库存</th>
+                            <th scope="col">预占库存</th>
+                            <th scope="col">可用库存</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+
+                        <tr th:each="product:${mallGoods.getProducts()}">
+                            <td class="txt80 c" th:text="${product.bn}">123456</td>
+                            <td class="txt80 c" th:text="${product.standard}">红色,L</td>
+                            <td class="txt80 c" th:text="${product.store}"> 2</td>
+                            <td class="txt80 c" th:text="${product.freez}"> 1</td>
+                            <td class="txt80 c" th:text="${product.usableStore}"> 1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div style="text-align: center;margin-top: 10px" th:if="${author.getAuthorShop() != null}">
+        <a class="btn-lit" href="javascript:updateAgentGoods();"><span>保存</span></a>
+    </div>
+
+</form>
+</body>
+</html>

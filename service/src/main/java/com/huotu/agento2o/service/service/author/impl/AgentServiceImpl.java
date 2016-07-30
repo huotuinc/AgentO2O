@@ -33,7 +33,6 @@ import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by helloztt on 2016/5/9.
@@ -220,7 +219,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setProvinceCode(requestAgent.getProvinceCode());
         agent.setCityCode(requestAgent.getCityCode());
         agent.setDistrictCode(requestAgent.getDistrictCode());
-        agent.setAddress_Area(requestAgent.getAddress_Area());
+        agent.setAddressArea(requestAgent.getAddressArea());
         agent.setTelephone(requestAgent.getTelephone());
         agent.setEmail(requestAgent.getEmail());
         mallAgent = mallCustomerService.save(mallAgent);
@@ -245,7 +244,7 @@ public class AgentServiceImpl implements AgentService {
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getMobile())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getTelephone())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getEmail())));
-            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress_Area())));
+            cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddressArea())));
             cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(agent.getAddress())));
             cellDescList.add(ExcelHelper.asCell(agent.getAgentLevel() == null ? "" : agent.getAgentLevel().getLevelName()));
             cellDescList.add(ExcelHelper.asCell(agent.isDisabled() ? "冻结" : "激活"));
@@ -287,6 +286,7 @@ public class AgentServiceImpl implements AgentService {
                 return new ApiResult("小伙伴账号已被绑定");
             }
         }
+        mallAgent.setNickName(requestAgent.getName());
         agent.setUserBaseInfo(userBaseInfo);
         agent.setName(requestAgent.getName());
         agent.setComment(requestAgent.getComment());
@@ -296,7 +296,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setProvinceCode(requestAgent.getProvinceCode());
         agent.setCityCode(requestAgent.getCityCode());
         agent.setDistrictCode(requestAgent.getDistrictCode());
-        agent.setAddress_Area(requestAgent.getAddress_Area());
+        agent.setAddressArea(requestAgent.getAddressArea());
         agent.setTelephone(requestAgent.getTelephone());
         agent.setAccountName(requestAgent.getAccountName());
         agent.setAccountNo(requestAgent.getAccountNo());

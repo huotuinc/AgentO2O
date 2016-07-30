@@ -17,6 +17,7 @@ import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentActiveEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
+import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.searchable.AgentSearcher;
 import com.huotu.agento2o.service.service.MallCustomerService;
 import com.huotu.agento2o.service.service.author.AgentService;
@@ -183,7 +184,7 @@ public class HbmAgentController {
         if ( requestAgent.getId() != null && requestAgent.getId() == 0 && StringUtil.isEmptyStr(requestAgent.getPassword())) {
             return new ApiResult("请输入密码");
         }
-        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getAddress_Area())) {
+        if (StringUtil.isEmptyStr(requestAgent.getProvinceCode()) || StringUtil.isEmptyStr(requestAgent.getCityCode()) || StringUtil.isEmptyStr(requestAgent.getAddressArea())) {
             return new ApiResult("请选择区域");
         }
         if (agentLevelId == null || agentLevelId == -1) {
@@ -266,8 +267,12 @@ public class HbmAgentController {
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult resetPassword(Integer agentId, String password) {
+        Agent agent = agentService.findByAgentId(agentId);
+        if (agent == null) {
+            return ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
+        }
         int result = mallCustomerService.resetPassword(agentId, password);
-        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.SYSTEM_BAD_REQUEST);
+        return result > 0 ? ApiResult.resultWith(ResultCodeEnum.SUCCESS) : ApiResult.resultWith(ResultCodeEnum.CONFIG_SAVE_FAILURE);
     }
 
     /**
@@ -281,6 +286,19 @@ public class HbmAgentController {
     @ResponseBody
     public ApiResult getUserNames(@RequestAttribute(value = "customerId") Integer customerId, String hotUserName) {
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS, agentService.getHotUserNames(customerId, hotUserName));
+    }
+
+    /**
+     * 获取下级门店
+     *
+     * @param agentId
+     * @return
+     */
+    @RequestMapping(value = "/showChildShop", method = RequestMethod.GET)
+    public String showChildShop(Integer agentId, Model model) {
+        List<Shop> shopList = shopService.findByAgentId(agentId);
+        model.addAttribute("shopList", shopList);
+        return "huobanmall/agent/showChildShop";
     }
 
 }
