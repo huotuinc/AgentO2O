@@ -73,7 +73,7 @@ public class HbmShopController {
                                Model model,
                                ShopSearchCondition searchCondition,
                                @RequestParam(required = false, defaultValue = "1") int pageIndex) throws Exception {
-        List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
+        List<AgentLevel> agentLevels = agentLevelService.findByCustomerId(customerId);
         MallCustomer mallCustomer = mallCustomerService.findByCustomerId(customerId);
         searchCondition.setMallCustomer(mallCustomer);
         if (searchCondition.getType() == null || (!"list".equals(searchCondition.getType()) && !"audit".equals(searchCondition.getType()))) {

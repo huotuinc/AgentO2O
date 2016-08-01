@@ -16,7 +16,7 @@ public interface AgentLevelService {
      * @param customerId
      * @return
      */
-    List<AgentLevel> findByCustomertId(Integer customerId);
+    List<AgentLevel> findByCustomerId(Integer customerId);
 
     /**
      * 增加代理商等级

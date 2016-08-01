@@ -85,7 +85,7 @@ public class HbmAgentLevelController {
      */
     @RequestMapping("/levelList")
     public String showLevelList(@RequestAttribute(value = "customerId") Integer customerId, Model model) {
-        List<AgentLevel> agentLevels = agentLevelService.findByCustomertId(customerId);
+        List<AgentLevel> agentLevels = agentLevelService.findByCustomerId(customerId);
         model.addAttribute("agentLevels", agentLevels);
         return "huobanmall/level/agentLevelList";
     }
