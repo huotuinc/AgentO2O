@@ -77,7 +77,7 @@ public class ShoppingCartController {
         shoppingCartList.forEach(p -> {
             if (p.getProduct() != null && p.getProduct().getGoods() != null && !StringUtil.isEmptyStr(p.getProduct().getGoods().getThumbnailPic())) {
                 try {
-                    URI picUri = resourceService.getResource(p.getProduct().getGoods().getThumbnailPic());
+                    URI picUri = resourceService.getResource(StaticResourceService.huobanmallMode,p.getProduct().getGoods().getThumbnailPic());
                     p.getProduct().getGoods().setPicUri(picUri);
                 } catch (URISyntaxException e) {
                 }

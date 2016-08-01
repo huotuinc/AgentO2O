@@ -97,7 +97,7 @@ public class AgentReturnedOrderController {
             agentProductList.forEach(agentProduct -> {
                 if(agentProduct.getProduct() != null && agentProduct.getProduct().getGoods() != null && StringUtil.isNotEmpty(agentProduct.getProduct().getGoods().getThumbnailPic())){
                     try {
-                        URI picUri = resourceService.getResource(agentProduct.getProduct().getGoods().getThumbnailPic());
+                        URI picUri = resourceService.getResource(StaticResourceService.huobanmallMode,agentProduct.getProduct().getGoods().getThumbnailPic());
                         agentProduct.getProduct().getGoods().setPicUri(picUri);
                     } catch (URISyntaxException e) {
                     }

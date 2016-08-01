@@ -43,6 +43,7 @@ public interface StaticResourceService {
     String GOODS_IMG="image/goods/";
 
     String INVOICE_IMG = "image/invoice/";
+    String huobanmallMode = "huobanmall";
 
     /**
      * 上传资源
@@ -61,7 +62,7 @@ public interface StaticResourceService {
      * @return
      * @throws URISyntaxException
      */
-    URI getResource(String path) throws URISyntaxException;
+    URI getResource(String mode,String path) throws URISyntaxException;
 
     /**
      * 根据 Object 中的 sourceColumnName 字段 获取资源 并 set 到 targetColumnName 字段中

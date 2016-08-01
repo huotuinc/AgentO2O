@@ -10,6 +10,7 @@
 
 package com.huotu.agento2o.agent.service.impl;
 
+import com.huotu.agento2o.common.SysConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,12 @@ public class LocalStaticResourceService extends AbstractStaticResourceService{
     public void setWebApplicationContext(WebApplicationContext context){
         File file = new File(context.getServletContext().getRealPath("/"));
         this.fileHome = file.toURI();
-//        String url = System.getProperty("user.dir");
-//        StringBuilder stringBuilder = new StringBuilder("http://localhost:8080");
-//        stringBuilder.append(context.getServletContext().getContextPath());
-        StringBuilder stringBuilder = new StringBuilder("http://manager.pdmall.com");
+        String url = System.getProperty("user.dir");
+        StringBuilder stringBuilder = new StringBuilder("http://localhost:8080");
+        stringBuilder.append(context.getServletContext().getContextPath());
+//        StringBuilder stringBuilder = new StringBuilder("http://manager.pdmall.com");
         try {
+            this.huobanmallPrefix = new URI(SysConstant.HUOBANMALL_RESOURCE_HOST);
             this.uriPrefix = new URI(stringBuilder.toString());
         } catch (URISyntaxException e) {
             log.error("解析失败",e);
