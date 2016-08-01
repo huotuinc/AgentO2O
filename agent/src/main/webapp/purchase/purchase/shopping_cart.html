@@ -141,6 +141,10 @@
     $("input[name=num]").change(function () {
         var max = parseInt($(this).attr("max"));
         var num = parseInt($(this).val());
+        if(num <= 0){
+            $.jBox.tip("订购数量必须大于0");
+            $(this).val(1);
+        }
         if (num > max) {
             $.jBox.tip("订购数量大于可用库存！");
             $(this).val(max);
@@ -187,8 +191,12 @@
             $(obj).text("完成");
         }else if($(obj).text() == '完成'){
             var shoppingCartId = $(obj).attr("shoppingCartId");
-            var num = $(obj).prevAll("input[name=num]").val();
-            var max = $(obj).prevAll("input[name=num]").attr("max");
+            var num = parseInt($(obj).prevAll("input[name=num]").val());
+            var max = parseInt($(obj).prevAll("input[name=num]").attr("max"));
+            if(num <= 0){
+                $.jBox.tip("订购数量必须大于0");
+                return;
+            }
             if (num > max) {
                 $.jBox.tip("订购数量大于可用库存！");
                 $(obj).prevAll("input[name=num]").val(max);
