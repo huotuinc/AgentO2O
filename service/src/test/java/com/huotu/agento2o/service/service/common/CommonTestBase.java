@@ -13,6 +13,7 @@ package com.huotu.agento2o.service.service.common;
 import com.huotu.agento2o.common.util.SerialNo;
 import com.huotu.agento2o.service.common.AfterSaleEnum;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -85,17 +86,18 @@ public abstract class CommonTestBase {
     private String password = "123456";
 
     @SuppressWarnings("Duplicates")
-    protected MallCustomer mockMallCustomer() {
+    protected MallCustomer mockMallCustomer(CustomerTypeEnum customerType) {
         MallCustomer customer = new MallCustomer();
         customer.setNickName(UUID.randomUUID().toString());
         customer.setUsername(UUID.randomUUID().toString());
         customer.setPassword(password);
+        customer.setCustomerType(customerType);
         return customerService.newCustomer(customer);
     }
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockAgent(MallCustomer mockCustomer, Agent parentAgent) {
-        MallCustomer customer = mockMallCustomer();
+        MallCustomer customer = mockMallCustomer(CustomerTypeEnum.AGENT);
         Agent agent = new Agent();
         agent.setUsername(customer.getUsername());
         agent.setId(customer.getId());
@@ -120,7 +122,7 @@ public abstract class CommonTestBase {
 
     @SuppressWarnings("Duplicates")
     protected MallCustomer mockShop(Agent parentAgent) {
-        MallCustomer shopCustomer = mockMallCustomer();
+        MallCustomer shopCustomer = mockMallCustomer(CustomerTypeEnum.AGENT_SHOP);
         Shop shop = new Shop();
         shop.setId(shopCustomer.getId());
         shop.setUsername(shopCustomer.getUsername());
@@ -133,6 +135,7 @@ public abstract class CommonTestBase {
         shop.setLat(28.689578);
         shop.setDisabled(false);
         shop.setDeleted(false);
+        shop.setStatus(AgentStatusEnum.NOT_CHECK);
         if (parentAgent != null) {
             shop.setAgent(parentAgent);
         }
@@ -141,7 +144,7 @@ public abstract class CommonTestBase {
     }
 
     protected MallCustomer mockShop(Agent parentAgent,double lan,double lat) {
-        MallCustomer shopCustomer = mockMallCustomer();
+        MallCustomer shopCustomer = mockMallCustomer(CustomerTypeEnum.AGENT_SHOP);
         Shop shop = new Shop();
         // TODO: 2016/7/14 城市code
         shop.setId(shopCustomer.getId());
@@ -171,6 +174,7 @@ public abstract class CommonTestBase {
         mockMallGoods.setCost(random.nextDouble());
         mockMallGoods.setPrice(random.nextDouble());
         mockMallGoods.setCustomerId(customerId);
+        mockMallGoods.setAgent(true);
         //平台方商品
 //        if(agentId == null){
 //            mockMallGoods.setAgentId(0);

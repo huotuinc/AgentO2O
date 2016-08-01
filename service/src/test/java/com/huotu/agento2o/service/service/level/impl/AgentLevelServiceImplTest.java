@@ -3,6 +3,7 @@ package com.huotu.agento2o.service.service.level.impl;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.config.ServiceConfig;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -41,7 +42,7 @@ public class AgentLevelServiceImplTest extends CommonTestBase {
 
     @Before
     public void init() {
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockAgentLevel = mockAgentLevel(mockCustomer);
     }
 

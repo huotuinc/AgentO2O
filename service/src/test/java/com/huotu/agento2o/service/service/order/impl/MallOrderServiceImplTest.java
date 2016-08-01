@@ -9,6 +9,7 @@
 
 package com.huotu.agento2o.service.service.order.impl;
 
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -59,7 +60,7 @@ public class MallOrderServiceImplTest extends CommonTestBase {
     public void init() {
         //模拟数据
         //用户相关
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockFirstLevelAgent = mockAgent(mockCustomer, null);
         mockFirstLevelShop = mockShop(mockFirstLevelAgent.getAgent());
         mockSecondLevelAgent = mockAgent(mockCustomer, mockFirstLevelAgent.getAgent());

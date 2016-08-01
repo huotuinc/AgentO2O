@@ -11,6 +11,7 @@
 package com.huotu.agento2o.service.service.goods.impl;
 
 import com.huotu.agento2o.common.util.Constant;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
@@ -39,7 +40,7 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
     @Test
     public void testFindByCustomerIdAndAgentId() throws Exception {
         //平台方
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         //代理商
         MallCustomer mockAgent = mockAgent(mockCustomer,null);
         MallGoods goods = mockMallGoods(mockCustomer.getCustomerId(),null);
@@ -54,7 +55,7 @@ public class MallGoodsServiceImplTest extends CommonTestBase {
     @Test
     public void testFindByAgentId() throws Exception {
         //平台方
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         //代理商
         MallCustomer parentMockAgent = mockAgent(mockCustomer,null);
         MallCustomer mockAgent = mockAgent(mockCustomer,parentMockAgent.getAgent());

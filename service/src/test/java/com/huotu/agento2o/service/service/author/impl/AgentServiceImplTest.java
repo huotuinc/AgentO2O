@@ -2,6 +2,7 @@ package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -41,7 +42,7 @@ public class AgentServiceImplTest extends CommonTestBase {
 
     @Before
     public void init() {
-        mockCustomer = mockMallCustomer();
+        mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         mockAgent = mockAgent(mockCustomer, null);
     }
 
@@ -74,7 +75,7 @@ public class AgentServiceImplTest extends CommonTestBase {
 //    @Rollback(false)
     public void testMockAgent(){
         MallCustomer customer = customerService.findByCustomerId(4471);
-        MallCustomer agentCustomer = mockMallCustomer();
+        MallCustomer agentCustomer = mockMallCustomer(CustomerTypeEnum.AGENT);
         Agent agent = new Agent();
         agent.setId(agentCustomer.getId());
         agent.setStatus(AgentStatusEnum.CHECKED);
@@ -126,7 +127,7 @@ public class AgentServiceImplTest extends CommonTestBase {
         agentList = agentService.findByAgentLevelId(-1);
         Assert.assertTrue(agentList.size() == 0);
         agentList = agentService.findByAgentLevelId(null);
-        Assert.assertTrue(agentList.size() >= 0);
+        Assert.assertNull(agentList);
     }
 
     @Test

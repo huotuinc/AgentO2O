@@ -326,7 +326,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
                 .andReturn();
         String resultString = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obResult = JSONObject.parseObject(resultString);
-        Assert.assertEquals("系统请求失败", obResult.getString("msg"));
+        Assert.assertEquals("设置失败", obResult.getString("msg"));
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("agentId", String.valueOf(expectAgent.getId())))
                 .andExpect(status().isOk())
@@ -342,7 +342,7 @@ public class HbmAgentControllerTest extends CommonTestBase {
                 .andReturn();
         resultString = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(resultString);
-        Assert.assertEquals("系统请求失败", obResult.getString("msg"));
+        Assert.assertEquals("设置失败", obResult.getString("msg"));
 
         result = mockMvc.perform(post(controllerUrl).cookie(cookie)
                 .param("password", "password")

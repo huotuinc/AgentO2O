@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
@@ -54,7 +55,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindByUserName() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer mockShop = mockShop(parentMockAgent.getAgent());
         MallCustomer realShop = mallCustomerService.findByUserName(mockShop.getUsername());
@@ -64,7 +65,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindById() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer mockShop = mockShop(parentMockAgent.getAgent());
         MallCustomer realShop = mallCustomerService.findByCustomerId(mockShop.getId());
@@ -73,7 +74,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindByIdAndParentAuthor() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer getShop = mockShop(parentMockAgent.getAgent());
         Shop shop = shopService.findByIdAndParentAuthor(getShop.getId(), parentMockAgent.getAgent());
@@ -88,7 +89,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindByIdAndCustomer_Id() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer getShop = mockShop(parentMockAgent.getAgent());
         getShop.getShop().setCustomer(mockCustomer);
@@ -100,7 +101,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void updateStatus() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
@@ -119,7 +120,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testUpdateStatusAndAuditComment() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
@@ -130,7 +131,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testDeleteById() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 
@@ -141,7 +142,7 @@ public class ShopServiceImplTest extends CommonTestBase {
 
     @Test
     public void testUpdateIsDisabledById() {
-        MallCustomer mockCustomer = mockMallCustomer();
+        MallCustomer mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentMockAgent = mockAgent(mockCustomer, null);
         MallCustomer getShop = mockShop(parentMockAgent.getAgent());
 

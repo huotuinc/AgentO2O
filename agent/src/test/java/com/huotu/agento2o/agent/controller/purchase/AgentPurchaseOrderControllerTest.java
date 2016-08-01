@@ -915,11 +915,11 @@ public class AgentPurchaseOrderControllerTest extends CommonTestBase {
     }
 
     /**
-     * 一级代理商登录 支付采购单
+     * 一级代理商登录 支付采购单(废弃)
      *
      * @throws Exception
      */
-    @Test
+//    @Test
     public void testPayPurchaseOrderByFirstLevelAgent() throws Exception {
         String controllerUrl = BASE_URL + "/payPurchaseOrder";
         MockHttpSession session = loginAs(mockFirstLevelAgent.getUsername(), passWord, String.valueOf(RoleTypeEnum.AGENT.getCode()));
