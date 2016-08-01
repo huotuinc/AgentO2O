@@ -283,10 +283,12 @@
             return;
         }
         var parentAgentId = /*[[${agent.parentAgent != null ? agent.parentAgent.id:-1}]]*/ -1;
+        $.jBox.tip("loading...", "loading");
         J.GetJsonRespons(ajaxUrl + "getParentAgents", {
             parentAgentLevelId: parentAgentLevelId
         }, function (json) {
             if (json.code == 200) {
+                $.jBox.closeTip();
                 $.each(json.data, function () {
                     var op = document.createElement('OPTION');
                     op.setAttribute("value", this.id);

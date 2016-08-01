@@ -152,6 +152,7 @@
                         <tr class="even">
                             <th scope="col">货号</th>
                             <th scope="col">规格</th>
+                            <th scope="col">单价</th>
                             <th scope="col">库存</th>
                             <th scope="col">预占库存</th>
                             <th scope="col">可用库存</th>
@@ -162,6 +163,7 @@
                         <tr th:each="product:${mallGoods.getProducts()}">
                             <td class="txt80 c" th:text="${product.bn}">123456</td>
                             <td class="txt80 c" th:text="${product.standard}">红色,L</td>
+                            <td class="txt80 c" th:text="|￥${product.price}|">￥20.0</td>
                             <td class="txt80 c" th:text="${product.store}"> 2</td>
                             <td class="txt80 c" th:text="${product.freez}"> 1</td>
                             <td class="txt80 c" th:text="${product.usableStore}"> 1</td>

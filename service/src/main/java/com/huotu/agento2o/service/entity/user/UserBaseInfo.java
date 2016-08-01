@@ -30,4 +30,9 @@ public class UserBaseInfo {
     @ManyToOne
     @JoinColumn(name = "UB_CustomerID")
     private MallCustomer mallCustomer;
+    /**
+     * 0代表普通会员，1代表小伙伴
+     */
+    @Column(name = "UB_UserType")
+    private Integer type;
 }
