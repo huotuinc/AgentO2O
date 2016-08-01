@@ -270,6 +270,7 @@
             return;
         }
         if(is_parent){
+            $.jBox.tip("正在加载", "loading");
             $.ajax({
                 type:"POST",
                 url: basicUrl + "/getType",
@@ -281,6 +282,7 @@
                     if(msg.code == 200){
                         var typeList = eval(msg.data);
                         createTidSelect(typeList,parent_id, standardTypeId);
+                        $.jBox.closeTip();
                     }else{
                         $.jBox.tip(msg.msg, 'error');
                         setTimeout(function(){
@@ -331,6 +333,7 @@
                 $.jBox.tip("请输入要订购的数量");
                 return;
             }
+            $.jBox.tip("正在加载", "loading");
             $.ajax({
                 type: "POST",
                 url: basicUrl + "/addShopping",

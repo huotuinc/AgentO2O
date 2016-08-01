@@ -121,6 +121,7 @@
             $.jBox.tip("订购数量大于可用库存！");
             return;
         }
+        $.jBox.tip("正在加载", "loading");
         $.ajax({
             type: "POST",
             url: basicUrl + "/addShopping",
