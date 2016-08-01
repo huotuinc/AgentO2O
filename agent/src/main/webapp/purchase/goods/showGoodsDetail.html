@@ -129,6 +129,8 @@
                     <div class="blank10"></div>
                 </div>
                 <div class="bar" style="text-align: right;margin-top: 10px;">
+                    <span th:if="${author.getAuthorShop() != null}"><a class="btn-lit"
+                                                                       href="javascript:updateAgentGoods();"><span>保存</span></a></span>
                     <a class="btn-lit" href="javascript:goBack();">
                         <span>返回</span></a>
                 </div>
@@ -172,9 +174,6 @@
         </div>
 
 
-    </div>
-    <div style="text-align: center;margin-top: 10px" th:if="${author.getAuthorShop() != null}">
-        <a class="btn-lit" href="javascript:updateAgentGoods();"><span>保存</span></a>
     </div>
 
 </form>
