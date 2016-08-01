@@ -22,9 +22,10 @@ import java.util.List;
 @Repository
 public interface UserBaseInfoRepository extends JpaRepository<UserBaseInfo, Integer> {
 
+    @Query("select a from UserBaseInfo a where a.loginName = ?1 and a.mallCustomer.customerId = ?2 and a.type =1")
     UserBaseInfo findByLoginNameAndMallCustomer_customerId(String loginName, Integer customerId);
 
-    @Query(value = "select top 10 d.UB_UserLoginName from (select  a.UB_UserLoginName,b.Agent_ID,c.Shop_ID from Hot_UserBaseInfo a left join Agt_Agent b on a.UB_UserID = b.UB_UserID and b.Deleted=0 left join Agt_Shop c on a.UB_UserID = c.UB_UserID and c.Deleted=0 where a.UB_UserLoginName like ?1 and a.UB_CustomerID = ?2)d where d.Agent_ID is null and d.Shop_ID is null", nativeQuery = true)
+    @Query(value = "select top 10 d.UB_UserLoginName from (select  a.UB_UserLoginName,b.Agent_ID,c.Shop_ID from Hot_UserBaseInfo a left join Agt_Agent b on a.UB_UserID = b.UB_UserID and b.Deleted=0 left join Agt_Shop c on a.UB_UserID = c.UB_UserID and c.Deleted=0 where a.UB_UserLoginName like ?1 and a.UB_CustomerID = ?2 and a.UB_UserType=1)d where d.Agent_ID is null and d.Shop_ID is null", nativeQuery = true)
     List<String> findByLoginNameLikeAndMallCustomer_customerId(String loginName, Integer customerId);
 
 }
