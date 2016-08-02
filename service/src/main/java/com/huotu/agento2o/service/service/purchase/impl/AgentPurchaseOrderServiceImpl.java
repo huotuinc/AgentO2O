@@ -445,7 +445,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
         }
         agentPurchaseOrder.setStatus(status);
         if (status == PurchaseEnum.OrderStatus.RETURNED) {
-            agentPurchaseOrder.setParentComment(comment);
+            agentPurchaseOrder.setStatusComment(comment);
         }
         agentPurchaseOrder.setLastUpdateTime(new Date());
         purchaseOrderRepository.save(agentPurchaseOrder);

@@ -545,7 +545,6 @@
     var id = /*[[${shop.id}]]*/"";
         $('#hotUserName').typeahead({
             source: function (query, process) {
-                $.jBox.tip("正在加载", "loading");
                 $.ajax({
                     type: 'POST',
                     url: "/config/getUserNames",
@@ -557,7 +556,6 @@
                         if (json.code == 200) {
                             return process(json.data);
                         }
-                        $.jBox.closeTip();
                     }
                 });
             }

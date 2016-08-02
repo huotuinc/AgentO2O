@@ -14,6 +14,7 @@ import com.huotu.agento2o.common.SysConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
@@ -28,6 +29,7 @@ import java.net.URISyntaxException;
  */
 @Service
 @Profile("!container")
+@DependsOn("sysConstant")
 public class LocalStaticResourceService extends AbstractStaticResourceService{
 
     private static final Log log = LogFactory.getLog(LocalStaticResourceService.class);
@@ -39,9 +41,8 @@ public class LocalStaticResourceService extends AbstractStaticResourceService{
         String url = System.getProperty("user.dir");
         StringBuilder stringBuilder = new StringBuilder("http://localhost:8080");
         stringBuilder.append(context.getServletContext().getContextPath());
-        StringBuilder huobanmallUrl = new StringBuilder("http://manager.pdmall.com");
         try {
-            this.huobanmallPrefix = new URI(huobanmallUrl.toString());
+            this.huobanmallPrefix = new URI(SysConstant.HUOBANMALL_RESOURCE_HOST);
             this.uriPrefix = new URI(stringBuilder.toString());
         } catch (URISyntaxException e) {
             log.error("解析失败",e);
