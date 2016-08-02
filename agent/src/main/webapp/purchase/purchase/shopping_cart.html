@@ -75,7 +75,7 @@
                                                    th:if="${shoppingCart.product.usableStore >= shoppingCart.num }"/>
                         </td>
                         <td class="txt20 c" data-th-text="${shoppingCartStat.count}">1</td>
-                        <td class="txt120 c" style="padding:10px 0px">
+                        <td class="txt120 c" style="padding:10px 0px;text-indent: 0px;">
                            <span style="width: 20%;float: left;">
                                <img th:src="${shoppingCart.product.goods.picUri !=null? shoppingCart.product.goods.picUri : ''}"
                                     style="vertical-align: top;width: 50px;height: 50px;"/>
@@ -88,7 +88,7 @@
                             规格描述
                         </td>
                         <td class="txt40 c" name="td-price">
-                            ￥<span data-th-text="${shoppingCart.product.price}" name="price">100</span>
+                            ￥<span data-th-text="${shoppingCart.product.purchasePrice}" name="price">100</span>
                         </td>
                         <td class="txt40 c" data-th-text="${shoppingCart.product.usableStore}">
                             1000
@@ -96,7 +96,7 @@
                         <td class="txt40 c" data-th-text="${shoppingCart.product.authorStore}">
                             1000
                         </td>
-                        <td class="txt40 c" name="td-num">
+                        <td class="txt80 c" name="td-num">
                             <input name="num" style="width: 50px;text-align: center;" type="number" disabled="disabled"
                                    data-th-value="${shoppingCart.num}"
                                    data-th-max="${shoppingCart.product.usableStore}"/>
@@ -136,7 +136,9 @@
 <script type="application/javascript" th:inline="javascript">
     /*<![CDATA[*/
     var basicUrl = /*[[@{/shoppingCart}]]*/ "/shoppingCart";
-
+    $(function(){
+        calculateAmount();
+    })
 
     $("input[name=num]").change(function () {
         var max = parseInt($(this).attr("max"));
@@ -213,7 +215,8 @@
                 dataType: "json",
                 success: function (msg) {
                     if (msg.code == 200) {
-                        $.jBox.tip(msg.msg,'success');
+                        $.jBox.closeTip();
+//                        $.jBox.tip(msg.msg,'success');
                     } else {
                         $.jBox.tip(msg.msg, 'error');
                     }

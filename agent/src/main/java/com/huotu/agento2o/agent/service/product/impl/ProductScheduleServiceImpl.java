@@ -51,6 +51,7 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
 //    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每隔6分钟结算一次
     public void productSchedule() {
         //查询出需要提醒的库存信息
+        log.info("start check product store . . .");
         List<Object> agents = agentProductService.findNeedWarningAgent();
         List<Object> shops = agentProductService.findNeedWarningShop();
         for (int i = 0; i < agents.size(); i++) {
@@ -71,6 +72,7 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
             List<AgentProduct> agentProducts = agentProductService.findWarningShopInfo(shopId);
             sendEmail(agentProducts,shop.getEmail());
         }
+        log.info("end check product store . . .");
     }
 
     private void sendEmail(List<AgentProduct> productList,String email){

@@ -61,7 +61,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (old == null) {
             shoppingCart = shoppingCartRepository.save(shoppingCart);
         } else {
-            //若购物车中已经存在该货品，则直接加数量
+            //若购物车中已经存在该货品，如果购物车数量+购买数量大于总数量，则保存为最大数量
             old.setNum(old.getNum() + shoppingCart.getNum());
             shoppingCart = shoppingCartRepository.save(old);
         }

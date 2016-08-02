@@ -54,6 +54,9 @@ public class MallProduct {
     @Column(name = "Price")
     private double price;
 
+    @Transient
+    private double purchasePrice;
+
     @Column(name = "Name", nullable = false)
     private String name;
     /**

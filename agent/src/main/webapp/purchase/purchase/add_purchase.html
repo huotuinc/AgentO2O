@@ -264,7 +264,7 @@
                                         规格描述
                                     </td>
                                     <td class="txt40 c" name="td-price">
-                                        ￥<span data-th-text="${shoppingCart.product.price}" name="price">100</span>
+                                        ￥<span data-th-text="${shoppingCart.product.purchasePrice}" name="price">100</span>
                                     </td>
                                     <td class="txt40 c"
                                         data-th-text="${shoppingCart.product.authorStore}">
@@ -274,7 +274,7 @@
                                         <span data-th-text="${shoppingCart.num}"></span>
                                         <span data-th-text="${shoppingCart.product.unit}"></span>
                                     </td>
-                                    <td class="txt40 c" data-th-text="${shoppingCart.product.price * shoppingCart.num}">
+                                    <td class="txt40 c" data-th-text="${shoppingCart.product.purchasePrice * shoppingCart.num}">
                                     </td>
                                 </tr>
                                 </tbody>
@@ -394,12 +394,12 @@
         }else if(taxType == '2'){
             taxTitle = $.trim($("#tax_taxTitle").val());
             if(taxTitle.length == 0){
-                $.jBox.tip("请输入发票公司名称");
+                $.jBox.tip("请输入发票抬头");
                 return;
             }
             taxContent = $.trim($("#tax_taxContent").val());
             if(taxContent.length == 0){
-                $.jBox.tip("请输入发票公司注册电话");
+                $.jBox.tip("请输入发票内容");
                 return;
             }
             taxpayerCode = $.trim($("#tax_taxpayerCode").val());

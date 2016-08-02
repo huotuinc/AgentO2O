@@ -621,7 +621,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         orderItem.setName(mallProduct.getName());
         orderItem.setPdtDesc(mallProduct.getStandard());
         orderItem.setUnit(mallProduct.getUnit());
-        orderItem.setPrice(mallProduct.getPrice());
+        orderItem.setPrice(mallProduct.getPurchasePrice());
         if (PurchaseEnum.ShipStatus.DELIVERED.equals(agentPurchaseOrder.getShipStatus())) {
             orderItem.setSendNum(orderItem.getNum());
         } else {

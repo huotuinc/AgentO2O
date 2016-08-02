@@ -39,9 +39,9 @@ public class LocalStaticResourceService extends AbstractStaticResourceService{
         String url = System.getProperty("user.dir");
         StringBuilder stringBuilder = new StringBuilder("http://localhost:8080");
         stringBuilder.append(context.getServletContext().getContextPath());
-//        StringBuilder stringBuilder = new StringBuilder("http://manager.pdmall.com");
+        StringBuilder huobanmallUrl = new StringBuilder("http://manager.pdmall.com");
         try {
-            this.huobanmallPrefix = new URI(SysConstant.HUOBANMALL_RESOURCE_HOST);
+            this.huobanmallPrefix = new URI(huobanmallUrl.toString());
             this.uriPrefix = new URI(stringBuilder.toString());
         } catch (URISyntaxException e) {
             log.error("解析失败",e);

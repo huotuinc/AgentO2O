@@ -110,11 +110,13 @@ public class MallProductServiceImpl implements MallProductService {
         }
         //如果有等级进货价，门店进货价则读取相应进货价，如果没有则读取默认进货价
         if(productPriceMap != null && author.getType() == Agent.class && productPriceMap.containsKey(author.getAuthorAgent().getAgentLevel().getLevelId())){
-            product.setPrice(productPriceMap.get(author.getAuthorAgent().getAgentLevel().getLevelId()));
+            product.setPurchasePrice(productPriceMap.get(author.getAuthorAgent().getAgentLevel().getLevelId()));
         }else if(productPriceMap != null && author.getType() == Shop.class && productPriceMap.containsKey(0)){
-            product.setPrice(productPriceMap.get(0));
+            product.setPurchasePrice(productPriceMap.get(0));
         }else if(product.getAgentPrice() != null && product.getAgentPrice() != 0){
-            product.setPrice(product.getAgentPrice());
+            product.setPurchasePrice(product.getAgentPrice());
+        }else{
+            product.setPurchasePrice(product.getPrice());
         }
     }
 }

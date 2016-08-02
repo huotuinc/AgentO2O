@@ -108,7 +108,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 agentReturnedOrderItem.setProduct(mallProduct);
                 agentReturnedOrderItem.setBn(mallProduct.getBn());
                 agentReturnedOrderItem.setName(mallProduct.getName());
-                agentReturnedOrderItem.setPrice(mallProduct.getPrice());
+                agentReturnedOrderItem.setPrice(mallProduct.getPurchasePrice());
                 agentReturnedOrderItem.setNum(productNums[i]);
                 agentReturnedOrderItem.setThumbnailPic(mallProduct.getGoods().getThumbnailPic());
                 agentReturnedOrderItem.setPdtDesc(mallProduct.getStandard());

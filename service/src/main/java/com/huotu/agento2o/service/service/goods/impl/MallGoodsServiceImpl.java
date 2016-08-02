@@ -107,9 +107,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                     }
                 });
                 if (goods.getProducts().size() == 1) {
-                    goods.setPrice(goods.getProducts().get(0).getPrice());
+                    goods.setPurchasePrice(goods.getProducts().get(0).getPurchasePrice());
                 } else if (goods.getAgentPrice() != null && goods.getAgentPrice() != 0) {
-                    goods.setPrice(goods.getAgentPrice());
+                    goods.setPurchasePrice(goods.getAgentPrice());
                 }
             });
         }
@@ -195,9 +195,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                     }
                 });
                 if (goods.getProducts().size() == 1) {
-                    goods.setPrice(goods.getProducts().get(0).getPrice());
+                    goods.setPurchasePrice(goods.getProducts().get(0).getPurchasePrice());
                 } else if (goods.getAgentPrice() != null && goods.getAgentPrice() != 0) {
-                    goods.setPrice(goods.getAgentPrice());
+                    goods.setPurchasePrice(goods.getAgentPrice());
                 }
             });
         }

@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 商品采购/货品采购
@@ -116,6 +117,7 @@ public class PurchaseController {
      */
     @RequestMapping(value = "/addShopping", method = RequestMethod.POST)
     @ResponseBody
+    @SuppressWarnings("Duplicates")
     public ApiResult addShopping(
             @AgtAuthenticationPrincipal Author author,
             Integer goodsId,
@@ -180,6 +182,73 @@ public class PurchaseController {
             result = ApiResult.resultWith(ResultCodeEnum.SUCCESS);
         }
         return result;
+    }
+
+
+    /**
+     * 同一商品，不同货品批量订购
+     * @param author
+     * @param productNumStr
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/batchAddShopping",method = RequestMethod.POST)
+    @ResponseBody
+    @SuppressWarnings("Duplicates")
+    public ApiResult addShopping(
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam String productNumStr) throws Exception{
+        ApiResult result = ApiResult.resultWith(ResultCodeEnum.SAVE_DATA_ERROR);
+        String[] productNum = productNumStr.split("\\|");
+        int successNum = 0;
+        if(productNum.length == 0){
+            return new ApiResult("请选择需要订购的货品");
+        }
+        for(int i = 0 ; i < productNum.length ; i++){
+            Integer productId = 0 ,num = 0;
+            if(productNum[i].indexOf(",") > -1){
+                productId = Integer.valueOf(productNum[i].split(",")[0]);
+                num = Integer.valueOf(productNum[i].split(",")[1]);
+            }
+            //校验货品
+            MallProduct product = null;
+            //货品为空时，如果商品只有一件货品，则取第一个货品；否则提示请选择货品
+            if (productId == null || productId.equals(0)) {
+                continue;
+            } else {
+                product = productService.findByProductId(productId);
+            }
+            if (product == null) {
+                continue;
+            }
+            //校验库存
+            if(author.getParentAgent() == null && num > (product.getStore() - product.getFreez())){
+                //上级为平台方,库存不足
+                continue;
+            }else if(author.getParentAgent() != null){
+                AgentProduct agentProduct = agentProductService.findAgentProduct(author.getParentAgent(),product);
+                if(agentProduct != null && num > agentProduct.getStore() - agentProduct.getFreez()){
+                    continue;
+                }
+            }
+            //增加购物车记录
+            ShoppingCart cart = new ShoppingCart();
+            if (author != null && author.getType() == Agent.class) {
+                cart.setAgent(author.getAuthorAgent());
+                cart.setShop(null);
+            } else if (author != null && author.getType() == Shop.class) {
+                cart.setAgent(null);
+                cart.setShop(author.getAuthorShop());
+            }
+            cart.setProduct(product);
+            cart.setNum(num);
+            cart.setCreateTime(new Date());
+            cart = shoppingCartService.createShoppingCart(cart);
+            if(cart != null){
+                successNum ++;
+            }
+        }
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS,"加入购物车成功：其中成功" + successNum + "个，失败" + (productNum.length - successNum) + "个");
     }
 
 

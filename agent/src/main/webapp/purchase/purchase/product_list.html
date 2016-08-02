@@ -41,11 +41,21 @@
 <form method="post" action="/purchase/showProductList" data-th-action="@{/purchase/showProductList}" id="form1">
     <div class="block">
         <div class="cnt-wp" style="padding: 10px 10px 10px;display: block;">
+            <div class="bar" style="float: right;">
+                批量填充：
+                <input type="number" value="0" style="width: 50px;" id="batchChangeNum"/>
+                <a class="btn-lit" href="javascript:batchPutIntoShoppingCart();">
+                    <span>批量订购</span></a>
+                <a class="btn-lit" href="javascript:window.location.href=document.referrer;">
+                    <span>返回</span></a>
+            </div>
             <div class="cnt">
-
                 <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
                     <thead>
                     <tr class="even">
+                        <th scope="col">
+                            <input type="checkbox" id="checkAll"/>
+                        </th>
                         <th scope="col">序号
                         </th>
                         <th scope="col">规格
@@ -67,12 +77,13 @@
                     <tbody data-th-remove="all-but-first">
                     <!--@thymesVar id="productList" type="java.util.List<com.huotu.agento2o.service.entity.goods.MallProduct>"-->
                     <tr data-th-each="product,productStat:${productList}" th:id="${product.productId}">
+                        <td class="txt20 c"><input name="choice" type="checkbox" data-th-disabled="${0 >= product.usableStore}"/></td>
                         <td class="txt20 c" data-th-text="${productStat.count}">1</td>
                         <td class="txt40 c" data-th-text="${product.standard}">
                             规格描述
                         </td>
                         <td class="txt20 c">
-                            ￥<span data-th-text="${product.price}">100</span>
+                            ￥<span data-th-text="${product.purchasePrice}">100</span>
                         </td>
                         <td class="txt20 c" data-th-text="${product.usableStore}">
                             1000
@@ -84,13 +95,15 @@
                             1000
                         </td>
                         <td class="txt40 c">
-                            <input name="num" style="width: 50px;text-align: center;" type="number" value="0" data-th-max="${product.usableStore}"/> <span data-th-text="${product.unit}"></span>
+                            <input name="num" style="width: 50px;text-align: center;" type="number" value="0"
+                                   data-th-attr="productId=${product.productId}"  data-th-max="${product.usableStore - product.shoppingStore}" data-th-disabled="${0 >= product.usableStore - product.shoppingStore}"/>
+                            <span data-th-text="${product.unit}"></span>
                         </td>
                         <td class="txt40 c">
-                            <a data-th-if="${product.usableStore > 0}" data-th-attr="productId=${product.productId}"
+                            <a data-th-if="${product.usableStore - product.shoppingStore > 0}" data-th-attr="productId=${product.productId}"
                                onclick="javascript:putIntoShoppingCart(this)" href="javascript:void(0)"
                                data-th-text="订购"></a>
-                            <span style="color: red" th:if="${0 >= product.usableStore}">库存不足</span>
+                            <span style="color: red" th:if="${0 >= product.usableStore - product.shoppingStore}">库存不足</span>
                         </td>
                     </tr>
                     </tbody>
@@ -103,10 +116,38 @@
 <script type="application/javascript" th:inline="javascript">
     /*<![CDATA[*/
     var basicUrl = /*[[@{/purchase}]]*/ "/purchase";
+    //批量设置订购数量
+    $("input[id=batchChangeNum]").keyup(function(){
+        var num = parseInt($(this).val());
+        if(num <= 0){
+            $.jBox.tip("订购数量必须大于0");
+            return;
+        }
+        $("tbody tr input[name=num]:not(:disabled)").each(function(){
+            var max = parseInt($(this).attr("max"));
+            if(max>=num){
+                $(this).val(num);
+            }else{
+                $(this).val(max);
+            }
+            $(this).parents("tr").find("input[type=checkbox]").prop("checked",true);
+        })
+    });
+    //全选
+    $("#checkAll").click(function () {
+        var option = $("#checkAll").prop('checked');
+        $("[name='choice']:checkbox:not(:disabled)").each(function () {
+            $(this).prop("checked", option);
+        })
+    })
     //订购数量校验
     $("input[name=num]").change(function(){
         var max = parseInt($(this).attr("max"));
         var num = parseInt($(this).val());
+        if(num <= 0){
+            $.jBox.tip("订购数量必须大于0");
+            $(this).val(0);
+        }
         if(num > max){
             $.jBox.tip("订购数量大于可用库存！");
             $(this).val(max);
@@ -117,6 +158,10 @@
         var productId = $(obj).attr("productId");
         var num = parseInt($("#" + productId + " input[name=num]").val());
         var max = parseInt($("#" + productId + " input[name=num]").attr("max"));
+        if(num <= 0){
+            $.jBox.tip("订购数量必须大于0");
+            return;
+        }
         if(num > max){
             $.jBox.tip("订购数量大于可用库存！");
             return;
@@ -132,6 +177,7 @@
             dataType: "json",
             success: function (msg) {
                 if (msg.code == 200) {
+                    $.jBox.closeTip();
                     $.jBox.confirm("已添加至购物车","提示",function(v,h,f){
                         if(v==true){
                             top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
@@ -144,6 +190,55 @@
                 }
             }
         });
+    }
+
+    //批量订购
+    function batchPutIntoShoppingCart(){
+        var productNumStr = "";
+        $("[name='choice']:checkbox:not(:disabled):checked").each(function(){
+            var inputObj = $(this).parents("tr").find("input[name=num]");
+            var productId= $(inputObj).attr("productId");
+            var num = parseInt($(inputObj).val());
+            var max = parseInt($(inputObj).attr("max"));
+            if(num < 0){
+                $(inputObj).val(0);
+                return true;
+            }else if(num > max){
+                $(inputObj).val(max);
+                num = max;
+            }
+            if(productNumStr.length > 0){
+                productNumStr += "|";
+            }
+            productNumStr += productId + "," +num;
+        })
+        if(productNumStr.length == 0){
+            $.jBox.tip("请选择需要订购的货品");
+        }else{
+            $.jBox.tip("正在加载","loading");
+            $.ajax({
+                type: "POST",
+                url: basicUrl + "/batchAddShopping",
+                data: {
+                    productNumStr: productNumStr
+                },
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.code == 200) {
+                        $.jBox.closeTip();
+                        $.jBox.confirm(msg.data,"提示",function(v,h,f){
+                            if(v==true){
+                                top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
+                            }else{
+                                window.location.reload();
+                            }
+                        },{buttons:{'继续采购':false,'采购下单':true}})
+                    } else {
+                        $.jBox.tip(msg.msg, 'error');
+                    }
+                }
+            });
+        }
     }
     /*]]>*/
 </script>

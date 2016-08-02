@@ -48,6 +48,8 @@ public class MallGoods {
      */
     @Column(name = "Price")
     private double price;
+    @Transient
+    private double purchasePrice;
     /**
      * 进货价
      */

@@ -186,7 +186,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             orderItem.setPdtDesc(shoppingCart.getProduct().getStandard());
             orderItem.setUnit(shoppingCart.getProduct().getUnit());
             productService.setProductPrice(shoppingCart.getProduct(),author);
-            orderItem.setPrice(shoppingCart.getProduct().getPrice());
+            orderItem.setPrice(shoppingCart.getProduct().getPurchasePrice());
             orderItem.setThumbnailPic(shoppingCart.getProduct().getGoods().getThumbnailPic());
             orderItem = itemRepository.save(orderItem);
             itemList.add(orderItem);
