@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderItemRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentReturnOrderRepository;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
+import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -53,6 +54,9 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
     @Autowired
     private MallProductRepository mallProductRepository;
+
+    @Autowired
+    private MallProductService mallProductService;
 
     @Autowired
     private AgentDeliveryRepository agentDeliveryRepository;
@@ -99,6 +103,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         for (int i = 0; i < agentProductIds.length; i++) {
             AgentProduct agentProduct = agentProductRepository.findOne(agentProductIds[i]);
             MallProduct mallProduct = agentProduct.getProduct();
+            mallProductService.setProductPrice(mallProduct,author);
             if (productNums[i] > (agentProduct.getStore() - agentProduct.getFreez()) || productNums[i] <= 0) {
                 throw new Exception("库存不足！");
             }

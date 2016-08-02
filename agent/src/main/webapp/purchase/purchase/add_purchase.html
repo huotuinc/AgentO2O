@@ -291,7 +291,7 @@
                     <div style="margin: 10px">
                         <div style="font-size: 14px; float: right">
                             <span>订单总计金额</span>
-                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="${#aggregates.sum(shoppingCartList.![product.price * num])}"></b></span>
+                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="${#aggregates.sum(shoppingCartList.![product.purchasePrice * num])}"></b></span>
                         </div>
                         <p style="clear: both"></p>
                         <div style="float: right;margin-top: -21px;">
@@ -410,10 +410,12 @@
             bankName = $.trim($("#tax_bankName").val());
             if(bankName.length == 0){
                 $.jBox.tip("请输入开户银行名称");
+                return;
             }
             accountNo = $.trim($("#tax_accountNo").val());
             if(accountNo.length == 0){
                 $.jBox.tip("请输入开户银行账号");
+                return;
             }
             data['taxTitle']=taxTitle;
             data['taxContent']=taxContent;

@@ -194,7 +194,7 @@
                     <div style="margin: 10px">
                         <div style="font-size: 14px; float: right">
                             <span>订单总计金额</span>
-                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="${#aggregates.sum(agentProductList.![product.price * returnedNum])}"></b></span>
+                            <span><b style=" color:#E33B3B; margin-right: 80px" th:text="${#aggregates.sum(agentProductList.![product.purchasePrice * returnedNum])}"></b></span>
                         </div>
                         <p style="clear: both"></p>
                         <div style="float: right;margin-top: -21px;">

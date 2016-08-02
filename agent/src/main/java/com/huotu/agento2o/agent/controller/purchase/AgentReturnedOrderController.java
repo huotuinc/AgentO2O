@@ -131,6 +131,7 @@ public class AgentReturnedOrderController {
             if(agentProduct == null || num == null || num <= 0 || num > (agentProduct.getStore() - agentProduct.getFreez())){
                 throw new Exception("数据错误！");
             }
+            mallProductService.setProductPrice(agentProduct.getProduct(),author);
             agentProduct.setReturnedNum(num);
             agentProductList.add(agentProduct);
         }
