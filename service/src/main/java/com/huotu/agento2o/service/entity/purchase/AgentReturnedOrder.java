@@ -257,7 +257,7 @@ public class AgentReturnedOrder {
     public boolean isCompleted(){
         return status == PurchaseEnum.OrderStatus.CHECKED
                 && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
-                && payStatus == PurchaseEnum.PayStatus.PAYED
+//                && payStatus == PurchaseEnum.PayStatus.PAYED
                 && receivedTime != null
                 && disabled == false;
     }

@@ -422,6 +422,10 @@
             $("#password").parent().parent().hide();
         }
         $("#citys").citySelect(pro, city, dist);
+        $("#citys select").change(function(){
+            selectProvince = $(this).children("option[value=" + $(this).val()+ "]").text();
+            map.centerAndZoom(selectProvince, 10);
+        })
         //    change2view2form('shopConfigForm');
         /*<![CDATA[*/
         /*百度地图API相关*/
@@ -464,7 +468,7 @@
                     lngandlat('', '');
                     $.jBox.tip("地址没有解析到结果,请点击地图进行选择");
                 }
-            });
+            },selectProvince);
         });
         map.addEventListener("click", function (e) {
             var pt = e.point;

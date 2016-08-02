@@ -78,12 +78,12 @@
                             <option th:each="shipStatusEnum:${shipStatusEnums}" th:value="${shipStatusEnum.code}" th:text="${shipStatusEnum.value}" th:selected="${shipStatusEnum.code == searchCondition.shipStatus}">未发货</option>
                         </select>
 
-                        <label class="first ">退款状态：</label>
+                        <!--<label class="first ">退款状态：</label>
                         <select name="payStatus" id="payStatus">
-                            <option selected="selected" value="-1" th:selected="*{payStatus == -1}">==所有==</option><!--th:selected="*{shipStatus == -1}"-->
-                            <!--/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/-->
+                            <option selected="selected" value="-1" th:selected="*{payStatus == -1}">==所有==</option>&lt;!&ndash;th:selected="*{shipStatus == -1}"&ndash;&gt;
+                            &lt;!&ndash;/*@thymesVar id="shipStatusEnums" type="com.huotu.hotsupplier.common.ienum.OrderEnum.ShipStatus"*/&ndash;&gt;
                             <option th:each="payStatusEnum:${payStatusEnums}" th:value="${payStatusEnum.code}" th:text="${payStatusEnum.value}" th:selected="${payStatusEnum.code == searchCondition.payStatus}">未发货</option>
-                        </select>
+                        </select>-->
 
                         <br />
                         <br />
@@ -149,8 +149,8 @@
                         </th>
                         <th scope="col">发货状态
                         </th>
-                        <th scope="col">付款状态
-                        </th>
+                        <!--<th scope="col">付款状态
+                        </th>-->
                         <th scope="col">操作
                         </th>
 
@@ -199,17 +199,17 @@
                         <td class="txt40 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}" style="color:red;">
                             发货状态
                         </td>
-                        <td class="txt40 c" data-th-text="${agentReturnOrder.payStatus.getValue()}" style="color:red;">
+                        <!--<td class="txt40 c" data-th-text="${agentReturnOrder.payStatus.getValue()}" style="color:red;">
                             付款状态
-                        </td>
+                        </td>-->
                         <td class="txt80 c">
                             <a href="javascript:void(0)" th:attr="rOrderId=''+${agentReturnOrder.ROrderId}" th:onclick="|showReturnedOrderDetail('${agentReturnOrder.rOrderId}',${agentReturnOrder.getAuthorId()})|" title="查看">查看</a>
                             <span th:if="${agentReturnOrder.checkable()}"> | </span>
                             <a th:if="${agentReturnOrder.checkable()}" href="javascript:void(0)" th:onclick="|checkReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="checkReturnOrder()" title="审核">审核</a>
                             <span th:if="${agentReturnOrder.receivable()}"> | </span>
                             <a th:if="${agentReturnOrder.receivable()}" href="javascript:void(0)" th:onclick="|receiveReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="receiveReturnOrder()" title="确认收货">确认收货</a>
-                            <span th:if="${agentReturnOrder.payabled()}"> | </span>
-                            <a th:if="${agentReturnOrder.payabled()}" href="javascript:void(0)" th:onclick="|payReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="payReturnOrder()" title="支付">支付</a>
+                            <!--<span th:if="${agentReturnOrder.payabled()}"> | </span>-->
+                            <!--<a th:if="${agentReturnOrder.payabled()}" href="javascript:void(0)" th:onclick="|payReturnOrder('${agentReturnOrder.rOrderId}')|" onclick="payReturnOrder()" title="支付">支付</a>-->
                         </td>
                     </tr>
                     </tbody>

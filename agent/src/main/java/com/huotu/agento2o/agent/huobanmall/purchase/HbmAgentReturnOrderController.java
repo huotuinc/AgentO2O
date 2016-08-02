@@ -174,12 +174,12 @@ public class HbmAgentReturnOrderController {
      * @param rOrderId
      * @return
      */
-    @RequestMapping(value = "/payReturnOrder")
+    /*@RequestMapping(value = "/payReturnOrder")
     @ResponseBody
     public ApiResult payReturnOrder(@RequestAttribute(value = "customerId") Integer customerId,
                                     @RequestParam(required = true) String rOrderId){
         return agentReturnedOrderService.payReturnOrder(customerId,null,rOrderId);
-    }
+    }*/
 
 
 }

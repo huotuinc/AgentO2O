@@ -48,8 +48,11 @@ public class MallGoods {
      */
     @Column(name = "Price")
     private double price;
+    /**
+     * 如果只有一个货品，显示这个货品的进货价；如果有多个货品，则显示区间值
+     */
     @Transient
-    private double purchasePrice;
+    private String purchasePrice;
     /**
      * 进货价
      */

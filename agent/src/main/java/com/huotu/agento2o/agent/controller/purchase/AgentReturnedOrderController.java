@@ -335,7 +335,7 @@ public class AgentReturnedOrderController {
 
         searchCondition.setParentAgentId(agent.getId());
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
-
+        setOrderPicUri(agentReturnedOrderPage.getContent());
         List<Agent> agentList = agentService.findByParentAgentId(agent.getId());
         List<Shop> shopList = shopService.findByAgentId(agent.getId());
 

@@ -500,8 +500,6 @@
             url: "/config/updateShop",
             data: {
                 id: id,
-                username: /*[[${shop.username}]]*/,
-                password: /*[[${shop.password}]]*/,
                 provinceCode: provinceCode,
                 cityCode: cityCode,
                 districtCode: districtCode,
@@ -542,6 +540,10 @@
     var pro = /*[[${shop.provinceCode}]]*/"";
     var city = /*[[${shop.cityCode}]]*/"";
     var dist = /*[[${shop.districtCode}]]*/"";
+    var selectProvince = /*[[${shop.addressArea}]]*/"杭州市";
+    if(selectProvince.indexOf("/") > -1){
+        selectProvince = selectProvince.split("/")[2];
+    }
     var id = /*[[${shop.id}]]*/"";
         $('#hotUserName').typeahead({
             source: function (query, process) {
@@ -565,6 +567,11 @@
         $("#password").parent().parent().hide();
     }
     $("#citys").citySelect(pro, city, dist);
+    //省市区选择后改变百度地图中心定位到选择的省市区
+    $("#citys select").change(function(){
+        selectProvince = $(this).children("option[value=" + $(this).val()+ "]").text();
+        map.centerAndZoom(selectProvince, 10);
+    })
     //    change2view2form('shopConfigForm');
     /*<![CDATA[*/
     /*百度地图API相关*/
@@ -578,8 +585,8 @@
             map.centerAndZoom(cityName, 10);
         }
 
-        var myCity = new BMap.LocalCity();
-        myCity.get(myFun);
+        var selectProvince = new BMap.LocalCity();
+        selectProvince.get(myFun);
     } else {
         var shoplan = /*[[${shop.lan}]]*/;
         var shoplat = /*[[${shop.lat}]]*/;
@@ -607,7 +614,7 @@
                 lngandlat('', '');
                 $.jBox.tip("地址没有解析到结果,请点击地图进行选择");
             }
-        });
+        },selectProvince);
     });
     map.addEventListener("click", function (e) {
         var pt = e.point;

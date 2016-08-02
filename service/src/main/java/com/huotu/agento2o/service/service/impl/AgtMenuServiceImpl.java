@@ -65,14 +65,14 @@ public class AgtMenuServiceImpl implements AgtMenuService {
             menuRepository.save(ddlb);
 
             //二级子菜单 售后列表
-            AgtMenu shlb = new AgtMenu(2, "/agent/afterSale/afterSaleList", "售后列表", 1, ddgl, "AGENT,SHOP,ORDER", 0, "010102");
+            AgtMenu shlb = new AgtMenu(2, "/agent/afterSale/afterSaleList", "售后列表", 1, ddgl, "SHOP,ORDER", 0, "010102");
             menuRepository.save(shlb);
 
             //一级子菜单 单据管理
-            AgtMenu djgl = new AgtMenu(1, "", "单据管理", 1, orderMenu, "AGENT,SHOP,ORDER", 0, "0102");
-            AgtMenu fhd = new AgtMenu(2, "/order/deliveries", "发货单", 0, djgl, "AGENT,SHOP,ORDER", 0, "010201");
+            AgtMenu djgl = new AgtMenu(1, "", "单据管理", 1, orderMenu, "SHOP,ORDER", 0, "0102");
+            AgtMenu fhd = new AgtMenu(2, "/order/deliveries", "发货单", 0, djgl, "SHOP,ORDER", 0, "010201");
             menuRepository.save(fhd);
-            AgtMenu thd = new AgtMenu(2, "/order/deliveries?type=return", "退货单", 1, djgl, "AGENT,SHOP,ORDER", 0, "010202");
+            AgtMenu thd = new AgtMenu(2, "/order/deliveries?type=return", "退货单", 1, djgl, "SHOP,ORDER", 0, "010202");
             menuRepository.save(thd);
         }
     }

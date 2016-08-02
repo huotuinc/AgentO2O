@@ -106,11 +106,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                         product.setShoppingStore(Math.max(0, shoppingCart.getNum()));
                     }
                 });
-                if (goods.getProducts().size() == 1) {
-                    goods.setPurchasePrice(goods.getProducts().get(0).getPurchasePrice());
-                } else if (goods.getAgentPrice() != null && goods.getAgentPrice() != 0) {
-                    goods.setPurchasePrice(goods.getAgentPrice());
-                }
+                setGoodsPurchasePrice(goods);
             });
         }
         return goodsPage;
@@ -194,14 +190,20 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                         product.setShoppingStore(Math.max(0, shoppingCart.getNum()));
                     }
                 });
-                if (goods.getProducts().size() == 1) {
-                    goods.setPurchasePrice(goods.getProducts().get(0).getPurchasePrice());
-                } else if (goods.getAgentPrice() != null && goods.getAgentPrice() != 0) {
-                    goods.setPurchasePrice(goods.getAgentPrice());
-                }
+                setGoodsPurchasePrice(goods);
             });
         }
         return goodsPage;
+    }
+
+    private void setGoodsPurchasePrice(MallGoods goods){
+        double minPurchasePrice = goods.getProducts().stream().mapToDouble(p->p.getPurchasePrice()).min().getAsDouble();
+        double maxPurchasePrice = goods.getProducts().stream().mapToDouble(p->p.getPurchasePrice()).max().getAsDouble();
+        if (minPurchasePrice == maxPurchasePrice) {
+            goods.setPurchasePrice(String.valueOf(minPurchasePrice));
+        } else {
+            goods.setPurchasePrice(minPurchasePrice + "-" + maxPurchasePrice);
+        }
     }
 
 

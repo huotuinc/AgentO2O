@@ -76,7 +76,7 @@ public class AgentController {
             Shop shop = author.getAuthorShop();
             URI logo_uri = null;
             if (!StringUtils.isEmpty(shop.getLogo())) {
-                logo_uri = resourceServer.getResource(null,shop.getLogo());
+                logo_uri = resourceServer.getResource(resourceServer.huobanmallMode,shop.getLogo());
             }
             //门店
             model.addAttribute("shop", shop);
@@ -219,7 +219,7 @@ public class AgentController {
         return shopService.saveShopConfig(shop, hotUserName);
     }
 
-    @RequestMapping(value = "/uploadShopLogo", method = RequestMethod.POST)
+    /*@RequestMapping(value = "/uploadShopLogo", method = RequestMethod.POST)
     @ResponseBody
     public Map<Object, Object> upLoadShop(
             @AgtAuthenticationPrincipal(type = Shop.class) Shop curShop,
@@ -242,6 +242,6 @@ public class AgentController {
         responseData.put("result", result);
 
         return responseData;
-    }
+    }*/
 
 }

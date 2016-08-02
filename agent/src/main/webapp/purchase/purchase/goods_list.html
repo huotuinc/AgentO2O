@@ -134,7 +134,7 @@
                             -webkit-line-clamp: 2;-webkit-box-orient: vertical;float: left;margin-right: 20px;" data-th-text="${goods.name}">商品名称</span>
                             </td>
                             <td class="txt80 c">
-                                ￥<span data-th-text="${goods.price}">100</span>
+                                ￥<span data-th-text="${goods.purchasePrice}">100</span>
                             </td>
                             <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![usableStore])}">
                                 1000
