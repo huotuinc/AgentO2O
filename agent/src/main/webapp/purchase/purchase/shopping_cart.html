@@ -194,6 +194,7 @@
                 $(obj).prevAll("input[name=num]").val(max);
                 return;
             }
+            $.jBox.tip("正在加载", "loading");
             $.ajax({
                 type: "POST",
                 url: basicUrl + "/editNum",
@@ -219,6 +220,7 @@
     //删除
     function deleteShoppingCart(obj) {
         var shoppingCartId = $(obj).attr("shoppingCartId");
+        $.jBox.tip("正在加载", "loading");
         $.ajax({
             type: "POST",
             url: basicUrl + "/delete",
@@ -246,6 +248,7 @@
                     dataType: "json",
                     success: function (msg) {
                         if (msg.code == 200) {
+                            $.jBox.closeTip();
                             window.location.reload();
                         } else {
                             $.jBox.tip(msg.msg, 'error');

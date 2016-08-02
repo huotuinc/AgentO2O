@@ -76,7 +76,7 @@ public class AgentController {
             Shop shop = author.getAuthorShop();
             URI logo_uri = null;
             if (!StringUtils.isEmpty(shop.getLogo())) {
-                logo_uri = resourceServer.getResource(shop.getLogo());
+                logo_uri = resourceServer.getResource(null,shop.getLogo());
             }
             //门店
             model.addAttribute("shop", shop);

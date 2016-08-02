@@ -74,7 +74,7 @@ public class HbmAgentController {
             agent.setChildAgentNum(agentService.findByParentAgentId(agent.getId()).size());
             agent.setChildShopNum(shopService.findByAgentId(agent.getId()).size());
         });
-        model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
+        model.addAttribute("agentLevels", agentLevelService.findByCustomerId(customerId));
         model.addAttribute("page", page);
         model.addAttribute("agentActiveEnums", AgentActiveEnum.values());
         return "huobanmall/agent/agentList";
@@ -147,7 +147,7 @@ public class HbmAgentController {
             }
             model.addAttribute("agent", oldAgent);
         }
-        model.addAttribute("agentLevels", agentLevelService.findByCustomertId(customerId));
+        model.addAttribute("agentLevels", agentLevelService.findByCustomerId(customerId));
         model.addAttribute("parentAgentLevelId", parentAgentLevelId);
         return ifShow ? "huobanmall/agent/showAgent" : "huobanmall/agent/addAgent";
     }

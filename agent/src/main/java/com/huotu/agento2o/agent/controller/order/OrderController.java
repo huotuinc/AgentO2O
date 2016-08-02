@@ -108,7 +108,7 @@ public class OrderController {
         mallOrderItemList.forEach(item->{
             if(!StringUtil.isEmptyStr(item.getThumbnailPic())){
                 try {
-                    URI picUri = resourceService.getResource(item.getThumbnailPic());
+                    URI picUri = resourceService.getResource(StaticResourceService.huobanmallMode,item.getThumbnailPic());
                     item.setPicUri(picUri);
                 } catch (URISyntaxException e) {
                 }

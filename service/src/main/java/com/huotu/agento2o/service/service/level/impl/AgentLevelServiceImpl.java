@@ -31,7 +31,7 @@ public class AgentLevelServiceImpl implements AgentLevelService {
     private AgentService agentService;
 
     @Override
-    public List<AgentLevel> findByCustomertId(Integer customerId) {
+    public List<AgentLevel> findByCustomerId(Integer customerId) {
         return agentLevelRepository.findByCustomer_customerIdOrderByLevel(customerId);
     }
 

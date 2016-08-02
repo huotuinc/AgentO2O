@@ -38,6 +38,7 @@ public abstract class AbstractStaticResourceService implements StaticResourceSer
 
     protected URI uriPrefix;
     protected URI fileHome;
+    protected URI huobanmallPrefix;
     @Autowired
     private VFSHelper vfsHelper;
 
@@ -77,17 +78,24 @@ public abstract class AbstractStaticResourceService implements StaticResourceSer
                 }
             }
         });
-        return getResource(path);
+        //上传图片到本地
+        return getResource(null,path);
     }
 
     @Override
-    public URI getResource(String path) throws URISyntaxException {
-        StringBuilder stringBuilder = new StringBuilder(uriPrefix.toString());
+    public URI getResource(String mode,String path) throws URISyntaxException {
+        StringBuilder stringBuilder;
+        if(this.huobanmallMode.equals(mode)){
+            stringBuilder = new StringBuilder(huobanmallPrefix.toString());
+        }else{
+            stringBuilder = new StringBuilder(uriPrefix.toString());
+        }
         if (!stringBuilder.toString().endsWith("/") && !path.startsWith("/"))
             stringBuilder.append("/");
         stringBuilder.append(path);
         return new URI(stringBuilder.toString());
     }
+
 
     @Override
     public void setListUri(List targetList, String sourceColumnName, String targetColumnName) {
@@ -101,7 +109,8 @@ public abstract class AbstractStaticResourceService implements StaticResourceSer
                     sourceColumn.setAccessible(true);
                     String resourceStr = String.valueOf(sourceColumn.get(p));
                     if (!StringUtil.isEmptyStr(resourceStr)) {
-                        URI picUri = getResource(resourceStr);
+                        //从伙伴商城读取图片
+                        URI picUri = getResource(this.huobanmallMode,resourceStr);
                         Field targetColumn = p.getClass().getDeclaredField(targetColumnName);
                         targetColumn.setAccessible(true);
                         targetColumn.set(p, picUri);

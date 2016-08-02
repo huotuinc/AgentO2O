@@ -46,10 +46,16 @@ public class DynamicStaticResourceService extends AbstractStaticResourceService 
         if (home == null) {
             throw new IllegalStateException("请设置huotu.resourcesUri和huotu.resourcesHome属性");
         }
+        //伙伴商城的资源
+        String huobanmallUri = env.getProperty("huobanmall.resourceUrl", (String) null);
+        if (huobanmallUri == null) {
+            throw new IllegalStateException("请设置huobanmall.resourceUrl属性");
+        }
         log.info("Use ResourceURI:" + uri);
         try {
             this.uriPrefix = new URI(uri);
             this.fileHome = new URI(home);
+            this.huobanmallPrefix = new URI(huobanmallUri);
         } catch (URISyntaxException e) {
             log.error("解析失败", e);
             throw new InternalError("解析失败");

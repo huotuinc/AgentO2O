@@ -4,6 +4,7 @@ import com.huotu.agento2o.common.ienum.EnumHelper;
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.SerialNo;
+import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
@@ -93,7 +94,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
     public void testFindAll(){
 
         int recordNum = 3;
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
 
         MallCustomer parentAgent1 = mockAgent(mallCustomer,null);
         MallCustomer parentAgent2 = mockAgent(mallCustomer,null);
@@ -110,21 +111,25 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
 
             parentReturnOrder1.setROrderId(SerialNo.create());
             parentReturnOrder1.setAuthor(parentAgent1);
+            parentReturnOrder1.setParentAgent(null);
             parentAgentROrders1.add(parentReturnOrder1);
 
             AgentReturnedOrder parentReturnOrder2 = new AgentReturnedOrder();
             parentReturnOrder2.setROrderId(SerialNo.create());
             parentReturnOrder2.setAuthor(parentAgent2);
+            parentReturnOrder1.setParentAgent(null);
             parentAgentROrders2.add(parentReturnOrder2);
 
             AgentReturnedOrder agentReturnedOrder1 = new AgentReturnedOrder();
             agentReturnedOrder1.setROrderId(SerialNo.create());
             agentReturnedOrder1.setAuthor(agent1);
+            agentReturnedOrder1.setParentAgent(agent1.getParentAgent());
             agentROrders1.add(agentReturnedOrder1);
 
             AgentReturnedOrder agentReturnedOrder2 = new AgentReturnedOrder();
             agentReturnedOrder2.setROrderId(SerialNo.create());
             agentReturnedOrder2.setAuthor(agent2);
+            agentReturnedOrder2.setParentAgent(agent2.getParentAgent());
             agentROrders2.add(agentReturnedOrder2);
         }
 
@@ -167,7 +172,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         String rOrderId = SerialNo.create();
         Integer returnNum = 5;
 
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer agent = mockAgent(mallCustomer,null);
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),agent.getId());
         MallProduct mallProduct = mockMallProduct(mallGoods);
@@ -208,7 +213,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
 
     @Test
     public void testCheckReturnOrder(){
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentAgent = mockAgent(mallCustomer,null);
         MallCustomer subAgent = mockAgent(mallCustomer,parentAgent.getAgent());
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(), parentAgent.getId());
@@ -296,7 +301,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
 
     @Test
     public void testPushReturnOrderDelivery(){
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
 
         MallCustomer agent = mockAgent(mallCustomer,null);
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(), agent.getId());
@@ -338,7 +343,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Integer parentReturnNum = 10;
         Integer subReturnNum = 10;
 
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentAgent = mockAgent(mallCustomer,null);
         MallCustomer subAgent = mockAgent(mallCustomer,parentAgent.getAgent());
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),null);
@@ -411,7 +416,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         String parentROrderId = SerialNo.create();
         String subROrderId = SerialNo.create();
 
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer parentAgent = mockAgent(mallCustomer,null);
         MallCustomer subAgent = mockAgent(mallCustomer,parentAgent.getAgent());
 
@@ -451,7 +456,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         Integer agentProductStore = 1000;
         Integer agentProductFreez = 900;
 
-        MallCustomer mallCustomer = mockMallCustomer();
+        MallCustomer mallCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
         MallCustomer agent = mockAgent(mallCustomer,null);
         MallGoods mallGoods = mockMallGoods(mallCustomer.getCustomerId(),agent.getId());
         MallProduct mallProduct = mockMallProduct(mallGoods);

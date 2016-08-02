@@ -57,18 +57,18 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
         //初始化模拟数据
         mockCustomer = mockMallCustomer(CustomerTypeEnum.HUOBAN_MALL);
 
-        for (int i = 0; i <= random.nextInt(5)+1; i++) {
+        for (int i = 0; i <= random.nextInt(5) + 1; i++) {
             AgentLevel mockAgentLevel = mockAgentLevel(mockCustomer);
             agentLevels.add(mockAgentLevel);
         }
         //排序
-        Collections.sort(agentLevels,(o1, o2) -> {
+        Collections.sort(agentLevels, (o1, o2) -> {
             return o1.getLevel().compareTo(o2.getLevel());
         });
     }
 
     @Test
-    public void testShowLevelList() throws Exception{
+    public void testShowLevelList() throws Exception {
         String controllerUrl = BASE_URL + "/levelList";
         Cookie cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
         MvcResult agentResult = mockMvc.perform(get(controllerUrl).cookie(cookie))
@@ -85,60 +85,62 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
     }
 
     @Test
-    public void testsShowLevel() throws Exception{
-        String controllerUrl = BASE_URL + "/-1";
+    public void testsShowLevel() throws Exception {
+        String controllerUrl = BASE_URL + "/get";
         AgentLevel expectAgentLevel = agentLevels.get(0);
         Cookie cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
-        MvcResult agentResult = mockMvc.perform(get(controllerUrl).cookie(cookie))
+        MvcResult agentResult = mockMvc.perform(get(controllerUrl).cookie(cookie)
+                .param("levelId", "-1"))
                 .andExpect(status().isOk())
                 .andReturn();
-        String result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        String result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("没有传输数据",obResult.getString("msg"));
-        controllerUrl = BASE_URL + "/"+expectAgentLevel.getLevelId();
-        agentResult = mockMvc.perform(get(controllerUrl).cookie(cookie))
+        Assert.assertEquals("没有传输数据", obResult.getString("msg"));
+//        controllerUrl = BASE_URL + "/" + expectAgentLevel.getLevelId();
+        agentResult = mockMvc.perform(get(controllerUrl).cookie(cookie)
+                .param("levelId", expectAgentLevel.getLevelId().toString()))
                 .andExpect(status().isOk())
                 .andReturn();
-        result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(result);
-        JSONObject realAgentLevel = obResult.getJSONObject("data") ;
-        Assert.assertEquals(expectAgentLevel.getLevelId(),realAgentLevel.get("levelId"));
-        Assert.assertEquals("请求成功",obResult.getString("msg"));
+        JSONObject realAgentLevel = obResult.getJSONObject("data");
+        Assert.assertEquals(expectAgentLevel.getLevelId(), realAgentLevel.get("levelId"));
+        Assert.assertEquals("请求成功", obResult.getString("msg"));
     }
 
     @Test
-    public void testDeleteLevel() throws Exception{
+    public void testDeleteLevel() throws Exception {
         String controllerUrl = BASE_URL + "/delete";
         AgentLevel expectAgentLevel = agentLevels.get(0);
         Cookie cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
         MvcResult agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie))
                 .andExpect(status().isOk())
                 .andReturn();
-        String result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        String result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("没有传输数据",obResult.getString("msg"));
+        Assert.assertEquals("没有传输数据", obResult.getString("msg"));
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
-                .param("levelId",String.valueOf(expectAgentLevel.getLevelId())))
+                .param("levelId", String.valueOf(expectAgentLevel.getLevelId())))
                 .andExpect(status().isOk())
                 .andReturn();
-        result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("请求成功",obResult.getString("msg"));
+        Assert.assertEquals("请求成功", obResult.getString("msg"));
         expectAgentLevel = agentLevels.get(1);
-        MallCustomer mockAgent = mockAgent(mockCustomer,null);
+        MallCustomer mockAgent = mockAgent(mockCustomer, null);
         mockAgent.getAgent().setAgentLevel(expectAgentLevel);
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
-                .param("levelId",String.valueOf(expectAgentLevel.getLevelId())))
+                .param("levelId", String.valueOf(expectAgentLevel.getLevelId())))
                 .andExpect(status().isOk())
                 .andReturn();
-        result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("等级已被绑定",obResult.getString("msg"));
+        Assert.assertEquals("等级已被绑定", obResult.getString("msg"));
 
     }
 
     @Test
-    public void testAddAndSaveLevel() throws Exception{
+    public void testAddAndSaveLevel() throws Exception {
         String controllerUrl = BASE_URL + "/save";
         AgentLevel expectAgentLevel = agentLevels.get(0);
         Cookie cookie = new Cookie("UserID", String.valueOf(mockCustomer.getCustomerId()));
@@ -146,35 +148,35 @@ public class HbmAgentLevelControllerTest extends CommonTestBase {
         MvcResult agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie))
                 .andExpect(status().isOk())
                 .andReturn();
-        String result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        String result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         JSONObject obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("请输入等级名称",obResult.getString("msg"));
+        Assert.assertEquals("请输入等级名称", obResult.getString("msg"));
         //levelId为空
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
-                .param("levelName","levelName"))
+                .param("levelName", "levelName"))
                 .andExpect(status().isOk())
                 .andReturn();
-        result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("没有传输数据",obResult.getString("msg"));
+        Assert.assertEquals("没有传输数据", obResult.getString("msg"));
         //修改
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
-                .param("levelId",String.valueOf(expectAgentLevel.getLevelId()))
-                .param("levelName","levelName"))
+                .param("levelId", String.valueOf(expectAgentLevel.getLevelId()))
+                .param("levelName", "levelName"))
                 .andExpect(status().isOk())
                 .andReturn();
-        result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("请求成功",obResult.getString("msg"));
+        Assert.assertEquals("请求成功", obResult.getString("msg"));
 
         //增加
         agentResult = mockMvc.perform(post(controllerUrl).cookie(cookie)
-                .param("levelId","0")
-                .param("levelName","levelName"))
+                .param("levelId", "0")
+                .param("levelName", "levelName"))
                 .andExpect(status().isOk())
                 .andReturn();
-        result = new String(agentResult.getResponse().getContentAsByteArray(),"UTF-8");
+        result = new String(agentResult.getResponse().getContentAsByteArray(), "UTF-8");
         obResult = JSONObject.parseObject(result);
-        Assert.assertEquals("请求成功",obResult.getString("msg"));
+        Assert.assertEquals("请求成功", obResult.getString("msg"));
     }
 }
