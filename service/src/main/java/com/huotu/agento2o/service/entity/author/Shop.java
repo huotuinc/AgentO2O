@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Date;
 
 
@@ -22,8 +23,19 @@ import java.util.Date;
 @Setter
 public class Shop{
 
+    /**
+     * 默认工作日
+     */
+    public static final String WORKDAY = "1,2,3,4,5,6,0";
+    /**
+     * 默认营业开始时间
+     */
+    public static final String OPEN_TIME = "00:00:00";
+    /**
+     * 默认营业结束时间
+     */
+    public static final String CLOSE_TIME = "23:59:59";
     private static final long serialVersionUID = -5103560839055745939L;
-
     @Id
     @Column(name = "Shop_ID")
     private Integer id;
@@ -198,7 +210,7 @@ public class Shop{
      * 客服电话
      */
     @Column(name = "Service_Tel")
-    private String serveiceTel;
+    private String serviceTel;
 
     /**
      * 售后电话
@@ -232,7 +244,7 @@ public class Shop{
     private ShopLevel shopLevel;
 
     /**
-     * 工作日
+     * 工作日 1-周一，2-周二，3-周三，4-周四，5-周五，6-周六，0-周日
      */
     @Column(name = "Workday")
     private String workday;
@@ -240,16 +252,16 @@ public class Shop{
     /**
      * 营业开始时间
      */
-    @Temporal(TemporalType.TIME)
+//    @Temporal(TemporalType.TIME)
     @Column(name = "OpenTime")
-    private Date openTime;
+    private Time openTime;
 
     /**
      * 营业结束时间
      */
-    @Temporal(TemporalType.TIME)
+//    @Temporal(TemporalType.TIME)
     @Column(name = "CloseTime")
-    private Date closeTime;
+    private Time closeTime;
 
 
     public boolean hasAccountInfo() {
