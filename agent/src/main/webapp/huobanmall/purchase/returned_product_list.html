@@ -197,7 +197,7 @@
                             审核状态
                         </td>
                         <td class="txt40 c" data-th-text="${agentReturnOrder.shipStatus.getValue()}" style="color:red;">
-                            发货状态
+                            退货状态
                         </td>
                         <!--<td class="txt40 c" data-th-text="${agentReturnOrder.payStatus.getValue()}" style="color:red;">
                             付款状态
@@ -344,6 +344,8 @@
 
     //审核采购单
     function checkReturnOrder(rOrderId){
+        $('#RadioGroup1').attr('checked','checked');
+        $("#parentComment").val();
         J.ShowDialog("checkDialog", "退货单审核", function () {
             var status = $("input[name='RadioGroup']:checked").val();
             var data = {

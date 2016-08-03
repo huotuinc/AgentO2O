@@ -95,7 +95,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentReturnedOrder.setROrderId(SerialNo.create());
         agentReturnedOrder.setAuthor(author);
         agentReturnedOrder.setParentAgent(author.getParentAgent());
-        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
+        agentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.NOT_DELIVER);
         agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
         agentReturnedOrder.setCreateTime(new Date());
@@ -339,7 +339,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDeliveryRepository.save(agentDelivery);
 
         agentReturnedOrder.setLastUpdateTime(new Date());
-        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        agentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.DELIVERED);
         agentReturnOrderRepository.save(agentReturnedOrder);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
@@ -371,8 +371,8 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
             agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
                 MallProduct mallProduct = agentReturnedOrderItem.getProduct();
-                mallProduct.setFreez(mallProduct.getFreez() - agentReturnedOrderItem.getNum());
                 mallProduct.setStore(mallProduct.getStore() + agentReturnedOrderItem.getNum());
+                mallProduct.getGoods().setStore(mallProduct.getGoods().getStore() + agentReturnedOrderItem.getNum());
                 mallProductRepository.save(mallProduct);
                 AgentProduct agentProduct = null;
                 if(subAgentReturnedOrder.getAgent() != null){

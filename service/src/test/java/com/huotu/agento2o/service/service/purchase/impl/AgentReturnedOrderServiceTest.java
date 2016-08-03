@@ -369,7 +369,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         parentAgentReturnedOrder.setAuthor(parentAgent);
         parentAgentReturnedOrder.setDisabled(false);
         parentAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
-        parentAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        parentAgentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.DELIVERED);
         agentReturnOrderRepository.saveAndFlush(parentAgentReturnedOrder);
 
         AgentReturnedOrderItem parentAgentReturnedOrderItem = new AgentReturnedOrderItem();
@@ -394,7 +394,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         subAgentReturnedOrder.setAuthor(subAgent);
         subAgentReturnedOrder.setDisabled(false);
         subAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
-        subAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        subAgentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.DELIVERED);
         agentReturnOrderRepository.saveAndFlush(subAgentReturnedOrder);
 
         AgentReturnedOrderItem subAgentReturnedOrderItem = new AgentReturnedOrderItem();
@@ -425,7 +425,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         parentAgentReturnedOrder.setDisabled(false);
         parentAgentReturnedOrder.setAuthor(parentAgent);
         parentAgentReturnedOrder.setROrderId(parentROrderId);
-        parentAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        parentAgentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.DELIVERED);
         parentAgentReturnedOrder.setReceivedTime(new Date());
         parentAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
         agentReturnOrderRepository.save(parentAgentReturnedOrder);
@@ -439,7 +439,7 @@ public class AgentReturnedOrderServiceTest extends CommonTestBase {
         subAgentReturnedOrder.setROrderId(subROrderId);
         subAgentReturnedOrder.setDisabled(false);
         subAgentReturnedOrder.setAuthor(subAgent);
-        subAgentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.DELIVERED);
+        subAgentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.DELIVERED);
         subAgentReturnedOrder.setReceivedTime(new Date());
         subAgentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKED);
         subAgentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);

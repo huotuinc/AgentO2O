@@ -359,6 +359,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 }
                 product.setStore(product.getStore() - item.getNum());
                 product.setFreez(product.getFreez() - item.getNum());
+                product.getGoods().setStore(product.getGoods().getStore() - item.getNum());
                 productRepository.save(product);
             } else {
                 //上级为代理商 获取代理商货品

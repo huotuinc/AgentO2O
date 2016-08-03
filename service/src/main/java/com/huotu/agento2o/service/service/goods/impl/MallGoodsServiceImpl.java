@@ -79,6 +79,8 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
             predicates.add(cb.equal(root.get("isAgent").as(Boolean.class), true));
+            //商品采购中不显示平台方已经删除的商品
+            predicates.add(cb.equal(root.get("disabled").as(Boolean.class),false));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }

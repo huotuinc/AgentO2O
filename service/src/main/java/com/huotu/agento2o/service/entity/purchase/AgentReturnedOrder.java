@@ -94,10 +94,10 @@ public class AgentReturnedOrder {
     @Column(name = "Status")
     private PurchaseEnum.OrderStatus status;
     /**
-     * 发货状态
+     * 退货状态
      */
     @Column(name = "Ship_Status")
-    private PurchaseEnum.ShipStatus shipStatus;
+    private PurchaseEnum.ReturnedShipStatus shipStatus;
     /**
      * 退款状态
      */
@@ -229,7 +229,7 @@ public class AgentReturnedOrder {
     //可支付
     public boolean payabled() {
         return status == PurchaseEnum.OrderStatus.CHECKED
-                && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
+                && shipStatus == PurchaseEnum.ReturnedShipStatus.DELIVERED
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED)
                 && receivedTime != null
                 && disabled==false;
@@ -239,7 +239,7 @@ public class AgentReturnedOrder {
     //可发货
     public boolean deliverable() {
         return status == PurchaseEnum.OrderStatus.CHECKED
-                && (shipStatus == null || shipStatus == PurchaseEnum.ShipStatus.NOT_DELIVER)
+                && (shipStatus == null || shipStatus == PurchaseEnum.ReturnedShipStatus.NOT_DELIVER)
                 && disabled==false;
     }
 
@@ -247,7 +247,7 @@ public class AgentReturnedOrder {
     //可确认收货
     public boolean receivable(){
         return status == PurchaseEnum.OrderStatus.CHECKED
-                && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
+                && shipStatus == PurchaseEnum.ReturnedShipStatus.DELIVERED
                 && (payStatus == null || payStatus == PurchaseEnum.PayStatus.NOT_PAYED)
                 && receivedTime == null
                 && disabled==false;
@@ -256,7 +256,7 @@ public class AgentReturnedOrder {
     // 完成整个退货流程
     public boolean isCompleted(){
         return status == PurchaseEnum.OrderStatus.CHECKED
-                && shipStatus == PurchaseEnum.ShipStatus.DELIVERED
+                && shipStatus == PurchaseEnum.ReturnedShipStatus.DELIVERED
 //                && payStatus == PurchaseEnum.PayStatus.PAYED
                 && receivedTime != null
                 && disabled == false;

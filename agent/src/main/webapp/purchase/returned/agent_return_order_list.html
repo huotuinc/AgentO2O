@@ -428,6 +428,8 @@
 
     //审核采购单
     function checkReturnOrder(rOrderId){
+        $("#RadioGroup1").attr("checked","checked");
+        $("#parentComment").val();
         J.ShowDialog("checkDialog", "退货单审核", function () {
             var status = $("input[name='RadioGroup']:checked").val();
             var data = {
@@ -440,7 +442,7 @@
                     $.jBox.tip("请输入审核说明！");
                     return;
                 }
-                data['parentComment'] = comment;
+                data['statusComment'] = comment;
             }
             $.jBox.tip("正在保存...", "loading");
             $.ajax({

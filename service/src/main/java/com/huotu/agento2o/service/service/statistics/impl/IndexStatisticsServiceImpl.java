@@ -92,7 +92,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int unDeliveryReturnedOrderCount(int agentId) {
-        return returnOrderRepository.countByAuthor_IdAndStatusAndShipStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.NOT_DELIVER);
+        return returnOrderRepository.countByAuthor_IdAndStatusAndShipStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ReturnedShipStatus.NOT_DELIVER);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int toReceiveReturnedOrderCount(int authorId) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.DELIVERED);
+        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ReturnedShipStatus.DELIVERED);
     }
 
     @Override

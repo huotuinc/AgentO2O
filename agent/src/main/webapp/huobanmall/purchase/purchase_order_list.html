@@ -301,6 +301,8 @@
     //审核采购单
     function checkOrder(obj){
         var pOrderId = $(obj).attr("pOrderId");
+        $("#RadioGroup1").attr('checked','checked');
+        $("#statusComment").val();
         J.ShowDialog("checkDialog", "采购单审核", function () {
             var status = $("input[name='RadioGroup']:checked").val();
             var data = {

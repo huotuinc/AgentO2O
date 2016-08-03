@@ -754,7 +754,7 @@ public abstract class CommonTestBase extends SpringWebTest {
         agentReturnedOrder.setROrderId(SerialNo.create());
         agentReturnedOrder.setAuthor(author);
         agentReturnedOrder.setDisabled(false);
-        agentReturnedOrder.setShipStatus(PurchaseEnum.ShipStatus.NOT_DELIVER);
+        agentReturnedOrder.setShipStatus(PurchaseEnum.ReturnedShipStatus.NOT_DELIVER);
         agentReturnedOrder.setStatus(PurchaseEnum.OrderStatus.CHECKING);
         agentReturnedOrder.setPayStatus(PurchaseEnum.PayStatus.NOT_PAYED);
         agentReturnedOrder.setSendmentStatus(PurchaseEnum.SendmentStatus.HOME_DELIVERY);
