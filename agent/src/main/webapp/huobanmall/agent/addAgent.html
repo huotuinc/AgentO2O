@@ -142,6 +142,7 @@
                                             </option>
                                             <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
                                                     th:text="${agentLevel.levelName}"
+                                                    th:attr="level=${agentLevel.level}"
                                                     th:selected="${agentLevel.levelId == parentAgentLevelId}">省级代理商
                                             </option>
                                         </select>
@@ -202,6 +203,7 @@
                                             <!--/*@thymesVar id="agentLevels" type="java.util.List<com.huotu.agento2o.service.entity.level.AgentLevel>"*/-->
                                             <option th:each="agentLevel:${agentLevels}" th:value="${agentLevel.levelId}"
                                                     th:text="${agentLevel.levelName}"
+                                                    th:attr="level=${agentLevel.level}"
                                                     th:selected="${agent.agentLevel==null? false:agentLevel.levelId == agent.agentLevel.levelId}">
                                                 省级代理商
                                             </option>
@@ -321,12 +323,12 @@
         var agentLevelId = $.trim($("#levelId").val());
         var hotUserName = $.trim($("#hotUserName").val());
         var email = $.trim($("#email").val());
-        var distLentgh = $("#districtCode")[0].length;
+        var distLength = $("#districtCode")[0].length;
         var provinceText = $("#provinceCode").find("option:selected").text();
         var cityText = $("#cityCode").find("option:selected").text();
         var distText = $("#districtCode").find("option:selected").text();
         var addressArea = provinceText + "/" + cityText;
-        if (distLentgh > 1) {
+        if (distLength > 1) {
             addressArea = addressArea + "/" + distText;
         }
         if (username.length == 0) {
@@ -338,7 +340,7 @@
             $.jBox.tip("请输入密码");
             return;
         }
-        if (provinceCode.length == 0 || cityCode.length == 0 || (distLentgh > 1 && districtCode.length == 0)) {
+        if (provinceCode.length == 0 || cityCode.length == 0 || (distLength > 1 && districtCode.length == 0)) {
             $.jBox.tip("请选择区域");
             return;
         }
@@ -346,6 +348,19 @@
             $.jBox.tip("请选择代理商等级");
             return;
         }
+        if (parentAgentId != -1) {
+            var parentLevel = parseInt($("#parentAgentLevelId").find("option:selected").attr("level"));
+            var level = parseInt($("#levelId").find("option:selected").attr("level"));
+            if (parentLevel > level) {
+                $.jBox.tip("无法绑定比自己等级低的上级代理商");
+                return;
+            }
+            if (parentAgentId == id) {
+                $.jBox.tip("上级代理商不能绑自己");
+                return;
+            }
+        }
+
         if (name.length == 0) {
             $.jBox.tip("请输入代理商名称");
             return;

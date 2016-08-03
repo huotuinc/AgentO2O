@@ -281,12 +281,12 @@
         var id = $.trim($("#shopID").val());
         var hotUserName = $.trim($("#hotUserName").val());
         var email = $.trim($("#email").val());
-        var distLentgh = $("#districtCode")[0].length;
+        var distLength = $("#districtCode")[0].length;
         var provinceText = $("#provinceCode").find("option:selected").text();
         var cityText = $("#cityCode").find("option:selected").text();
         var distText = $("#districtCode").find("option:selected").text();
         var addressArea = provinceText + "/" + cityText;
-        if (distLentgh > 1) {
+        if (distLength > 1) {
             addressArea = addressArea + "/" + distText;
         }
         if (username.length == 0) {
@@ -298,7 +298,7 @@
             $.jBox.tip("请输入密码");
             return;
         }
-        if (provinceCode.length == 0 || cityCode.length == 0 || (distLentgh > 1 && districtCode.length == 0)) {
+        if (provinceCode.length == 0 || cityCode.length == 0 || (distLength > 1 && districtCode.length == 0)) {
             $.jBox.tip("请选择区域");
             return;
         }

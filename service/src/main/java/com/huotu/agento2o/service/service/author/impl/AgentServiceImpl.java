@@ -7,7 +7,6 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
-import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
@@ -42,9 +41,6 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     private AgentRepository agentRepository;
-
-    @Autowired
-    private MallPasswordEncoder passwordEncoder;
 
     @Autowired
     private AgentLevelService agentLevelService;
@@ -169,7 +165,7 @@ public class AgentServiceImpl implements AgentService {
         if (parentAgentId != null && parentAgentId != -1) {
             parentAgent = findById(parentAgentId, customerId);
             if (parentAgent != null && parentAgent.getAgentLevel() != null && parentAgent.getAgentLevel().getLevel() > agentLevel.getLevel()) {
-                return new ApiResult("无法绑定上级代理商");
+                return new ApiResult("无法绑定比自己等级低的上级代理商");
             }
         }
         //小伙伴账号绑定限制

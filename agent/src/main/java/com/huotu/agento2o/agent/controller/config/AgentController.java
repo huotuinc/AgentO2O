@@ -195,7 +195,7 @@ public class AgentController {
         if(shop.getLat() == 0 || shop.getLan() == 0){
             return new ApiResult("请输入经纬度");
         }
-        if(StringUtil.isEmptyStr(shop.getServeiceTel())){
+        if (StringUtil.isEmptyStr(shop.getServiceTel())) {
             return new ApiResult("请输入客服电话");
         }
         if (StringUtil.isEmptyStr(shop.getLogo())) {

@@ -18,7 +18,6 @@ import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
-import com.huotu.agento2o.service.config.MallPasswordEncoder;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -40,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,8 +52,6 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     private ShopRepository shopRepository;
     @Autowired
-    private MallPasswordEncoder passwordEncoder;
-    @Autowired
     private UserBaseInfoRepository userBaseInfoRepository;
     //    @Autowired
 //    private MallCustomerRepository mallCustomerRepository;
@@ -61,6 +59,7 @@ public class ShopServiceImpl implements ShopService {
     private MallCustomerService mallCustomerSerivce;
     @Autowired
     private AccountRepository accountRepository;
+
 
     // TODO: 2016/7/28 delete
     /*@Override
@@ -126,6 +125,10 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setUsername(shop.getUsername());
             oldShop.setAgent(agent);
             oldShop.setCustomer(agent.getCustomer());
+            //设置默认工作日和上下班时间
+            oldShop.setWorkday(Shop.WORKDAY);
+            oldShop.setOpenTime(Time.valueOf(Shop.OPEN_TIME));
+            oldShop.setCloseTime(Time.valueOf(Shop.CLOSE_TIME));
             mallShop = mallCustomerSerivce.newCustomer(shop.getUsername(), shop.getPassword(), CustomerTypeEnum.AGENT_SHOP);
             oldShop.setId(mallShop.getCustomerId());
             mallShop.setShop(oldShop);
@@ -195,7 +198,6 @@ public class ShopServiceImpl implements ShopService {
                 return new ApiResult("小伙伴账号已被绑定", 400);
             }
         }
-//        oldShop.setUsername(shop.getUsername());
         mallShop.setNickName(shop.getName());
         oldShop.setAddressArea(shop.getAddressArea());
         oldShop.setProvinceCode(shop.getProvinceCode());
@@ -209,7 +211,7 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setLan(shop.getLan());
         oldShop.setLat(shop.getLat());
         oldShop.setComment(shop.getComment());
-        oldShop.setServeiceTel(shop.getServeiceTel());
+        oldShop.setServiceTel(shop.getServiceTel());
         oldShop.setAfterSalTel(shop.getAfterSalTel());
         oldShop.setAfterSalQQ(shop.getAfterSalQQ());
         oldShop.setUserBaseInfo(userBaseInfo);
@@ -218,6 +220,9 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setAccountNo(shop.getAccountNo());
         oldShop.setEmail(shop.getEmail());
         oldShop.setLogo(shop.getLogo());
+        oldShop.setWorkday(shop.getWorkday());
+        oldShop.setOpenTime(shop.getOpenTime());
+        oldShop.setCloseTime(shop.getCloseTime());
         mallCustomerSerivce.save(mallShop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
