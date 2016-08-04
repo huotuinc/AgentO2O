@@ -27,4 +27,17 @@ public class Constant {
      * 提现次数，默认为2次
      */
     public static final int WITHDRAWCOUNT = 2;
+
+    /**
+     * 门店默认工作日
+     */
+    public static final String WORKDAY = "1,2,3,4,5,6,0";
+    /**
+     * 门店默认营业开始时间
+     */
+    public static final String OPEN_TIME = "00:00:00";
+    /**
+     * 门店默认营业结束时间
+     */
+    public static final String CLOSE_TIME = "23:59:59";
 }
