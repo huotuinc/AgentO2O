@@ -23,7 +23,6 @@ import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentGoods;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.FreightTemplate;
-import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
 import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
@@ -293,7 +292,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         if (agentProductStoreInfo != null) {
             product.setStore(agentProductStoreInfo.getStore());
             product.setFreez(agentProductStoreInfo.getFreeze());
-            product.setUsableStore(Math.max(0, agentProductStoreInfo.getStore() - agentProductStoreInfo.getFreeze()));
+            product.setUsableStore(agentProductStoreInfo.getStore() - agentProductStoreInfo.getFreeze());
             if (products != null) {
                 products.add(product);
             }

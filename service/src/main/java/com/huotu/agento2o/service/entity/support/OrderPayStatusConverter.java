@@ -19,7 +19,7 @@ import javax.persistence.Converter;
  * Created by liual on 2015-11-27.
  */
 @Converter(autoApply = true)
-public class PayStatusConverter implements AttributeConverter<OrderEnum.PayStatus, Integer> {
+public class OrderPayStatusConverter implements AttributeConverter<OrderEnum.PayStatus, Integer> {
     @Override
     public Integer convertToDatabaseColumn(OrderEnum.PayStatus attribute) {
         return attribute.getCode();
