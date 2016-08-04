@@ -23,18 +23,6 @@ import java.util.Date;
 @Setter
 public class Shop{
 
-    /**
-     * 默认工作日
-     */
-    public static final String WORKDAY = "1,2,3,4,5,6,0";
-    /**
-     * 默认营业开始时间
-     */
-    public static final String OPEN_TIME = "00:00:00";
-    /**
-     * 默认营业结束时间
-     */
-    public static final String CLOSE_TIME = "23:59:59";
     private static final long serialVersionUID = -5103560839055745939L;
     @Id
     @Column(name = "Shop_ID")

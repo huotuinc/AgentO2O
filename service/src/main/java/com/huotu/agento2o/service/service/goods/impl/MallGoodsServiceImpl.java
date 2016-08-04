@@ -251,12 +251,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
      * @param author
      */
     private void setStoreAndFreeze(MallProduct product, Author author, List<MallProduct> products) {
-        AgentProduct agentProduct = null;
-        if (author != null && author.getType() == Agent.class) {
-            agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
-        } else if (author != null && author.getType() == Shop.class) {
-            agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
-        }
+        AgentProduct agentProduct = getAgentProduct(author, product);
         if (agentProduct != null) {
             product.setStore(agentProduct.getStore());
             product.setFreez(agentProduct.getFreez());

@@ -12,10 +12,7 @@ package com.huotu.agento2o.service.service.author.impl;
 
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.common.ienum.EnumHelper;
-import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.common.util.ExcelHelper;
-import com.huotu.agento2o.common.util.ResultCodeEnum;
-import com.huotu.agento2o.common.util.StringUtil;
+import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
@@ -126,9 +123,9 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setAgent(agent);
             oldShop.setCustomer(agent.getCustomer());
             //设置默认工作日和上下班时间
-            oldShop.setWorkday(Shop.WORKDAY);
-            oldShop.setOpenTime(Time.valueOf(Shop.OPEN_TIME));
-            oldShop.setCloseTime(Time.valueOf(Shop.CLOSE_TIME));
+            oldShop.setWorkday(Constant.WORKDAY);
+            oldShop.setOpenTime(Time.valueOf(Constant.OPEN_TIME));
+            oldShop.setCloseTime(Time.valueOf(Constant.CLOSE_TIME));
             mallShop = mallCustomerSerivce.newCustomer(shop.getUsername(), shop.getPassword(), CustomerTypeEnum.AGENT_SHOP);
             oldShop.setId(mallShop.getCustomerId());
             mallShop.setShop(oldShop);
