@@ -187,7 +187,7 @@
                             <td class="txt20 c"><input type="checkbox" name="choice" th:value="${withdrawRecord.id}" th:if="${withdrawRecord.status.code}==0"/></td>
                             <td class="txt80 c" th:text="${withdrawRecord.withdrawNo}">
                             </td>
-                            <td class="txt80 c" th:text="${withdrawRecord.shopAccount.author.name}">
+                            <td class="txt80 c" th:text="${withdrawRecord.account.getAuthorName()}">
                             </td>
                             <td class="txt80 c" th:text="${withdrawRecord.amount}">
                             </td>
@@ -414,31 +414,27 @@
     }
 
     function updateWithdrawRecord(id,status){
-        $.jBox.confirm('请确认已线下打款！',function(v){
-            if(v == 'ok'){
-                $.jBox.tip("正在保存...", "loading");
-                $.ajax({
-                    type:"POST",
-                    url: baseUrl + "/updateWithdrawRecord",
-                    data:{
-                        id:id,
-                        status:status
-                    },
-                    dataType:"json",
-                    success: function (msg) {
-                        if(msg.code == 200){
-                            $.jBox.tip(msg.msg, 'success');
-                        }else{
-                            $.jBox.tip(msg.msg, 'error');
-                        }
-                        setTimeout(function(){
-                            window.location.reload();
-                        },500);
+        $.jBox.tip("正在保存...", "loading");
+        $.ajax({
+            type:"POST",
+            url: baseUrl + "/updateWithdrawRecord",
+            data:{
+                id:id,
+                status:status
+            },
+            dataType:"json",
+            success: function (msg) {
+                if(msg.code == 200){
+                    $.jBox.tip(msg.msg, 'success');
+                }else{
+                    $.jBox.tip(msg.msg, 'error');
+                }
+                setTimeout(function(){
+                    window.location.reload();
+                },500);
 
-                    }
-                });
             }
-        })
+        });
     }
     //审核提现单（status  0：申请中 1：已打款  2： 申请不通过）
     function updateStatusById(status,obj) {

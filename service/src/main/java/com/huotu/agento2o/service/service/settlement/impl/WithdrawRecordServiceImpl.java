@@ -90,6 +90,7 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
         withdrawRecord.setApplyTime(new Date());
         withdrawRecord.setStatus(WithdrawEnum.WithdrawEnumStatus.APPLYING);
         withdrawRecord.setAccount(account);
+        withdrawRecord.setCustomerId(account.getAuthorCustomer().getId());
         withdrawRecordRepository.save(withdrawRecord);
     }
 
@@ -97,10 +98,7 @@ public class WithdrawRecordServiceImpl implements WithdrawRecordService {
     public Page<WithdrawRecord> getPageByCustomerId(Integer customerId, WithdrawRecordSearcher withdrawRecordSearcher) {
         Specification<WithdrawRecord> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.or(
-                    cb.equal(root.get("account").get("agent").get("customer").get("customerId").as(Integer.class),customerId),
-                    cb.equal(root.get("account").get("shop").get("customer").get("customerId").as(Integer.class),customerId)
-            ));
+            predicates.add(cb.equal(root.get("customerId").as(Integer.class),customerId));
             if(withdrawRecordSearcher.getStatus()!= -1) {
                 predicates.add(cb.equal(root.get("status").as(WithdrawEnum.WithdrawEnumStatus.class),
                         EnumHelper.getEnumType(WithdrawEnum.WithdrawEnumStatus.class,withdrawRecordSearcher.getStatus())));

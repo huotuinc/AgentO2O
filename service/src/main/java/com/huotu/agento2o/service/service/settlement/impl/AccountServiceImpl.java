@@ -148,7 +148,7 @@ public class AccountServiceImpl implements AccountService {
     public long getRecords(Account account, LocalDateTime firstDayOfMonth, LocalDateTime lastDayOfMonth) throws Exception {
         Specification<WithdrawRecord> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("shopAccount").as(Account.class), account));
+            predicates.add(cb.equal(root.get("account").as(Account.class), account));
             //找出 申请中和已支付的流水记录
             predicates.add(cb.or(cb.equal(root.get("status").as(WithdrawEnum.WithdrawEnumStatus.class), WithdrawEnum.WithdrawEnumStatus.APPLYING),
                     cb.equal(root.get("status").as(WithdrawEnum.WithdrawEnumStatus.class), WithdrawEnum.WithdrawEnumStatus.PAYED)));

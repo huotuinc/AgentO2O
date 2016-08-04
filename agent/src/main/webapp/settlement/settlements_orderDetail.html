@@ -248,7 +248,7 @@
                             <!--<td class="txt120 c" th:text="${supOrderItem.name}"> OL圈梦想合伙人首次公开众筹正式开启(1)</td>-->
                             <td class="txt40 c" th:text="${supOrderItem.price}"> 1000.000</td>
                             <td class="txt40 c" th:text="${supOrderItem.nums}"> 1</td>
-                            <td class="txt40 c" th:text="${#numbers.formatDecimal(supOrderItem.cost*supOrderItem.nums,1,2)}"> 1000.000</td>
+                            <td class="txt40 c" th:text="${#numbers.formatDecimal(supOrderItem.price*supOrderItem.nums,1,2)}"> 1000.000</td>
                             <td class="txt40 c" th:text="${supOrderItem.sendNum}"> 1</td>
                         </tr>
                         </tbody>

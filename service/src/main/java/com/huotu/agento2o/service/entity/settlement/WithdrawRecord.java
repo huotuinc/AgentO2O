@@ -69,6 +69,12 @@ public class WithdrawRecord {
     private Account account;
 
     /**
+     * 平台方ID（冗余）
+     */
+    @Column(name = "Customer_Id")
+    private Integer customerId;
+
+    /**
      * 开户银行名称
      */
     @Column(name = "BankName")

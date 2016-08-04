@@ -169,8 +169,8 @@
                         <tbody th:remove="all-but-first">
                         <tr th:each="withdrawRecord:${withdrawRecordPage}">
                             <td class="txt4r c" th:text="${withdrawRecord.withdrawNo}"></td>
-                            <td class="txt4r c" th:text="${#dates.format(withdrawRecord.applyTime,'yyyy-MM-dd HH:mm:ss')}"></td>
-                            <td class="txt4r c" th:text="${#dates.format(withdrawRecord.remitTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td class="txt4r c" th:text="${withdrawRecord.applyTime != null ? #dates.format(withdrawRecord.applyTime,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                            <td class="txt4r c" th:text="${withdrawRecord.remitTime != null ? #dates.format(withdrawRecord.remitTime,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
                             <td class="txt4r c" th:text="${withdrawRecord.amount}"></td>
 
                             <td class="txt4r c" style="color:red;" th:text="${withdrawRecord.status.value}">
