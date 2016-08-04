@@ -88,7 +88,7 @@
                         <td class="txt20 c" data-th-text="${product.usableStore}">
                             1000
                         </td>
-                        <td class="txt20 c" data-th-text="${product.authorStore}">
+                        <td class="txt20 c" data-th-style="${0>product.authorStore}?'color:red;'" data-th-text="${product.authorStore}">
                             1000
                         </td>
                         <td class="txt20 c" data-th-text="${product.shoppingStore}">

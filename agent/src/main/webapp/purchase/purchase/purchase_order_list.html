@@ -285,7 +285,7 @@
         })
     }
     //支付采购单
-    function payOrder(obj){
+    /*function payOrder(obj){
         $.jBox.confirm("请确认已线下支付","提示",function(v){
             if(v == 'ok'){
                 var pOrderId = $(obj).attr("pOrderId");
@@ -310,7 +310,7 @@
                 })
             }
         })
-    }
+    }*/
 
     //确认收货
     function receiveOrder(obj){
@@ -377,8 +377,8 @@
         }
         var pOrderId = $("input[name=pOrderId]").val();
         var orderItemName = $("input[name=orderItemName]").val();
-        var payStatusCode = $("#payStatusCode").val();
-        var shipStatusCode = $("#payStatusCode").val();
+//        var payStatusCode = $("#payStatusCode").val();
+        var shipStatusCode = $("#shipStatusCode").val();
         var statusCode = $("#statusCode").val();
         var beginTime = $("#beginTime").val();
         var endTime = $("#endTime").val();
@@ -389,7 +389,7 @@
         url += '?rnd=' + Math.random()
                 + '&pOrderId=' + pOrderId
                 + '&orderItemName=' + orderItemName
-                + '&payStatusCode=' + payStatusCode
+//                + '&payStatusCode=' + payStatusCode
                 + '&shipStatusCode=' + shipStatusCode
                 + '&statusCode=' + statusCode
                 + '&beginTime=' + beginTime

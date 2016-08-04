@@ -139,7 +139,7 @@
                             <td class="txt80 c" data-th-text="${#aggregates.sum(goods.products.![usableStore])}">
                                 1000
                             </td>
-                            <td class="txt80 c" th:text="${#aggregates.sum(goods.products.![authorStore])}"></td>
+                            <td class="txt80 c" th:style="${0>#aggregates.sum(goods.products.![authorStore])}?'color:red'" th:text="${#aggregates.sum(goods.products.![authorStore])}"></td>
                             <td class="txt80 c" th:text="${#aggregates.sum(goods.products.![shoppingStore])}"></td>
                             <td class="txt80 c">
                                 <input name="num" style="width: 50px;text-align: center;" type="number" value="0"

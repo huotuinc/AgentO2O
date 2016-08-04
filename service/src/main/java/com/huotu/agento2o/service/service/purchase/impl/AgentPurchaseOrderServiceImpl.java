@@ -474,11 +474,11 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
                 cellDescList.add(ExcelHelper.asCell(StringUtil.getNullStr(order.getMallCustomer().getNickName())));
             }
             cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getCreateTime(), StringUtil.TIME_PATTERN)));
-            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getPayTime(), StringUtil.TIME_PATTERN)));
+//            cellDescList.add(ExcelHelper.asCell(StringUtil.DateFormat(order.getPayTime(), StringUtil.TIME_PATTERN)));
             cellDescList.add(ExcelHelper.asCell(order.getFinalAmount(), Cell.CELL_TYPE_NUMERIC));
             cellDescList.add(ExcelHelper.asCell(order.getCostFreight(), Cell.CELL_TYPE_NUMERIC));
             cellDescList.add(ExcelHelper.asCell(order.getStatus().getValue()));
-            cellDescList.add(ExcelHelper.asCell(order.getPayStatus().getValue()));
+//            cellDescList.add(ExcelHelper.asCell(order.getPayStatus().getValue()));
             cellDescList.add(ExcelHelper.asCell(order.getShipStatus().getValue()));
             cellDescList.add(ExcelHelper.asCell(order.getShipName()));
             cellDescList.add(ExcelHelper.asCell(order.getShipMobile()));

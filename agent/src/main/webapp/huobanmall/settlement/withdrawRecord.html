@@ -247,7 +247,7 @@
                             <div class="cnt form">
                                 <ul>
                                     <li class="account">
-                                        <span>供应商：</span>
+                                        <span>代理商/门店：</span>
                                         <select id="withdrawcount_authorId" name="withdrawcount_authorId">
                                             <option value="0" th:selected="${withdrawRecordSearcher.shopId == 0}">请选择</option>
                                             <option th:each="shop:${shopList}" th:value="${shop.id}" th:selected="${withdrawRecordSearcher.shopId == shop.id ? true : false}" th:text="${shop.name}"></option>
