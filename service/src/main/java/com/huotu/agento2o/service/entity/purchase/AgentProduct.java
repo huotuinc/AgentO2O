@@ -15,7 +15,9 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallGoods;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,8 @@ import javax.persistence.*;
 @Cacheable(value = false)
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AgentProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -111,4 +115,9 @@ public class AgentProduct {
         return null;
     }
 
+    public AgentProduct(Integer id,Integer store,Integer freez){
+        this.id = id;
+        this.store = store;
+        this.freez = freez;
+    }
 }

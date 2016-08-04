@@ -15,6 +15,7 @@ import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.common.PurchaseEnum;
 import com.huotu.agento2o.service.entity.purchase.*;
 import com.huotu.agento2o.service.model.order.DeliveryInfo;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.purchase.AgentDeliveryRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentPurchaseOrderItemRepository;
@@ -111,7 +112,7 @@ public class AgentDeliveryServiceImpl implements AgentDeliveryService {
                 deliveryItem.setDelivery(agentDelivery);
                 if (agentId != null) {
                     //代理商货品
-                    AgentProduct agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(purchaseOrder.getParentAgent(), orderItem.getProduct());
+                    AgentProductStoreInfo agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(purchaseOrder.getParentAgent().getId(), orderItem.getProduct().getProductId());
                     deliveryItem.setAgentProductId(agentProduct.getId());
                 }
                 //平台货品

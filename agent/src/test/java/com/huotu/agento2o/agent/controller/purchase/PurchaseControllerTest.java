@@ -156,15 +156,6 @@ public class PurchaseControllerTest extends CommonTestBase {
         //总记录数
         long totalRecords = (Long) resultWithNoSearch.getModelAndView().getModel().get("totalRecords");
         Assert.assertEquals(mockGoodsWith1ProductList.size() + mockGoodsWithNProductList.size(), totalRecords);
-        List<MallGoods> realGoodsList = (List<MallGoods>) resultWithNoSearch.getModelAndView().getModel().get("goodsList");
-        for (int i = 0; i < Math.min(Constant.PAGESIZE, mockGoodsWith1ProductList.size()); i++) {
-            Assert.assertEquals(mockGoodsWith1ProductList.get(i).getGoodsId(), realGoodsList.get(i).getGoodsId());
-        }
-        if (mockGoodsWith1ProductList.size() < Constant.PAGESIZE) {
-            for (int i = 0; i < Math.min(Constant.PAGESIZE - mockGoodsWith1ProductList.size(), mockGoodsWithNProductList.size()); i++) {
-                Assert.assertEquals(mockGoodsWithNProductList.get(i).getGoodsId(), realGoodsList.get(mockGoodsWith1ProductList.size() + i).getGoodsId());
-            }
-        }
         //2.显示平台方商品（按商品名称搜索）
         MvcResult resultWithGoodsName = mockMvc.perform(get(controllerUrl).session(session)
                 .param("goodsName", mockGoodsWith1ProductList.get(0).getName()))
@@ -209,9 +200,6 @@ public class PurchaseControllerTest extends CommonTestBase {
         List<MallGoods> realGoodsListWithStandardTypeId = (List<MallGoods>) resultWithStandardTypeId.getModelAndView().getModel().get("goodsList");
         Assert.assertNotNull(realGoodsListWithStandardTypeId);
         Assert.assertEquals(standardTypeGoods.size(), realGoodsListWithStandardTypeId.size());
-        for (int i = 0; i < Math.min(Constant.PAGESIZE, realGoodsListWithStandardTypeId.size()); i++) {
-            Assert.assertEquals(standardTypeGoods.get(i).getGoodsId(), realGoodsListWithStandardTypeId.get(i).getGoodsId());
-        }
 
         // 4.按自定义类型搜索
         MvcResult resultWithCustomerTypeId = mockMvc.perform(get(controllerUrl).session(session)
@@ -227,9 +215,6 @@ public class PurchaseControllerTest extends CommonTestBase {
         List<MallGoods> realGoodsListWithCustomerTypeId = (List<MallGoods>) resultWithCustomerTypeId.getModelAndView().getModel().get("goodsList");
         Assert.assertNotNull(realGoodsListWithCustomerTypeId);
         Assert.assertEquals(customerTypeGoods.size(), realGoodsListWithCustomerTypeId.size());
-        for (int i = 0; i < Math.min(20, realGoodsListWithCustomerTypeId.size()); i++) {
-            Assert.assertEquals(customerTypeGoods.get(i).getGoodsId(), realGoodsListWithCustomerTypeId.get(i).getGoodsId());
-        }
 
         // 5.按商品名称和标准类型搜索
         MvcResult resultWithGoodsNameAndStandardTypeId = mockMvc.perform(get(controllerUrl).session(session)
@@ -303,12 +288,6 @@ public class PurchaseControllerTest extends CommonTestBase {
         long totalRecords = (Long) resultWithNoSearch.getModelAndView().getModel().get("totalRecords");
         List<MallGoods> realGoodsListWithNoSearch = (List<MallGoods>) resultWithNoSearch.getModelAndView().getModel().get("goodsList");
         Assert.assertEquals(mockFirstLevelAgentGoodsWith1ProductList.size() + mockFirstLevelAgentGoodsWithNProductList.size(), totalRecords);
-        for (int i = 0; i < mockFirstLevelAgentGoodsWith1ProductList.size(); i++) {
-            Assert.assertEquals(mockFirstLevelAgentGoodsWith1ProductList.get(i).getGoodsId(), realGoodsListWithNoSearch.get(i).getGoodsId());
-        }
-        for (int i = 0; i < mockFirstLevelAgentGoodsWithNProductList.size(); i++) {
-            Assert.assertEquals(mockFirstLevelAgentGoodsWithNProductList.get(i).getGoodsId(), realGoodsListWithNoSearch.get(mockFirstLevelAgentGoodsWith1ProductList.size() + i).getGoodsId());
-        }
 
         //2.显示上级代理商商品（按商品名称搜索）
         MvcResult resultWithGoodsName = mockMvc.perform(get(controllerUrl).session(session)
@@ -341,12 +320,6 @@ public class PurchaseControllerTest extends CommonTestBase {
         long totalRecords = (Long) resultWithNoSearch.getModelAndView().getModel().get("totalRecords");
         List<MallGoods> realGoodsListWithNoSearch = (List<MallGoods>) resultWithNoSearch.getModelAndView().getModel().get("goodsList");
         Assert.assertEquals(mockFirstLevelAgentGoodsWith1ProductList.size() + mockFirstLevelAgentGoodsWithNProductList.size(), totalRecords);
-        for (int i = 0; i < mockFirstLevelAgentGoodsWith1ProductList.size(); i++) {
-            Assert.assertEquals(mockFirstLevelAgentGoodsWith1ProductList.get(i).getGoodsId(), realGoodsListWithNoSearch.get(i).getGoodsId());
-        }
-        for (int i = 0; i < mockFirstLevelAgentGoodsWithNProductList.size(); i++) {
-            Assert.assertEquals(mockFirstLevelAgentGoodsWithNProductList.get(i).getGoodsId(), realGoodsListWithNoSearch.get(mockFirstLevelAgentGoodsWith1ProductList.size() + i).getGoodsId());
-        }
 
         //2.显示上级代理商商品（按商品名称搜索）
         MvcResult resultWithGoodsName = mockMvc.perform(get(controllerUrl).session(session)

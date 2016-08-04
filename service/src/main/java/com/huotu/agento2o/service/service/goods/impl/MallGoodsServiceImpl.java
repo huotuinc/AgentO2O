@@ -24,6 +24,7 @@ import com.huotu.agento2o.service.entity.purchase.AgentGoods;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.FreightTemplate;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.goods.MallGoodsTypeRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentGoodsRepository;
@@ -32,6 +33,7 @@ import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
 import com.huotu.agento2o.service.searchable.GoodsSearcher;
 import com.huotu.agento2o.service.service.goods.MallGoodsService;
 import com.huotu.agento2o.service.service.goods.MallProductService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,6 +66,8 @@ public class MallGoodsServiceImpl implements MallGoodsService {
     private MallProductService productService;
     @Autowired
     private AgentGoodsRepository agentGoodsRepository;
+    @Autowired
+    private AgentProductService agentProductService;
 
 
     /**
@@ -99,20 +103,22 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
                     productService.setProductPrice(product, author);
-                    AgentProduct agentProduct = getAgentProduct(author, product);
-                    ShoppingCart shoppingCart = getShoppingCart(author, product);
+                    //查找当前用户对应货品的可用库存
+                    Integer agentProductUsableNum = agentProductService.findAgentProductUsableNum(author, product);
+                    //查找购物车中这个货品的数量
+                    Integer shoppingCartNum = getShoppingCartNum(author, product);
                     //如果有多个货品，有货品可用数量小于0的按0算合计值
                     //如果只有单个货品，不做限制
-                    if (agentProduct != null) {
-                        if(goods.getProducts().size() > 1){
-                            product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                    if (agentProductUsableNum != null) {
+                        if (goods.getProducts().size() > 1) {
+                            product.setAuthorStore(Math.max(0, agentProductUsableNum));
                         } else {
-                            product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                            product.setAuthorStore(agentProductUsableNum);
                         }
                     }
                     product.setUsableStore(Math.max(0, product.getStore() - product.getFreez()));
-                    if (shoppingCart != null) {
-                        product.setShoppingStore(Math.max(0, shoppingCart.getNum()));
+                    if (shoppingCartNum != null) {
+                        product.setShoppingStore(Math.max(0, shoppingCartNum));
                     }
                 });
                 setGoodsPurchasePrice(goods);
@@ -132,24 +138,21 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         return productPriceMap;
     }
 
-    public AgentProduct getAgentProduct(Author author, MallProduct product) {
-        AgentProduct agentProduct = null;
+    /**
+     * 根据用户和货品查找购物车中的数量
+     *
+     * @param author
+     * @param product
+     * @return
+     */
+    public Integer getShoppingCartNum(Author author, MallProduct product) {
+        Integer num = 0;
         if (author != null && author.getType() == Agent.class) {
-            agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
+            num = shoppingCartRepository.findNumByAgentAndProduct(author.getAuthorAgent().getId(), product.getProductId());
         } else if (author != null && author.getType() == Shop.class) {
-            agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
+            num = shoppingCartRepository.findNumByShopAndProduct(author.getAuthorShop().getId(), product.getProductId());
         }
-        return agentProduct;
-    }
-
-    public ShoppingCart getShoppingCart(Author author, MallProduct product) {
-        ShoppingCart shoppingCart = null;
-        if (author != null && author.getType() == Agent.class) {
-            shoppingCart = shoppingCartRepository.findByAgentAndProduct(author.getAuthorAgent(), product);
-        } else if (author != null && author.getType() == Shop.class) {
-            shoppingCart = shoppingCartRepository.findByShopAndProduct(author.getAuthorShop(), product);
-        }
-        return shoppingCart;
+        return num;
     }
 
     /**
@@ -194,22 +197,22 @@ public class MallGoodsServiceImpl implements MallGoodsService {
                 final int finalProductCount = productCount;
                 goods.getProducts().forEach(product -> {
                     productService.setProductPrice(product, author);
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), product);
-                    AgentProduct agentProduct = getAgentProduct(author, product);
-                    ShoppingCart shoppingCart = getShoppingCart(author, product);
-                    if (agentProduct != null) {
+                    AgentProductStoreInfo parentAgentProductStoreInfo = agentProductRepository.findUsableNumByAgentAndProduct(author.getParentAgent().getId(), product.getProductId());
+                    Integer agentProductUsableNum = agentProductService.findAgentProductUsableNum(author, product);
+                    Integer shoppingCartNum = getShoppingCartNum(author, product);
+                    if (agentProductUsableNum != null) {
                         if (finalProductCount > 1) {
-                            product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                            product.setAuthorStore(Math.max(0, agentProductUsableNum));
                         } else {
-                            product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                            product.setAuthorStore(agentProductUsableNum);
 
                         }
                     }
-                    if (parentAgentProduct != null) {
-                        product.setUsableStore(Math.max(0, parentAgentProduct.getStore() - parentAgentProduct.getFreez()));
+                    if (parentAgentProductStoreInfo != null) {
+                        product.setUsableStore(Math.max(0, parentAgentProductStoreInfo.getStore() - parentAgentProductStoreInfo.getFreeze()));
                     }
-                    if (shoppingCart != null) {
-                        product.setShoppingStore(Math.max(0, shoppingCart.getNum()));
+                    if (shoppingCartNum != null) {
+                        product.setShoppingStore(Math.max(0, shoppingCartNum));
                     }
                 });
                 setGoodsPurchasePrice(goods);
@@ -219,8 +222,14 @@ public class MallGoodsServiceImpl implements MallGoodsService {
     }
 
     private void setGoodsPurchasePrice(MallGoods goods) {
-        double minPurchasePrice = goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).min().getAsDouble();
-        double maxPurchasePrice = goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).max().getAsDouble();
+        double minPurchasePrice = 0;
+        double maxPurchasePrice = 0;
+        if (goods.getProducts() != null && goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).min().isPresent()) {
+            minPurchasePrice = goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).min().getAsDouble();
+        }
+        if (goods.getProducts() != null && goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).max().isPresent()) {
+            maxPurchasePrice = goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).max().getAsDouble();
+        }
         if (minPurchasePrice == maxPurchasePrice) {
             goods.setPurchasePrice(String.valueOf(minPurchasePrice));
         } else {
@@ -275,16 +284,16 @@ public class MallGoodsServiceImpl implements MallGoodsService {
      * @param author
      */
     private void setStoreAndFreeze(MallProduct product, Author author, List<MallProduct> products) {
-        AgentProduct agentProduct = null;
+        AgentProductStoreInfo agentProductStoreInfo = null;
         if (author != null && author.getType() == Agent.class) {
-            agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
+            agentProductStoreInfo = agentProductRepository.findUsableNumByAgentAndProduct(author.getAuthorAgent().getId(), product.getProductId());
         } else if (author != null && author.getType() == Shop.class) {
-            agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
+            agentProductStoreInfo = agentProductRepository.findUsableNumByShopAndProduct(author.getAuthorShop().getId(), product.getProductId());
         }
-        if (agentProduct != null) {
-            product.setStore(agentProduct.getStore());
-            product.setFreez(agentProduct.getFreez());
-            product.setUsableStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+        if (agentProductStoreInfo != null) {
+            product.setStore(agentProductStoreInfo.getStore());
+            product.setFreez(agentProductStoreInfo.getFreeze());
+            product.setUsableStore(Math.max(0, agentProductStoreInfo.getStore() - agentProductStoreInfo.getFreeze()));
             if (products != null) {
                 products.add(product);
             }

@@ -98,7 +98,7 @@ public class ShopControllerTest extends CommonTestBase {
                 .param("address", "address")
                 .param("lan", "1")
                 .param("lat", "1")
-                .param("serveiceTel", "serveiceTel")
+                .param("serviceTel", "serviceTel")
                 .param("afterSalTel", "afterSalTel")
                 .param("afterSalQQ", "afterSalQQ")
                 .param("accountName", "accountName")
@@ -106,6 +106,7 @@ public class ShopControllerTest extends CommonTestBase {
                 .param("accountNo", "accountNo")
         ).andExpect(status().isOk()).andReturn();
         String content = new String(result.getResponse().getContentAsByteArray(), "UTF-8");
+        System.out.println(content);
         JSONObject obj = JSONObject.parseObject(content);
         Assert.assertEquals("200", obj.getString("code"));
     }

@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.service.goods.MallProductService;
 import com.huotu.agento2o.service.service.purchase.AgentProductService;
@@ -45,9 +46,9 @@ public class AgentProductServiceImpl implements AgentProductService {
         } else if (author != null && author.getType() == Shop.class) {
             productList = agentProductRepository.findByShop_IdAndDisabledFalse(author.getId());
         }
-        if(productList != null){
-            productList.forEach(p->{
-                mallProductService.setProductPrice(p.getProduct(),author);
+        if (productList != null) {
+            productList.forEach(p -> {
+                mallProductService.setProductPrice(p.getProduct(), author);
             });
         }
         return productList;
@@ -108,6 +109,21 @@ public class AgentProductServiceImpl implements AgentProductService {
             return agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
         }
         return null;
+    }
+
+    @Override
+    public Integer findAgentProductUsableNum(Author author, MallProduct product) {
+        Integer agentProductUsableNum = 0;
+        AgentProductStoreInfo agentProductStoreInfo = null;
+        if (author != null && author.getType() == Agent.class) {
+            agentProductStoreInfo = agentProductRepository.findUsableNumByAgentAndProduct(author.getAuthorAgent().getId(), product.getProductId());
+        } else if (author != null && author.getType() == Shop.class) {
+            agentProductStoreInfo = agentProductRepository.findUsableNumByShopAndProduct(author.getAuthorShop().getId(), product.getProductId());
+        }
+        if (agentProductStoreInfo != null) {
+            agentProductUsableNum = agentProductStoreInfo.getStore() - agentProductStoreInfo.getFreeze();
+        }
+        return agentProductUsableNum;
     }
 
     @Override

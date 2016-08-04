@@ -44,6 +44,14 @@ public interface AgentProductService {
     AgentProduct findAgentProduct(Shop shop,MallProduct product);
     AgentProduct findAgentProduct(Author author, MallProduct product);
 
+    /**
+     * 查找代理商/门店当前该货品的可用库存
+     * @param author
+     * @param product
+     * @return
+     */
+    Integer findAgentProductUsableNum(Author author,MallProduct product);
+
     AgentProduct findByAgentProductId(Integer agentProductId);
 
 

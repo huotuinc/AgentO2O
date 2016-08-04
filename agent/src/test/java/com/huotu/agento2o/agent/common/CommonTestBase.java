@@ -31,6 +31,7 @@ import com.huotu.agento2o.service.entity.order.MallAfterSales;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.purchase.*;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.MallCustomerRepository;
 import com.huotu.agento2o.service.repository.author.AgentRepository;
 import com.huotu.agento2o.service.repository.author.ShopRepository;
@@ -613,8 +614,8 @@ public abstract class CommonTestBase extends SpringWebTest {
         if (agentPurchaseOrder.getParentAgent() == null) {
             orderItem.setNum(random.nextInt(mallProduct.getFreez() - 1) + 1);
         } else {
-            AgentProduct agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentPurchaseOrder.getParentAgent(), mallProduct);
-            orderItem.setNum(random.nextInt(agentProduct.getFreez() - 1) + 1);
+            AgentProductStoreInfo agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(agentPurchaseOrder.getParentAgent().getId(), mallProduct.getProductId());
+            orderItem.setNum(random.nextInt(agentProduct.getFreeze() - 1) + 1);
         }
         orderItem.setProduct(mallProduct);
         orderItem.setBn(mallProduct.getBn());

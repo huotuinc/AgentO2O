@@ -34,12 +34,20 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
 
     List<ShoppingCart> findByShop_IdOrderByCreateTimeDesc(Integer shopId);
 
-//    ShoppingCart findByIdAndAuthor(Integer id, Author author);
+    //    ShoppingCart findByIdAndAuthor(Integer id, Author author);
     ShoppingCart findByIdAndAgent(Integer id, Agent agent);
+
     ShoppingCart findByIdAndShop(Integer id, Shop shop);
 
-    ShoppingCart findByAgentAndProduct(Agent agent,MallProduct product);
-    ShoppingCart findByShopAndProduct(Shop shop,MallProduct product);
+    ShoppingCart findByAgentAndProduct(Agent agent, MallProduct product);
+
+    ShoppingCart findByShopAndProduct(Shop shop, MallProduct product);
+
+    @Query("select a.num from ShoppingCart a where a.agent.id = ?1 and a.product.productId = ?2")
+    Integer findNumByAgentAndProduct(Integer agentId, Integer productId);
+
+    @Query("select a.num from ShoppingCart a where a.shop.id = ?1 and a.product.productId = ?2")
+    Integer findNumByShopAndProduct(Integer shopId, Integer productId);
 
 //    ShoppingCart findByAuthorAndProduct(Author author, MallProduct product);
 

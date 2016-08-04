@@ -10,6 +10,7 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.*;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.model.purchase.ReturnOrderDeliveryInfo;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentDeliveryRepository;
@@ -319,11 +320,11 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         List<AgentDeliveryItem> agentDeliveryItems = new ArrayList<>();
         for (AgentReturnedOrderItem agentReturnedOrderItem : agentReturnedOrderItems) {
             AgentDeliveryItem deliveryItem = new AgentDeliveryItem();
-            AgentProduct agentProduct = null;
+            AgentProductStoreInfo agentProduct = null;
             if(agentReturnedOrder.getAgent() != null){
-                agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentReturnedOrder.getAgent(), agentReturnedOrderItem.getProduct());
+                agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(agentReturnedOrder.getAgent().getId(), agentReturnedOrderItem.getProduct().getProductId());
             }else if(agentReturnedOrder.getShop() != null){
-                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(agentReturnedOrder.getShop(),agentReturnedOrderItem.getProduct());
+                agentProduct = agentProductRepository.findUsableNumByShopAndProduct(agentReturnedOrder.getShop().getId(),agentReturnedOrderItem.getProduct().getProductId());
             }
             deliveryItem.setAgentProductId(agentProduct.getId());
             deliveryItem.setDelivery(agentDelivery);
@@ -442,16 +443,16 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
     public ApiResult editReturnNum(Author author, Integer productId, Integer num) {
         MallProduct mallProduct = new MallProduct();
         mallProduct.setProductId(productId);
-        AgentProduct agentProduct = null;
+        AgentProductStoreInfo agentProduct = null;
         if(author.getType() == Agent.class){
-            agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), mallProduct);
+            agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(author.getAuthorAgent().getId(), mallProduct.getProductId());
         }else if(author.getType() == Shop.class){
-            agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),mallProduct);
+            agentProduct = agentProductRepository.findUsableNumByShopAndProduct(author.getAuthorShop().getId(),mallProduct.getProductId());
         }
         if(agentProduct == null){
             return new ApiResult("货品不存在");
         }
-        if (agentProduct.getStore() - agentProduct.getFreez() < num) {
+        if (agentProduct.getStore() - agentProduct.getFreeze() < num) {
             return new ApiResult("库存不足");
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);

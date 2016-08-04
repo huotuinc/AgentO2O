@@ -41,7 +41,7 @@ public class ShopServiceImplTest extends CommonTestBase {
     private MallPasswordEncoder passwordEncoder;
 
 
-    @Test
+//    @Test
 //    @Rollback(false)
     public void testMockShop(){
         Agent agent = agentService.findByAgentId(29756);

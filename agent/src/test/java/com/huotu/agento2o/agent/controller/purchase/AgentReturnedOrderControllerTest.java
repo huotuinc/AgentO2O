@@ -440,7 +440,7 @@ public class AgentReturnedOrderControllerTest extends CommonTestBase {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertEquals(PurchaseEnum.ShipStatus.DELIVERED,agentReturnedOrder.getShipStatus());
+        Assert.assertEquals(PurchaseEnum.ReturnedShipStatus.DELIVERED,agentReturnedOrder.getShipStatus());
 
         // 一级代理商收货
         controllerUrl = BASE_URL + "/receiveAgentReturnOrder";

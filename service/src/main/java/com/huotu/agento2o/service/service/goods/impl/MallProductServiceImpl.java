@@ -17,6 +17,7 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.goods.MallProductRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
@@ -59,25 +60,25 @@ public class MallProductServiceImpl implements MallProductService {
         List<MallProduct> agentProductList = new ArrayList<>();
         if (productList != null && productList.size() > 0) {
             productList.forEach(product -> {
-                setProductPrice(product,author);
-                //当前库存
-                AgentProduct agentProduct = agentProductService.findAgentProduct(author,product);
-                ShoppingCart shoppingCart = shoppingCartService.findByAuthorAndProduct(author,product);
-                if (agentProduct != null) {
-                    product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                setProductPrice(product, author);
+                //代理商/门店当前库存
+                Integer agentProductUsableNum = agentProductService.findAgentProductUsableNum(author, product);
+                Integer shoppingCartNum = shoppingCartService.findNumByAuthorAndProduct(author, product);
+                if (agentProductUsableNum != null) {
+                    product.setAuthorStore(agentProductUsableNum);
                 }
-                if(shoppingCart != null){
-                    product.setShoppingStore(Math.max(0,shoppingCart.getNum()));
+                if (shoppingCartNum != null) {
+                    product.setShoppingStore(Math.max(0, shoppingCartNum));
                 }
                 //上级可用库存
-                if(author.getParentAgent() == null){
+                if (author.getParentAgent() == null) {
                     //平台方商品
                     product.setUsableStore(product.getStore() - product.getFreez());
                     agentProductList.add(product);
-                }else{
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), product);
-                    if (parentAgentProduct != null) {
-                        product.setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                } else {
+                    AgentProductStoreInfo parentAgentProductStoreInfo = agentProductRepository.findUsableNumByAgentAndProduct(author.getParentAgent().getId(), product.getProductId());
+                    if (parentAgentProductStoreInfo != null) {
+                        product.setUsableStore(parentAgentProductStoreInfo.getStore() - parentAgentProductStoreInfo.getFreeze());
                         agentProductList.add(product);
                     }
                 }
@@ -87,12 +88,12 @@ public class MallProductServiceImpl implements MallProductService {
     }
 
 
-    public Map<Integer,Double> getLevelProductPrice(String priceInfo){
-        Map<Integer,Double> productPriceMap = new HashMap<>();
+    public Map<Integer, Double> getLevelProductPrice(String priceInfo) {
+        Map<Integer, Double> productPriceMap = new HashMap<>();
         String[] priceInfoList = priceInfo.split("\\|");
-        for(int i = 0 ; i< priceInfoList.length ; i ++){
-            if(priceInfoList[i].indexOf(":") > -1){
-                productPriceMap.put(Integer.parseInt(priceInfoList[i].split(":")[0]),Double.parseDouble(priceInfoList[i].split(":")[1]));
+        for (int i = 0; i < priceInfoList.length; i++) {
+            if (priceInfoList[i].indexOf(":") > -1) {
+                productPriceMap.put(Integer.parseInt(priceInfoList[i].split(":")[0]), Double.parseDouble(priceInfoList[i].split(":")[1]));
             }
         }
         return productPriceMap;
@@ -100,22 +101,23 @@ public class MallProductServiceImpl implements MallProductService {
 
     /**
      * 设置货品进货价
+     *
      * @param product
      * @param author
      */
-    public void setProductPrice(MallProduct product,Author author){
-        Map<Integer,Double> productPriceMap = null;
-        if(!StringUtil.isEmpty(product.getAgentPriceInfo())){
+    public void setProductPrice(MallProduct product, Author author) {
+        Map<Integer, Double> productPriceMap = null;
+        if (!StringUtil.isEmpty(product.getAgentPriceInfo())) {
             productPriceMap = getLevelProductPrice(product.getAgentPriceInfo());
         }
         //如果有等级进货价，门店进货价则读取相应进货价，如果没有则读取默认进货价
-        if(productPriceMap != null && author.getType() == Agent.class && productPriceMap.containsKey(author.getAuthorAgent().getAgentLevel().getLevelId())){
+        if (productPriceMap != null && author.getType() == Agent.class && productPriceMap.containsKey(author.getAuthorAgent().getAgentLevel().getLevelId())) {
             product.setPurchasePrice(productPriceMap.get(author.getAuthorAgent().getAgentLevel().getLevelId()));
-        }else if(productPriceMap != null && author.getType() == Shop.class && productPriceMap.containsKey(0)){
+        } else if (productPriceMap != null && author.getType() == Shop.class && productPriceMap.containsKey(0)) {
             product.setPurchasePrice(productPriceMap.get(0));
-        }else if(product.getAgentPrice() != null && product.getAgentPrice() != 0){
+        } else if (product.getAgentPrice() != null && product.getAgentPrice() != 0) {
             product.setPurchasePrice(product.getAgentPrice());
-        }else{
+        } else {
             product.setPurchasePrice(product.getPrice());
         }
     }

@@ -58,6 +58,8 @@ public interface ShoppingCartService {
 
     ShoppingCart findByAuthorAndProduct(Author author, MallProduct product);
 
+    Integer findNumByAuthorAndProduct(Author author,MallProduct product);
+
     /**
      * 根据 ID列表 和 当前登录用户 查找勾选的购物车货品信息
      *

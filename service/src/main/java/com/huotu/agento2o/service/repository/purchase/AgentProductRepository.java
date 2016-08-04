@@ -15,6 +15,7 @@ import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -56,6 +57,17 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
 //    AgentProduct findByAuthorAndProductAndDisabledFalse(Author author, MallProduct product);
     AgentProduct findByAgentAndProductAndDisabledFalse(Agent agent,MallProduct product);
     AgentProduct findByShopAndProductAndDisabledFalse(Shop shop,MallProduct product);
+
+    /**
+     * 根据用户和货品查找当前用户的可用库存
+     * @param agentId
+     * @param productId
+     * @return
+     */
+    @Query("select new com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo (a.id,a.store,a.freez)  from AgentProduct a where a.agent.id = ?1 and a.product.productId = ?2 and a.disabled = false")
+    AgentProductStoreInfo findUsableNumByAgentAndProduct(Integer agentId, Integer productId);
+    @Query("select new com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo (a.id,a.store,a.freez)  from AgentProduct a where a.shop.id = ?1 and a.product.productId = ?2 and a.disabled = false")
+    AgentProductStoreInfo findUsableNumByShopAndProduct(Integer shopId,Integer productId);
 
     /**
      * 查询出需要提醒的用户

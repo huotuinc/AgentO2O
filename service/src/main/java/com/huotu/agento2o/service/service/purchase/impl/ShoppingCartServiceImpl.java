@@ -18,6 +18,7 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.goods.MallGoodsRepository;
 import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.repository.purchase.ShoppingCartRepository;
@@ -112,8 +113,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         //上级为 平台方
                         p.getProduct().setUsableStore(p.getProduct().getStore() - p.getProduct().getFreez());
                     } else {
-                        AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), p.getProduct());
-                        p.getProduct().setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreez());
+                        AgentProductStoreInfo parentAgentProduct = agentProductRepository.findUsableNumByAgentAndProduct(author.getParentAgent().getId(), p.getProduct().getProductId());
+                        p.getProduct().setUsableStore(parentAgentProduct.getStore() - parentAgentProduct.getFreeze());
                     }
                 }
             });
@@ -142,20 +143,31 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public Integer findNumByAuthorAndProduct(Author author, MallProduct product) {
+        Integer shoppingNum = 0;
+        if (author != null && author.getType() == Agent.class) {
+            return shoppingCartRepository.findNumByAgentAndProduct(author.getAuthorAgent().getId(),product.getProductId());
+        } else if (author != null && author.getType() == Shop.class) {
+            return shoppingCartRepository.findNumByShopAndProduct(author.getAuthorShop().getId(),product.getProductId());
+        }
+        return shoppingNum;
+    }
+
+    @Override
     public List<ShoppingCart> findById(List<Integer> ids, Author author) {
         List<ShoppingCart> shoppingCartList = new ArrayList<>();
         ids.forEach(p -> {
             ShoppingCart cart = findById(p, author);
             if (cart != null) {
                 productService.setProductPrice(cart.getProduct(),author);
-                AgentProduct agentProduct = null;
+                AgentProductStoreInfo agentProduct = null;
                 if (author != null && author.getType() == Agent.class) {
-                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(cart.getAgent(),cart.getProduct());
+                    agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(cart.getAgent().getId(),cart.getProduct().getProductId());
                 } else if (author != null && author.getType() == Shop.class) {
-                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(cart.getShop(),cart.getProduct());
+                    agentProduct = agentProductRepository.findUsableNumByShopAndProduct(cart.getShop().getId(),cart.getProduct().getProductId());
                 }
                 if (agentProduct != null) {
-                    cart.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                    cart.getProduct().setAuthorStore(agentProduct.getStore() - agentProduct.getFreeze());
                 }
                 //上级为平台方，判断商品可用库存
                 if (author.getParentAgent() == null) {
@@ -163,8 +175,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         shoppingCartList.add(cart);
                     }
                 } else {
-                    AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), cart.getProduct());
-                    if (parentAgentProduct != null && parentAgentProduct.getStore() - parentAgentProduct.getFreez() >= cart.getNum()) {
+                    AgentProductStoreInfo parentAgentProduct = agentProductRepository.findUsableNumByAgentAndProduct(author.getParentAgent().getId(), cart.getProduct().getProductId());
+                    if (parentAgentProduct != null && parentAgentProduct.getStore() - parentAgentProduct.getFreeze() >= cart.getNum()) {
                         shoppingCartList.add(cart);
                     }
                 }
