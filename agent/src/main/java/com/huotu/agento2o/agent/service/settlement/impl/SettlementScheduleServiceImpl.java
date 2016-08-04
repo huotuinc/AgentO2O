@@ -41,6 +41,7 @@ public class SettlementScheduleServiceImpl implements SettlementScheduleService 
     public void settlementSchedule() {
         log.info("start settle . . .");
         Date now = new Date();
+        //结算门店订单
         List<Shop> shopList = shopService.findAll();
         if (shopList != null && shopList.size() > 0) {
             shopList.forEach(shop -> {

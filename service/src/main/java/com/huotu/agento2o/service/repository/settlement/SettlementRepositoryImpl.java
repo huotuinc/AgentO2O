@@ -38,7 +38,7 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
     public List<SettlementOrder> findSettlementOrder(Integer shopId, Integer customerId, Date settleTime) {
         String sql = "SELECT A.Order_Id,A.Createtime,A.Paytime,ISNULL(A.Cost_Freight,0)-ISNULL(SUM(C.settleFreight),0) AS Cost_Freight,ISNULL(A.Final_Amount,0)-ISNULL(SUM(C.RefundAmount),0) AS Final_Amount " +
                 " FROM Mall_Orders A LEFT JOIN Mall_Order_Items B ON A.Order_Id = B.Order_Id LEFT JOIN Mall_AfterSales C ON C.Order_Id = B.Order_Id AND B.Product_Id = C.Product_Id" +
-                " WHERE A.SettleStatus=? AND A.Pay_Status<>? AND A.Pre_Received_Time IS NOT NULL AND PreSettleDate<=? AND A.Customer_Id=? AND A.Agent_SHop_Id=? AND A.Agent_Shop_Type=?" +
+                " WHERE A.SettleStatus=? AND A.Pay_Status<>? AND A.Pre_Received_Time IS NOT NULL AND PreSettleDate<=? AND A.Customer_Id=? AND A.Agent_Shop_Id=? AND A.Agent_Shop_Type=?" +
                 " GROUP BY A.Order_Id,A.Createtime,A.Paytime,A.Cost_Freight,A.Final_Amount";
         List<SettlementOrder> settlementOrders = jdbcTemplate.query(sql, ((rs, num) -> {
                     SettlementOrder settlementOrder = new SettlementOrder();

@@ -53,16 +53,9 @@ public class ShopServiceImpl implements ShopService {
     //    @Autowired
 //    private MallCustomerRepository mallCustomerRepository;
     @Autowired
-    private MallCustomerService mallCustomerSerivce;
+    private MallCustomerService mallCustomerService;
     @Autowired
     private AccountRepository accountRepository;
-
-
-    // TODO: 2016/7/28 delete
-    /*@Override
-    public Shop findByUserName(String userName) {
-        return shopRepository.findByUsername(userName);
-    }*/
 
     @Override
     public Shop findById(Integer id) {
@@ -81,7 +74,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop findByIdAndCustomer_Id(Integer shopId, Integer customer_Id) {
-        MallCustomer customer = mallCustomerSerivce.findByCustomerId(customer_Id);
+        MallCustomer customer = mallCustomerService.findByCustomerId(customer_Id);
         return shopId == null || customer == null ? null : shopRepository.findByIdAndCustomer(shopId, customer);
     }
 
@@ -113,7 +106,7 @@ public class ShopServiceImpl implements ShopService {
 
         if (shop.getId() == null || shop.getId() == 0) { //新增
             //判断门店登录名是否唯一
-            MallCustomer checkShop = mallCustomerSerivce.findByUserName(shop.getUsername());
+            MallCustomer checkShop = mallCustomerService.findByUserName(shop.getUsername());
             if (checkShop != null) {
                 return ApiResult.resultWith(ResultCodeEnum.LOGINNAME_NOT_AVAILABLE);
             }
@@ -126,11 +119,11 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setWorkday(Constant.WORKDAY);
             oldShop.setOpenTime(Time.valueOf(Constant.OPEN_TIME));
             oldShop.setCloseTime(Time.valueOf(Constant.CLOSE_TIME));
-            mallShop = mallCustomerSerivce.newCustomer(shop.getUsername(), shop.getPassword(), CustomerTypeEnum.AGENT_SHOP);
+            mallShop = mallCustomerService.newCustomer(shop.getUsername(), shop.getPassword(), CustomerTypeEnum.AGENT_SHOP);
             oldShop.setId(mallShop.getCustomerId());
             mallShop.setShop(oldShop);
         } else {  //编辑
-            mallShop = mallCustomerSerivce.findByCustomerId(shop.getId());
+            mallShop = mallCustomerService.findByCustomerId(shop.getId());
             if (mallShop == null || mallShop.getShop() == null || mallShop.getShop().isDisabled() || mallShop.getShop().isDeleted()) {
                 return new ApiResult("该门店已失效");
             }
@@ -158,7 +151,7 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setComment(shop.getComment());
         oldShop.setUserBaseInfo(shop.getUserBaseInfo());
         oldShop.setEmail(shop.getEmail());
-        mallCustomerSerivce.save(mallShop);
+        mallCustomerService.save(mallShop);
         //如果结算账户不存在，则新建结算账户
         Account account = accountRepository.findByShop_Id(oldShop.getId());
         if (account == null) {
@@ -173,7 +166,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     @SuppressWarnings("Duplicates")
     public ApiResult saveShopConfig(Shop shop, String hotUserName) {
-        MallCustomer mallShop = mallCustomerSerivce.findByCustomerId(shop.getId());
+        MallCustomer mallShop = mallCustomerService.findByCustomerId(shop.getId());
         if (mallShop == null || mallShop.getShop() == null || mallShop.getShop().isDisabled() || mallShop.getShop().isDeleted()) {
             return new ApiResult("该门店已失效");
         }
@@ -220,7 +213,7 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setWorkday(shop.getWorkday());
         oldShop.setOpenTime(shop.getOpenTime());
         oldShop.setCloseTime(shop.getCloseTime());
-        mallCustomerSerivce.save(mallShop);
+        mallCustomerService.save(mallShop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
 
