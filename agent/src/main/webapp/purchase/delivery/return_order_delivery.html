@@ -87,9 +87,9 @@
             setTimeout(function () {
                 J.GetJsonRespons(baseUrl + "returnedOrder/delivery", requestData, function (result) {
                     if (result.code != 200) {
-                        $.jBox.tip("发货失败--" + result.msg,'error');
+                        $.jBox.tip("退货失败--" + result.msg,'error');
                     } else {
-                        $.jBox.tip("发货成功", "success");
+                        $.jBox.tip("退货成功", "success");
                         setTimeout(function () {
                             window.parent.location.reload();
                         }, 400);

@@ -466,7 +466,7 @@
                                             <td style="color:red;" class="txt40" th:text="${orders.shipStatus.value}">
                                                 未发货
                                             </td>
-                                            <td class="txt80" th:text="${orders.paymentType.value}">
+                                            <td class="txt40" th:text="${orders.paymentType.value}">
                                                 银联在线支付
                                             </td>
                                             <td class="txt40" th:text="${orders.agentShopType.value}">
@@ -528,7 +528,7 @@
 
     function showConsignFlow(obj, type) {//发货
         var orderId = $(obj).attr("orderId");
-
+        $.jBox.tip("正在加载", "loading");
         $.ajax({
             url:orderUrl+"judgeStock",
             type:"get",
@@ -538,6 +538,7 @@
             dataType: "json",
             success:function(result){
                 if(result.code == 200){
+                    $.jBox.closeTip();
                     var title = "发货操作";
                     if (type == 1) {
                         title = "退货操作";

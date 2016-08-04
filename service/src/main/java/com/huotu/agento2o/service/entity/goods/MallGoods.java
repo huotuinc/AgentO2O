@@ -105,4 +105,10 @@ public class MallGoods {
     @JoinColumn(name = "Freight_Template_Id")
     @ManyToOne
     private FreightTemplate freightTemplate;
+
+    /**
+     * 排序
+     */
+    @Column(name = "D_Order")
+    private Integer dOrder;
 }

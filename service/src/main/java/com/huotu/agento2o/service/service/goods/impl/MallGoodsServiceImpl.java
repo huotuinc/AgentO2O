@@ -80,7 +80,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             predicates.add(cb.equal(root.get("customerId").as(Integer.class), customerId));
             predicates.add(cb.equal(root.get("isAgent").as(Boolean.class), true));
             //商品采购中不显示平台方已经删除的商品
-            predicates.add(cb.equal(root.get("disabled").as(Boolean.class),false));
+            predicates.add(cb.equal(root.get("disabled").as(Boolean.class), false));
             if (!StringUtil.isEmptyStr(goodsSearcher.getGoodsName())) {
                 predicates.add(cb.like(root.get("name").as(String.class), "%" + goodsSearcher.getGoodsName() + "%"));
             }
@@ -93,15 +93,22 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "salesCount")));
+        //排序规格与伙伴商城一致，P_Order desc;Goods_Id desc
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "dOrder", "goodsId")));
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {
                     productService.setProductPrice(product, author);
                     AgentProduct agentProduct = getAgentProduct(author, product);
                     ShoppingCart shoppingCart = getShoppingCart(author, product);
+                    //如果有多个货品，有货品可用数量小于0的按0算合计值
+                    //如果只有单个货品，不做限制
                     if (agentProduct != null) {
-                        product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                        if(goods.getProducts().size() > 1){
+                            product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                        } else {
+                            product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+                        }
                     }
                     product.setUsableStore(Math.max(0, product.getStore() - product.getFreez()));
                     if (shoppingCart != null) {
@@ -174,16 +181,29 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         //设置可用库存和当前库存
-        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "dOrder", "goodsId")));
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
+                //计算代理商或门店这个商品的货品个数
+                int productCount = 0;
+                if (author.getType() == Agent.class) {
+                    productCount = agentProductRepository.countByAgent_IdAndGoodsId(author.getParentAgent().getId(), goods.getGoodsId());
+                } else if (author.getType() == Shop.class) {
+                    productCount = agentProductRepository.countByShop_IdAndGoodsId(author.getParentAgent().getId(), goods.getGoodsId());
+                }
+                final int finalProductCount = productCount;
                 goods.getProducts().forEach(product -> {
                     productService.setProductPrice(product, author);
                     AgentProduct parentAgentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getParentAgent(), product);
                     AgentProduct agentProduct = getAgentProduct(author, product);
                     ShoppingCart shoppingCart = getShoppingCart(author, product);
                     if (agentProduct != null) {
-                        product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                        if (finalProductCount > 1) {
+                            product.setAuthorStore(Math.max(0, agentProduct.getStore() - agentProduct.getFreez()));
+                        } else {
+                            product.setAuthorStore(agentProduct.getStore() - agentProduct.getFreez());
+
+                        }
                     }
                     if (parentAgentProduct != null) {
                         product.setUsableStore(Math.max(0, parentAgentProduct.getStore() - parentAgentProduct.getFreez()));
@@ -198,9 +218,9 @@ public class MallGoodsServiceImpl implements MallGoodsService {
         return goodsPage;
     }
 
-    private void setGoodsPurchasePrice(MallGoods goods){
-        double minPurchasePrice = goods.getProducts().stream().mapToDouble(p->p.getPurchasePrice()).min().getAsDouble();
-        double maxPurchasePrice = goods.getProducts().stream().mapToDouble(p->p.getPurchasePrice()).max().getAsDouble();
+    private void setGoodsPurchasePrice(MallGoods goods) {
+        double minPurchasePrice = goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).min().getAsDouble();
+        double maxPurchasePrice = goods.getProducts().stream().mapToDouble(p -> p.getPurchasePrice()).max().getAsDouble();
         if (minPurchasePrice == maxPurchasePrice) {
             goods.setPurchasePrice(String.valueOf(minPurchasePrice));
         } else {
@@ -236,7 +256,7 @@ public class MallGoodsServiceImpl implements MallGoodsService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         //设置可用库存和预占库存
-        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE));
+        Page<MallGoods> goodsPage = goodsRepository.findAll(specification, new PageRequest(goodsSearcher.getPageNo() - 1, Constant.PAGESIZE, new Sort(Sort.Direction.DESC, "dOrder", "goodsId")));
         if (goodsPage.getContent() != null && goodsPage.getContent().size() > 0) {
             goodsPage.getContent().forEach(goods -> {
                 goods.getProducts().forEach(product -> {

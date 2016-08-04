@@ -53,7 +53,8 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
         List<OrderEnum.ShipMode> agentShopTypeList = new ArrayList<>();
         agentShopTypeList.add(OrderEnum.ShipMode.SHOP_DELIVERY);
         agentShopTypeList.add(OrderEnum.ShipMode.PLATFORM_DELIVERY);
-        if (author instanceof Shop) {
+        agentShopTypeList.add(OrderEnum.ShipMode.SHOP_PART_BENEFIT);
+        if (author.getType() == Shop.class) {
             return orderRepository.countByShop_IdAndAgentShopTypeInAndShop_IdAndCreateTimeBetween(author.getId(), agentShopTypeList, start, end);
         } else {
             return orderRepository.countByShop_ParentAuthor_IdAndAgentShopTypeInAndCreateTimeBetween(author.getId(), agentShopTypeList, start, end);
@@ -62,22 +63,26 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int purchaseOrderCountByDate(Author author, Date start, Date end) {
-        return purchaseOrderRepository.countByAgentAndShopAndCreateTimeBetweenAndDisabledFalse(author.getAuthorAgent(),author.getAuthorShop(), start, end);
+        return purchaseOrderRepository.countByAgentAndShopAndCreateTimeBetweenAndDisabledFalse(author.getAuthorAgent(), author.getAuthorShop(), start, end);
     }
 
     @Override
     public int subPurchaseOrderCountByDate(Author author, Date start, Date end) {
-        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
+        int subAgentPurchaseOrderCount = purchaseOrderRepository.countByAgent_ParentAgent_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
+        int subShopPurchaseOrderCount = purchaseOrderRepository.countByShop_Agent_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
+        return subAgentPurchaseOrderCount + subShopPurchaseOrderCount;
     }
 
     @Override
-    public int returnedOrderCountByDate(Author author,Date start, Date end) {
+    public int returnedOrderCountByDate(Author author, Date start, Date end) {
         return returnOrderRepository.countByAuthor_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
     }
 
     @Override
     public int subReturnedOrderCountByDate(Author author, Date start, Date end) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
+        int subAgentReturnedOrderCountByDate = returnOrderRepository.countByAgent_ParentAgent_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
+        int subShopReturnedOrderCountByDate = returnOrderRepository.countByShop_Agent_IdAndCreateTimeBetweenAndDisabledFalse(author.getId(), start, end);
+        return subAgentReturnedOrderCountByDate + subShopReturnedOrderCountByDate;
     }
 
     @Override
@@ -87,7 +92,10 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int unDeliveryPurchaseOrderCount(int agentId) {
-        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.NOT_DELIVER);
+        //待发货采购单数
+        int unDeliveryAgentPurchaseOrderCount = purchaseOrderRepository.countByAgent_ParentAgent_IdAndStatusAndShipStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.NOT_DELIVER);
+        int unDeliveryShopPurchaseOrderCount = purchaseOrderRepository.countByShop_Agent_IdAndStatusAndShipStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ShipStatus.NOT_DELIVER);
+        return unDeliveryAgentPurchaseOrderCount + unDeliveryShopPurchaseOrderCount;
     }
 
     @Override
@@ -97,12 +105,16 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int checkingPurchaseOrderCount(int agentId) {
-        return purchaseOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKING);
+        int checkingAgentPurchaseOrderCount = purchaseOrderRepository.countByAgent_ParentAgent_IdAndStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKING);
+        int checkingShopPurchaseOrderCount = purchaseOrderRepository.countByShop_Agent_IdAndStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKING);
+        return checkingAgentPurchaseOrderCount + checkingShopPurchaseOrderCount;
     }
 
     @Override
     public int checkingReturnedOrderCount(int agentId) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKING);
+        int checkingAgentReturnedOrderCount = returnOrderRepository.countByAgent_ParentAgent_IdAndStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKING);
+        int checkingShopReturnedOrderCount = returnOrderRepository.countByShop_Agent_IdAndStatusAndDisabledFalse(agentId, PurchaseEnum.OrderStatus.CHECKING);
+        return checkingAgentReturnedOrderCount + checkingShopReturnedOrderCount;
     }
 
     @Override
@@ -112,7 +124,10 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
 
     @Override
     public int toReceiveReturnedOrderCount(int authorId) {
-        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ReturnedShipStatus.DELIVERED);
+        int toReceiveAgentReturnedOrderCount = returnOrderRepository.countByAgent_ParentAgent_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ReturnedShipStatus.DELIVERED);
+        int toReceiveShopReturnedOrderCount =  returnOrderRepository.countByShop_Agent_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ReturnedShipStatus.DELIVERED);
+        return toReceiveAgentReturnedOrderCount + toReceiveShopReturnedOrderCount;
+//        return returnOrderRepository.countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(authorId, PurchaseEnum.OrderStatus.CHECKED, PurchaseEnum.ReturnedShipStatus.DELIVERED);
     }
 
     @Override
@@ -136,9 +151,9 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
             indexStatistics.setTodaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author, todayStart, todayEnd));
             indexStatistics.setYesterdaySubPurchaseOrderCount(subPurchaseOrderCountByDate(author, yesterdayStart, yesterdayEnd));
 
-            //今日退货单数，昨日退货单数
-            indexStatistics.setTodayReturnedOrderCount(returnedOrderCountByDate(author, todayStart, todayEnd));
-            indexStatistics.setYesterdayReturnedOrderCount(returnedOrderCountByDate(author, yesterdayStart, yesterdayEnd));
+            //今日下级退货单数，昨日下级退货单数
+            indexStatistics.setTodaySubReturnedOrderCount(subReturnedOrderCountByDate(author, todayStart, todayEnd));
+            indexStatistics.setYesterdaySubReturnedOrderCount(subReturnedOrderCountByDate(author, yesterdayStart, yesterdayEnd));
 
             //待审核采购单数
             indexStatistics.setToCheckPurchaseOrderCount(checkingPurchaseOrderCount(author.getId()));
@@ -149,7 +164,7 @@ public class IndexStatisticsServiceImpl implements IndexStatisticsService {
             indexStatistics.setToCheckReturnedOrderCount(checkingReturnedOrderCount(author.getId()));
             indexStatistics.setToReceiveReturnedOrderCount(toReceiveReturnedOrderCount(author.getId()));
             indexStatistics.setProductNotifyCount(agentProductRepository.countByWarningAgentInfo(author.getId()));
-        } else if (author != null && author.getType() ==  Shop.class) {
+        } else if (author != null && author.getType() == Shop.class) {
             indexStatistics.setAgent(false);
             indexStatistics.setToCheckSettlementCount(toCheckSettlementCount(author.getId()));
             indexStatistics.setProductNotifyCount(agentProductRepository.countByWarningShopInfo(author.getId()));

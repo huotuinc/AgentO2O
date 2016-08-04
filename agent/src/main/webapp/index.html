@@ -58,7 +58,7 @@
                     <th:block th:if="*{agent}">
                         <p style="clear: both;padding-top: 10px;"></p>
 
-                        <li th:if="*{todayPurchaseOrderCount!=null}">今日下级采购单数<span th:text="*{todayPurchaseOrderCount}">0</span></li>
+                        <li th:if="*{todaySubPurchaseOrderCount!=null}">今日下级采购单数<span th:text="*{todaySubPurchaseOrderCount}">0</span></li>
                         <li th:if="*{todaySubReturnedOrderCount!=null}">今日下级退货单数<span th:text="*{todaySubReturnedOrderCount}">0</span></li>
                     </th:block>
 

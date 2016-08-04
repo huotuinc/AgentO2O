@@ -38,6 +38,11 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
 
     List<AgentProduct> findByShop_IdAndDisabledFalse(Integer shopId);
 
+    //统计代理商商品的货品个数
+    int countByAgent_IdAndGoodsId(Integer agentId,Integer goodsId);
+    //统计门店商品的货品个数
+    int countByShop_IdAndGoodsId(Integer shopId,Integer goodsId);
+
 
     @Query("update AgentProduct  set warning=?3 where agent.id=?1 and product.productId=?2")
     @Modifying

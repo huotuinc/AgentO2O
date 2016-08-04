@@ -27,12 +27,19 @@ public interface AgentReturnOrderRepository extends JpaRepository<AgentReturnedO
     @Query("select count(a) from AgentReturnedOrder a where (a.agent.id = ?1 or a.shop.id = ?1) and a.status = ?2 and a.shipStatus = ?3 and a.disabled = false ")
     int countByAuthor_IdAndStatusAndShipStatusAndDisabledFalse(Integer authorId, PurchaseEnum.OrderStatus status, PurchaseEnum.ReturnedShipStatus shipStatus);
 
-    @Query("select count(a) from AgentReturnedOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.createTime between ?2 and ?3 and a.disabled = false ")
-    int countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(Integer agentId, Date start, Date end);
+//    @Query("select count(a) from AgentReturnedOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.createTime between ?2 and ?3 and a.disabled = false ")
+//    int countByAuthor_ParentAuthor_IdAndCreateTimeBetweenAndDisabledFalse(Integer agentId, Date start, Date end);
 
-    @Query("select count(a) from AgentReturnedOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.status = ?2 and a.disabled = false ")
-    int countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status);
+    int countByAgent_ParentAgent_IdAndCreateTimeBetweenAndDisabledFalse(Integer agentId, Date start, Date end);
+    int countByShop_Agent_IdAndCreateTimeBetweenAndDisabledFalse(Integer agentId, Date start, Date end);
 
-    @Query("select count(a) from AgentReturnedOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.status = ?2 and a.shipStatus = ?3 and a.receivedTime is not null and a.disabled = false ")
-    int countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status, PurchaseEnum.ReturnedShipStatus shipStatus);
+//    @Query("select count(a) from AgentReturnedOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.status = ?2 and a.disabled = false ")
+//    int countByAuthor_ParentAuthor_IdAndStatusAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status);
+    int countByAgent_ParentAgent_IdAndStatusAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status);
+    int countByShop_Agent_IdAndStatusAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status);
+
+//    @Query("select count(a) from AgentReturnedOrder a where (a.agent.parentAgent.id = ?1 or a.shop.agent.id = ?1) and a.status = ?2 and a.shipStatus = ?3 and a.receivedTime is not null and a.disabled = false ")
+//    int countByAuthor_ParentAuthor_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status, PurchaseEnum.ReturnedShipStatus shipStatus);
+    int countByAgent_ParentAgent_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status, PurchaseEnum.ReturnedShipStatus shipStatus);
+    int countByShop_Agent_IdAndStatusAndShipStatusAndReceivedTimeIsNullAndDisabledFalse(Integer agentId, PurchaseEnum.OrderStatus status, PurchaseEnum.ReturnedShipStatus shipStatus);
 }
