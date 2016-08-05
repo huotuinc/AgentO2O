@@ -63,7 +63,7 @@ public class MallAfterSales {
     @ManyToOne
     private Shop shop;
     /**
-     * 代理商发货类型，默认为0或者空，
+     * 代理商发货类型，默认为0或者空，（废弃）
      */
     @Column(name = "Agent_Shop_Type")
     private OrderEnum.ShipMode agentShopType;

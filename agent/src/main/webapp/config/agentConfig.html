@@ -239,7 +239,7 @@
                                 <tr>
                                     <th>开户名称<span class="must">*</span>:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="accountName"
+                                        <input type="text" class="input-normal" id="accountName" disabled="disabled"
                                                th:field="*{accountName}"
                                                th:value="*{accountName}"/>
                                     </td>
@@ -247,14 +247,14 @@
                                 <tr>
                                     <th>开户银行<span class="must">*</span>:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="bankName" th:field="*{bankName}"
+                                        <input type="text" class="input-normal" id="bankName" disabled="disabled"
                                                th:value="*{bankName}"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>银行卡号<span class="must">*</span>:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="accountNo" th:field="*{accountNo}"
+                                        <input type="text" class="input-normal" id="accountNo" th:field="*{accountNo}" disabled="disabled"
                                                th:value="*{accountNo}"/>
                                     </td>
                                 </tr>
@@ -285,9 +285,9 @@
         var telephone = $.trim($("#telephone").val());
         var address = $.trim($("#address").val());
         var comment = $.trim($("#comment").val());
-        var accountName = $.trim($("#accountName").val());
-        var bankName = $.trim($("#bankName").val());
-        var accountNo = $.trim($("#accountNo").val());
+//        var accountName = $.trim($("#accountName").val());
+//        var bankName = $.trim($("#bankName").val());
+//        var accountNo = $.trim($("#accountNo").val());
         var hotUserName = $.trim($("#hotUserName").val());
         var email = $.trim($("#email").val());
         var id = $.trim($("#agentId").val());
@@ -335,7 +335,7 @@
             $.jBox.tip("请输入详细地址");
             return;
         }
-        if (accountName.length == 0) {
+        /*if (accountName.length == 0) {
             $.jBox.tip("请输入开户名称");
             return;
         }
@@ -350,7 +350,7 @@
         if (!/^[0-9]*$/.test(accountNo)) {
             $.jBox.tip("银行卡号必须是数字");
             return;
-        }
+        }*/
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
             type: 'POST',
@@ -367,9 +367,9 @@
                 telephone: telephone,
                 address: address,
                 comment: comment,
-                accountName: accountName,
-                bankName: bankName,
-                accountNo: accountNo,
+//                accountName: accountName,
+//                bankName: bankName,
+//                accountNo: accountNo,
                 hotUserName: hotUserName,
                 email: email
             },
@@ -384,6 +384,7 @@
                 }
             }
         });
+
     }
     /*]]>*/
 </script>

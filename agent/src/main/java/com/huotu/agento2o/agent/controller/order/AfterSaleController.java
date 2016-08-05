@@ -88,7 +88,7 @@ public class AfterSaleController {
         model.addAttribute("userInfo", userBaseInfo);
         model.addAttribute("order", order);
 
-        model.addAttribute("authorType", author.getClass().getSimpleName());
+//        model.addAttribute("authorType", author.getType().getSimpleName());
         return "order/afterSales/after_sales_detail";
     }
 

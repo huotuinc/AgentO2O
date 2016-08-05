@@ -294,9 +294,9 @@ public class AgentServiceImpl implements AgentService {
         agent.setDistrictCode(requestAgent.getDistrictCode());
         agent.setAddressArea(requestAgent.getAddressArea());
         agent.setTelephone(requestAgent.getTelephone());
-        agent.setAccountName(requestAgent.getAccountName());
+        /*agent.setAccountName(requestAgent.getAccountName());
         agent.setAccountNo(requestAgent.getAccountNo());
-        agent.setBankName(requestAgent.getBankName());
+        agent.setBankName(requestAgent.getBankName());*/
         agent.setEmail(requestAgent.getEmail());
         mallCustomerService.save(mallAgent);
         Account account = accountRepository.findByAgent_Id(agent.getId());

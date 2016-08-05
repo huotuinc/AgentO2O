@@ -84,7 +84,7 @@
                                    class="input-normal Wdate" th:value="*{endDate}"
                                    onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false,minDate:'#F{$dp.$D(\'txtBeginTime\')}'})"/>
 
-                            <label class="first"> 分销商审核状态：
+                            <label class="first"> 平台方审核状态：
                                 <select id="customerStatus" name="customerStatus">
                                     <option value="-1" th:selected="*{customerStatus==-1}">请选择</option>
                                     <option value="0" th:selected="*{customerStatus==0}">待审核</option>
@@ -163,7 +163,7 @@
                             </th>
                             <th scope="col">门店审核状态
                             </th>
-                            <th scope="col">分销商审核状态
+                            <th scope="col">平台方审核状态
                             </th>
                             <th scope="col">操作
                             </th>

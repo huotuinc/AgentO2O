@@ -344,6 +344,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     var baseUrl = /*[[@{/huobanmall/withdraw}]]*/ "/huobanmall/withdraw";
+    var totalPages = /*[[${totalPages}]]*/ 1;
 
     //查询
     function searchWithdrawRecord() {
@@ -532,13 +533,14 @@
 
     }
     $("#withdrawcount_authorId").change(function(){
-//        $.jBox.tip("正在保存...", "loading");
+        $.jBox.tip("正在读取...", "loading");
         $.ajax({
             type:"GET",
             url:baseUrl + "/showWithdrawCount",
-            data:{authorId:$("#withdrawcount_authorId").val()},
+            data:{shopId:$("#withdrawcount_authorId").val()},
             dataType:"json",
             success: function (result) {
+                $.jBox.closeTip();
                 $("#withdrawCount").val(result.data);
             },
             error: function () {
@@ -562,7 +564,7 @@
                 type:"POST",
                 url:baseUrl + "/updateWithdrawCount",
                 data:{
-                    authorId:$("#withdrawcount_authorId").val(),
+                    shopId:$("#withdrawcount_authorId").val(),
                     withdrawCount:$("#withdrawCount").val()
                 },
                 dataType:"json",

@@ -205,9 +205,9 @@ public class ShopServiceImpl implements ShopService {
         oldShop.setAfterSalTel(shop.getAfterSalTel());
         oldShop.setAfterSalQQ(shop.getAfterSalQQ());
         oldShop.setUserBaseInfo(userBaseInfo);
-        oldShop.setBankName(shop.getBankName());
-        oldShop.setAccountName(shop.getAccountName());
-        oldShop.setAccountNo(shop.getAccountNo());
+//        oldShop.setBankName(shop.getBankName());
+//        oldShop.setAccountName(shop.getAccountName());
+//        oldShop.setAccountNo(shop.getAccountNo());
         oldShop.setEmail(shop.getEmail());
         oldShop.setLogo(shop.getLogo());
         oldShop.setWorkday(shop.getWorkday());

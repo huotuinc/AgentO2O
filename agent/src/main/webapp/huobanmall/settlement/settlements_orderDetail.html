@@ -144,7 +144,7 @@
                             <td class="txt40 c" th:text="${payment.begin != null ?  #dates.format(payment.begin,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
                             <td class="txt40 c" th:text="${payment.money}"></td>
                             <td class="txt40 c" th:text="${payment.payMethod}"></td>
-                            <td class="txt40 c" th:text="${payment.status.value}"></td>
+                            <td class="txt40 c" th:text="${payment.status != null ? payment.status.value : ''}"></td>
                         </tr>
                         </tbody>
                     </table>

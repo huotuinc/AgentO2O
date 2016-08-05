@@ -5,6 +5,7 @@
  * (c) Copyright Hangzhou Hot Technology Co., Ltd.
  * Floor 4,Block B,Wisdom E Valley,Qianmo Road,Binjiang District
  * 2013-2016. All rights reserved.
+ *
  */
 
 package com.huotu.agento2o.service.entity.support;
@@ -16,20 +17,17 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * Created by liual on 2015-11-27.
+ * Created by helloztt on 2016/8/5.
  */
 @Converter(autoApply = true)
-public class PaymentPayStatusConverter implements AttributeConverter<PaymentEnum.PayStatus, Integer> {
+public class PaymentPayStatusConverter implements AttributeConverter<PaymentEnum.PayStatus, String> {
     @Override
-    public Integer convertToDatabaseColumn(PaymentEnum.PayStatus attribute) {
-        return attribute.getCode();
+    public String convertToDatabaseColumn(PaymentEnum.PayStatus attribute) {
+        return String.valueOf(attribute.getCode());
     }
 
     @Override
-    public PaymentEnum.PayStatus convertToEntityAttribute(Integer dbData) {
-        if (dbData == null) {
-            return null;
-        }
-        return EnumHelper.getEnumType(PaymentEnum.PayStatus.class, dbData);
+    public PaymentEnum.PayStatus convertToEntityAttribute(String dbData) {
+        return EnumHelper.getEnumType(PaymentEnum.PayStatus.class, Integer.parseInt(dbData));
     }
 }

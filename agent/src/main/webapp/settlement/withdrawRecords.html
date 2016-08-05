@@ -406,7 +406,7 @@
             $.jBox.tip("请设置银行账号");
             return;
         }
-        $.jBox.confirm("确认保存？","提示",function(v) {
+        $.jBox.confirm("提现账户一旦设置，不可更改，您是否确认提交？","提示",function(v) {
             if(v == "ok") {
                 $.jBox.tip("保存中...", "loading");
                 var requestData = {

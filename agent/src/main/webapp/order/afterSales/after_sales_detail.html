@@ -358,17 +358,11 @@
 
                                 <div style="padding-left: 15px;">
 
-                                    <span th:if="${authorType=='Shop'and afterSales.shop!=null and afterSales.beneficiaryShop==null}">
-
                                         <a th:if="${afterSales.returnable()}" class="btn-lit status" id="status7" href="javascript:afterSale.showReply('填写退货地址',actionMethod.returnAgree);"><span>同意退货</span></a>
 
                                         <a th:if="${afterSales.refundable()}" class="btn-lit status" id="status8" href="javascript:afterSale.agreeRefund();"><span>同意退款</span></a>
 
-
                                         <a th:if="${afterSales.refusable()}" class="btn-lit status" id="status5" href="javascript:afterSale.showReply('给客户留言',actionMethod.afterSaleRefuse);"><span>拒绝</span></a>
-
-                                    </span>
-
 
                                 </div>
 

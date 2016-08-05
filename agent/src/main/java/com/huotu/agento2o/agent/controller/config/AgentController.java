@@ -120,7 +120,7 @@ public class AgentController {
         if(StringUtil.isEmptyStr(requestAgent.getAddress())){
             return new ApiResult("请输入详细地址");
         }
-        if(StringUtil.isEmptyStr(requestAgent.getAccountName())){
+        /*if(StringUtil.isEmptyStr(requestAgent.getAccountName())){
             return new ApiResult("请输入开户名称");
         }
         if(StringUtil.isEmptyStr(requestAgent.getBankName())){
@@ -128,7 +128,7 @@ public class AgentController {
         }
         if(StringUtil.isEmptyStr(requestAgent.getAccountNo())){
             return new ApiResult("请输入银行卡号");
-        }
+        }*/
         return agentService.saveAgentConfig(agent.getId(), requestAgent, hotUserName);
     }
 
@@ -207,7 +207,7 @@ public class AgentController {
         if(StringUtil.isEmptyStr(shop.getAfterSalQQ())){
             return new ApiResult("请输入售后QQ");
         }
-        if(StringUtil.isEmptyStr(shop.getAccountName())){
+        /*if(StringUtil.isEmptyStr(shop.getAccountName())){
             return new ApiResult("请输入开户名称");
         }
         if(StringUtil.isEmptyStr(shop.getBankName())){
@@ -215,7 +215,7 @@ public class AgentController {
         }
         if(StringUtil.isEmptyStr(shop.getAccountNo())){
             return new ApiResult("请输入银行卡号");
-        }
+        }*/
         return shopService.saveShopConfig(shop, hotUserName);
     }
 

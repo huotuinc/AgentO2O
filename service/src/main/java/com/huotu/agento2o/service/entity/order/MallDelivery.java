@@ -60,8 +60,8 @@ public class MallDelivery {
     /**
      * 代理商发货类型，默认为0或者空，
      */
-    @Column(name = "Agent_Shop_Type")
-    private OrderEnum.ShipMode agentShopType;
+    /*@Column(name = "Agent_Shop_Type")
+    private OrderEnum.ShipMode agentShopType;*/
 
 //    @ManyToOne
 //    @JoinColumn(name = "Beneficiary_Agent_id")

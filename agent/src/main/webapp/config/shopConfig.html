@@ -337,24 +337,24 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                 <tr>
-                                    <th>开户名称<span class="must">*</span>:</th>
+                                    <th>开户名称:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="accountName"
+                                        <input type="text" class="input-normal" id="accountName" disabled="disabled"
                                                th:field="*{accountName}" th:value="*{accountName}"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>开户银行<span class="must">*</span>:</th>
+                                    <th>开户银行:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="bankName"
+                                        <input type="text" class="input-normal" id="bankName" disabled="disabled"
                                                th:field="*{bankName}" th:value="*{bankName}"/>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <th>银行卡号<span class="must">*</span>:</th>
+                                    <th>银行卡号:</th>
                                     <td>
-                                        <input type="text" class="input-normal" id="accountNo"
+                                        <input type="text" class="input-normal" id="accountNo" disabled="disabled"
                                                th:field="*{accountNo}" th:value="*{accountNo}"/>
                                     </td>
                                 </tr>
@@ -436,9 +436,9 @@
 
         var hotUserName = $.trim($("#hotUserName").val());
 
-        var bankName = $.trim($("#bankName").val());
-        var accountName = $.trim($("#accountName").val());
-        var accountNo = $.trim($("#accountNo").val());
+//        var bankName = $.trim($("#bankName").val());
+//        var accountName = $.trim($("#accountName").val());
+//        var accountNo = $.trim($("#accountNo").val());
         var logo = $.trim($("#logoFile").val());
 
         var distLength = $("#districtCode")[0].length;
@@ -522,7 +522,7 @@
             $.jBox.tip("请输入售后QQ");
             return;
         }
-        if (accountName.length == 0) {
+        /*if (accountName.length == 0) {
             $.jBox.tip("请输入开户名称");
             return;
         }
@@ -537,8 +537,7 @@
         if (!/^[0-9]*$/.test(accountNo)) {
             $.jBox.tip("银行卡号必须是数字");
             return;
-        }
-
+        }*/
         $.jBox.tip("正在保存...", "loading");
         $.ajax({
             type: 'POST',
@@ -561,9 +560,9 @@
                 afterSalTel: afterSalTel,
                 afterSalQQ: afterSalQQ,
                 hotUserName: hotUserName,
-                bankName: bankName,
-                accountName: accountName,
-                accountNo: accountNo,
+//                bankName: bankName,
+//                accountName: accountName,
+//                accountNo: accountNo,
                 email: email,
                 logo: logo,
                 workday: workday,
@@ -581,6 +580,7 @@
                 }
             }
         });
+
     }
     /*]]>*/
 </script>

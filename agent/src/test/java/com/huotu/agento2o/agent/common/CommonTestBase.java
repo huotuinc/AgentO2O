@@ -695,10 +695,10 @@ public abstract class CommonTestBase extends SpringWebTest {
         mallAfterSales.setOrderId(orderId);
         mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
         mallAfterSales.setShop(shop);
-        if (random.nextInt() % 2 == 0)
+        /*if (random.nextInt() % 2 == 0)
             mallAfterSales.setAgentShopType(OrderEnum.ShipMode.SHOP_DELIVERY);
         else
-            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);*/
         mallAfterSales.setAfterSaleType(AfterSaleEnum.AfterSaleType.REFUND);
         mallAfterSales.setAfterSalesReason(AfterSaleEnum.AfterSalesReason.GOOD_PROBLEM);
         mallAfterSales.setCreateTime(new Date());
@@ -713,10 +713,10 @@ public abstract class CommonTestBase extends SpringWebTest {
         mallAfterSales.setOrderId(random.nextInt() + "1");
         mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
         mallAfterSales.setShop(shop);
-        if (random.nextInt() % 2 == 0)
+        /*if (random.nextInt() % 2 == 0)
             mallAfterSales.setAgentShopType(OrderEnum.ShipMode.SHOP_DELIVERY);
         else
-            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);*/
         mallAfterSales.setAfterSaleType(AfterSaleEnum.AfterSaleType.REFUND);
         mallAfterSales.setAfterSalesReason(AfterSaleEnum.AfterSalesReason.GOOD_PROBLEM);
         mallAfterSales.setCreateTime(new Date());

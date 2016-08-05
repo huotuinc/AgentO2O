@@ -272,10 +272,10 @@ public abstract class CommonTestBase {
         mallAfterSales.setAfterId(SerialNo.create());
         mallAfterSales.setCreateTime(new Date());
         mallAfterSales.setShop(shop);
-        if (random.nextInt() % 2 == 0)
+        /*if (random.nextInt() % 2 == 0)
             mallAfterSales.setAgentShopType(OrderEnum.ShipMode.SHOP_DELIVERY);
         else
-            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);
+            mallAfterSales.setAgentShopType(OrderEnum.ShipMode.PLATFORM_DELIVERY);*/
         mallAfterSales.setAfterSaleStatus(AfterSaleEnum.AfterSaleStatus.APPLYING);
         mallAfterSales.setPayStatus(OrderEnum.PayStatus.ALL_REFUND);
         mallAfterSales.setAfterSaleType(AfterSaleEnum.AfterSaleType.REFUND);
