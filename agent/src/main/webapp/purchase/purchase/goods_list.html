@@ -9,7 +9,7 @@
   ~ 2013-2016. All rights reserved.
   ~
   -->
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8"/>
     <title>商品采购</title>
@@ -303,7 +303,7 @@
             $.jBox.tip("订购数量大于可用库存！");
             $(this).val(max);
         }else if(num <1){
-            $.jBox.tip("订购数量必须大于1");
+            $.jBox.tip("订购数量必须大于0");
             $(this).val(1);
         }
     })
