@@ -119,20 +119,36 @@
     //批量设置订购数量
     $("input[id=batchChangeNum]").bind("keyup change", function () {
         var num = parseInt($(this).val());
-        if(num <= 0){
+        if (num < 0) {
             $.jBox.tip("订购数量必须大于0");
             $(this).val(0);
             return;
         }
-        $("tbody tr input[name=num]:not(:disabled)").each(function(){
-            var max = parseInt($(this).attr("max"));
+//        $("tbody tr input[name=num]:not(:disabled)").each(function(){
+//            var max = parseInt($(this).attr("max"));
+//            if(max>=num){
+//                $(this).val(num);
+//            }else{
+//                $(this).val(max);
+//            }
+//            $(this).parents("tr").find("input[type=checkbox]").prop("checked",true);
+//        })
+        if ($("[name='choice']:checkbox:not(:disabled):checked").length < 1) {
+            $("[name='choice']:checkbox:not(:disabled)").each(function () {
+                $(this).prop("checked", true);
+            })
+            $("#checkAll").prop('checked', true);
+        }
+        $("[name='choice']:checkbox:not(:disabled):checked").each(function () {
+            var inputObj = $(this).parents("tr").find("input[name=num]");
+            var max = parseInt($(inputObj).attr("max"));
             if(max>=num){
-                $(this).val(num);
+                $(inputObj).val(num);
             }else{
-                $(this).val(max);
+                $(inputObj).val(max);
             }
-            $(this).parents("tr").find("input[type=checkbox]").prop("checked",true);
         })
+
     });
     //全选
     $("#checkAll").click(function () {
@@ -196,14 +212,16 @@
     //批量订购
     function batchPutIntoShoppingCart(){
         var productNumStr = "";
+        var ifZero = false;
         $("[name='choice']:checkbox:not(:disabled):checked").each(function(){
             var inputObj = $(this).parents("tr").find("input[name=num]");
             var productId= $(inputObj).attr("productId");
             var num = parseInt($(inputObj).val());
             var max = parseInt($(inputObj).attr("max"));
-            if(num < 0){
+            if (num <= 0) {
                 $(inputObj).val(0);
-                return true;
+                ifZero = true;
+                return;
             }else if(num > max){
                 $(inputObj).val(max);
                 num = max;
@@ -213,6 +231,10 @@
             }
             productNumStr += productId + "," +num;
         })
+        if (ifZero) {
+            $.jBox.tip("订购数量必须大于0");
+            return;
+        }
         if(productNumStr.length == 0){
             $.jBox.tip("请选择需要订购的货品");
         }else{
