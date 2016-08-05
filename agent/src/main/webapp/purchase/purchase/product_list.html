@@ -46,7 +46,7 @@
                 <input type="number" value="0" style="width: 50px;" id="batchChangeNum"/>
                 <a class="btn-lit" href="javascript:batchPutIntoShoppingCart();">
                     <span>批量订购</span></a>
-                <a class="btn-lit" href="javascript:window.location.href=document.referrer;">
+                <a class="btn-lit" href="javascript:window.location.href='/purchase/showGoodsList';">
                     <span>返回</span></a>
             </div>
             <div class="cnt">
@@ -218,6 +218,7 @@
             var productId= $(inputObj).attr("productId");
             var num = parseInt($(inputObj).val());
             var max = parseInt($(inputObj).attr("max"));
+            debugger;
             if (num <= 0) {
                 $(inputObj).val(0);
                 ifZero = true;
@@ -229,12 +230,14 @@
             if(productNumStr.length > 0){
                 productNumStr += "|";
             }
+            debugger;
             productNumStr += productId + "," +num;
         })
         if (ifZero) {
             $.jBox.tip("订购数量必须大于0");
             return;
         }
+        debugger;
         if(productNumStr.length == 0){
             $.jBox.tip("请选择需要订购的货品");
         }else{
