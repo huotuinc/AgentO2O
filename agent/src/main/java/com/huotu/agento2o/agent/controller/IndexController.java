@@ -103,7 +103,7 @@ public class IndexController {
      */
     private List<AgtMenu> getIsAuthorMenus(List<AgtMenu> menus) {
         if (menus == null || menus.size() < 1) {
-            return null;
+            return menus;
         }
         List<AgtMenu> isAuthorMenus = new ArrayList<>();
         for (AgtMenu menu : menus) {
