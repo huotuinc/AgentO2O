@@ -81,7 +81,7 @@ public class MallOrderServiceImplTest extends CommonTestBase {
 
     @Test
     public void testFindOrderDetail() throws Exception {
-        OrderDetailModel detail = orderService.findOrderDetail(mockSecondLevelShopTwoList.get(0).getOrderId());
+        OrderDetailModel detail = orderService.findOrderDetail(mockFirstLevelShop,mockSecondLevelShopTwoList.get(0).getOrderId());
         Assert.assertTrue(detail != null);
     }
 

@@ -15,12 +15,16 @@ import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrder;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
+import com.huotu.agento2o.service.entity.purchase.AgentProduct;
 import com.huotu.agento2o.service.model.order.GoodCustomField;
 import com.huotu.agento2o.service.model.order.OrderDetailModel;
+import com.huotu.agento2o.service.model.purchase.AgentProductStoreInfo;
 import com.huotu.agento2o.service.repository.order.MallDeliveryRepository;
 import com.huotu.agento2o.service.repository.order.MallOrderRepository;
+import com.huotu.agento2o.service.repository.purchase.AgentProductRepository;
 import com.huotu.agento2o.service.searchable.OrderSearchCondition;
 import com.huotu.agento2o.service.service.order.MallOrderService;
+import com.huotu.agento2o.service.service.purchase.AgentProductService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +52,11 @@ public class MallOrderServiceImpl implements MallOrderService {
 
     @Autowired
     private MallDeliveryRepository deliveryRepository;
+
+    @Autowired
+    private AgentProductRepository agentProductRepository;
+    @Autowired
+    private AgentProductService agentProductService;
 
     @Override
     public MallOrder findByOrderId(String orderId) {
@@ -220,7 +229,7 @@ public class MallOrderServiceImpl implements MallOrderService {
     }
 
     @Override
-    public OrderDetailModel findOrderDetail(String orderId) {
+    public OrderDetailModel findOrderDetail(Author author,String orderId) {
         OrderDetailModel orderDetailModel = new OrderDetailModel();
         MallOrder orders = orderRepository.findOne(orderId);
         if (orders.getAgentShopType() != null && orders.getAgentShopType() == OrderEnum.ShipMode.SHOP_PART_BENEFIT) {
@@ -235,6 +244,18 @@ public class MallOrderServiceImpl implements MallOrderService {
         }
         if (refundList != null && refundList.size() > 0) {
             orderDetailModel.setRefundsList(refundList);
+        }
+        if(mallOrderItem != null && mallOrderItem.size() > 0){
+            //如果当前用户是门店，则显示库存信息
+            if(author.getType() == Shop.class){
+                mallOrderItem.forEach(p->{
+                    AgentProductStoreInfo agentProductStoreInfo = agentProductRepository.findUsableNumByShopAndProduct(p.getShopId(),p.getProduct().getProductId());
+                    if(agentProductStoreInfo != null){
+                        p.setStore(agentProductStoreInfo.getStore());
+                        p.setFreez(agentProductStoreInfo.getFreeze());
+                    }
+                });
+            }
         }
         orderDetailModel.setShipName(orders.getShipName());
         orderDetailModel.setShipTel(orders.getShipTel());

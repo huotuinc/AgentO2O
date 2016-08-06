@@ -187,4 +187,14 @@ public class MallCustomer implements Author {
         }
         return null;
     }
+
+    @Override
+    public String getTypeName() {
+        if (this.getCustomerType() == CustomerTypeEnum.AGENT) {
+            return "Agent";
+        } else if (this.getCustomerType() == CustomerTypeEnum.AGENT_SHOP) {
+            return "Shop";
+        }
+        return null;
+    }
 }

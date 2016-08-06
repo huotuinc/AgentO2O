@@ -429,7 +429,7 @@
                                             </td>
                                             <td class="txt80 r">
                                                 <label>
-                                                    <img th:if="${orders.agentMarkType != null}" th:src="@{'/resource/images/remark_icons/'+${orders.agentMarkType}+'.gif'}" width="20" height="20"/>
+                                                    <img th:if="${orders.agentMarkText != null}" th:src="@{'/resource/images/remark_icons/'+${orders.agentMarkType}+'.gif'}" width="20" height="20"/>
                                                 </label>
                                                 <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" title="查看" th:text="${orders.orderId}"></a>
                                             </td>

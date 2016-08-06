@@ -33,7 +33,7 @@ public class CustomerInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String customerIdStr = CookieHelper.getCookieVal(request, "UserID");
         if (customerIdStr == null && environment.acceptsProfiles("development")) {
-            customerIdStr = "15633";
+            customerIdStr = "4471";
         }
         if (StringUtils.isEmpty(customerIdStr)) {
             response.sendRedirect("http://login.huobanplus.com");

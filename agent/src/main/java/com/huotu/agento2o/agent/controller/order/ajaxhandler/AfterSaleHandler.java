@@ -65,6 +65,7 @@ public class AfterSaleHandler {
                 if (forReturn.size() > 0) {
                     LogiModel logiModel = JSON.parseObject(forReturn.get(0).getAfterContext(), LogiModel.class);
                     String dicReturnItemsStr = afterSales.getOrderItem().getItemId() + "," + afterSales.getOrderItem().getNums();
+                    //推送伙伴商城
                     apiResult = deliveryService.pushRefund(afterSales.getOrderId(), logiModel, afterSales.getShop().getId(), dicReturnItemsStr);
                 }
             }

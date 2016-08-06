@@ -124,10 +124,12 @@ public class OrderController {
      * @throws Exception
      */
     @RequestMapping(value = "/showOrderDetail", method = RequestMethod.GET)
-    public ModelAndView showOrderDetail(@RequestParam("orderId") String orderId) throws Exception {
+    public ModelAndView showOrderDetail(
+            @AgtAuthenticationPrincipal Author author,
+            @RequestParam("orderId") String orderId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("order/order_detail");
-        OrderDetailModel orderDetailModel = orderService.findOrderDetail(orderId);
+        OrderDetailModel orderDetailModel = orderService.findOrderDetail(author,orderId);
         getItemPicUri(orderDetailModel.getSupOrderItemList());
         modelAndView.addObject("orderDetail", orderDetailModel);
         return modelAndView;

@@ -26,7 +26,7 @@ public interface MallOrderService {
 
     Page<MallOrder> findAll(int pageIndex, Author author, int pageSize, OrderSearchCondition searchCondition);
 
-    OrderDetailModel findOrderDetail(String orderId);
+    OrderDetailModel findOrderDetail(Author author,String orderId);
 
     HSSFWorkbook createWorkBook(List<MallOrder> orders);
 }

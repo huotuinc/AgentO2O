@@ -54,6 +54,25 @@
         </property>
     </bean>
 
+    <bean id="hbmEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="jdbcDataSource"></property>
+        <property name="persistenceUnitName" value="hbmEntity"/>
+        <property name="packagesToScan" value="com.huotu.agento2o.service.entity"/>
+        <property name="persistenceProvider">
+            <bean class="org.eclipse.persistence.jpa.PersistenceProvider"/>
+        </property>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect"/>
+        </property>
+        <property name="jpaPropertyMap">
+            <map>
+                <!--<entry key="javax.persistence.schema-generation.database.action" value="create"/>-->
+                <entry key="eclipselink.weaving" value="false"/>
+                <entry key="eclipselink.logging.level" value="FINE"/>
+            </map>
+        </property>
+    </bean>
+
     <!--事务管理器配置 -->
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>

@@ -41,4 +41,10 @@ public interface Author extends Serializable, UserDetails {
 
     Class getType();
 
+    /**
+     * 用于前端访问
+     * @return
+     */
+    String getTypeName();
+
 }

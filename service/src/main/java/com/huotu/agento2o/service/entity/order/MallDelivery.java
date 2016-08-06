@@ -81,6 +81,8 @@ public class MallDelivery {
     private String shipZip;
     @Column(name = "Ship_Tel")
     private String shipTel;
+    @Column(name = "Memo")
+    private String memo;
 
     @OneToMany(mappedBy = "delivery")
     private List<MallDeliveryItem> deliveryItems;

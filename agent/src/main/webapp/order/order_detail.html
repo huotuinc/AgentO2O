@@ -255,15 +255,17 @@
                 <div class="cnt">
                     <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
                         <thead>
-                        <tr class="even">
+                        <tr class="even" th:attr="type=${#authentication.getPrincipal().getTypeName()}">
                             <th scope="col">货号</th>
                             <th scope="col">商品名称</th>
                             <th scope="col">价格</th>
                             <th scope="col">购买数量</th>
                             <th scope="col">小计</th>
                             <th scope="col">已发货量</th>
-                            <th scope="col">当前库存</th>
-                            <th scope="col">预占库存</th>
+                            <th:block th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}">
+                                <th scope="col">当前库存</th>
+                                <th scope="col">预占库存</th>
+                            </th:block>
                         </tr>
                         </thead>
                         <tbody th:remove="all-but-first">
@@ -282,8 +284,10 @@
                             <td class="txt80 c" th:text="${supOrderItem.nums}"> 1</td>
                             <td class="txt80 c" th:text="${#numbers.formatDecimal(supOrderItem.price*supOrderItem.nums,1,2)}"> 1000.000</td>
                             <td class="txt80 c" th:text="${supOrderItem.sendNum}"> 1</td>
-                            <td class="txt80 c" th:text="${supOrderItem.store}">00</td>
-                            <td class="txt80 c" th:text="${supOrderItem.freez}">00</td>
+                            <th:block th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}">
+                                <td class="txt80 c" th:text="${supOrderItem.store}">00</td>
+                                <td class="txt80 c" th:text="${supOrderItem.freez}">00</td>
+                            </th:block>
                         </tr>
                         </tbody>
                     </table>
