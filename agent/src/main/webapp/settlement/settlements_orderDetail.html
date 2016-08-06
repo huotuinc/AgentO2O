@@ -107,7 +107,7 @@
                         <thead>
                         <tr class="even">
                             <th scope="col">建立日期</th>
-                            <th scope="col">发货单号</th>
+                            <th scope="col">退货单号</th>
                             <th scope="col">物流公司</th>
                             <th scope="col">物流单号</th>
                             <th scope="col">收件人</th>
@@ -127,6 +127,80 @@
             </div>
         </div>
         <div class="blank10"  th:if="${orderDetail.refundsList}!=null">
+        </div>
+        <div class="block" th:if="${orderDetail.paymentsList}!=null">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">收款单据列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">单据日期</th>
+                            <th scope="col">支付金额</th>
+                            <th scope="col">支付方式</th>
+                            <th scope="col">状态</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="payment:${orderDetail.paymentsList}">
+                            <td class="txt40 c" th:text="${payment.begin != null ?  #dates.format(payment.begin,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                            <td class="txt40 c" th:text="${payment.money}"></td>
+                            <td class="txt40 c" th:text="${payment.payMethod}"></td>
+                            <td class="txt40 c" th:text="${payment.status != null ? payment.status.value : ''}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="block" th:if="${orderDetail.refundsMoneyList}!=null">
+            <div class="h">
+                <span class="icon-sprite icon-list"></span>
+
+                <h3 style="float: left; width: 180px;">退款单据列表</h3>
+            </div>
+            <div class="tl corner">
+            </div>
+            <div class="tr corner">
+            </div>
+            <div class="bl corner">
+            </div>
+            <div class="br corner">
+            </div>
+            <div class="cnt-wp">
+                <div class="cnt">
+                    <table class="data-table even1" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <thead>
+                        <tr class="even">
+                            <th scope="col">单据日期</th>
+                            <th scope="col">退款金额</th>
+                            <th scope="col">退款方式</th>
+                        </tr>
+                        </thead>
+                        <tbody th:remove="all-but-first">
+                        <tr th:each="refundsMoney:${orderDetail.refundsMoneyList}">
+                            <td class="txt40 c" th:text="${refundsMoney.readyTime != null ?  #dates.format(refundsMoney.readyTime,'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                            <td class="txt40 c" th:text="${refundsMoney.money}"></td>
+                            <td class="txt40 c" th:text="${refundsMoney.payMethod}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="blank10">
         </div>
         <div class="block">
             <div class="h">

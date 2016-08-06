@@ -65,8 +65,8 @@ public class MallAfterSales {
     /**
      * 代理商发货类型，默认为0或者空，（废弃）
      */
-    @Column(name = "Agent_Shop_Type")
-    private OrderEnum.ShipMode agentShopType;
+    /*@Column(name = "Agent_Shop_Type")
+    private OrderEnum.ShipMode agentShopType;*/
 
     @Column(name = "Apply_Type")
     private AfterSaleEnum.AfterSaleType afterSaleType;

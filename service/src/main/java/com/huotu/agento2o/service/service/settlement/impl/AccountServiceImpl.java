@@ -115,6 +115,7 @@ public class AccountServiceImpl implements AccountService {
         withdrawRecord.setBankName(account.getAuthorBankName());
         withdrawRecord.setAccountName(account.getAuthorAccountName());
         withdrawRecord.setAccountNo(account.getAuthorAccountNo());
+        withdrawRecord.setCustomerId(account.getAuthorCustomer().getCustomerId());
         accountRepository.save(account);
         withdrawRecordRepository.save(withdrawRecord);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
