@@ -12,6 +12,7 @@ package com.huotu.agento2o.service.service.purchase.impl;
 
 import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
+import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -195,5 +197,61 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public void deleteAllShoppingCartByAgentId(Integer agentId) {
         shoppingCartRepository.deleteByAgentId(agentId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult batchCreateShoppingCart(String productInfo, Author author) throws Exception {
+        if (StringUtil.isEmptyStr(productInfo) || author == null) {
+            return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
+        }
+        String[] productNum = productInfo.split("\\|");
+        int successNum = 0;
+        if (productNum.length == 0) {
+            return new ApiResult("请选择需要订购的货品");
+        }
+        for (int i = 0; i < productNum.length; i++) {
+            Integer productId = 0, num = 0;
+            if (productNum[i].indexOf(",") > -1) {
+                productId = Integer.valueOf(productNum[i].split(",")[0]);
+                num = Integer.valueOf(productNum[i].split(",")[1]);
+            }
+            if (num == 0) {
+                throw new Exception("订购数量必须大于0");
+            }
+            //校验货品
+            MallProduct product = null;
+            //货品为空时，如果商品只有一件货品，则取第一个货品；否则提示请选择货品
+            if (productId == null || productId.equals(0)) {
+                continue;
+            } else {
+                product = productService.findByProductId(productId);
+            }
+            if (product == null) {
+                continue;
+            }
+            //校验库存
+            if (author.getParentAgent() == null && num > (product.getStore() - product.getFreez())) {
+                //上级为平台方,库存不足
+                continue;
+            } else if (author.getParentAgent() != null) {
+                AgentProduct agentProduct = agentProductService.findAgentProduct(author.getParentAgent(), product);
+                if (agentProduct != null && num > agentProduct.getStore() - agentProduct.getFreez()) {
+                    continue;
+                }
+            }
+            //增加购物车记录
+            ShoppingCart cart = new ShoppingCart();
+            cart.setAgent(author.getAuthorAgent());
+            cart.setShop(author.getAuthorShop());
+            cart.setProduct(product);
+            cart.setNum(num);
+            cart.setCreateTime(new Date());
+            cart = createShoppingCart(cart);
+            if (cart != null) {
+                successNum++;
+            }
+        }
+        return ApiResult.resultWith(ResultCodeEnum.SUCCESS, "加入购物车成功：其中成功" + successNum + "个，失败" + (productNum.length - successNum) + "个");
     }
 }

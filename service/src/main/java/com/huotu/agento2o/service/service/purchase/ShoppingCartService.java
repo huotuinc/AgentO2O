@@ -11,7 +11,6 @@
 package com.huotu.agento2o.service.service.purchase;
 
 import com.huotu.agento2o.common.util.ApiResult;
-import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.goods.MallProduct;
 import com.huotu.agento2o.service.entity.purchase.ShoppingCart;
@@ -82,4 +81,13 @@ public interface ShoppingCartService {
      * @param agentId
      */
     void deleteAllShoppingCartByAgentId(Integer agentId);
+
+    /**
+     * 批量加入购物车
+     *
+     * @param productInfo
+     * @param author
+     * @return
+     */
+    ApiResult batchCreateShoppingCart(String productInfo, Author author) throws Exception;
 }
