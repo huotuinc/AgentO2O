@@ -5,7 +5,6 @@ import com.huotu.agento2o.agent.config.annotataion.AgtAuthenticationPrincipal;
 import com.huotu.agento2o.agent.service.StaticResourceService;
 import com.huotu.agento2o.common.util.*;
 import com.huotu.agento2o.service.common.OrderEnum;
-import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.author.Author;
 import com.huotu.agento2o.service.entity.author.Shop;
 import com.huotu.agento2o.service.entity.order.MallOrder;
@@ -92,7 +91,6 @@ public class OrderController {
         model.addAttribute("pageSize", ordersList.getSize());
         model.addAttribute("searchCondition", searchCondition);
         model.addAttribute("pageIndex", pageIndex);
-        model.addAttribute("author", author);
         return "order/order_list";
     }
 

@@ -69,7 +69,6 @@
 </head>
 <body>
 <!--/*@thymesVar id="mallGoods" type="com.huotu.agento2o.service.entity.goods.MallGoods"*/-->
-<!--@thymesVar id="author" type="com.huotu.agento2o.service.entity.author.Author"-->
 <form method="post" action="" id="form1">
     <div class="container">
         <div class="blank10">
@@ -106,7 +105,7 @@
                                 <th>可用库存：</th>
                                 <td th:text="${#aggregates.sum(mallGoods.products.![usableStore])}">1</td>
                             </tr>
-                            <div th:if="${author.getAuthorShop() != null}">
+                            <div th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}">
                                 <tr>
                                     <th>运费模板：</th>
                                     <td>
@@ -129,8 +128,8 @@
                     <div class="blank10"></div>
                 </div>
                 <div class="bar" style="text-align: right;margin-top: 10px;">
-                    <span th:if="${author.getAuthorShop() != null}"><a class="btn-lit"
-                                                                       href="javascript:updateAgentGoods();"><span>保存</span></a></span>
+                    <span th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}"><a class="btn-lit"
+                                                                                               href="javascript:updateAgentGoods();"><span>保存</span></a></span>
                     <a class="btn-lit" href="javascript:goBack();">
                         <span>返回</span></a>
                 </div>

@@ -121,7 +121,6 @@ public class GoodsController {
         model.addObject("pageNo", goodsSearcher.getPageNo());
         model.addObject("totalPages", goodsPage.getTotalPages());
         model.addObject("totalRecords", goodsPage.getTotalElements());
-        model.addObject("author", author);
         return model;
     }
 

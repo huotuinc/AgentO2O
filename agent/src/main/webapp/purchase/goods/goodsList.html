@@ -36,7 +36,6 @@
             data-th-src="@{/resource/3rdParty/My97DatePicker/WdatePicker.js}"></script>
 </head>
 <body>
-<!--@thymesVar id="author" type="com.huotu.agento2o.service.entity.author.Author"-->
 <!--/*@thymesVar id="goodsSearcher" type="com.huotu.agento2o.service.searchable.GoodsSearcher"*/-->
 <form method="post" action="/goods/goodsList" data-th-action="@{/goods/goodsList}" id="form1"
       data-th-object="${goodsSearcher}">
@@ -147,7 +146,7 @@
                             <td class="txt80 c">
                                 <a data-th-attr="goodsId=${goods.goodsId}"
                                    onclick="javascript:showDetail(this)" href="javascript:void(0)"
-                                   data-th-text="${author.getAuthorAgent() != null ?'查看':'编辑'}"></a>
+                                   data-th-text="${#authentication.getPrincipal().getTypeName() == 'Agent' ? '查看':'编辑'}"></a>
                             </td>
                         </tr>
                         </tbody>

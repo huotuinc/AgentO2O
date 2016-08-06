@@ -75,12 +75,13 @@ public class IndexController {
     ) {
         if (!StringUtils.isEmpty(parentId)) {
             List<AgtMenu> menus = menuService.findByParent(parentId, 0);
-            List<AgtMenu> isAuthorMenus = new ArrayList<>();
+            /*List<AgtMenu> isAuthorMenus = new ArrayList<>();
             for (AgtMenu menu : menus) {
                 if (menu.isAuthor()) {
                     isAuthorMenus.add(menu);
                 }
-            }
+            }*/
+            List<AgtMenu> isAuthorMenus = getIsAuthorMenus(menus);
             model.addAttribute("menus", isAuthorMenus);
             AgtMenu activeMenu;
             if (StringUtils.isEmpty(activeMenuId)) {
@@ -92,6 +93,26 @@ public class IndexController {
         }
         model.addAttribute("parentId", parentId);
         return "left_menu";
+    }
+
+    /**
+     * 获取有权限的菜单
+     *
+     * @param menus
+     * @return
+     */
+    private List<AgtMenu> getIsAuthorMenus(List<AgtMenu> menus) {
+        if (menus == null || menus.size() < 1) {
+            return null;
+        }
+        List<AgtMenu> isAuthorMenus = new ArrayList<>();
+        for (AgtMenu menu : menus) {
+            if (menu.isAuthor()) {
+                menu.setChildren(getIsAuthorMenus(menu.getChildren()));
+                isAuthorMenus.add(menu);
+            }
+        }
+        return isAuthorMenus;
     }
 
     /**

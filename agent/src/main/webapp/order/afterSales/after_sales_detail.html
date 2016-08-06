@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <!--/*@thymesVar id="afterSales" type="com.huotu.agento2o.service.entity.order.MallAfterSales"*/-->
 <!--/*@thymesVar id="afterSalesItem" type="com.huotu.agento2o.service.entity.order.MallAfterSalesItem"*/-->
 <!--/*@thymesVar id="userInfo" type="com.huotu.agento2o.service.entity.user.UserBaseInfo"*/-->
@@ -356,14 +356,13 @@
 
                             <div class="table-action">
 
-                                <div style="padding-left: 15px;">
-
+                                <div style="padding-left: 15px;"
+                                     th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}">
                                         <a th:if="${afterSales.returnable()}" class="btn-lit status" id="status7" href="javascript:afterSale.showReply('填写退货地址',actionMethod.returnAgree);"><span>同意退货</span></a>
 
                                         <a th:if="${afterSales.refundable()}" class="btn-lit status" id="status8" href="javascript:afterSale.agreeRefund();"><span>同意退款</span></a>
 
                                         <a th:if="${afterSales.refusable()}" class="btn-lit status" id="status5" href="javascript:afterSale.showReply('给客户留言',actionMethod.afterSaleRefuse);"><span>拒绝</span></a>
-
                                 </div>
 
                             </div>

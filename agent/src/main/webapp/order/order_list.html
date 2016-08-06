@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <!--@thymesVar id="ordersList" type="java.util.List<com.huotu.agento2o.service.entity.order.MallOrder>"-->
-<!--@thymesVar id="author" type="com.huotu.agento2o.service.entity.author.Author"-->
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
@@ -329,7 +328,7 @@
                     <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
                         <span>批量发货</span></a>
                         -->
-                    <span th:if="${author.getAuthorShop() != null}">
+                    <span th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}">
                         <a class="btn-lit aucontrol" href="javascript:showBatchDelivery();">
                             <span>批量发货</span>
                         </a>
@@ -416,7 +415,8 @@
                                             <th scope="col">收益状态
                                             </th>
 
-                                            <th scope="col" th:if="${author.getAuthorShop() == null}">所属门店
+                                            <th scope="col"
+                                                th:if="${#authentication.getPrincipal().getTypeName() == 'Agent'}">所属门店
                                             </th>
 
                                             <th scope="col" width="70px">操作
@@ -473,12 +473,12 @@
                                                 银联在线支付
                                             </td>
                                             <td class="txt60" th:text="${orders.shop.name}"
-                                                th:if="${author.getAuthorShop() == null}">
+                                                th:if="${#authentication.getPrincipal().getTypeName() == 'Agent'}">
                                                 门店1
                                             </td>
                                             <td class="txt80 c tail">
                                                 <div th:inline="text">
-                                                        <span th:if="${orders.deliveryable() and author.getAuthorShop() != null}">
+                                                        <span th:if="${orders.deliveryable() and #authentication.getPrincipal().getTypeName() == 'Shop'}">
                                                             <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showConsignFlow(this)" id="btnConsignFlow" title="发货" th:if="${orders.deliveryable()}">发货</a> |
                                                         </span>
                                                   <!--/* <span th:if="${!author.isAgent()and orders.shop==null and orders.beneficiaryShop!=null}">
@@ -487,7 +487,7 @@
                                                         </span>
                                                     </span>*/-->
                                                     <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showDetail(this)" id="btnDetail" title="查看">查看</a>
-                                                    <span th:if="${author.getAuthorShop() != null }">
+                                                    <span th:if="${#authentication.getPrincipal().getTypeName() == 'Shop'}">
                                                         | <a href="javascript:void(0)" th:attr="orderId=''+${orders.orderId}" onclick="showRemark(this)" id="supplierRemark" title="备注">备注</a>
                                                     </span>
                                                     <!--/*<a th:attr="orderId=''+${orders.orderId}" onclick="showRefunds(this)" title="退货" th:if="${orders.returnable()}">退货</a>*/-->
