@@ -546,7 +546,7 @@
                     var url = orderUrl + 'delivery?orderId=' + orderId;
                     J.PopupIFrame(url, title, 900, 480, "ifrm", "", "auto", "");
                 }else{
-                    $.jBox.tip("库存不足，请检查库存并进货!", "info");
+                    $.jBox.tip(result.msg, "info");
                 }
             },
             error: function () {
