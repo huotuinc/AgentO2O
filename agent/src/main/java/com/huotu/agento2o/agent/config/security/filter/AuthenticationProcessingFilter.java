@@ -2,6 +2,7 @@ package com.huotu.agento2o.agent.config.security.filter;
 
 import com.huotu.agento2o.agent.common.CookieHelper;
 import com.huotu.agento2o.agent.common.UserNameAndPasswordNullException;
+import com.huotu.agento2o.agent.common.VerifyCodeErrorException;
 import com.huotu.agento2o.agent.config.security.AuthenticationToken;
 import com.huotu.agento2o.common.SysConstant;
 import com.huotu.agento2o.service.common.CustomerTypeEnum;
@@ -24,13 +25,26 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
 
     public static final String SPRING_SECURITY_FORM_ROLE_TYPE_KEY = "roleType";
 
+    public static final String SPRING_SECURITY_FORM_VERIFYCODE_KEY = "verifyCode";
+
     public String roleTypeParameter = SPRING_SECURITY_FORM_ROLE_TYPE_KEY;
+
+    private String verifyCodeParameter = SPRING_SECURITY_FORM_VERIFYCODE_KEY;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         if (!request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException(
                     "Authentication method not supported: " + request.getMethod());
+        }
+        //校验 验证码
+        //从cookies中获取验证码
+        String realVerifyCode = request.getSession().getAttribute("verifyCode").toString();
+        String verifyCode = obtainVerifyCode(request);
+        if (StringUtils.isEmpty(realVerifyCode) || !realVerifyCode.equalsIgnoreCase(verifyCode)) {
+            throw new VerifyCodeErrorException(messages.getMessage(
+                    "AbstractUserDetailsAuthenticationProvider.errorVerifyCode",
+                    "verify code is error"));
         }
         //charsetEncodingFilter在此之后，所以此时还没转码
         try {
@@ -65,7 +79,7 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
             long authorId = 0;
             if (userDetails instanceof MallCustomer) {
                 authorId = ((MallCustomer) userDetails).getCustomerId();
-                if(((MallCustomer) userDetails).getCustomerType() == CustomerTypeEnum.AGENT_SHOP){
+                if (((MallCustomer) userDetails).getCustomerType() == CustomerTypeEnum.AGENT_SHOP) {
                     CookieHelper.setCookie(response, "agentShopId", String.valueOf(authorId), SysConstant.COOKIE_DOMAIN);
                 }
             }
@@ -86,5 +100,13 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
             return 0;
         }
         return Integer.parseInt(param);
+    }
+
+    protected String obtainVerifyCode(HttpServletRequest request) {
+        String param = request.getParameter(verifyCodeParameter);
+        if (StringUtils.isEmpty(param)) {
+            return null;
+        }
+        return param;
     }
 }

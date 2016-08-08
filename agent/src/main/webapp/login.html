@@ -11,6 +11,41 @@
             src="resource/3rdParty/js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" th:src="@{/resource/3rdParty/jBox/jquery.jBox-2.3.min.js}"
             src="resource/3rdParty/jBox/jquery.jBox-2.3.min.js"></script>
+    <style>
+        .btn-showDynPwWrapimg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            _right: -1px;
+            display: block;
+            width: 119px;
+            height: 42px;
+            font-size: 14px;
+            font-weight: normal;
+            text-align: center;
+            color: #6d798c;
+            background-position: -115px -157px;
+            margin-right: 14px;
+            margin-top: 12px;
+            z-index: 10000;
+        }
+        .btn {
+            width: 110px;
+            height: 38px;
+            float: left;
+            text-align: center;
+            cursor: pointer;
+            border: 0;
+            padding: 0;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-block;
+            vertical-align: baseline;
+            line-height: 38px;
+            outline: 0;
+            background-color: transparent;
+        }
+    </style>
 </head>
 <body style="zoom: 1; background-color: #292929;" class=" move">
 <div style="width: 100%; padding-top: 20px; background-color: #e8ecef;">
@@ -31,19 +66,40 @@
                 </select>
             </div>
             <div class="loginFormIpt showPlaceholder" style="text-align: center; margin: 0 auto;">
-                <input class="formIpt" tabindex="1" title="请输入帐号" id="username" name="username" type="text" maxlength="50" autocomplete="off" placeholder="帐号"/>
+                <input class="formIpt" tabindex="1" title="请输入帐号" id="username" name="username" type="text"
+                       maxlength="50" autocomplete="off" placeholder="帐号"/>
             </div>
             <div class="loginFormIpt showPlaceholder" style="text-align: center; margin: 0 auto;">
-                <input class="formIpt" tabindex="2" title="请输入密码" id="password" name="password" type="password" placeholder="密码"/>
+                <input class="formIpt" tabindex="2" title="请输入密码" id="password" name="password" type="password"
+                       placeholder="密码"/>
+            </div>
+            <p style="clear: both"></p>
+            <div id="" class="loginFormIpt showPlaceholder" style="text-align: center; margin: 0 auto;">
+
+                <input class="formIpt" tabindex="2" title="请输入验证码" name="verifyCode" type="text" placeholder="验证码"/>
+                <div class="btn btn-showDynPwWrapimg">
+                        <span style="float: right; line-height: 14px; padding-right: 8px; padding-top: 3px">
+                            <label class="ftx23 hline">
+                                看不清<br/>
+                                <a onclick="LoadVerifyCode('mall');" class="flk13">换一张</a>
+                            </label>
+                        </span>
+                        <span style="float: right; padding-right: 5px;">
+                            <img id="verify_image1" th:src="@{/code/verifyImage}" alt="点击刷新"
+                                 style="width: 55px; vertical-align: middle; height: 32px;"/></span>
+                </div>
+                <p style="clear: both"></p>
             </div>
             <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;">
                 <p style="width: 50%;margin: auto">
-                    <input id="mallBtn" type="submit"  class="buttons3" value="登&nbsp;&nbsp;录"/>
+                    <input id="mallBtn" type="submit" class="buttons3" value="登&nbsp;&nbsp;录"/>
                 </p>
             </div>
-            <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;" th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
+            <div style="text-align: center; margin: 0 auto; width: 389px; padding-top: 10px;"
+                 th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
                 <p style="width: 50%;margin: auto">
-                    <span id="errorInfo" style="color: red" th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></span>
+                    <span id="errorInfo" style="color: red"
+                          th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></span>
                 </p>
             </div>
         </form>
@@ -56,5 +112,16 @@
         </nav>
     </div>
 </footer>
+<script th:inline="javascript">
+    var baseUrl = /*[[@{/code/verifyImage}]]*/ "/code/verifyImage";
+    function LoadVerifyCode(type) {
+        if (type == 'mall') {
+            $('#verify_image1').attr('src', baseUrl + "?rnd=" + Math.random());
+        }
+        else if (type == 'task') {
+            $('#verify_image2').attr('src', baseUrl + "?rnd=" + Math.random());
+        }
+    }
+</script>
 </body>
 </html>
