@@ -117,7 +117,7 @@ public class DeliveryController {
             }
             count ++;
         }
-        if(count > 0){
+        if(count == 0){
             return new ApiResult("没有需要发货的货品！");
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);

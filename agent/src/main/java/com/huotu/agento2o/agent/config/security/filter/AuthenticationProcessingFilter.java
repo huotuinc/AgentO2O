@@ -25,11 +25,11 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
 
     public static final String SPRING_SECURITY_FORM_ROLE_TYPE_KEY = "roleType";
 
-    public static final String SPRING_SECURITY_FORM_VERIFYCODE_KEY = "verifyCode";
+    public static final String SPRING_SECURITY_FORM_VERIFY_CODE_KEY = "verifyCode";
 
     public String roleTypeParameter = SPRING_SECURITY_FORM_ROLE_TYPE_KEY;
 
-    private String verifyCodeParameter = SPRING_SECURITY_FORM_VERIFYCODE_KEY;
+    private String verifyCodeParameter = SPRING_SECURITY_FORM_VERIFY_CODE_KEY;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -38,7 +38,7 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
                     "Authentication method not supported: " + request.getMethod());
         }
         //校验 验证码
-        //从cookies中获取验证码
+        //从SESSION中获取验证码
         String realVerifyCode = request.getSession().getAttribute("verifyCode").toString();
         String verifyCode = obtainVerifyCode(request);
         if (StringUtils.isEmpty(realVerifyCode) || !realVerifyCode.equalsIgnoreCase(verifyCode)) {

@@ -102,7 +102,6 @@ public class SettlementServiceImpl implements SettlementService {
         settlement.setFinalAmount((double) Math.round(finalAmount * 100) / 100);
         settlement.setFreight((double) Math.round(freight * 100) / 100);
         settlement.setSettlementOrders(settlementOrders);
-        // TODO: 2016/6/8 test
         settlement = settlementRepository.save(settlement);
         for (SettlementOrder settlementOrder : settlementOrders) {
             settlementOrder.setSettlement(settlement);
@@ -110,6 +109,7 @@ public class SettlementServiceImpl implements SettlementService {
         settlementOrderRepository.save(settlementOrders);
         log.info("shopId:" + shop.getId() + ",customerId:" + shop.getCustomer().getCustomerId() + "settlementNo:" + settlement.getSettlementNo() + ",finalAmount:" + finalAmount + ",freight:" + freight);
         orderRepository.updateSettle(shop.getId(), shop.getCustomer().getCustomerId(), settleTime, OrderEnum.PayStatus.REFUNDING);
+        log.info("updateSettle:" + shop.getId() + "," + shop.getCustomer().getCustomerId() + "," + settlement + OrderEnum.PayStatus.REFUNDING.getCode());
     }
 
     @Override

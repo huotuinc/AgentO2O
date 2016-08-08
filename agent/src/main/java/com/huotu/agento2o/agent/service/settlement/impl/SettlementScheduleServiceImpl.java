@@ -39,8 +39,8 @@ public class SettlementScheduleServiceImpl implements SettlementScheduleService 
 //    @Scheduled(cron = "0 0 3 ? * *")
     @Scheduled(cron = "0 */5 * * * ?")//用于测试，每0,5结尾分钟结算一次
     public void settlementSchedule() {
-        log.info("start settle . . .");
         Date now = new Date();
+        log.info("start settle . . ." + now);
         //结算门店订单
         List<Shop> shopList = shopService.findAll();
         if (shopList != null && shopList.size() > 0) {
