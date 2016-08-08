@@ -60,7 +60,7 @@ public class CodeController {
         // 将四位数字的验证码保存到Session中。
         HttpSession session = request.getSession();
         System.out.print(checkCode);
-        session.setAttribute("code", checkCode.toString().toLowerCase());
+        session.setAttribute("verifyCode", checkCode.toString().toLowerCase());
         return checkCode.toString();
     }
 
@@ -71,11 +71,11 @@ public class CodeController {
             return;
         }
         // 定义图像buffer
-        BufferedImage buffImg = new BufferedImage((int) Math.abs(checkCode.length() * 12.8), 48,
+        BufferedImage buffImg = new BufferedImage((int) Math.abs(checkCode.length() * 12.8), 52,
                 BufferedImage.TYPE_INT_RGB);
         Graphics gd = buffImg.getGraphics();
         // 清空图片背景色
-        Font font = new Font("Arial", (Font.BOLD | Font.ITALIC), 22);
+        Font font = new Font("Arial", (Font.BOLD | Font.ITALIC), 20);
         Color[] fontColor = {Color.BLACK, Color.RED, Color.PINK, Color.GREEN, Color.CYAN, Color.BLUE, Color.DARK_GRAY, Color.MAGENTA};  //定义 8 种颜色
         // 将图像填充为白色
         gd.setColor(Color.WHITE);
@@ -84,7 +84,7 @@ public class CodeController {
         gd.setFont(font);
         for (int i = 0; i < codeCount; i++) {
             gd.setColor(fontColor[new Random().nextInt(8)]);
-            gd.drawString(checkCode.substring(i,i+1), 2 + i * 10, 35);
+            gd.drawString(checkCode.substring(i,i+1), 2 + i * 12, 35);
         }
         // 禁止图像缓存。
         response.setHeader("Pragma", "no-cache");
