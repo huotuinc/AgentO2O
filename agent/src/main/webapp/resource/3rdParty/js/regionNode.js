@@ -8367,9 +8367,9 @@ var _znodes = [{"id": "110000", "name": "北京市", "pId": "0", "depth": "1"}, 
         prov_sel.options[0] = new Option("请选择省份", "");
         city_sel.options[0] = new Option("请选择城市", "");
         dist_sel.options[0] = new Option("请选择地区", "");
-        var prov_val = pro == null ? "" : pro;
-        var city_val = city == null ? "" : city;
-        var dist_val = dist == null ? "" : dist;
+        var prov_val = pro == null ? "" : $.trim(pro);
+        var city_val = city == null ? "" : $.trim(city);
+        var dist_val = dist == null ? "" : $.trim(dist);
         fillCity();
         setArea(prov_val, city_val, dist_val);
         function fillCity() {
@@ -8386,6 +8386,11 @@ var _znodes = [{"id": "110000", "name": "北京市", "pId": "0", "depth": "1"}, 
         function setCity() {
             var j = 1;
             var provinceCode = prov_sel.value;
+            if (provinceCode != "") {
+                city_obj.show();
+            } else {
+                city_obj.hide();
+            }
             for (i = 0; i < _znodes.length; i++) {
                 if (_znodes[i].pId == provinceCode) {
 
@@ -8409,6 +8414,11 @@ var _znodes = [{"id": "110000", "name": "北京市", "pId": "0", "depth": "1"}, 
                     // document.getElementById("county").options[j] = new Option(_znodes[i].name, _znodes[i].id);
                     j++;
                 }
+            }
+            if (cityCode != "" && j > 1) {
+                dist_obj.show();
+            } else {
+                dist_obj.hide();
             }
             dist_sel.length = j;
 
@@ -8444,14 +8454,11 @@ var _znodes = [{"id": "110000", "name": "北京市", "pId": "0", "depth": "1"}, 
 
         // 选择省份时发生事件
         prov_obj.bind("change", function () {
-            // dist_obj.hide();
-            // city_obj.show();
             setCity();
         });
 
         // 选择市级时发生事件
         city_obj.bind("change", function () {
-            // dist_obj.show();
             setCounty();
         });
     };
