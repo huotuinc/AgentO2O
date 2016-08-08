@@ -62,6 +62,10 @@ public class ReturnedOrderSearch {
     private int pageSize = Constant.PAGESIZE;
 
     private int parent_agentLevel = -1;
+    /**
+     * 货名名称
+     */
+    private String orderItemName;
 
 
 }

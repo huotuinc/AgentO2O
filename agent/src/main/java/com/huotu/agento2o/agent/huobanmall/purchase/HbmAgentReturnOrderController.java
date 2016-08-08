@@ -70,7 +70,7 @@ public class HbmAgentReturnOrderController {
         model.setViewName("huobanmall/purchase/returned_product_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
-        model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
+        model.addObject("shipStatusEnums",PurchaseEnum.ReturnedShipStatus.values());
         model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
         model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
         model.addObject("totalPages", totalPages);

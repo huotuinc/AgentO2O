@@ -5,7 +5,9 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.ShopLevel;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -21,6 +23,8 @@ import java.util.Date;
 @Cacheable(value = false)
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Shop{
 
     private static final long serialVersionUID = -5103560839055745939L;
@@ -254,5 +258,10 @@ public class Shop{
 
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
+    }
+
+    public Shop(Integer id,String name){
+        this.id = id;
+        this.name = name;
     }
 }

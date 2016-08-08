@@ -106,11 +106,19 @@ public class DeliveryController {
         MallOrder order = orderService.findByOrderId(orderId);
         List<MallOrderItem> mallOrderItems = orderItemService.findMallOrderItemByOrderId(order.getOrderId());
         AgentProduct agentProduct ;
+        int count = 0;
         for (MallOrderItem mallOrderItem : mallOrderItems){
+            if(mallOrderItem.getSendNum() >= mallOrderItem.getNums()){
+                continue;
+            }
             agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
             if (!(agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore())){
                 return ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE);
             }
+            count ++;
+        }
+        if(count > 0){
+            return new ApiResult("没有需要发货的货品！");
         }
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }

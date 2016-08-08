@@ -56,7 +56,6 @@ public class CodeController {
         }
         // 将四位数字的验证码保存到Session中。
         HttpSession session = request.getSession();
-        System.out.print(checkCode);
         session.setAttribute("verifyCode", checkCode.toString().toLowerCase());
         return checkCode.toString();
     }
@@ -74,7 +73,7 @@ public class CodeController {
         // 清空图片背景色
         Font font = new Font("Arial", (Font.BOLD | Font.ITALIC), 20);
         Color[] fontColor = {Color.BLACK, Color.RED, Color.PINK, Color.GREEN, Color.CYAN, Color.BLUE, Color.DARK_GRAY, Color.MAGENTA};  //定义 8 种颜色
-        // 将图像填充为白色
+        // 将图像填充为灰色
         gd.setColor(new Color(245,246,247));
         gd.fillRect(0, 0, buffImg.getWidth(), buffImg.getHeight());
         // 设置字体

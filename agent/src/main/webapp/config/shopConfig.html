@@ -617,7 +617,19 @@
     $("#citys").citySelect(pro, city, dist);
     //省市区选择后改变百度地图中心定位到选择的省市区
     $("#citys select").change(function(){
-        selectProvince = $(this).children("option[value=" + $(this).val()+ "]").text();
+        selectProvince = "";
+        var province = $.trim($("#provinceCode").val());
+        if(province != null && province.length > 0){
+            selectProvince += $("#provinceCode option[value=" + province+ "]").text();
+        }
+        var city = $.trim($("#cityCode").val());
+        if(city != null && city.length > 0){
+            selectProvince += $("#cityCode option[value=" + city+ "]").text();
+        }
+        var district = $.trim($("#districtCode").val());
+        if(district != null && district.length > 0){
+            selectProvince += $("#districtCode option[value=" + district+ "]").text();
+        }
         map.centerAndZoom(selectProvince, 10);
     })
     //    change2view2form('shopConfigForm');

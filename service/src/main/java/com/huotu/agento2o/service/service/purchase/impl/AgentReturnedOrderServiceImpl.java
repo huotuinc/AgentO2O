@@ -104,7 +104,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         for (int i = 0; i < agentProductIds.length; i++) {
             AgentProduct agentProduct = agentProductRepository.findOne(agentProductIds[i]);
             MallProduct mallProduct = agentProduct.getProduct();
-            mallProductService.setProductPrice(mallProduct,author);
+            mallProductService.setProductPrice(mallProduct, author);
             if (productNums[i] > (agentProduct.getStore() - agentProduct.getFreez()) || productNums[i] <= 0) {
                 throw new Exception("库存不足！");
             }
@@ -156,7 +156,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                     Predicate p1 = cb.equal(join1.get("parentAgent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     Predicate p2 = cb.equal(join2.get("agent").get("id").as(Integer.class), returnedOrderSearch.getParentAgentId());
                     predicates.add(cb.or(p1,p2));*/
-                    predicates.add(cb.equal(root.get("parentAgent").get("id").as(Agent.class),returnedOrderSearch.getParentAgentId()));
+                    predicates.add(cb.equal(root.get("parentAgent").get("id").as(Agent.class), returnedOrderSearch.getParentAgentId()));
                 }
             }
             if (returnedOrderSearch.getCustomerId() != null && returnedOrderSearch.getCustomerId() != 0) {
@@ -164,7 +164,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 Join<AgentReturnedOrder, Shop> join2 = root.join(root.getModel().getSingularAttribute("shop", Shop.class), JoinType.LEFT);
                 Predicate p1 = cb.equal(join1.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
                 Predicate p2 = cb.equal(join2.get("customer").get("customerId").as(Integer.class), returnedOrderSearch.getCustomerId());
-                predicates.add(cb.or(p1,p2));
+                predicates.add(cb.or(p1, p2));
             }
             if (!StringUtils.isEmpty(returnedOrderSearch.getROrderId())) {
                 predicates.add(cb.like(root.get("rOrderId").as(String.class), "%" + returnedOrderSearch.getROrderId() + "%"));
@@ -189,6 +189,11 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 predicates.add(cb.lessThanOrEqualTo(root.get("createTime").as(Date.class),
                         StringUtil.DateFormat(returnedOrderSearch.getEndTime(), StringUtil.TIME_PATTERN)));
             }
+            if (!StringUtil.isEmpty(returnedOrderSearch.getOrderItemName())) {
+                predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class),
+                        returnedOrderSearch.getOrderItemName()));
+            }
+            query.distinct(true);
 //            predicates.add(cb.equal(root.get("disabled").as(Boolean.class), false));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -199,7 +204,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
     @Override
     public ApiResult cancelReturnOrder(Author author, String rOrderId) {
-        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByAgentAndShopAndROrderIdAndDisabledFalse(author.getAuthorAgent(),author.getAuthorShop(), rOrderId);
+        AgentReturnedOrder agentReturnedOrder = agentReturnOrderRepository.findByAgentAndShopAndROrderIdAndDisabledFalse(author.getAuthorAgent(), author.getAuthorShop(), rOrderId);
 
         if (agentReturnedOrder != null) {
             if (agentReturnedOrder.getStatus().equals(PurchaseEnum.OrderStatus.CHECKING)) {// 待审核状态才可以退货
@@ -229,7 +234,7 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
             if (author != null && author.getType() == Agent.class) {
                 agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(author.getAuthorAgent(), product);
             } else if (author != null && author.getType() == Shop.class) {
-                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(),product);
+                agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(author.getAuthorShop(), product);
             }
             agentProduct.setFreez(agentProduct.getFreez() - num);
             agentProducts.add(agentProduct);
@@ -269,12 +274,12 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
 
             agentReturnedOrderItems.forEach(agentReturnedOrderItem -> {
                 AgentProduct agentProduct = null;
-                if(agentReturnedOrder.getAgent()!= null){
+                if (agentReturnedOrder.getAgent() != null) {
                     agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(agentReturnedOrder.getAgent(), agentReturnedOrderItem.getProduct());
-                }else if(agentReturnedOrder.getShop() != null){
-                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(agentReturnedOrder.getShop(),agentReturnedOrderItem.getProduct());
+                } else if (agentReturnedOrder.getShop() != null) {
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(agentReturnedOrder.getShop(), agentReturnedOrderItem.getProduct());
                 }
-                if(agentProduct != null){
+                if (agentProduct != null) {
                     agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
                     agentProductRepository.save(agentProduct);
                 }
@@ -299,8 +304,8 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         agentDelivery.setDeliveryId(SerialNo.create());
         agentDelivery.setPurchaseOrder(null);
         agentDelivery.setAgentReturnedOrder(agentReturnedOrder);
-        agentDelivery.setAgentId(agentReturnedOrder.getAgent()!=null?agentReturnedOrder.getAgent().getId():null);
-        agentDelivery.setShopId(agentReturnedOrder.getShop()!=null?agentReturnedOrder.getShop().getId():null);
+        agentDelivery.setAgentId(agentReturnedOrder.getAgent() != null ? agentReturnedOrder.getAgent().getId() : null);
+        agentDelivery.setShopId(agentReturnedOrder.getShop() != null ? agentReturnedOrder.getShop().getId() : null);
         agentDelivery.setCustomerId(agentReturnedOrder.getMallCustomer().getCustomerId());
         agentDelivery.setType(OrderEnum.DeliveryType.RETURN.getCode());
         agentDelivery.setLogisticsName(deliveryInfo.getLogiName());
@@ -321,10 +326,10 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         for (AgentReturnedOrderItem agentReturnedOrderItem : agentReturnedOrderItems) {
             AgentDeliveryItem deliveryItem = new AgentDeliveryItem();
             AgentProductStoreInfo agentProduct = null;
-            if(agentReturnedOrder.getAgent() != null){
+            if (agentReturnedOrder.getAgent() != null) {
                 agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(agentReturnedOrder.getAgent().getId(), agentReturnedOrderItem.getProduct().getProductId());
-            }else if(agentReturnedOrder.getShop() != null){
-                agentProduct = agentProductRepository.findUsableNumByShopAndProduct(agentReturnedOrder.getShop().getId(),agentReturnedOrderItem.getProduct().getProductId());
+            } else if (agentReturnedOrder.getShop() != null) {
+                agentProduct = agentProductRepository.findUsableNumByShopAndProduct(agentReturnedOrder.getShop().getId(), agentReturnedOrderItem.getProduct().getProductId());
             }
             deliveryItem.setAgentProductId(agentProduct.getId());
             deliveryItem.setDelivery(agentDelivery);
@@ -376,12 +381,12 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 mallProduct.getGoods().setStore(mallProduct.getGoods().getStore() + agentReturnedOrderItem.getNum());
                 mallProductRepository.save(mallProduct);
                 AgentProduct agentProduct = null;
-                if(subAgentReturnedOrder.getAgent() != null){
-                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getAgent(),mallProduct);
-                }else if(subAgentReturnedOrder.getShop() != null){
-                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(subAgentReturnedOrder.getShop(),mallProduct);
+                if (subAgentReturnedOrder.getAgent() != null) {
+                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getAgent(), mallProduct);
+                } else if (subAgentReturnedOrder.getShop() != null) {
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(subAgentReturnedOrder.getShop(), mallProduct);
                 }
-                if(agentProduct != null){
+                if (agentProduct != null) {
                     agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
                     agentProduct.setStore(agentProduct.getStore() - agentReturnedOrderItem.getNum());
                     agentProductRepository.save(agentProduct);
@@ -395,12 +400,12 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
                 parentAgentProduct.setStore(parentAgentProduct.getStore() + agentReturnedOrderItem.getNum());
                 agentProductRepository.save(parentAgentProduct);
                 AgentProduct agentProduct = null;
-                if(subAgentReturnedOrder.getAgent() != null){
-                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getAgent(),mallProduct);
-                }else if(subAgentReturnedOrder.getShop() != null){
-                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(subAgentReturnedOrder.getShop(),mallProduct);
+                if (subAgentReturnedOrder.getAgent() != null) {
+                    agentProduct = agentProductRepository.findByAgentAndProductAndDisabledFalse(subAgentReturnedOrder.getAgent(), mallProduct);
+                } else if (subAgentReturnedOrder.getShop() != null) {
+                    agentProduct = agentProductRepository.findByShopAndProductAndDisabledFalse(subAgentReturnedOrder.getShop(), mallProduct);
                 }
-                if(agentProduct != null){
+                if (agentProduct != null) {
                     agentProduct.setFreez(agentProduct.getFreez() - agentReturnedOrderItem.getNum());
                     agentProduct.setStore(agentProduct.getStore() - agentReturnedOrderItem.getNum());
                     agentProductRepository.save(agentProduct);
@@ -444,12 +449,12 @@ public class AgentReturnedOrderServiceImpl implements AgentReturnedOrderService 
         MallProduct mallProduct = new MallProduct();
         mallProduct.setProductId(productId);
         AgentProductStoreInfo agentProduct = null;
-        if(author.getType() == Agent.class){
+        if (author.getType() == Agent.class) {
             agentProduct = agentProductRepository.findUsableNumByAgentAndProduct(author.getAuthorAgent().getId(), mallProduct.getProductId());
-        }else if(author.getType() == Shop.class){
-            agentProduct = agentProductRepository.findUsableNumByShopAndProduct(author.getAuthorShop().getId(),mallProduct.getProductId());
+        } else if (author.getType() == Shop.class) {
+            agentProduct = agentProductRepository.findUsableNumByShopAndProduct(author.getAuthorShop().getId(), mallProduct.getProductId());
         }
-        if(agentProduct == null){
+        if (agentProduct == null) {
             return new ApiResult("货品不存在");
         }
         if (agentProduct.getStore() - agentProduct.getFreeze() < num) {

@@ -189,7 +189,7 @@ public class AgentReturnedOrderController {
         model.setViewName("purchase/returned/returned_order_list");
         int totalPages = agentReturnedOrderPage.getTotalPages();
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
-        model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
+        model.addObject("shipStatusEnums",PurchaseEnum.ReturnedShipStatus.values());
         model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
         model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
         model.addObject("totalPages", totalPages);
@@ -344,7 +344,7 @@ public class AgentReturnedOrderController {
         int totalPages = agentReturnedOrderPage.getTotalPages();
 
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
-        model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
+        model.addObject("shipStatusEnums",PurchaseEnum.ReturnedShipStatus.values());
         model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
         model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
         model.addObject("totalPages", totalPages);

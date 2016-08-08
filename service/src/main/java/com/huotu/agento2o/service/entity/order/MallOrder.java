@@ -196,9 +196,14 @@ public class MallOrder {
 
     //发货状态为 未发货，部分发货，部分退货
     //支付状态为 已支付，部分退款
+    //需要发货的item的个数大于0
     //为可发货
     public boolean deliveryable() {
-        return shop != null && OrderEnum.ShipMode.SHOP_DELIVERY.equals(agentShopType) && (shipStatus == OrderEnum.ShipStatus.NOT_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_RETURN) &&
+        long toDeliveryItem = 0;
+        if(orderItems != null){
+            toDeliveryItem = orderItems.stream().filter(p->p.getNums()>p.getSendNum()).count();
+        }
+        return toDeliveryItem >0 && shop != null && OrderEnum.ShipMode.SHOP_DELIVERY.equals(agentShopType) && (shipStatus == OrderEnum.ShipStatus.NOT_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_DELIVER || shipStatus == OrderEnum.ShipStatus.PARTY_RETURN) &&
                 (payStatus == OrderEnum.PayStatus.PAYED || payStatus == OrderEnum.PayStatus.PARTY_REFUND);
     }
 

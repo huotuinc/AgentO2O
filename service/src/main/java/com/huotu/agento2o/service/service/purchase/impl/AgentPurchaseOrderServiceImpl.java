@@ -133,6 +133,7 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
             if (!StringUtil.isEmptyStr(purchaseOrderSearcher.getOrderItemName())) {
                 predicates.add(cb.like(root.get("orderItemList").get("name").as(String.class), "%" + purchaseOrderSearcher.getOrderItemName() + "%"));
             }
+            query.distinct(true);
 //            predicates.add(cb.isFalse(root.get("disabled")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
