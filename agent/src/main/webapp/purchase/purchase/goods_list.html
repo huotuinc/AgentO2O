@@ -344,6 +344,7 @@
                 dataType: "json",
                 success: function (msg) {
                     if (msg.code == 200) {
+                        $.jBox.closeTip();
                         $.jBox.confirm("已添加至购物车","提示",function(v){
                             if(v == true){
                                 top.document.getElementById("content_left").contentDocument.getElementById("id_020102").getElementsByTagName("a")[0].click();
