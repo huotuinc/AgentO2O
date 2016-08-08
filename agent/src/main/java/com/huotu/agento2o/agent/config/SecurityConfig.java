@@ -32,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/resource/**",
             "/loginFailed",
             "/huobanmall/**",
-            "/agent/index/**"
+            "/agent/index/**",
+            "/code/verifyImage"
     };
 
     @Autowired
