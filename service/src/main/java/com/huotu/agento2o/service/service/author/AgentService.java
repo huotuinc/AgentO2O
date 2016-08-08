@@ -54,6 +54,13 @@ public interface AgentService {
     List<Agent> findByAgentLevelId(Integer levelId);
 
     /**
+     * 根据平台方获取可用的代理商集合
+     * @param customerId
+     * @return
+     */
+    List<Agent> findByCustomerId(Integer customerId);
+
+    /**
      * 判断用户名是否可用
      *
      * @param userName

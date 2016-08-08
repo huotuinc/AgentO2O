@@ -7,11 +7,13 @@ import com.huotu.agento2o.common.util.ApiResult;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrder;
 import com.huotu.agento2o.service.entity.purchase.AgentReturnedOrderItem;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.ReturnedOrderSearch;
+import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnOrderItemService;
 import com.huotu.agento2o.service.service.purchase.AgentReturnedOrderService;
@@ -42,6 +44,8 @@ public class HbmAgentReturnOrderController {
     private AgentDeliveryService agentDeliveryService;
     @Autowired
     private StaticResourceService resourceService;
+    @Autowired
+    private AgentService agentService;
 
 
     /**
@@ -60,22 +64,21 @@ public class HbmAgentReturnOrderController {
         searchCondition.setCustomerId(customerId);
         Page<AgentReturnedOrder> agentReturnedOrderPage  = agentReturnedOrderService.findAll(searchCondition);
         setPicUri(agentReturnedOrderPage.getContent());
+        //下级代理商列表
+        List<Agent> agentList = agentService.findByCustomerId(customerId);
         ModelAndView model = new ModelAndView();
         model.setViewName("huobanmall/purchase/returned_product_list");
-
         int totalPages = agentReturnedOrderPage.getTotalPages();
-
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums",PurchaseEnum.ShipStatus.values());
         model.addObject("orderStatusEnums",PurchaseEnum.OrderStatus.values());
         model.addObject("agentReturnedOrderList", agentReturnedOrderPage.getContent());
         model.addObject("totalPages", totalPages);
-//        model.addObject("agentId", author.getId());
         model.addObject("totalRecords", agentReturnedOrderPage.getTotalElements());
         model.addObject("pageSize", agentReturnedOrderPage.getSize());
         model.addObject("searchCondition", searchCondition);
         model.addObject("pageIndex", searchCondition.getPageIndex());
-//        model.addObject("authorType", author.getClass().getSimpleName());
+        model.addObject("agentList", agentList);
         return model;
     }
 

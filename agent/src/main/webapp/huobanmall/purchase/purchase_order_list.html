@@ -66,10 +66,17 @@
 
                     <div class="search-bar">
                         <label class="first ">采购单号：</label>
-                        <input name="pOrderId" type="text" th:value="*{pOrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
+                        <input name="pOrderId" type="text" th:value="*{POrderId}" id="pOrderId" class="input-small" style="width: 120px;"/>
                         &nbsp;
                         <label class="first ">货品名称：</label>
                         <input name="orderItemName" type="text" th:value="*{orderItemName}" id="orderItemName" class="input-small" style="width: 120px;"/>
+                        <label class="first">下级代理商</label>
+                        <select name="agentId" id="agentId">
+                            <option value="-1" th:selected="*{agentId == -1}">==所有==</option>
+
+                            <!--/*@thymesVar id="agentList" type="java.util.List<com.huotu.agento2o.service.entity.author.Agent>"*/-->
+                            <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}" th:selected="${agent.id == purchaseOrderSearcher.agentId}">代理商</option>
+                        </select>
                         <br/>
                         <br/>
                         <!-- <label class="first ">付款状态：</label>
@@ -392,8 +399,9 @@
         }
 
         var pOrderId = $("input[name=pOrderId]").val();
+        var agentId = $("#agentId").val();
         var orderItemName = $("input[name=orderItemName]").val();
-        var payStatusCode = $("#payStatusCode").val();
+//        var payStatusCode = $("#payStatusCode").val();
         var shipStatusCode = $("#shipStatusCode").val();
         var statusCode = $("#statusCode").val();
         var beginTime = $("#beginTime").val();
@@ -405,7 +413,8 @@
         url += '?rnd=' + Math.random()
                 + '&pOrderId=' + pOrderId
                 + '&orderItemName=' + orderItemName
-                + '&payStatusCode=' + payStatusCode
+                + '&agentId=' + agentId
+//                + '&payStatusCode=' + payStatusCode
                 + '&shipStatusCode=' + shipStatusCode
                 + '&statusCode=' + statusCode
                 + '&beginTime=' + beginTime

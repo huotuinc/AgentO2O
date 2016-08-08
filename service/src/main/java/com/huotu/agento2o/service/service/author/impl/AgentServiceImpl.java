@@ -80,6 +80,11 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+    public List<Agent> findByCustomerId(Integer customerId) {
+        return agentRepository.findByCustomer_CustomerIdAndIsDeletedFalse(customerId);
+    }
+
+    @Override
     public boolean isEnableAgent(String userName) {
         return mallCustomerService.findByUserName(userName) == null;
     }

@@ -240,6 +240,7 @@
             },
             dataType: "json",
             success: function (msg) {
+                $.jBox.closeTip();
                 if (msg.code == 200) {
                     window.location.reload();
                 } else {

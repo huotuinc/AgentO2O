@@ -59,8 +59,15 @@
                 <div class="search-bar">
                     <div>
                         <label class="first">退货单号：</label><!--data-th-value="${goodsSearcher.goodsName}"-->
-                        <input name="rOrderId" type="text" th:value="*{rOrderId}"  id="goodsName"
+                        <input name="rOrderId" type="text" th:value="*{ROrderId}"  id="goodsName"
                                class="input-small" style="width: 120px;"/>
+                        <label class="first">下级代理商</label>
+                        <select name="agentId" id="agentId">
+                            <option value="-1" th:selected="*{agentId == -1}">==所有==</option>
+
+                            <!--/*@thymesVar id="agentList" type="java.util.List<com.huotu.agento2o.service.entity.author.Agent>"*/-->
+                            <option th:each="agent:${agentList}" th:value="${agent.id}" th:text="${agent.name}" th:selected="${agent.id == searchCondition.agentId}">代理商</option>
+                        </select>
                         <br />
                         <br />
 

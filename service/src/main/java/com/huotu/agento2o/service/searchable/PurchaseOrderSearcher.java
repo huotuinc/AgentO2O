@@ -18,7 +18,7 @@ import lombok.Data;
  */
 @Data
 public class PurchaseOrderSearcher {
-    Integer agentId;
+    Integer agentId = -1;
 
     Integer shopId;
 

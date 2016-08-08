@@ -71,10 +71,10 @@ public class AgentPurchaseOrderServiceImpl implements AgentPurchaseOrderService 
     public Page<AgentPurchaseOrder> findAll(PurchaseOrderSearcher purchaseOrderSearcher) {
         Specification<AgentPurchaseOrder> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() != 0) {
+            if (purchaseOrderSearcher.getAgentId() != null && purchaseOrderSearcher.getAgentId() > 0) {
                 predicates.add(cb.equal(root.get("agent").get("id").as(Integer.class), purchaseOrderSearcher.getAgentId()));
             }
-            if (purchaseOrderSearcher.getShopId() != null && purchaseOrderSearcher.getShopId() != 0) {
+            if (purchaseOrderSearcher.getShopId() != null && purchaseOrderSearcher.getShopId() > 0) {
                 predicates.add(cb.equal(root.get("shop").get("id").as(Integer.class), purchaseOrderSearcher.getShopId()));
             }
             if (purchaseOrderSearcher.getParentAgentId() != null) {

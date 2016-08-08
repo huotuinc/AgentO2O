@@ -35,14 +35,12 @@ import java.util.Random;
 @RequestMapping("/code")
 public class CodeController {
 
-    private List<Object> codes;
     /**
      * 验证码个数
      */
     private int codeCount = 4;
 
     private String generateCheckOut(HttpServletRequest request) {
-        codes = new ArrayList<>();
         int number = 0;
         char code;
         StringBuffer checkCode = new StringBuffer();
@@ -54,7 +52,6 @@ public class CodeController {
             } else {
                 code = (char) ('A' + (char) (number % 26));
             }
-            codes.add(code);
             checkCode.append(code);
         }
         // 将四位数字的验证码保存到Session中。
@@ -78,7 +75,7 @@ public class CodeController {
         Font font = new Font("Arial", (Font.BOLD | Font.ITALIC), 20);
         Color[] fontColor = {Color.BLACK, Color.RED, Color.PINK, Color.GREEN, Color.CYAN, Color.BLUE, Color.DARK_GRAY, Color.MAGENTA};  //定义 8 种颜色
         // 将图像填充为白色
-        gd.setColor(Color.WHITE);
+        gd.setColor(new Color(245,246,247));
         gd.fillRect(0, 0, buffImg.getWidth(), buffImg.getHeight());
         // 设置字体
         gd.setFont(font);

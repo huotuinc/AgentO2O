@@ -5,7 +5,9 @@ import com.huotu.agento2o.service.common.AgentStatusEnum;
 import com.huotu.agento2o.service.entity.MallCustomer;
 import com.huotu.agento2o.service.entity.level.AgentLevel;
 import com.huotu.agento2o.service.entity.user.UserBaseInfo;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -19,6 +21,8 @@ import java.util.Date;
 @Cacheable(value = false)
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Agent{
 
     private static final long serialVersionUID = 1298342488758535678L;
@@ -208,5 +212,10 @@ public class Agent{
 
     public boolean hasAccountInfo() {
         return !StringUtil.isEmptyStr(bankName) && !StringUtil.isEmptyStr(accountName) && !StringUtil.isEmptyStr(accountNo);
+    }
+
+    public Agent(Integer id,String name){
+        this.id = id;
+        this.name = name;
     }
 }

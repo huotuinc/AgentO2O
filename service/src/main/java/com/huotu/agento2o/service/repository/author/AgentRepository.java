@@ -27,7 +27,21 @@ public interface AgentRepository extends JpaRepository<Agent, Integer>, JpaSpeci
     @Query("update Agent a set a.isDisabled = ?2 where a.id = ?1")
     int updateDisabledStatus(Integer agentId, boolean status);
 
+    /**
+     * 查找下级代理商列表
+     * @param agentId
+     * @return
+     */
+    @Query("select new com.huotu.agento2o.service.entity.author.Agent(a.id,a.name) from Agent a where a.parentAgent.id = ?1 and a.isDeleted = false")
     List<Agent> findByParentAgent_IdAndIsDeletedFalse(Integer agentId);
+
+    /**
+     * 用于界面上的select，只需要id 和 name
+     * @param customerId
+     * @return
+     */
+    @Query("select new com.huotu.agento2o.service.entity.author.Agent(a.id,a.name) from Agent a where a.customer.customerId = ?1 and a.isDeleted = false")
+    List<Agent> findByCustomer_CustomerIdAndIsDeletedFalse(Integer customerId);
 
     Agent findByUserBaseInfo_userIdAndIsDeletedFalse(Integer userId);
 }

@@ -18,10 +18,12 @@ import com.huotu.agento2o.common.util.Constant;
 import com.huotu.agento2o.common.util.ResultCodeEnum;
 import com.huotu.agento2o.common.util.StringUtil;
 import com.huotu.agento2o.service.common.PurchaseEnum;
+import com.huotu.agento2o.service.entity.author.Agent;
 import com.huotu.agento2o.service.entity.purchase.AgentDelivery;
 import com.huotu.agento2o.service.entity.purchase.AgentPurchaseOrder;
 import com.huotu.agento2o.service.searchable.DeliverySearcher;
 import com.huotu.agento2o.service.searchable.PurchaseOrderSearcher;
+import com.huotu.agento2o.service.service.author.AgentService;
 import com.huotu.agento2o.service.service.purchase.AgentDeliveryService;
 import com.huotu.agento2o.service.service.purchase.AgentPurchaseOrderService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -52,6 +54,8 @@ public class HbmAgentPurchaseOrderController {
     private StaticResourceService resourceService;
     @Autowired
     private AgentDeliveryService agentDeliveryService;
+    @Autowired
+    private AgentService agentService;
 
 
     /**
@@ -71,6 +75,8 @@ public class HbmAgentPurchaseOrderController {
         purchaseOrderSearcher.setCustomerId(customerId);
         Page<AgentPurchaseOrder> purchaseOrderPage = purchaseOrderService.findAll(purchaseOrderSearcher);
         setPicUri(purchaseOrderPage.getContent());
+        //下级代理商列表
+        List<Agent> agentList = agentService.findByCustomerId(customerId);
         model.addObject("purchaseOrderList", purchaseOrderPage.getContent());
         model.addObject("pageSize", Constant.PAGESIZE);
         model.addObject("pageNo", purchaseOrderSearcher.getPageIndex());
@@ -79,6 +85,7 @@ public class HbmAgentPurchaseOrderController {
         model.addObject("payStatusEnums", PurchaseEnum.PayStatus.values());
         model.addObject("shipStatusEnums", PurchaseEnum.ShipStatus.values());
         model.addObject("orderStatusEnums", PurchaseEnum.OrderStatus.values());
+        model.addObject("agentList", agentList);
         return model;
     }
 
