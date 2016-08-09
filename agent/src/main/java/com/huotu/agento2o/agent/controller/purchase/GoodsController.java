@@ -69,7 +69,7 @@ public class GoodsController {
         ModelAndView model = new ModelAndView();
         model.setViewName("purchase/goods/manager");
         List<AgentProduct> agentProduct = agentProductService.findByAgentId(author);
-        model.addObject("agentProduct", agentProduct);
+        model.addObject("agentProductList", agentProduct);
         return model;
     }
 

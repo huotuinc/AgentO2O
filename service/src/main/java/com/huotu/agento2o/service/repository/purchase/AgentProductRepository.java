@@ -75,10 +75,8 @@ public interface AgentProductRepository extends JpaRepository<AgentProduct, Inte
      * @return 用户ID
      */
     @Query("select DISTINCT product.agent.id from AgentProduct product where  product.agent is not null and product.warning>=product.store-product.freez")
-    @Modifying
     List<Object> findNeedWaringAgent();
     @Query("select DISTINCT product.shop.id from AgentProduct product where  product.shop is not null and product.warning>=product.store-product.freez")
-    @Modifying
     List<Object> findNeedWaringShop();
 
     /**

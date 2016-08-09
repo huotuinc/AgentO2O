@@ -87,15 +87,15 @@
                     </tr>
                     </thead>
                     <tbody data-th-remove="all-but-first">
-                    <!--/*@thymesVar id="agentProduct" type="com.huotu.agento2o.service.entity.purchase.AgentProduct"*/-->
-                    <tr data-th-each="agentProduct,goodsStat:${agentProduct}">
+                    <!--/*@thymesVar id="agentProductList" type="java.util.List<com.huotu.agento2o.service.entity.purchase.AgentProduct>"*/-->
+                    <tr data-th-each="agentProduct,goodsStat:${agentProductList}">
                         <td class="txt20 c" data-th-text="${goodsStat.count}">1</td>
-                        <td class="txt160 c js_nametd">
+                        <td class="txt160 c">
                             <span data-th-text="${agentProduct.product.name}">商品名称</span>
                             <span style="color: red"
                                   data-th-if="${agentProduct.warning > agentProduct.store - agentProduct.freez}">（库存不足）</span>
                         </td>
-                        <td class="txt80 c">
+                        <td class="txt120 c">
                             <span data-th-text="${agentProduct.product.standard}">100</span>
                         </td>
                         <td class="txt80 c">

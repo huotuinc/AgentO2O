@@ -79,6 +79,7 @@
             var leftMenu = /*[[@{/leftMenu}]]*/ "";
             leftMenu = leftMenu + "?parentId=" + menuId + "&activeMenuId=" + childMenuId;
             _loadLeftMenu(leftMenu);
+            _loadMain(leftMenu);
         };
         mallMenuManager.index = function () {
 //            $(".active").removeClass("active");

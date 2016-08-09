@@ -121,7 +121,7 @@ public class SendEmailServiceImpl implements SendEmailService {
                     .substitutionVars(Substitution.sub()
                             .set("info", sb.toString())
                             .set("name", authorName))
-                    .subject("库存预警")
+                    .subject("代理商库存预警通知")
                     .to(emailStr);
             SendCloud webApi = SendCloud.createWebApi(emailConfig.getApiUser(), emailConfig.getApiKey());
             Result result = null;
