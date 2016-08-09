@@ -134,10 +134,15 @@ public abstract class CommonTestBase extends SpringWebTest {
     }
 
     protected MockHttpSession loginAs(String userName, String password, String roleType) throws Exception {
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
+        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/code/verifyImage"))
                 .andReturn().getRequest().getSession(true);
+        String verifyCode = session.getAttribute("verifyCode").toString();
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType", roleType))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType", roleType)
+                .param("verifyCode", verifyCode)
+        )
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         saveAuthedSession(session);

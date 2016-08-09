@@ -56,6 +56,7 @@ public class IndexControllerTest extends CommonTestBase {
      */
     @Test
     public void agentLoginAsAgentTest() throws Exception{
+        String verifyCode = null;
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         //平台方
@@ -78,19 +79,32 @@ public class IndexControllerTest extends CommonTestBase {
 //        agentService.addAgent(agent);
 //        agentService.flush();
 
+        //获取验证码
         //以代理商角色登录
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
+//        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
+//                .andReturn().getRequest().getSession(true);
+        MockHttpSession session = (MockHttpSession)this.mockMvc.perform(get("/code/verifyImage"))
                 .andReturn().getRequest().getSession(true);
+        verifyCode = session.getAttribute("verifyCode").toString();
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
 
         //以门店角色登录,返回 用户名或者密码错误
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
+        session.setAttribute("verifyCode",verifyCode);
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("用户名或密码错误") > -1);
 
@@ -99,8 +113,13 @@ public class IndexControllerTest extends CommonTestBase {
         agentRepository.saveAndFlush(agent);
 
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
+        session.setAttribute("verifyCode",verifyCode);
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已冻结") > -1);
 
@@ -109,8 +128,13 @@ public class IndexControllerTest extends CommonTestBase {
         agent.setDeleted(true);
         agentRepository.saveAndFlush(agent);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
+        session.setAttribute("verifyCode",verifyCode);
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已失效") > -1);
     }
@@ -121,6 +145,7 @@ public class IndexControllerTest extends CommonTestBase {
      */
     @Test
     public void shopLoginAsShopTest() throws Exception{
+        String verifyCode = null;
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
         //平台方
@@ -143,17 +168,26 @@ public class IndexControllerTest extends CommonTestBase {
         shopCustomer.setShop(shop);
         shopCustomer = customerRepository.save(shopCustomer);
 
-        MockHttpSession session = (MockHttpSession) this.mockMvc.perform(get("/"))
+        MockHttpSession session = (MockHttpSession)this.mockMvc.perform(get("/code/verifyImage"))
                 .andReturn().getRequest().getSession(true);
+        verifyCode = session.getAttribute("verifyCode").toString();
         //以门店角色登录
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
         Assert.assertNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
         //以代理商角色登录
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.AGENT.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
 
@@ -161,7 +195,11 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDisabled(true);
         shopRepository.save(shop);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已冻结") > -1);
@@ -170,7 +208,11 @@ public class IndexControllerTest extends CommonTestBase {
         shop.setDeleted(true);
         shopRepository.save(shop);
         session = (MockHttpSession) this.mockMvc.perform(post(SecurityConfig.LOGIN_PAGE).session(session)
-                .param("username", userName).param("password", password).param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode())))
+                .param("username", userName)
+                .param("password", password)
+                .param("roleType",String.valueOf(RoleTypeEnum.SHOP.getCode()))
+                .param("verifyCode",verifyCode)
+        )
                 .andReturn().getRequest().getSession();
         Assert.assertNotNull(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION"));
         Assert.assertTrue(session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION").toString().indexOf("该账户已失效") > -1);

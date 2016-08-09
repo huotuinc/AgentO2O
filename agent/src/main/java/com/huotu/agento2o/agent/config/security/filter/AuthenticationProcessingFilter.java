@@ -39,9 +39,9 @@ public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticati
         }
         //校验 验证码
         //从SESSION中获取验证码
-        String realVerifyCode = request.getSession().getAttribute("verifyCode").toString();
+        Object realVerifyCode = request.getSession().getAttribute("verifyCode");
         String verifyCode = obtainVerifyCode(request);
-        if (StringUtils.isEmpty(realVerifyCode) || !realVerifyCode.equalsIgnoreCase(verifyCode)) {
+        if (realVerifyCode == null || StringUtils.isEmpty(realVerifyCode.toString()) || !realVerifyCode.toString().equalsIgnoreCase(verifyCode)) {
             throw new VerifyCodeErrorException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.errorVerifyCode",
                     "verify code is error"));

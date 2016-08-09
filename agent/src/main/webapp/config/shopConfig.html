@@ -585,6 +585,7 @@
     /*]]>*/
 </script>
 <script th:inline="javascript">
+    /*<![CDATA[*/
     var pro = /*[[${shop.provinceCode}]]*/"";
     var city = /*[[${shop.cityCode}]]*/"";
     var dist = /*[[${shop.districtCode}]]*/"";
@@ -633,7 +634,6 @@
         map.centerAndZoom(selectProvince, 10);
     })
     //    change2view2form('shopConfigForm');
-    /*<![CDATA[*/
     /*百度地图API相关*/
     var map = new BMap.Map("addrMap");
 
