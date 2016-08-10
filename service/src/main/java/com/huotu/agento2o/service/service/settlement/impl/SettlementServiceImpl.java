@@ -248,6 +248,8 @@ public class SettlementServiceImpl implements SettlementService {
             costPrice += orderItem.getCost() * orderItem.getNums();
         }
         orderDetailModel.setCostPrice((double) Math.round(costPrice * 100) / 100);
+        orderDetailModel.setPmtAmount(orders.getPmtAmount());
+        orderDetailModel.setOrderSourceType(orders.getOrderSourceType());
         return orderDetailModel;
     }
 

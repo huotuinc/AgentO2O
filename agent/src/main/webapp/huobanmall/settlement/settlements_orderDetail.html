@@ -247,6 +247,16 @@
                                     th:text="${orderDetail.finalAmount}"></span></label>
                             <label class="first " style="padding:0px 300px 0px 50px; ">运费：<span
                                     th:text="${orderDetail.costFreight}"></span></label>
+                            <br/>
+                            <br/>
+                            <label>
+                                <label class="first" style="padding:0px 300px 0px 50px; ">优惠金额：<span
+                                        th:text="'￥'+${orderDetail.pmtAmount}"></span></label>
+                            </label>
+                            <label>
+                                <label class="first" style="padding:0px 300px 0px 50px; ">活动来源：<span
+                                        th:text="${orderDetail.orderSourceType.value}"></span></label>
+                            </label>
                             <!--<br/>
                             <br/>
                             <label class="first" style="padding:0px 300px 0px 50px; ">成本总价：<span
