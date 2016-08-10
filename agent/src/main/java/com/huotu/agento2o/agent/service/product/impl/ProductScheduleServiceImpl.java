@@ -47,8 +47,8 @@ public class ProductScheduleServiceImpl implements ProductScheduleService {
 
     @Override
     //每天早上10点获取库存预警信息
-//    @Scheduled(cron = "0 0 10 * * ?")
-    @Scheduled(cron = "0 0 * * * ?")//用于测试，每1小时检查库存
+    @Scheduled(cron = "0 0 10 * * ?")
+//    @Scheduled(cron = "0 0 * * * ?")//用于测试，每1小时检查库存
     public void productSchedule() {
         //查询出需要提醒的库存信息
         log.info("start check product store . . .");

@@ -36,8 +36,8 @@ public class SettlementScheduleServiceImpl implements SettlementScheduleService 
 
     @Override
     //每日早上3点获取结算单
-//    @Scheduled(cron = "0 0 3 ? * *")
-    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每0,5结尾分钟结算一次
+    @Scheduled(cron = "0 0 3 ? * *")
+//    @Scheduled(cron = "0 */5 * * * ?")//用于测试，每0,5结尾分钟结算一次
     public void settlementSchedule() {
         Date now = new Date();
         log.info("start settle . . ." + now);
