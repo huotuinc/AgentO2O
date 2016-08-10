@@ -112,7 +112,9 @@ public class DeliveryController {
                 continue;
             }
             agentProduct = agentProductService.findAgentProduct(shop,mallOrderItem.getProduct());
-            if (!(agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getFreez()<=agentProduct.getStore())){
+            //预占库存>=购买数量
+            //库存>=购买数量
+            if (!(agentProduct!=null && agentProduct.getFreez()>=mallOrderItem.getNums() && agentProduct.getStore() >= mallOrderItem.getNums())){
                 return ApiResult.resultWith(ResultCodeEnum.INVENTORY_SHORTAGE);
             }
             count ++;
@@ -140,7 +142,9 @@ public class DeliveryController {
             if (agentProduct!=null) {
                 order.getOrderItems().get(i).setStore(agentProduct.getStore());
                 order.getOrderItems().get(i).setFreez(agentProduct.getFreez());
-                order.getOrderItems().get(i).setStockAdequate(agentProduct.getFreez() >= order.getOrderItems().get(i).getNums() && agentProduct.getFreez() <= agentProduct.getStore());
+                //预占库存>=购买数量
+                //库存>=购买数量
+                order.getOrderItems().get(i).setStockAdequate(agentProduct.getFreez() >= order.getOrderItems().get(i).getNums() && order.getOrderItems().get(i).getNums() <= agentProduct.getStore());
             }
         }
         model.addAttribute("order", order);
