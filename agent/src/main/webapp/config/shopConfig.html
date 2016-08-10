@@ -211,7 +211,7 @@
                                                th:value="*{email}"/>
                                     </td>
                                 </tr>
-                                <tr>
+                                <!--<tr>
                                     <th>营业时间:</th>
                                     <td>
                                         <input type="checkbox" name="workday" value="1"
@@ -233,13 +233,13 @@
                                         <input type="text" th:value="*{openTime}" class="input-normal Wdate"
                                                id="openTime"
                                                onfocus="WdatePicker({dateFmt: 'HH:mm:ss',quickSel:['07-30-00','08-00-00','08-30-00','09-00-00','09-30-00']})"/>
-                                        ---
+                                        -&#45;&#45;
                                         <input type="text" th:value="*{closeTime}" class="input-normal Wdate"
                                                id="closeTime"
                                                onfocus="WdatePicker({dateFmt: 'HH:mm:ss',quickSel:['17-00-00','17-30-00','18-00-00','18-30-00','19-00-00'], minDate: '#F{$dp.$D(\'openTime\')}'})"/>
 
                                     </td>
-                                </tr>
+                                </tr>-->
 
                                 <tr>
                                     <th>详细地址<span class="must">*</span>:</th>
@@ -264,7 +264,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>LOGO：</th>
+                                    <th>LOGO<span class="must">*</span>：</th>
                                     <td>
                                         <img id="uploadLogo"
                                              style="width: 80px; height: 80px; border: 1px solid #ccc; float: left; background: #efefef; line-height: 80px; text-align: center; color: #ccc;"/>
@@ -414,7 +414,7 @@
         var mobile = $.trim($("#mobile").val());
         var telephone = $.trim($("#telephone").val());
         var email = $.trim($("#email").val());
-        var workday = "";
+        /*var workday = "";
         var workdayBox = $("input[name=workday]:checked");
         if (workdayBox.length > 0) {
             for (var i = 0; i < workdayBox.length; i++) {
@@ -423,7 +423,7 @@
             workday = workday.substr(1);
         }
         var openTime = $.trim($("#openTime").val());
-        var closeTime = $.trim($("#closeTime").val());
+        var closeTime = $.trim($("#closeTime").val());*/
 
         var address = $.trim($("#address").val());
         var lan = $.trim($("#lan").val());
@@ -482,10 +482,10 @@
             $.jBox.tip("E-mail格式不正确");
             return;
         }
-        if (openTime.length == 0 || closeTime.length == 0) {
+        /*if (openTime.length == 0 || closeTime.length == 0) {
             $.jBox.tip("请输入营业时间");
             return;
-        }
+        }*/
         if (address.length == 0) {
             $.jBox.tip("请输入详细地址");
             return;
@@ -565,8 +565,8 @@
 //                accountNo: accountNo,
                 email: email,
                 logo: logo,
-                workday: workday,
-                openTime: openTime,
+//                workday: workday,
+//                openTime: openTime,
                 closeTime: closeTime
             },
             success: function (result) {

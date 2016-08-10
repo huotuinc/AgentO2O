@@ -116,9 +116,9 @@ public class ShopServiceImpl implements ShopService {
             oldShop.setAgent(agent);
             oldShop.setCustomer(agent.getCustomer());
             //设置默认工作日和上下班时间
-            oldShop.setWorkday(Constant.WORKDAY);
-            oldShop.setOpenTime(Time.valueOf(Constant.OPEN_TIME));
-            oldShop.setCloseTime(Time.valueOf(Constant.CLOSE_TIME));
+//            oldShop.setWorkday(Constant.WORKDAY);
+//            oldShop.setOpenTime(Time.valueOf(Constant.OPEN_TIME));
+//            oldShop.setCloseTime(Time.valueOf(Constant.CLOSE_TIME));
             mallShop = mallCustomerService.newCustomer(shop.getUsername(), shop.getPassword(), CustomerTypeEnum.AGENT_SHOP);
             oldShop.setId(mallShop.getCustomerId());
             mallShop.setShop(oldShop);
@@ -210,9 +210,9 @@ public class ShopServiceImpl implements ShopService {
 //        oldShop.setAccountNo(shop.getAccountNo());
         oldShop.setEmail(shop.getEmail());
         oldShop.setLogo(shop.getLogo());
-        oldShop.setWorkday(shop.getWorkday());
-        oldShop.setOpenTime(shop.getOpenTime());
-        oldShop.setCloseTime(shop.getCloseTime());
+//        oldShop.setWorkday(shop.getWorkday());
+//        oldShop.setOpenTime(shop.getOpenTime());
+//        oldShop.setCloseTime(shop.getCloseTime());
         mallCustomerService.save(mallShop);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS);
     }
