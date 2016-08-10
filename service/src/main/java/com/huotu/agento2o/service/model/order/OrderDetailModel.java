@@ -10,12 +10,14 @@
 
 package com.huotu.agento2o.service.model.order;
 
+import com.huotu.agento2o.service.common.OrderEnum;
 import com.huotu.agento2o.service.entity.order.MallDelivery;
 import com.huotu.agento2o.service.entity.order.MallOrderItem;
 import com.huotu.agento2o.service.entity.order.MallPayments;
 import com.huotu.agento2o.service.entity.order.MallRefunds;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,11 +94,14 @@ public class OrderDetailModel {
      * 运费
      */
     private double costFreight;
-
     /**
      * 成本价
      */
     private double costPrice;
+    /**
+     * 订单优惠金额
+     */
+    private double pmtAmount;
 
     /**
      * 下单时间
@@ -112,6 +117,10 @@ public class OrderDetailModel {
      * 支付方式名称
      */
     private String payTypeName;
+    /**
+     * 订单来源
+     */
+    private OrderEnum.OrderSourceType orderSourceType;
 
     /**
      * 商品列表

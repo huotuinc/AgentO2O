@@ -245,15 +245,15 @@ public class Shop{
      * 营业开始时间
      */
 //    @Temporal(TemporalType.TIME)
-    @Column(name = "OpenTime")
-    private Time openTime;
+//    @Column(name = "OpenTime")
+//    private Time openTime;
 
     /**
      * 营业结束时间
      */
 //    @Temporal(TemporalType.TIME)
-    @Column(name = "CloseTime")
-    private Time closeTime;
+//    @Column(name = "CloseTime")
+//    private Time closeTime;
 
 
     public boolean hasAccountInfo() {

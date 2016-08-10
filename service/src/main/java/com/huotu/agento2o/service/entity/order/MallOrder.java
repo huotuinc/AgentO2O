@@ -146,6 +146,9 @@ public class MallOrder {
     @Column(name = "Agent_Mark_Text")
     private String agentMarkText;
 
+    /**
+     * 订单来源
+     */
     @Column(name = "SourceType")
     private OrderEnum.OrderSourceType orderSourceType;
 

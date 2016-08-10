@@ -264,6 +264,8 @@ public class MallOrderServiceImpl implements MallOrderService {
         orderDetailModel.setShipAddr(orders.getShipAddr());
         orderDetailModel.setFinalAmount(orders.getFinalAmount());
         orderDetailModel.setCostFreight(orders.getCostFreight());
+        orderDetailModel.setPmtAmount(orders.getPmtAmount());
+        orderDetailModel.setOrderSourceType(orders.getOrderSourceType());
         orderDetailModel.setCreateTime(StringUtil.DateFormat(orders.getCreateTime(), StringUtil.TIME_PATTERN));
         orderDetailModel.setPayTime(StringUtil.DateFormat(orders.getPayTime(), StringUtil.TIME_PATTERN));
         orderDetailModel.setSupOrderItemList(mallOrderItem);

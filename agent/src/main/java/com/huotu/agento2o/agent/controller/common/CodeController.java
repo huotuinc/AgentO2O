@@ -72,7 +72,7 @@ public class CodeController {
         Graphics gd = buffImg.getGraphics();
         // 清空图片背景色
         Font font = new Font("Arial", (Font.BOLD | Font.ITALIC), 20);
-        Color[] fontColor = {Color.BLACK, Color.RED, Color.PINK, Color.GREEN, Color.CYAN, Color.BLUE, Color.DARK_GRAY, Color.MAGENTA};  //定义 8 种颜色
+        Color[] fontColor = {Color.BLACK, Color.RED, Color.CYAN, Color.RED, Color.CYAN, Color.BLACK, Color.DARK_GRAY, Color.MAGENTA};  //定义 8 种颜色
         // 将图像填充为灰色
         gd.setColor(new Color(245,246,247));
         gd.fillRect(0, 0, buffImg.getWidth(), buffImg.getHeight());
