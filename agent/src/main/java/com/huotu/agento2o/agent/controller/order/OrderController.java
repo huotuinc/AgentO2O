@@ -64,6 +64,7 @@ public class OrderController {
     private MallOrderItemService orderItemService;
     @Autowired
     private StaticResourceService resourceService;
+
     /**
      * 获取订单全部数据 query 查询分页
      * Modified By cwb
@@ -78,12 +79,12 @@ public class OrderController {
             OrderSearchCondition searchCondition,
             @RequestParam(required = false, defaultValue = "1") int pageIndex
     ) {
-        Page<MallOrder> ordersList  = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
+        Page<MallOrder> ordersList = orderService.findAll(pageIndex, author, Constant.PAGESIZE, searchCondition);
         getPicUri(ordersList.getContent());
         int totalPages = ordersList.getTotalPages();
         model.addAttribute("payStatusEnums", OrderEnum.PayStatus.values());
-        model.addAttribute("shipStatusEnums",OrderEnum.ShipStatus.values());
-        model.addAttribute("shipModeEnums",OrderEnum.ShipMode.values());
+        model.addAttribute("shipStatusEnums", OrderEnum.ShipStatus.values());
+        model.addAttribute("shipModeEnums", OrderEnum.ShipMode.values());
         model.addAttribute("ordersList", ordersList.getContent());
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("agentId", author.getId());
@@ -96,17 +97,17 @@ public class OrderController {
 
     private void getPicUri(List<MallOrder> mallOrderList) {
         mallOrderList.forEach(order -> {
-            if(order.getOrderItems() != null && order.getOrderItems().size() > 0){
+            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
                 getItemPicUri(order.getOrderItems());
             }
         });
     }
 
-    private void getItemPicUri(List<MallOrderItem> mallOrderItemList){
-        mallOrderItemList.forEach(item->{
-            if(!StringUtil.isEmptyStr(item.getThumbnailPic())){
+    private void getItemPicUri(List<MallOrderItem> mallOrderItemList) {
+        mallOrderItemList.forEach(item -> {
+            if (!StringUtil.isEmptyStr(item.getThumbnailPic())) {
                 try {
-                    URI picUri = resourceService.getResource(StaticResourceService.huobanmallMode,item.getThumbnailPic());
+                    URI picUri = resourceService.getResource(StaticResourceService.huobanmallMode, item.getThumbnailPic());
                     item.setPicUri(picUri);
                 } catch (URISyntaxException e) {
                 }
@@ -127,7 +128,7 @@ public class OrderController {
             @RequestParam("orderId") String orderId) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("order/order_detail");
-        OrderDetailModel orderDetailModel = orderService.findOrderDetail(author,orderId);
+        OrderDetailModel orderDetailModel = orderService.findOrderDetail(author, orderId);
         getItemPicUri(orderDetailModel.getSupOrderItemList());
         modelAndView.addObject("orderDetail", orderDetailModel);
         return modelAndView;
@@ -140,12 +141,12 @@ public class OrderController {
     public String showRemark(
             @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
             Model model,
-            @RequestParam(name = "orderId",required = true) String orderId){
-        MallOrder order = orderService.findByShopAndOrderId(shop,orderId);
-        if(order != null){
-            model.addAttribute("orderId",order.getOrderId());
-            model.addAttribute("agentMarkType",order.getAgentMarkType());
-            model.addAttribute("agentMarkText",order.getAgentMarkText());
+            @RequestParam(name = "orderId", required = true) String orderId) {
+        MallOrder order = orderService.findByShopAndOrderId(shop, orderId);
+        if (order != null) {
+            model.addAttribute("orderId", order.getOrderId());
+            model.addAttribute("agentMarkType", order.getAgentMarkType());
+            model.addAttribute("agentMarkText", order.getAgentMarkText());
         }
         return "order/remark";
     }
@@ -157,12 +158,12 @@ public class OrderController {
     @ResponseBody
     public ApiResult editRemark(
             @AgtAuthenticationPrincipal(type = Shop.class) Shop shop,
-            @RequestParam(name = "orderId",required = true) String orderId,
+            @RequestParam(name = "orderId", required = true) String orderId,
             String agentMarkType,
-            String agentMarkText){
-        if(orderId != ""){
-            return orderService.updateRemark(shop,orderId,agentMarkType,agentMarkText);
-        }else{
+            String agentMarkText) {
+        if (orderId != "") {
+            return orderService.updateRemark(shop, orderId, agentMarkType, agentMarkText);
+        } else {
             return ApiResult.resultWith(ResultCodeEnum.DATA_NULL);
         }
     }
@@ -195,7 +196,7 @@ public class OrderController {
                             HttpServletResponse response) {
         searchCondition.setAgentId(agentId);
         int pageSize = Constant.PAGESIZE * (txtEndPage - txtBeginPage + 1);
-        Page<MallOrder> pageInfo = orderService.findAll(txtBeginPage,author ,pageSize, searchCondition);
+        Page<MallOrder> pageInfo = orderService.findAll(txtBeginPage, author, pageSize, searchCondition);
         List<MallOrder> orderList = pageInfo.getContent();
         session.setAttribute("state", null);
         // 生成提示信息，
@@ -252,7 +253,10 @@ public class OrderController {
                 if (!StringUtils.isEmpty(logiMoneyStr)) logiMoney = Double.parseDouble(logiMoneyStr);
                 orderForDelivery.setLogiMoney(logiMoney);
                 orderForDelivery.setRemark((String) itemInfo.get(5).getValue());
-                orderForDeliveries.add(orderForDelivery);
+                orderForDelivery.setAgentShopId(shop.getId());
+                if (!StringUtil.isEmpty(orderForDelivery.getOrderNo())) {
+                    orderForDeliveries.add(orderForDelivery);
+                }
             });
             apiResult = deliveryService.pushBatchDelivery(orderForDeliveries, shop.getCustomer().getId());
         }

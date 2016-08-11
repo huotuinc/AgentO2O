@@ -31,4 +31,6 @@ public class OrderForDelivery {
     private String logiCode;
     @JSONField(name = "Remark")
     private String remark;
+    @JSONField(name = "AgentShopId")
+    private Integer agentShopId;
 }

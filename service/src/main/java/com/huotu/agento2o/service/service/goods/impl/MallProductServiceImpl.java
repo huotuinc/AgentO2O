@@ -92,7 +92,7 @@ public class MallProductServiceImpl implements MallProductService {
         Map<Integer, Double> productPriceMap = new HashMap<>();
         String[] priceInfoList = priceInfo.split("\\|");
         for (int i = 0; i < priceInfoList.length; i++) {
-            if (priceInfoList[i].indexOf(":") > -1) {
+            if (priceInfoList[i].indexOf(":") > -1 && Double.parseDouble(priceInfoList[i].split(":")[1]) > 0) {
                 productPriceMap.put(Integer.parseInt(priceInfoList[i].split(":")[0]), Double.parseDouble(priceInfoList[i].split(":")[1]));
             }
         }
